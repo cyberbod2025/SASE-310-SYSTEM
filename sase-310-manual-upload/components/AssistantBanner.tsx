@@ -1,0 +1,189 @@
+import React from "react";
+import { useApp } from "../store";
+import { AppModule, UserRole } from "../types";
+
+interface PendingAction {
+  id: string;
+  title: string;
+  description: string;
+  module: AppModule;
+  priority: "info" | "warning" | "urgent";
+}
+
+export const AssistantBanner: React.FC<{
+  onOpenNotifications?: () => void;
+}> = ({ onOpenNotifications }) => {
+  const {
+    assistantMessage,
+    currentUserRole,
+    students,
+    notifications,
+    setCurrentModule,
+  } = useApp();
+
+  // Generate pending actions based on role and data
+  const getPendingActions = (): PendingAction[] => {
+    const actions: PendingAction[] = [];
+
+    // Check for pattern alerts (orientation, direction)
+    const patternAlerts = students.filter(
+      (s) => s.incidents.length >= 3
+    ).length;
+    if (patternAlerts > 0) {
+      actions.push({
+        id: "pattern-alert",
+        title: `${patternAlerts} alumno(s) con patrón detectado`,
+        description: "Requieren intervención inmediata",
+        module: AppModule.REPORTES,
+        priority: "urgent",
+      });
+    }
+
+    // Check unread notifications
+    const unread = notifications.filter((n) => !n.read).length;
+    if (unread > 0) {
+      actions.push({
+        id: "unread-notif",
+        title: `${unread} notificación(es) sin leer`,
+        description: "Revisa tus avisos pendientes",
+        module: AppModule.DASHBOARD,
+        priority: "info",
+      });
+    }
+
+    // Role-specific actions
+    if (currentUserRole === UserRole.SECRETARIA) {
+      actions.push({
+        id: "inscripciones",
+        title: "Período de inscripciones activo",
+        description: "Revisar documentos pendientes",
+        module: AppModule.INSCRIPCIONES,
+        priority: "info",
+      });
+    }
+
+    if (currentUserRole === UserRole.DIRECTIVO) {
+      actions.push({
+        id: "bitacora",
+        title: "Bitácora de auditoría disponible",
+        description: "Consulta las acciones del personal",
+        module: AppModule.BITACORA,
+        priority: "info",
+      });
+    }
+
+    if (currentUserRole === UserRole.ORIENTACION) {
+      actions.push({
+        id: "reportes-docentes",
+        title: "Solicitar reportes docentes",
+        description: "Obtén información académica y conductual",
+        module: AppModule.REPORTES_DOCENTES,
+        priority: "info",
+      });
+    }
+
+    return actions;
+  };
+
+  const pendingActions = getPendingActions();
+
+  if (!assistantMessage && pendingActions.length === 0) return null;
+
+  // Determine urgency
+  const hasUrgent = pendingActions.some((a) => a.priority === "urgent");
+  const hasWarning = pendingActions.some((a) => a.priority === "warning");
+
+  const bgColor = hasUrgent
+    ? "bg-red-50 border-red-200"
+    : hasWarning
+    ? "bg-yellow-50 border-yellow-200"
+    : "bg-blue-50 border-blue-100";
+
+  const textColor = hasUrgent
+    ? "text-red-800"
+    : hasWarning
+    ? "text-yellow-800"
+    : "text-primary";
+
+  const icon = hasUrgent ? "warning" : hasWarning ? "info" : "smart_toy";
+
+  return (
+    <div
+      className={`mx-6 mt-6 mb-0 p-5 rounded-2xl border backdrop-blur-md shadow-lg animate-fade-in transition-all duration-300 ${
+        hasUrgent
+          ? "bg-red-900/40 border-red-500/30 shadow-red-900/20"
+          : "bg-black/30 border-white/10 shadow-blue-900/20"
+      }`}
+    >
+      <div className="flex items-start gap-4">
+        {/* Gemini Orb Animation */}
+        <div className="relative size-12 shrink-0 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 animate-[spin_3s_linear_infinite] blur-md opacity-60"></div>
+          <div className="absolute inset-1 rounded-full bg-black flex items-center justify-center z-10 overflow-hidden">
+            <div className="relative size-full animate-[spin_10s_linear_infinite]">
+              <div className="absolute inset-0 border-[3px] border-transparent border-t-cyan-400 border-b-purple-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-2 border-[3px] border-transparent border-l-yellow-400 border-r-pink-500 rounded-full animate-[spin_3s_linear_infinite_reverse]"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_15px_white] animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-bold uppercase tracking-widest mb-1 text-blue-300/80">
+            Asistente IA SASE
+          </h4>
+
+          {/* Main message */}
+          {assistantMessage && (
+            <p
+              className={`text-sm font-medium mb-3 leading-relaxed ${
+                hasUrgent ? "text-red-200" : "text-gray-100"
+              }`}
+            >
+              {assistantMessage}
+            </p>
+          )}
+
+          {/* Pending actions */}
+          {pendingActions.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                Sugerencias de acción:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {pendingActions.map((action) => (
+                  <button
+                    key={action.id}
+                    onClick={() => {
+                      if (action.id === "unread-notif" && onOpenNotifications) {
+                        onOpenNotifications();
+                      } else {
+                        setCurrentModule(action.module);
+                      }
+                    }}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border hover:scale-105 active:scale-95 ${
+                      action.priority === "urgent"
+                        ? "bg-red-500/20 border-red-500/50 text-red-200 hover:bg-red-500/30"
+                        : action.priority === "warning"
+                        ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-200 hover:bg-yellow-500/30"
+                        : "bg-white/5 border-white/10 text-blue-200 hover:bg-white/10 hover:border-blue-400/30"
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      {action.priority === "urgent"
+                        ? "priority_high"
+                        : action.priority === "warning"
+                        ? "schedule"
+                        : "arrow_forward"}
+                    </span>
+                    {action.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
