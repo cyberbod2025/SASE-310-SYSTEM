@@ -1,0 +1,12 @@
+C:\Users\cyber\Desktop\sase-310-tv\docs\stitch_vista_del_alumno\dashboard_del_docente\screen.png
+C:\Users\cyber\Desktop\sase-310-tv\docs\stitch_vista_del_alumno\dashboard_de_enfermería\screen.png
+C:\Users\cyber\Desktop\sase-310-tv\docs\stitch_vista_del_alumno\dashboard_de_orientación\screen.png
+C:\Users\cyber\Desktop\sase-310-tv\docs\stitch_vista_del_alumno\dashboard_de_prefectura\screen.png
+C:\Users\cyber\Desktop\sase-310-tv\docs\stitch_vista_del_alumno\vista_del_alumno\screen.png
+C:\Users\cyber\Desktop\sase-310-tv\node_modules\highlight.js\scss\brown-papersq.png
+C:\Users\cyber\Desktop\sase-310-tv\node_modules\highlight.js\scss\school-book.png
+C:\Users\cyber\Desktop\sase-310-tv\node_modules\highlight.js\styles\brown-papersq.png
+C:\Users\cyber\Desktop\sase-310-tv\node_modules\highlight.js\styles\school-book.png
+C:\Users\cyber\Desktop\sase-310-tv\node_modules\xlsx\formats.png
+C:\Users\cyber\Desktop\sase-310-tv\node_modules\xlsx\legend.png
+C:\Users\cyber\Desktop\sase-310-tv\node_modules\zod-to-json-schema\.github\CR_logotype-full-color.png
