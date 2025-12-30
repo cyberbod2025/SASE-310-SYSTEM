@@ -52,9 +52,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => subscription.unsubscribe();
   }, []);
 
-  // 3. Fetch Role from Database
+  // 3. Fetch Role from Database & Subscribe to Realtime Changes
   const fetchProfile = async (userId: string) => {
     try {
+      // Initial fetch
       const { data, error } = await supabase
         .from("profiles")
         .select("role")
@@ -76,6 +77,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           setRole(UserRole.DOCENTE);
         }
       }
+
+      // Realtime Subscription
+      const channel = supabase
+        .channel(`public:profiles:${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "profiles",
+            filter: `id=eq.${userId}`,
+          },
+          (payload) => {
+            console.log("Profile updated via Realtime:", payload);
+            const newRole = payload.new.role as UserRole;
+            if (Object.values(UserRole).includes(newRole)) {
+              setRole(newRole);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     } catch (err) {
       console.error("Unexpected error fetching profile:", err);
       setRole(UserRole.DOCENTE);
