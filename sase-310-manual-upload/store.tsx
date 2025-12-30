@@ -315,10 +315,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const fetchStudents = async () => {
       try {
-        const { data, error } = await supabase.from("alumnos").select(`
+        const { data, error } = await supabase.from("students").select(`
           *,
-          incidencias (
-            id, tipo, descripcion, created_at, reportado_por
+          incidents (
+            id, type, description, created_at, reported_by
           ),
           justificantes (
             id, folio, start_date, end_date, reason, description, created_at, issued_by
@@ -337,18 +337,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           const mappedStudents: Student[] = data.map((d: any) => ({
             id: d.id,
             matricula: d.matricula,
-            name: `${d.nombre} ${d.apellido_paterno} ${
-              d.apellido_materno || ""
-            }`.trim(),
-            group: d.grupo,
+            name: d.name,
+            group: d.group_id, // Assuming group_id maps to group name or we need a join. For now assuming simple string or id
             avatar: d.avatar_url || "https://i.pravatar.cc/150",
-            caseState: calculateState(d.incidencias || []),
-            incidents: (d.incidencias || []).map((i: any) => ({
+            caseState: calculateState(d.incidents || []),
+            incidents: (d.incidents || []).map((i: any) => ({
               id: i.id,
-              type: i.tipo,
-              description: i.descripcion,
-              date: i.created_at,
-              reportedBy: i.reportado_por,
+              type: i.type,
+              description: i.description,
+              date: i.date, // Use the incident date, not creation time
+              reportedBy: i.reported_by,
             })),
             justificantes: (d.justificantes || []).map((j: any) => ({
               id: j.id,
@@ -416,13 +414,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Persist to Supabase
     try {
-      const { error } = await supabase.from("incidencias").insert([
+      const { error } = await supabase.from("incidents").insert([
         {
-          alumno_id: studentId,
-          tipo: type,
-          descripcion: description,
-          reportado_por: user?.id,
-          // nivel_gravedad: defaults?
+          student_id: studentId,
+          type: type,
+          description: description,
+          reported_by: user?.id,
+          date: new Date().toISOString(),
         },
       ]);
 
