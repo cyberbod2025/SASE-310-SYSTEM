@@ -190,10 +190,17 @@ const INITIAL_STUDENTS: Student[] = [
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(
     UserRole.DOCENTE
   );
+
+  // Sync role from AuthProvider
+  useEffect(() => {
+    if (role) {
+      setCurrentUserRole(role);
+    }
+  }, [role]);
   const [students, setStudents] = useState<Student[]>([]);
   const [quickRegisterOpen, setQuickRegisterOpen] = useState(false);
   const [assistantMessage, setAssistantMessage] = useState<string | null>(null);
