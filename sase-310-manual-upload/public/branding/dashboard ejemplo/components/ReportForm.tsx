@@ -17,14 +17,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ currentUser, onReportSubmit }) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // FIX: Added subject to the validation to ensure it's not empty.
     if (!studentId || !subject || !description || !actionsTaken) {
       alert('Por favor completa todos los campos.');
       return;
     }
 
-    // FIX: Added 'subject' property to the new report object to match the Report interface.
-    // FIX: Added missing 'comments' and 'evidence' properties to satisfy the Report interface.
     const newReport: Report = {
       id: `report-${Date.now()}`,
       studentId,
