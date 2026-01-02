@@ -11,15 +11,15 @@ import { BitacoraAuditoria } from "./components/BitacoraAuditoria";
 import { PanelSolicitudes } from "./components/PanelSolicitudes";
 import { SolicitudReportesDocentes } from "./components/SolicitudReportesDocentes";
 
-// Dashboards
-import { DashboardDocente } from "./components/dashboards/DashboardDocente";
-import { DashboardPrefectura } from "./components/dashboards/DashboardPrefectura";
-import { DashboardEnfermeria } from "./components/dashboards/DashboardEnfermeria";
-import { DashboardOrientacion } from "./components/dashboards/DashboardOrientacion";
-import { DashboardTrabajoSocial } from "./components/dashboards/DashboardTrabajoSocial";
-import { DashboardSecretaria } from "./components/dashboards/DashboardSecretaria";
-import { DashboardDireccion } from "./components/dashboards/DashboardDireccion";
-import { DashboardUDEII } from "./components/dashboards/DashboardUDEII";
+// Lazy Load Dashboards to optimize bundle size
+const DashboardDocente = React.lazy(() => import("./components/dashboards/DashboardDocente").then(module => ({ default: module.DashboardDocente })));
+const DashboardPrefectura = React.lazy(() => import("./components/dashboards/DashboardPrefectura").then(module => ({ default: module.DashboardPrefectura })));
+const DashboardEnfermeria = React.lazy(() => import("./components/dashboards/DashboardEnfermeria").then(module => ({ default: module.DashboardEnfermeria })));
+const DashboardOrientacion = React.lazy(() => import("./components/dashboards/DashboardOrientacion").then(module => ({ default: module.DashboardOrientacion })));
+const DashboardTrabajoSocial = React.lazy(() => import("./components/dashboards/DashboardTrabajoSocial").then(module => ({ default: module.DashboardTrabajoSocial })));
+const DashboardSecretaria = React.lazy(() => import("./components/dashboards/DashboardSecretaria").then(module => ({ default: module.DashboardSecretaria })));
+const DashboardDireccion = React.lazy(() => import("./components/dashboards/DashboardDireccion").then(module => ({ default: module.DashboardDireccion })));
+// const DashboardUDEII = React.lazy(() => import("./components/dashboards/DashboardUDEII").then(module => ({ default: module.DashboardUDEII })));
 
 // -- MAIN APP SHELL --
 const MainContent = () => {
@@ -32,25 +32,38 @@ const MainContent = () => {
   if (currentModule === AppModule.REPORTES_DOCENTES)
     return <SolicitudReportesDocentes />;
 
-  switch (currentUserRole) {
-    case UserRole.DOCENTE:
-      return <DashboardDocente />;
-    case UserRole.PREFECTURA:
-      return <DashboardPrefectura />;
-    case UserRole.ENFERMERIA:
-      return <DashboardEnfermeria />;
-    case UserRole.ORIENTACION:
-      return <DashboardOrientacion />;
-    case UserRole.TRABAJO_SOCIAL:
-      return <DashboardTrabajoSocial />;
-    case UserRole.SECRETARIA:
-      return <DashboardSecretaria />;
-    // case UserRole.UDEII: return <DashboardUDEII />;
-    case UserRole.DIRECTIVO:
-      return <DashboardDireccion />;
-    default:
-      return <DashboardDocente />;
-  }
+  // Loading spinner for dashboard transitions
+  const Loader = () => (
+    <div className="flex-1 flex items-center justify-center h-[50vh]">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+  );
+
+  return (
+    <React.Suspense fallback={<Loader />}>
+      {(() => {
+        switch (currentUserRole) {
+          case UserRole.DOCENTE:
+            return <DashboardDocente />;
+          case UserRole.PREFECTURA:
+            return <DashboardPrefectura />;
+          case UserRole.ENFERMERIA:
+            return <DashboardEnfermeria />;
+          case UserRole.ORIENTACION:
+            return <DashboardOrientacion />;
+          case UserRole.TRABAJO_SOCIAL:
+            return <DashboardTrabajoSocial />;
+          case UserRole.SECRETARIA:
+            return <DashboardSecretaria />;
+          // case UserRole.UDEII: return <DashboardUDEII />;
+          case UserRole.DIRECTIVO:
+            return <DashboardDireccion />;
+          default:
+            return <DashboardDocente />;
+        }
+      })()}
+    </React.Suspense>
+  );
 };
 
 const App: React.FC = () => {
