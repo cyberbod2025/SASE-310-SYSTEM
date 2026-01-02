@@ -16,6 +16,26 @@ export const Reportes: React.FC = () => {
     end: new Date().toISOString().split("T")[0],
   });
 
+  const handleQuickRange = (type: "week" | "month" | "lastMonth") => {
+    const today = new Date();
+    let start = new Date();
+    let end = new Date();
+
+    if (type === "week") {
+      start.setDate(today.getDate() - 7);
+    } else if (type === "month") {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+    } else if (type === "lastMonth") {
+      start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      end = new Date(today.getFullYear(), today.getMonth(), 0);
+    }
+
+    setDateRange({
+      start: start.toISOString().split("T")[0],
+      end: end.toISOString().split("T")[0],
+    });
+  };
+
   // Aggregate data for reports
   const allIncidents = students.flatMap((s) =>
     s.incidents.map((i) => ({
@@ -365,33 +385,64 @@ export const Reportes: React.FC = () => {
 
       {/* Date Range Filter */}
       <div className="bg-white p-4 rounded-xl border border-border-color shadow-sm">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-text-secondary">
-              date_range
-            </span>
-            <span className="text-sm font-medium text-text-secondary">
-              Período:
-            </span>
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-text-secondary">
+                date_range
+              </span>
+              <label
+                id="period-label"
+                className="text-sm font-medium text-text-secondary"
+              >
+                Período:
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                aria-label="Fecha de inicio"
+                aria-labelledby="period-label"
+                type="date"
+                value={dateRange.start}
+                onChange={(e) =>
+                  setDateRange({ ...dateRange, start: e.target.value })
+                }
+                className="px-3 py-2 border border-border-color rounded-lg text-sm"
+              />
+              <span className="text-text-secondary" aria-hidden="true">
+                al
+              </span>
+              <input
+                aria-label="Fecha de fin"
+                aria-labelledby="period-label"
+                type="date"
+                value={dateRange.end}
+                onChange={(e) =>
+                  setDateRange({ ...dateRange, end: e.target.value })
+                }
+                className="px-3 py-2 border border-border-color rounded-lg text-sm"
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="date"
-              value={dateRange.start}
-              onChange={(e) =>
-                setDateRange({ ...dateRange, start: e.target.value })
-              }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm"
-            />
-            <span className="text-text-secondary">al</span>
-            <input
-              type="date"
-              value={dateRange.end}
-              onChange={(e) =>
-                setDateRange({ ...dateRange, end: e.target.value })
-              }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm"
-            />
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => handleQuickRange("week")}
+              className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
+            >
+              Esta Semana
+            </button>
+            <button
+              onClick={() => handleQuickRange("month")}
+              className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
+            >
+              Este Mes
+            </button>
+            <button
+              onClick={() => handleQuickRange("lastMonth")}
+              className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
+            >
+              Mes Anterior
+            </button>
           </div>
         </div>
       </div>
