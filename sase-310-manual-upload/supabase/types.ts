@@ -98,7 +98,18 @@ export interface Database {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      log_audit: {
+        Args: {
+          p_action_type: string;
+          p_action_description: string;
+          p_target_table: string;
+          p_target_record_id: string;
+          p_target_student_name?: string | null;
+          p_old_values?: Json | null;
+          p_new_values?: Json | null;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       [_ in never]: never;

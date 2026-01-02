@@ -274,24 +274,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Persist to Supabase audit_log table
     try {
-      const { error } = await supabase.from("audit_log").insert([
-        {
-          user_id: user?.id,
-          user_email: user?.email,
-          user_role: currentUserRole,
-          action_type: actionType,
-          action_description: description,
-          target_table: targetTable,
-          target_record_id: targetRecordId,
-          target_student_name: studentName,
-          old_values: oldValues ? JSON.stringify(oldValues) : null,
-          new_values: newValues ? JSON.stringify(newValues) : null,
-        },
-      ]);
+      // @ts-ignore - Types for log_audit are not fully generated yet
+      const { error } = await supabase.rpc("log_audit", {
+        p_action_type: actionType,
+        p_action_description: description,
+        p_target_table: targetTable,
+        p_target_record_id: targetRecordId,
+        p_target_student_name: studentName,
+        p_old_values: oldValues,
+        p_new_values: newValues,
+      });
 
       if (error) {
         console.warn(
-          "Error persisting audit log (table may not exist yet):",
+          "Error persisting audit log (table may not exist yet or RPC failed):",
           error.message
         );
       }
