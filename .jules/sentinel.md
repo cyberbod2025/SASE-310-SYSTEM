@@ -1,0 +1,4 @@
+## 2024-05-22 - [CRITICAL] Insecure Role Fallback
+**Vulnerability:** Found that both the frontend (`AuthProvider.tsx`) and the database RLS helper (`get_my_role` in `initial_schema.sql`) defaulted to the `DOCENTE` (Teacher) role when a user profile was missing or an error occurred.
+**Learning:** "Fail Open" defaults are dangerous. A missing profile should result in *no* access, not *default* access. The database function `coalesce(_role, 'docente')` meant any authenticated user (even without a profile) could read all student data because of the policy `Staff view all students`.
+**Prevention:** Always use "Fail Closed" logic. Default to `null` or a restricted guest role. In SQL, ensure role retrieval functions return `null` or raise an error if the role is indeterminate, rather than guessing a privileged role.
