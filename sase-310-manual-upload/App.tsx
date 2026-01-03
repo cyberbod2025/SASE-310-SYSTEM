@@ -55,7 +55,7 @@ const MainContent = () => {
 
 const App: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const { session, loading } = useAuth();
+  const { session, loading, role } = useAuth();
 
   // Show splash screen primarily
   if (showSplash) {
@@ -72,6 +72,29 @@ const App: React.FC = () => {
 
   if (!session) {
     return <Login />;
+  }
+
+  // Security Check: If logged in but no role assigned (or invalid), deny access.
+  // This prevents AppProvider from initializing with default privileges.
+  if (!role) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-900 text-white p-8 text-center">
+        <span className="material-symbols-outlined text-6xl text-red-500 mb-4">
+          lock_person
+        </span>
+        <h1 className="text-2xl font-bold mb-2">Acceso Denegado</h1>
+        <p className="text-gray-400 max-w-md">
+          Su cuenta no tiene un rol asignado en el sistema. Por favor contacte al
+          administrador para verificar su perfil.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-8 px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors"
+        >
+          Reintentar
+        </button>
+      </div>
+    );
   }
 
   return (
