@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useApp } from "../store";
 import { CaseState, IncidentType } from "../types";
 import { printContent } from "./PrintButtons";
@@ -17,19 +17,22 @@ export const Reportes: React.FC = () => {
   });
 
   // Aggregate data for reports
-  const allIncidents = students.flatMap((s) =>
+  // Memoized: Only recalculate when student list changes
+  const allIncidents = useMemo(() => students.flatMap((s) =>
     s.incidents.map((i) => ({
       ...i,
       studentName: s.name,
       group: s.group,
     }))
-  );
+  ), [students]);
 
-  const filteredIncidents = allIncidents.filter(
+  // Memoized: Only recalculate when allIncidents or dateRange changes
+  const filteredIncidents = useMemo(() => allIncidents.filter(
     (i) => i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59"
-  );
+  ), [allIncidents, dateRange]);
 
-  const incidentsByType = {
+  // Memoized: Derived from filteredIncidents
+  const incidentsByType = useMemo(() => ({
     retardos: filteredIncidents.filter((i) => i.type === IncidentType.RETARDO)
       .length,
     uniformes: filteredIncidents.filter((i) => i.type === IncidentType.UNIFORME)
@@ -38,15 +41,16 @@ export const Reportes: React.FC = () => {
       .length,
     faltas: filteredIncidents.filter((i) => i.type === IncidentType.ASISTENCIA)
       .length,
-  };
+  }), [filteredIncidents]);
 
-  const studentsByState = {
+  // Memoized: Derived from students
+  const studentsByState = useMemo(() => ({
     cerrados: students.filter((s) => s.caseState === CaseState.CERRADO).length,
     observados: students.filter((s) => s.caseState === CaseState.OBSERVADO)
       .length,
     patron: students.filter((s) => s.caseState === CaseState.PATRON_DETECTADO)
       .length,
-  };
+  }), [students]);
 
   const handlePrintReport = () => {
     let htmlContent = "";
