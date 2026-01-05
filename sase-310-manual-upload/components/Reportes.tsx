@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useApp } from "../store";
 import { CaseState, IncidentType } from "../types";
 import { printContent } from "./PrintButtons";
@@ -17,36 +17,54 @@ export const Reportes: React.FC = () => {
   });
 
   // Aggregate data for reports
-  const allIncidents = students.flatMap((s) =>
-    s.incidents.map((i) => ({
-      ...i,
-      studentName: s.name,
-      group: s.group,
-    }))
+  const allIncidents = useMemo(
+    () =>
+      students.flatMap((s) =>
+        s.incidents.map((i) => ({
+          ...i,
+          studentName: s.name,
+          group: s.group,
+        }))
+      ),
+    [students]
   );
 
-  const filteredIncidents = allIncidents.filter(
-    (i) => i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59"
+  const filteredIncidents = useMemo(
+    () =>
+      allIncidents.filter(
+        (i) =>
+          i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59"
+      ),
+    [allIncidents, dateRange]
   );
 
-  const incidentsByType = {
-    retardos: filteredIncidents.filter((i) => i.type === IncidentType.RETARDO)
-      .length,
-    uniformes: filteredIncidents.filter((i) => i.type === IncidentType.UNIFORME)
-      .length,
-    conducta: filteredIncidents.filter((i) => i.type === IncidentType.CONDUCTA)
-      .length,
-    faltas: filteredIncidents.filter((i) => i.type === IncidentType.ASISTENCIA)
-      .length,
-  };
+  const incidentsByType = useMemo(
+    () => ({
+      retardos: filteredIncidents.filter((i) => i.type === IncidentType.RETARDO)
+        .length,
+      uniformes: filteredIncidents.filter(
+        (i) => i.type === IncidentType.UNIFORME
+      ).length,
+      conducta: filteredIncidents.filter((i) => i.type === IncidentType.CONDUCTA)
+        .length,
+      faltas: filteredIncidents.filter((i) => i.type === IncidentType.ASISTENCIA)
+        .length,
+    }),
+    [filteredIncidents]
+  );
 
-  const studentsByState = {
-    cerrados: students.filter((s) => s.caseState === CaseState.CERRADO).length,
-    observados: students.filter((s) => s.caseState === CaseState.OBSERVADO)
-      .length,
-    patron: students.filter((s) => s.caseState === CaseState.PATRON_DETECTADO)
-      .length,
-  };
+  const studentsByState = useMemo(
+    () => ({
+      cerrados: students.filter((s) => s.caseState === CaseState.CERRADO)
+        .length,
+      observados: students.filter((s) => s.caseState === CaseState.OBSERVADO)
+        .length,
+      patron: students.filter(
+        (s) => s.caseState === CaseState.PATRON_DETECTADO
+      ).length,
+    }),
+    [students]
+  );
 
   const handlePrintReport = () => {
     let htmlContent = "";
@@ -219,12 +237,8 @@ export const Reportes: React.FC = () => {
 
       case "asistencia":
         title = "Reporte de Asistencia";
-        const faltasCount = filteredIncidents.filter(
-          (i) => i.type === IncidentType.ASISTENCIA
-        ).length;
-        const retardosCount = filteredIncidents.filter(
-          (i) => i.type === IncidentType.RETARDO
-        ).length;
+        const faltasCount = incidentsByType.faltas;
+        const retardosCount = incidentsByType.retardos;
         htmlContent = `
           <h2>Período: ${dateRange.start} al ${dateRange.end}</h2>
           <h3>Indicadores de Asistencia</h3>
