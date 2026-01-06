@@ -45,6 +45,9 @@ export interface Incident {
   description: string;
   date: string; // ISO string
   reportedBy: string; // Role or Name
+  subject?: string; // Optional: Academic subject
+  comments?: string; // Optional: Additional supervisor comments
+  evidence?: string[]; // Optional: URLs to images/docs
 }
 
 export interface Justificante {

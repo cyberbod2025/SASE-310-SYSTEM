@@ -4,14 +4,15 @@ import { useApp } from "../store";
 
 interface AuditEntry {
   id: string;
-  user_email: string;
-  user_role: string;
-  action_type: string;
-  action_description: string;
-  target_table: string;
-  target_record_id: string;
-  target_student_name: string | null;
-  created_at: string;
+  usuario_id: string | null;
+  email_usuario: string | null;
+  rol_usuario: string | null;
+  tipo_accion: string;
+  descripcion_accion: string | null;
+  tabla_objetivo: string | null;
+  id_registro_objetivo: string | null;
+  nombre_alumno_objetivo: string | null;
+  creado_en: string; // Corrected column name
 }
 
 export const BitacoraAuditoria: React.FC = () => {
@@ -28,15 +29,17 @@ export const BitacoraAuditoria: React.FC = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("audit_log")
+        .from("auditoria") // Corrected table name
         .select("*")
-        .order("created_at", { ascending: false })
+        .order("creado_en", { ascending: false }) // Corrected sort column
         .limit(100);
 
       if (error) {
         console.error("Error fetching audit log:", error);
       } else {
-        setEntries(data || []);
+        // Force cast to match interface if strict typing complains about nulls vs assumed strings,
+        // but Supabase types are usually aligned.
+        setEntries((data as any) || []);
       }
     } catch (err) {
       console.error("Unexpected error:", err);
@@ -47,7 +50,7 @@ export const BitacoraAuditoria: React.FC = () => {
   const filteredEntries =
     filter === "all"
       ? entries
-      : entries.filter((e) => e.action_type === filter);
+      : entries.filter((e) => e.tipo_accion === filter);
 
   const getActionBadge = (actionType: string) => {
     switch (actionType) {
@@ -132,7 +135,7 @@ export const BitacoraAuditoria: React.FC = () => {
             <span className="text-xs font-bold uppercase">Consultas</span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {entries.filter((e) => e.action_type === "CONSULTA").length}
+            {entries.filter((e) => e.tipo_accion === "CONSULTA").length}
           </p>
         </div>
         <div className="bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-sm">
@@ -141,7 +144,7 @@ export const BitacoraAuditoria: React.FC = () => {
             <span className="text-xs font-bold uppercase">Actualizaciones</span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {entries.filter((e) => e.action_type === "ACTUALIZACION").length}
+            {entries.filter((e) => e.tipo_accion === "ACTUALIZACION").length}
           </p>
         </div>
         <div className="bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-sm">
@@ -152,7 +155,7 @@ export const BitacoraAuditoria: React.FC = () => {
             <span className="text-xs font-bold uppercase">Creaciones</span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {entries.filter((e) => e.action_type === "CREACION").length}
+            {entries.filter((e) => e.tipo_accion === "CREACION").length}
           </p>
         </div>
         <div className="bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-sm">
@@ -161,7 +164,7 @@ export const BitacoraAuditoria: React.FC = () => {
             <span className="text-xs font-bold uppercase">Usuarios Únicos</span>
           </div>
           <p className="text-2xl font-bold text-white">
-            {new Set(entries.map((e) => e.user_email)).size}
+            {new Set(entries.map((e) => e.email_usuario || "Sistema")).size}
           </p>
         </div>
       </div>
@@ -187,9 +190,6 @@ export const BitacoraAuditoria: React.FC = () => {
               policy
             </span>
             <p>No hay registros de auditoría.</p>
-            <p className="text-xs mt-2">
-              Asegúrese de que la tabla 'audit_log' exista en Supabase.
-            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -212,53 +212,53 @@ export const BitacoraAuditoria: React.FC = () => {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-xs font-mono text-gray-300">
-                        {new Date(entry.created_at).toLocaleDateString("es-MX")}
+                        {new Date(entry.creado_en).toLocaleDateString("es-MX")}
                       </div>
                       <div className="text-[10px] text-gray-500">
-                        {new Date(entry.created_at).toLocaleTimeString("es-MX")}
+                        {new Date(entry.creado_en).toLocaleTimeString("es-MX")}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="size-6 rounded-full bg-primary/20 text-blue-300 flex items-center justify-center text-[10px] font-bold">
-                          {entry.user_email?.substring(0, 2).toUpperCase() ||
+                          {entry.email_usuario?.substring(0, 2).toUpperCase() ||
                             "??"}
                         </div>
                         <span
                           className="text-xs truncate max-w-[150px] text-gray-300"
-                          title={entry.user_email}
+                          title={entry.email_usuario || ""}
                         >
-                          {entry.user_email || "Sistema"}
+                          {entry.email_usuario || "Sistema"}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="px-2 py-1 bg-white/10 text-gray-300 text-[10px] font-bold rounded uppercase">
-                        {entry.user_role || "N/A"}
+                        {entry.rol_usuario || "N/A"}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-2 py-1 border rounded text-[10px] font-bold flex items-center gap-1 w-fit ${getActionBadge(
-                          entry.action_type
+                          entry.tipo_accion
                         )} bg-opacity-20 border-opacity-20`}
                       >
                         <span className="material-symbols-outlined text-xs">
-                          {getActionIcon(entry.action_type)}
+                          {getActionIcon(entry.tipo_accion)}
                         </span>
-                        {entry.action_type}
+                        {entry.tipo_accion}
                       </span>
                     </td>
                     <td
                       className="px-6 py-4 text-xs text-gray-300 max-w-[200px] truncate"
-                      title={entry.action_description}
+                      title={entry.descripcion_accion || ""}
                     >
-                      {entry.action_description}
+                      {entry.descripcion_accion}
                     </td>
                     <td className="px-6 py-4">
-                      {entry.target_student_name ? (
+                      {entry.nombre_alumno_objetivo ? (
                         <span className="px-2 py-1 bg-blue-500/10 text-blue-300 text-xs font-medium rounded border border-blue-500/20">
-                          {entry.target_student_name}
+                          {entry.nombre_alumno_objetivo}
                         </span>
                       ) : (
                         <span className="text-xs text-gray-600">—</span>

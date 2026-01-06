@@ -13,6 +13,7 @@ interface PendingAction {
 export const AssistantBanner: React.FC<{
   onOpenNotifications?: () => void;
 }> = ({ onOpenNotifications }) => {
+  const [isVisible, setIsVisible] = React.useState(true);
   const {
     assistantMessage,
     currentUserRole,
@@ -87,25 +88,24 @@ export const AssistantBanner: React.FC<{
 
   const pendingActions = getPendingActions();
 
-  if (!assistantMessage && pendingActions.length === 0) return null;
-
   // Determine urgency
   const hasUrgent = pendingActions.some((a) => a.priority === "urgent");
   const hasWarning = pendingActions.some((a) => a.priority === "warning");
 
-  const bgColor = hasUrgent
-    ? "bg-red-50 border-red-200"
-    : hasWarning
-    ? "bg-yellow-50 border-yellow-200"
-    : "bg-blue-50 border-blue-100";
+  // Auto-hide logic
+  React.useEffect(() => {
+    // Don't auto-hide if there are urgent actions
+    if (hasUrgent) return;
 
-  const textColor = hasUrgent
-    ? "text-red-800"
-    : hasWarning
-    ? "text-yellow-800"
-    : "text-primary";
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, 8000); // 8 seconds
 
-  const icon = hasUrgent ? "warning" : hasWarning ? "info" : "smart_toy";
+    return () => clearTimeout(timer);
+  }, [hasUrgent, assistantMessage, pendingActions.length]);
+
+  if (!isVisible) return null;
+  if (!assistantMessage && pendingActions.length === 0) return null;
 
   return (
     <div
@@ -129,8 +129,14 @@ export const AssistantBanner: React.FC<{
         </div>
 
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-bold uppercase tracking-widest mb-1 text-blue-300/80">
-            Asistente IA SASE
+          <h4 className="text-xs font-bold uppercase tracking-widest mb-1 text-blue-300/80 flex justify-between items-center">
+            <span>Asistente IA SASE</span>
+            <button
+              onClick={() => setIsVisible(false)}
+              className="text-white/40 hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-sm">close</span>
+            </button>
           </h4>
 
           {/* Main message */}

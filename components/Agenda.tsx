@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useApp } from "../store";
+import toast from "react-hot-toast";
 
 interface CalendarEvent {
   id: string;
@@ -63,7 +64,38 @@ export const Agenda: React.FC = () => {
   const { currentUserRole } = useApp();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [events] = useState<CalendarEvent[]>(MOCK_EVENTS);
+  const [events, setEvents] = useState<CalendarEvent[]>(MOCK_EVENTS);
+  const [showModal, setShowModal] = useState(false);
+
+  // New Event Form State
+  const [newEvent, setNewEvent] = useState<Partial<CalendarEvent>>({
+    date: new Date().toISOString().split("T")[0],
+    type: "reunion",
+  });
+
+  const handleSaveEvent = () => {
+    if (!newEvent.title || !newEvent.date || !newEvent.type) {
+      toast.error("Por favor completa los campos obligatorios.");
+      return;
+    }
+
+    const eventToAdd: CalendarEvent = {
+      id: Date.now().toString(),
+      title: newEvent.title,
+      date: newEvent.date,
+      time: newEvent.time,
+      type: newEvent.type as any,
+      description: newEvent.description,
+    };
+
+    setEvents([...events, eventToAdd]);
+    toast.success("Evento agregado a la agenda.");
+    setShowModal(false);
+    setNewEvent({
+      date: new Date().toISOString().split("T")[0],
+      type: "reunion",
+    });
+  };
 
   const getEventTypeStyle = (type: CalendarEvent["type"]) => {
     switch (type) {
@@ -132,7 +164,7 @@ export const Agenda: React.FC = () => {
   };
 
   const upcomingEvents = events
-    .filter((e) => new Date(e.date) >= new Date())
+    .filter((e) => e.date >= new Date().toISOString().split("T")[0])
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 5);
 
@@ -141,7 +173,8 @@ export const Agenda: React.FC = () => {
     : [];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 relative">
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -154,7 +187,10 @@ export const Agenda: React.FC = () => {
             Calendario de eventos y actividades escolares
           </p>
         </div>
-        <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary-hover transition-all shadow-lg shadow-blue-500/20 border border-white/10">
+        <button
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary-hover transition-all shadow-lg shadow-blue-500/20 border border-white/10"
+        >
           <span className="material-symbols-outlined">add</span>
           Nuevo Evento
         </button>
@@ -327,39 +363,41 @@ export const Agenda: React.FC = () => {
                   No hay eventos próximos.
                 </div>
               ) : (
-                upcomingEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className="p-4 hover:bg-white/5 transition-colors cursor-pointer group"
-                    onClick={() => setSelectedDate(event.date)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={`p-2 rounded-lg ${getEventTypeStyle(
-                          event.type
-                        )}`}
-                      >
-                        <span className="material-symbols-outlined text-lg">
-                          {getEventTypeIcon(event.type)}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm text-gray-200 group-hover:text-white transition-colors truncate">
-                          {event.title}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {new Date(
-                            event.date + "T12:00:00"
-                          ).toLocaleDateString("es-MX", {
-                            day: "numeric",
-                            month: "short",
-                          })}
-                          {event.time && ` • ${event.time}`}
-                        </p>
+                <div className="max-h-[300px] overflow-y-auto">
+                  {upcomingEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="p-4 hover:bg-white/5 transition-colors cursor-pointer group"
+                      onClick={() => setSelectedDate(event.date)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`p-2 rounded-lg ${getEventTypeStyle(
+                            event.type
+                          )}`}
+                        >
+                          <span className="material-symbols-outlined text-lg">
+                            {getEventTypeIcon(event.type)}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-sm text-gray-200 group-hover:text-white transition-colors truncate">
+                            {event.title}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {new Date(
+                              event.date + "T12:00:00"
+                            ).toLocaleDateString("es-MX", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                            {event.time && ` • ${event.time}`}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -401,6 +439,119 @@ export const Agenda: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* NEW EVENT MODAL */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Nuevo Evento</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
+                  Título
+                </label>
+                <input
+                  type="text"
+                  className="w-full bg-black/20 border border-white/10 rounded-lg p-2.5 text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                  placeholder="Ej. Junta de Consejo Ténico"
+                  value={newEvent.title || ""}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, title: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
+                    Fecha
+                  </label>
+                  <input
+                    type="date"
+                    className="w-full bg-black/20 border border-white/10 rounded-lg p-2.5 text-white outline-none"
+                    value={newEvent.date}
+                    onChange={(e) =>
+                      setNewEvent({ ...newEvent, date: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
+                    Hora (Opcional)
+                  </label>
+                  <input
+                    type="time"
+                    className="w-full bg-black/20 border border-white/10 rounded-lg p-2.5 text-white outline-none"
+                    value={newEvent.time || ""}
+                    onChange={(e) =>
+                      setNewEvent({ ...newEvent, time: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
+                  Tipo de Evento
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { val: "reunion", label: "Reunión" },
+                    { val: "entrega", label: "Entrega" },
+                    { val: "evento", label: "Evento" },
+                    { val: "evaluacion", label: "Evaluación" },
+                    { val: "festivo", label: "Festivo" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.val}
+                      onClick={() =>
+                        setNewEvent({ ...newEvent, type: opt.val as any })
+                      }
+                      className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${
+                        newEvent.type === opt.val
+                          ? "bg-primary text-white border-primary"
+                          : "bg-white/5 text-gray-400 border-white/5 hover:bg-white/10"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
+                  Descripción
+                </label>
+                <textarea
+                  className="w-full bg-black/20 border border-white/10 rounded-lg p-2.5 text-white h-24 outline-none resize-none"
+                  placeholder="Detalles adicionales..."
+                  value={newEvent.description || ""}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, description: e.target.value })
+                  }
+                ></textarea>
+              </div>
+
+              <button
+                onClick={handleSaveEvent}
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all mt-2"
+              >
+                Guardar Evento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

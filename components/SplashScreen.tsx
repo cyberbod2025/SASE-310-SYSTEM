@@ -34,7 +34,7 @@ export const SplashScreen: React.FC<{ onComplete: () => void }> = ({
       {/* Background Animated Grid */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div
-          className="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] animate-[spin_60s_linear_infinite]"
+          className="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] animate-grid-flow"
           style={{
             backgroundImage:
               "linear-gradient(#0052cc 1px, transparent 1px), linear-gradient(90deg, #0052cc 1px, transparent 1px)",
@@ -78,10 +78,6 @@ export const SplashScreen: React.FC<{ onComplete: () => void }> = ({
               </span>
             </div>
           </div>
-
-          <p className="text-blue-200 text-sm tracking-[0.3em] font-medium uppercase">
-            Sistema Institucional Escolar
-          </p>
         </div>
 
         {/* Loading Bar & System Text */}

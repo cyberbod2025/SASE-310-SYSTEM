@@ -148,7 +148,14 @@ export const Archivo: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <button className="text-primary hover:underline text-xs font-bold uppercase tracking-wide">
+                      <button
+                        onClick={() =>
+                          alert(
+                            `Funcionalidad en desarrollo: Detalles de ${s.name}`
+                          )
+                        }
+                        className="text-primary hover:underline text-xs font-bold uppercase tracking-wide"
+                      >
                         Ver Expediente
                       </button>
                     </td>

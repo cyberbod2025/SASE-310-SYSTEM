@@ -140,20 +140,22 @@ export const Inscripciones: React.FC = () => {
     }
 
     try {
-      const { data: newStudentData, error: studentError } = await supabase
-        .from("alumnos")
+      const { data: newStudentData, error: studentError } = await (
+        supabase.from("alumnos") as any
+      )
         .insert([
           {
-            nombre: fullName,
+            nombre_completo: fullName,
+            matricula: formData.curp, // Using CURP as matricula initially
             curp: formData.curp,
-            grado: formData.group.split(" ")[0] || "1º", // Extract grade from "1º A"
+            grado: formData.group.split(" ")[0] || "1º",
             grupo: formData.group,
-            estado_caso: CaseState.OBSERVADO, // Default state
+            estado_caso: CaseState.OBSERVADO,
             fecha_nacimiento: formData.fechaNacimiento || null,
             genero: formData.genero,
             promedio_anterior: formData.promedioAnterior,
             avatar_url: `https://i.pravatar.cc/150?u=${Math.random()}`,
-            guardian_info: {
+            datos_tutor: {
               name: primaryContactName || "No registrado",
               relationship: primaryContactRel,
               phonePrimary: primaryContactPhone || formData.telEmergencia,
@@ -164,8 +166,8 @@ export const Inscripciones: React.FC = () => {
                 detalle_persona_inscribe: formData.detallePersonaInscribe,
               },
             },
-            last_modified_by: "Secretaría (Web)", // Should ideally be current user
-            last_modified_at: new Date().toISOString(),
+            modificado_por: "Secretaría (Web)",
+            modificado_en: new Date().toISOString(),
           },
         ])
         .select()
@@ -202,7 +204,6 @@ export const Inscripciones: React.FC = () => {
             alumno_id: newStudentData.id,
             padecimiento: formData.situacionRiesgo,
             documento_url: docUrl,
-            // alerts: ...
           },
         ]);
         if (healthError)
@@ -211,16 +212,17 @@ export const Inscripciones: React.FC = () => {
 
       // Also update local store for immediate feedback
       if (newStudentData) {
+        const student = newStudentData as any;
         const mappedStudent: Student = {
-          id: newStudentData.id,
-          matricula: newStudentData.curp || "PENDIENTE", // Fallback
-          name: newStudentData.nombre,
-          group: newStudentData.grupo,
-          avatar: newStudentData.avatar_url,
-          caseState: newStudentData.estado_caso as CaseState,
+          id: student.id,
+          matricula: student.matricula || "PENDIENTE",
+          name: student.nombre_completo,
+          group: student.grupo,
+          avatar: student.avatar_url || "",
+          caseState: student.estado_caso as CaseState,
           incidents: [],
           justificantes: [],
-          guardianInfo: newStudentData.guardian_info as any,
+          guardianInfo: student.datos_tutor as any,
           // ... map other fields if needed
         };
         importStudents([mappedStudent]);

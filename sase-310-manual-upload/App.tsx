@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { AppProvider, useApp } from "./store";
-import { Toaster } from "react-hot-toast";
 import { Layout } from "./components/Layout";
 import { SplashScreen } from "./components/SplashScreen";
 import { UserRole, AppModule } from "./types";
@@ -11,8 +10,6 @@ import { Reportes } from "./components/Reportes";
 import { BitacoraAuditoria } from "./components/BitacoraAuditoria";
 import { PanelSolicitudes } from "./components/PanelSolicitudes";
 import { SolicitudReportesDocentes } from "./components/SolicitudReportesDocentes";
-import { Inscripciones } from "./components/Inscripciones";
-import { Archivo } from "./components/Archivo";
 
 // Dashboards
 import { DashboardDocente } from "./components/dashboards/DashboardDocente";
@@ -34,8 +31,6 @@ const MainContent = () => {
   if (currentModule === AppModule.SOLICITUDES) return <PanelSolicitudes />;
   if (currentModule === AppModule.REPORTES_DOCENTES)
     return <SolicitudReportesDocentes />;
-  if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
-  if (currentModule === AppModule.ARCHIVO) return <Archivo />;
 
   switch (currentUserRole) {
     case UserRole.DOCENTE:
@@ -81,7 +76,6 @@ const App: React.FC = () => {
 
   return (
     <AppProvider>
-      <Toaster position="top-center" reverseOrder={false} />
       <Layout>
         <MainContent />
       </Layout>

@@ -49,7 +49,7 @@ export const Login: React.FC = () => {
       {/* Background Effects (Matching Splash Screen) */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div
-          className="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] animate-[spin_60s_linear_infinite]"
+          className="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] animate-grid-flow"
           style={{
             backgroundImage:
               "linear-gradient(#0052cc 1px, transparent 1px), linear-gradient(90deg, #0052cc 1px, transparent 1px)",
@@ -59,22 +59,33 @@ export const Login: React.FC = () => {
         ></div>
       </div>
 
+      {/* Golden Horizon Beams */}
+      <div className="absolute top-[28%] left-0 w-full h-[2px] z-0 pointer-events-none overflow-hidden">
+        {/* Left Beam */}
+        <div className="absolute left-0 top-0 h-full bg-gradient-to-r from-transparent via-amber-400 to-white shadow-[0_0_20px_#fbbf24] blur-[1px] animate-horizon-scan origin-left"></div>
+        {/* Right Beam */}
+        <div className="absolute right-0 top-0 h-full bg-gradient-to-l from-transparent via-amber-400 to-white shadow-[0_0_20px_#fbbf24] blur-[1px] animate-horizon-scan origin-right"></div>
+      </div>
+
       {/* Ambient Glow */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[128px] pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[128px] pointer-events-none"></div>
 
       {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md p-8 mx-4">
-        <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_0_40px_-10px_rgba(37,99,235,0.3)] p-8">
+      <div className="relative z-10 w-full max-w-md p-1 mx-4 rounded-2xl overflow-hidden group">
+        {/* Tricolor Rainbow Glow Border */}
+        <div className="absolute inset-0 bg-[conic-gradient(from_0deg,red,green,blue,red)] animate-border-spin opacity-70 group-hover:opacity-100 transition-opacity blur-md"></div>
+
+        <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-8 h-full w-full">
           {/* Header & Logo */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-6">
+          <div className="text-center mb-1">
+            <div className="flex justify-center mb-1">
               <div className="relative group">
                 <div className="absolute -inset-4 bg-blue-500/20 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
                 <img
                   src="/branding/SASE.png"
                   alt="SASE Logo"
-                  className="relative w-96 h-96 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                  className="relative w-96 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
                 />
               </div>
             </div>

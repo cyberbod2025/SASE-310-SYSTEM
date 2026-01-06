@@ -274,18 +274,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Persist to Supabase audit_log table
     try {
-      const { error } = await supabase.from("auditoria").insert([
+      const { error } = await supabase.from("audit_log").insert([
         {
-          usuario_id: user?.id,
-          email_usuario: user?.email,
-          rol_usuario: currentUserRole,
-          tipo_accion: actionType,
-          descripcion_accion: description,
-          tabla_objetivo: targetTable,
-          id_registro_objetivo: targetRecordId,
-          nombre_alumno_objetivo: studentName,
-          valores_anteriores: oldValues ? JSON.stringify(oldValues) : null,
-          nuevos_valores: newValues ? JSON.stringify(newValues) : null,
+          user_id: user?.id,
+          user_email: user?.email,
+          user_role: currentUserRole,
+          action_type: actionType,
+          action_description: description,
+          target_table: targetTable,
+          target_record_id: targetRecordId,
+          target_student_name: studentName,
+          old_values: oldValues ? JSON.stringify(oldValues) : null,
+          new_values: newValues ? JSON.stringify(newValues) : null,
         },
       ]);
 
@@ -322,13 +322,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const fetchStudents = async () => {
       try {
-        const { data, error } = await supabase.from("alumnos").select(`
+        const { data, error } = await supabase.from("students").select(`
           *,
-          incidencias (
-            id, tipo, descripcion, creado_en, reportado_por
+          incidents (
+            id, type, description, created_at, reported_by
           ),
           justificantes (
-            id, folio, fecha_inicio, fecha_fin, motivo, descripcion, creado_en, emitido_por
+            id, folio, start_date, end_date, reason, description, created_at, issued_by
           ),
           salud (
             padecimiento, documento_url
@@ -336,7 +336,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         `);
 
         if (error) {
-          console.error("Error fetching students (alumnos):", error);
+          console.error("Error fetching students:", error);
           return;
         }
 
@@ -344,33 +344,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           const mappedStudents: Student[] = data.map((d: any) => ({
             id: d.id,
             matricula: d.matricula,
-            name: d.nombre_completo, // Mapped from nombre_completo
-            group: d.grupo, // Mapped from grupo
+            name: d.name,
+            group: d.group_id, // Assuming group_id maps to group name or we need a join. For now assuming simple string or id
             avatar: d.avatar_url || "https://i.pravatar.cc/150",
-            caseState: calculateState(d.incidencias || []),
-            incidents: (d.incidencias || []).map((i: any) => ({
+            caseState: calculateState(d.incidents || []),
+            incidents: (d.incidents || []).map((i: any) => ({
               id: i.id,
-              type: i.tipo,
-              description: i.descripcion,
-              date: i.fecha || i.creado_en,
-              reportedBy: i.reportado_por,
+              type: i.type,
+              description: i.description,
+              date: i.date, // Use the incident date, not creation time
+              reportedBy: i.reported_by,
             })),
             justificantes: (d.justificantes || []).map((j: any) => ({
               id: j.id,
               folio: j.folio,
-              startDate: j.fecha_inicio,
-              endDate: j.fecha_fin,
-              reason: j.motivo,
-              description: j.descripcion,
-              issuedAt: j.creado_en,
-              issuedBy: j.emitido_por,
+              startDate: j.start_date,
+              endDate: j.end_date,
+              reason: j.reason,
+              description: j.description,
+              issuedAt: j.created_at,
+              issuedBy: j.issued_by,
             })),
             medicalAlerts: (d.salud || [])
               .map((s: any) => s.padecimiento)
               .filter(Boolean),
-            lastModifiedBy: d.modificado_por,
-            lastModifiedAt: d.modificado_en,
-            guardianInfo: d.datos_tutor || undefined,
+            lastModifiedBy: d.last_modified_by,
+            lastModifiedAt: d.last_modified_at,
+            guardianInfo: d.guardian_info || undefined,
             bapInfo: {
               // Mock BAP info for now as we don't have a table
               hasBAP: false,
@@ -421,13 +421,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Persist to Supabase
     try {
-      const { error } = await supabase.from("incidencias").insert([
+      const { error } = await supabase.from("incidents").insert([
         {
-          alumno_id: studentId,
-          tipo: type,
-          descripcion: description,
-          reportado_por: user?.id,
-          fecha: new Date().toISOString(),
+          student_id: studentId,
+          type: type,
+          description: description,
+          reported_by: user?.id,
+          date: new Date().toISOString(),
         },
       ]);
 
@@ -464,16 +464,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Persist
     try {
-      const { error } = await (supabase.from("justificantes") as any).insert([
+      const { error } = await supabase.from("justificantes").insert([
         {
           alumno_id: studentId,
-          folio: folio,
-          fecha_inicio: data.startDate,
-          fecha_fin: data.endDate,
-          motivo: data.reason,
-          descripcion: data.description,
-          emitido_por: user?.id,
-        } as any,
+          folio,
+          start_date: data.startDate,
+          end_date: data.endDate,
+          reason: data.reason,
+          description: data.description,
+          issued_by: user?.id,
+        },
       ]);
       if (error) console.error("Error saving justificante:", error);
     } catch (err) {
@@ -495,11 +495,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // 2. Persist to Supabase
     try {
-      const { error } = await (supabase.from("alumnos") as any)
+      const { error } = await supabase
+        .from("alumnos")
         .update({
-          modificado_por: modifiedBy,
-          modificado_en: timestamp,
-        } as any)
+          last_modified_by: modifiedBy,
+          last_modified_at: timestamp,
+        })
         .eq("id", studentId);
 
       if (error) {

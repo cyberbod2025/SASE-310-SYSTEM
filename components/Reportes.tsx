@@ -16,37 +16,51 @@ export const Reportes: React.FC = () => {
     end: new Date().toISOString().split("T")[0],
   });
 
-  // Aggregate data for reports
-  const allIncidents = students.flatMap((s) =>
-    s.incidents.map((i) => ({
-      ...i,
-      studentName: s.name,
-      group: s.group,
-    }))
+  // Aggregate data for reports - Memoized ⚡
+  const allIncidents = React.useMemo(() => {
+    return students.flatMap((s) =>
+      s.incidents.map((i) => ({
+        ...i,
+        studentName: s.name,
+        group: s.group,
+      }))
+    );
+  }, [students]);
+
+  const filteredIncidents = React.useMemo(() => {
+    return allIncidents.filter(
+      (i) => i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59"
+    );
+  }, [allIncidents, dateRange]);
+
+  const incidentsByType = React.useMemo(
+    () => ({
+      retardos: filteredIncidents.filter((i) => i.type === IncidentType.RETARDO)
+        .length,
+      uniformes: filteredIncidents.filter(
+        (i) => i.type === IncidentType.UNIFORME
+      ).length,
+      conducta: filteredIncidents.filter(
+        (i) => i.type === IncidentType.CONDUCTA
+      ).length,
+      faltas: filteredIncidents.filter(
+        (i) => i.type === IncidentType.ASISTENCIA
+      ).length,
+    }),
+    [filteredIncidents]
   );
 
-  const filteredIncidents = allIncidents.filter(
-    (i) => i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59"
+  const studentsByState = React.useMemo(
+    () => ({
+      cerrados: students.filter((s) => s.caseState === CaseState.CERRADO)
+        .length,
+      observados: students.filter((s) => s.caseState === CaseState.OBSERVADO)
+        .length,
+      patron: students.filter((s) => s.caseState === CaseState.PATRON_DETECTADO)
+        .length,
+    }),
+    [students]
   );
-
-  const incidentsByType = {
-    retardos: filteredIncidents.filter((i) => i.type === IncidentType.RETARDO)
-      .length,
-    uniformes: filteredIncidents.filter((i) => i.type === IncidentType.UNIFORME)
-      .length,
-    conducta: filteredIncidents.filter((i) => i.type === IncidentType.CONDUCTA)
-      .length,
-    faltas: filteredIncidents.filter((i) => i.type === IncidentType.ASISTENCIA)
-      .length,
-  };
-
-  const studentsByState = {
-    cerrados: students.filter((s) => s.caseState === CaseState.CERRADO).length,
-    observados: students.filter((s) => s.caseState === CaseState.OBSERVADO)
-      .length,
-    patron: students.filter((s) => s.caseState === CaseState.PATRON_DETECTADO)
-      .length,
-  };
 
   const handlePrintReport = () => {
     let htmlContent = "";
@@ -338,7 +352,8 @@ export const Reportes: React.FC = () => {
           <button
             key={opt.id}
             onClick={() => setSelectedReport(opt.id as ReportType)}
-            className={`p-4 rounded-xl border-2 transition-all text-left ${
+            aria-pressed={selectedReport === opt.id}
+            className={`p-4 rounded-xl border-2 transition-all text-left focus:ring-2 focus:ring-primary focus:outline-none ${
               selectedReport === opt.id
                 ? "border-primary bg-primary/5"
                 : "border-border-color bg-white hover:border-primary/50"
@@ -375,23 +390,87 @@ export const Reportes: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <label htmlFor="startDate" className="sr-only">
+              Fecha de inicio
+            </label>
             <input
+              id="startDate"
               type="date"
+              aria-label="Fecha de inicio"
               value={dateRange.start}
               onChange={(e) =>
                 setDateRange({ ...dateRange, start: e.target.value })
               }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm"
+              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none"
             />
-            <span className="text-text-secondary">al</span>
+            <span className="text-text-secondary" aria-hidden="true">
+              al
+            </span>
+            <label htmlFor="endDate" className="sr-only">
+              Fecha de fin
+            </label>
             <input
+              id="endDate"
               type="date"
+              aria-label="Fecha de fin"
               value={dateRange.end}
               onChange={(e) =>
                 setDateRange({ ...dateRange, end: e.target.value })
               }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm"
+              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none"
             />
+          </div>
+
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label="Filtros rápidos de fecha"
+          >
+            <button
+              aria-label="Seleccionar última semana"
+              onClick={() => {
+                const end = new Date();
+                const start = new Date();
+                start.setDate(end.getDate() - 7);
+                setDateRange({
+                  start: start.toISOString().split("T")[0],
+                  end: end.toISOString().split("T")[0],
+                });
+              }}
+              className="px-3 py-1 text-xs font-medium text-primary bg-primary/5 border border-primary/20 rounded-full hover:bg-primary/10 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
+            >
+              Semana
+            </button>
+            <button
+              aria-label="Seleccionar último mes"
+              onClick={() => {
+                const end = new Date();
+                const start = new Date();
+                start.setMonth(end.getMonth() - 1);
+                setDateRange({
+                  start: start.toISOString().split("T")[0],
+                  end: end.toISOString().split("T")[0],
+                });
+              }}
+              className="px-3 py-1 text-xs font-medium text-primary bg-primary/5 border border-primary/20 rounded-full hover:bg-primary/10 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
+            >
+              Mes
+            </button>
+            <button
+              aria-label="Seleccionar último año"
+              onClick={() => {
+                const end = new Date();
+                const start = new Date();
+                start.setFullYear(end.getFullYear() - 1);
+                setDateRange({
+                  start: start.toISOString().split("T")[0],
+                  end: end.toISOString().split("T")[0],
+                });
+              }}
+              className="px-3 py-1 text-xs font-medium text-primary bg-primary/5 border border-primary/20 rounded-full hover:bg-primary/10 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
+            >
+              Año
+            </button>
           </div>
         </div>
       </div>

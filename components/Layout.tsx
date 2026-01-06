@@ -5,6 +5,7 @@ import { QuickRegisterModal } from "./QuickRegisterModal";
 import { AssistantBanner } from "./AssistantBanner";
 import { supabase } from "../supabase/client";
 import { FloatingAssistant } from "./FloatingAssistant";
+import { startProductTour } from "./TourGuide";
 
 const roleImages: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "/branding/direccion.png",
@@ -40,7 +41,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       {/* Sidebar - Role Based Content */}
       <aside className="w-64 bg-black/20 backdrop-blur-xl border-r border-white/10 flex flex-col shrink-0 hidden md:flex h-full shadow-[5px_0_30px_0_rgba(0,0,0,0.3)]">
-        <div className="p-6 border-b border-white/10">
+        <div className="p-6 border-b border-white/10" id="sidebar-logo">
           <div className="flex flex-col items-center gap-3">
             <div className="size-32 flex items-center justify-center">
               <img
@@ -62,11 +63,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto" id="sidebar-nav">
           <NavItem
             icon="dashboard"
             label="Tablero"
             active={currentModule === AppModule.DASHBOARD}
+            id="nav-dashboard"
             onClick={() => setCurrentModule(AppModule.DASHBOARD)}
           />
 
@@ -125,6 +127,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <NavItem
                 icon="badge"
                 label="Inscripciones"
+                id="nav-inscripciones"
                 active={currentModule === AppModule.INSCRIPCIONES}
                 onClick={() => setCurrentModule(AppModule.INSCRIPCIONES)}
               />
@@ -162,6 +165,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <NavItem
                 icon="assignment"
                 label="Solicitudes"
+                id="nav-solicitudes"
                 active={currentModule === AppModule.SOLICITUDES}
                 onClick={() => setCurrentModule(AppModule.SOLICITUDES)}
               />
@@ -184,6 +188,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <NavItem
               icon="description"
               label="Reportes"
+              id="nav-reportes"
               active={currentModule === AppModule.REPORTES}
               onClick={() => setCurrentModule(AppModule.REPORTES)}
             />
@@ -197,7 +202,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </nav>
 
         {/* Role Switcher for Demo */}
-        <div className="p-4 border-t border-border-color bg-gray-50">
+        <div
+          className="p-4 border-t border-border-color bg-gray-50"
+          id="role-switcher"
+        >
           <p className="text-xs font-bold text-text-secondary uppercase mb-2">
             Simular Rol (Demo)
           </p>
@@ -212,6 +220,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </option>
             ))}
           </select>
+          <button
+            onClick={() => {
+              const name =
+                prompt("¡Bienvenido a la demo! ¿Cómo te llamas?") || "Colega";
+              startProductTour(name, currentUserRole);
+            }}
+            className="w-full mt-3 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all animate-pulse-slow"
+          >
+            <span className="material-symbols-outlined text-[16px]">
+              play_circle
+            </span>
+            Ver Demo Interactiva
+          </button>
         </div>
 
         <div className="p-4 border-t border-border-color space-y-3">
@@ -271,6 +292,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             {/* Universal Quick Register Trigger - Hidden for Secretaria (No incidents) */}
             {currentUserRole !== UserRole.SECRETARIA && (
               <button
+                id="quick-register-btn"
                 onClick={() => setQuickRegisterOpen(true)}
                 className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg font-bold shadow-sm transition-all active:scale-95"
               >
@@ -284,14 +306,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="size-10 flex items-center justify-center rounded-lg hover:bg-background-light text-text-secondary relative"
               >
-                <span className="material-symbols-outlined">notifications</span>
+                <span
+                  className="material-symbols-outlined"
+                  id="notification-bell"
+                >
+                  notifications
+                </span>
                 {unreadCount > 0 && (
                   <span className="absolute top-2 right-2 size-2.5 bg-alert-red rounded-full border-2 border-white"></span>
                 )}
               </button>
 
               {showNotifications && (
-                <div className="absolute right-0 top-12 w-80 bg-white rounded-xl shadow-lg border border-border-color overflow-hidden z-50">
+                <div
+                  onMouseLeave={() => setShowNotifications(false)}
+                  className="absolute right-0 top-12 w-80 bg-white rounded-xl shadow-lg border border-border-color overflow-hidden z-50"
+                >
                   <div className="p-3 border-b border-gray-100 font-bold text-sm bg-gray-50 flex justify-between">
                     <span>Notificaciones</span>
                     <span className="text-xs text-text-secondary">
@@ -383,9 +413,11 @@ const NavItem: React.FC<{
   icon: string;
   label: string;
   active: boolean;
+  id?: string;
   onClick: () => void;
-}> = ({ icon, label, active, onClick }) => (
+}> = ({ icon, label, active, onClick, id }) => (
   <button
+    id={id}
     onClick={onClick}
     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 active:scale-95 ${
       active
