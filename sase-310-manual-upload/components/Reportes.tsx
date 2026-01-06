@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useApp } from "../store";
 import { CaseState, IncidentType } from "../types";
 import { printContent } from "./PrintButtons";
@@ -17,36 +17,38 @@ export const Reportes: React.FC = () => {
   });
 
   // Aggregate data for reports
-  const allIncidents = students.flatMap((s) =>
+  const allIncidents = useMemo(() => students.flatMap((s) =>
     s.incidents.map((i) => ({
       ...i,
       studentName: s.name,
       group: s.group,
     }))
-  );
+  ), [students]);
 
-  const filteredIncidents = allIncidents.filter(
+  const filteredIncidents = useMemo(() => allIncidents.filter(
     (i) => i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59"
-  );
+  ), [allIncidents, dateRange]);
 
-  const incidentsByType = {
-    retardos: filteredIncidents.filter((i) => i.type === IncidentType.RETARDO)
-      .length,
-    uniformes: filteredIncidents.filter((i) => i.type === IncidentType.UNIFORME)
-      .length,
-    conducta: filteredIncidents.filter((i) => i.type === IncidentType.CONDUCTA)
-      .length,
-    faltas: filteredIncidents.filter((i) => i.type === IncidentType.ASISTENCIA)
-      .length,
-  };
+  const incidentsByType = useMemo(() => filteredIncidents.reduce(
+    (acc, i) => {
+      if (i.type === IncidentType.RETARDO) acc.retardos++;
+      else if (i.type === IncidentType.UNIFORME) acc.uniformes++;
+      else if (i.type === IncidentType.CONDUCTA) acc.conducta++;
+      else if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
+      return acc;
+    },
+    { retardos: 0, uniformes: 0, conducta: 0, faltas: 0 }
+  ), [filteredIncidents]);
 
-  const studentsByState = {
-    cerrados: students.filter((s) => s.caseState === CaseState.CERRADO).length,
-    observados: students.filter((s) => s.caseState === CaseState.OBSERVADO)
-      .length,
-    patron: students.filter((s) => s.caseState === CaseState.PATRON_DETECTADO)
-      .length,
-  };
+  const studentsByState = useMemo(() => students.reduce(
+    (acc, s) => {
+      if (s.caseState === CaseState.CERRADO) acc.cerrados++;
+      else if (s.caseState === CaseState.OBSERVADO) acc.observados++;
+      else if (s.caseState === CaseState.PATRON_DETECTADO) acc.patron++;
+      return acc;
+    },
+    { cerrados: 0, observados: 0, patron: 0 }
+  ), [students]);
 
   const handlePrintReport = () => {
     let htmlContent = "";
