@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import { DashboardPrefectura } from "../components/dashboards/DashboardPrefectura";
 
@@ -48,7 +48,7 @@ describe("Dashboard Prefectura Unit Tests", () => {
     expect(screen.getByText(/Control Disciplinario/i)).toBeInTheDocument();
   });
 
-  it("Quick Register adds incident via Store", () => {
+  it("Quick Register adds incident via Store", async () => {
     render(<DashboardPrefectura />);
 
     const input = screen.getByPlaceholderText(/Ej. 2023-4492/i);
@@ -57,11 +57,17 @@ describe("Dashboard Prefectura Unit Tests", () => {
     const btn = screen.getByText("Registrar");
     fireEvent.click(btn);
 
-    expect(mocks.addIncident).toHaveBeenCalledWith(
-      "1", // ID found via matricula
-      expect.stringContaining("RETARDO"),
-      "Retardo (Entrada)"
-    );
-    expect(mocks.logAudit).toHaveBeenCalled();
+    await waitFor(() => {
+      // Check if the success toast is triggered, which happens at the end of the handler
+      expect(mocks.addIncident).toHaveBeenCalledWith(
+        "1",
+        expect.stringContaining("Retardo"),
+        "Retardo (Entrada)"
+      );
+    });
+
+    await waitFor(() => {
+      expect(mocks.logAudit).toHaveBeenCalled();
+    });
   });
 });

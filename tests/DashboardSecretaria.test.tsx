@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import { DashboardSecretaria } from "../components/dashboards/DashboardSecretaria";
 
@@ -17,7 +17,7 @@ vi.mock("../store", () => ({
         id: "1",
         name: "Secretaria Student",
         group: "1º A",
-        caseState: "OBSERVADO",
+        caseState: "Observado",
         guardianInfo: { name: "Mother", phonePrimary: "123", address: "Home" },
       },
     ],
@@ -72,7 +72,7 @@ describe("Dashboard Secretaria Unit Tests", () => {
     expect(screen.getByText("Mother")).toBeInTheDocument();
   });
 
-  it("Saving in Edit Mode triggers Audit", () => {
+  it("Saving in Edit Mode triggers Audit", async () => {
     render(<DashboardSecretaria />);
 
     // 1. Enter Edit Mode
@@ -82,7 +82,9 @@ describe("Dashboard Secretaria Unit Tests", () => {
     const saveBtn = screen.getByText("Guardar");
     fireEvent.click(saveBtn);
 
-    expect(mocks.logAudit).toHaveBeenCalled();
-    expect(mocks.updateStudentAudit).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mocks.logAudit).toHaveBeenCalled();
+      expect(mocks.updateStudentAudit).toHaveBeenCalled();
+    });
   });
 });

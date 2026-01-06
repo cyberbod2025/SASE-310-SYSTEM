@@ -1,0 +1,34 @@
+
+ RUN  v4.0.16 C:/Users/cyber/OneDrive/Escritorio/sase-310_-sistema-escolar
+
+ ÔØ» tests/DashboardDireccion.test.tsx (4 tests | 1 failed) 166ms
+     Ô£ô renders Header correctly 71ms
+     ├ù KPIs calculate correctly based on Store data 23ms
+     Ô£ô Institutional Checklist toggles state 26ms
+     Ô£ô Export Report triggers print function 43ms
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Tests 1 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  tests/DashboardDireccion.test.tsx > Dashboard Direccion Unit Tests > KPIs calculate correctly based on Store data
+Error: expect(element).toHaveTextContent()
+
+Expected element to have text content:
+  1
+Received:
+  Casos en Riesgo0Estudiantes detectados
+ ÔØ» tests/DashboardDireccion.test.tsx:60:22
+     58|     // Risk Cases: 1 (Student 1)
+     59|     const riskCard = screen.getByText(/Casos en Riesgo/i).closest("divÔÇª
+     60|     expect(riskCard).toHaveTextContent("1");
+       |                      ^
+     61|   });
+     62| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/1]ÔÄ»
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  00:47:55
+   Duration  2.61s (transform 209ms, setup 137ms, import 354ms, tests 166ms, environment 821ms)
+

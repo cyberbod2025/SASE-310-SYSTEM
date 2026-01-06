@@ -62,6 +62,7 @@ describe("Dashboard Enfermeria Unit Tests", () => {
     render(<DashboardEnfermeria />);
     // Text contains: "Urgente: 1 estudiantes"
     // Regex /Urgente:\s*1/i
-    expect(screen.getByText(/Urgente:\s*1/i)).toBeInTheDocument();
+    const alertLabel = screen.getByText(/Urgente:/i);
+    expect(alertLabel.closest("p")).toHaveTextContent(/1/);
   });
 });

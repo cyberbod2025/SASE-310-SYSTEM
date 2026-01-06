@@ -105,7 +105,12 @@ drop policy if exists "Personal puede registrar auditoria" on public.auditoria;
 create policy "Personal puede registrar auditoria" on public.auditoria for insert with check (auth.role() = 'authenticated');
 
 drop policy if exists "Admins pueden ver auditoria" on public.auditoria;
-create policy "Admins pueden ver auditoria" on public.auditoria for select using (auth.role() = 'authenticated');
+create policy "Admins pueden ver auditoria" on public.auditoria for select using (
+  exists (
+    select 1 from public.perfiles_usuario
+    where id = auth.uid() and rol = 'directivo'
+  )
+);
 
 -- Salud
 drop policy if exists "Personal puede ver salud" on public.salud;

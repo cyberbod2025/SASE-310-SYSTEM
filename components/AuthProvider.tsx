@@ -63,18 +63,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         .single();
 
       if (error || !data) {
-        console.warn("Profile not found or error, using fallback role.", error);
-        setRole(UserRole.DOCENTE); // Fallback defensivo
+        console.warn("Profile not found or error, denying access.", error);
+        setRole(null); // Secure fallback: Deny access
       } else {
         // Validate that the DB role exists in our Frontend Enum
         const dbRole = data.role as UserRole;
         if (Object.values(UserRole).includes(dbRole)) {
           setRole(dbRole);
         } else {
-          console.warn(
-            `Unknown role "${dbRole}" in DB, falling back to Docente.`
-          );
-          setRole(UserRole.DOCENTE);
+          console.warn(`Unknown role "${dbRole}" in DB, denying access.`);
+          setRole(null);
         }
       }
 
@@ -104,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       };
     } catch (err) {
       console.error("Unexpected error fetching profile:", err);
-      setRole(UserRole.DOCENTE);
+      setRole(null);
     } finally {
       setLoading(false);
     }
