@@ -230,6 +230,34 @@ export type Database = {
         };
         Relationships: [];
       };
+      profiles: {
+        Row: {
+          id: string;
+          role: Database["public"]["Enums"]["app_role"] | null;
+          full_name: string | null;
+          active: boolean | null;
+        };
+        Insert: {
+          id: string;
+          role?: Database["public"]["Enums"]["app_role"] | null;
+          full_name?: string | null;
+          active?: boolean | null;
+        };
+        Update: {
+          id?: string;
+          role?: Database["public"]["Enums"]["app_role"] | null;
+          full_name?: string | null;
+          active?: boolean | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey";
+            columns: ["id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -238,7 +266,15 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      [_ in never]: never;
+      app_role:
+        | "directivo"
+        | "docente"
+        | "docente_tutor"
+        | "prefectura"
+        | "orientacion"
+        | "trabajo_social"
+        | "enfermeria"
+        | "secretaria";
     };
   };
 };

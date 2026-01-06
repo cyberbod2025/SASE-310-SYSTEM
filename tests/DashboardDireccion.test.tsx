@@ -16,13 +16,13 @@ vi.mock("../store", () => ({
         id: "1",
         name: "Student One",
         incidents: [{}, {}], // 2 Incidents
-        caseState: "PATRON_DETECTADO", // Risk case
+        caseState: "Patrón Detectado", // Risk case
       },
       {
         id: "2",
         name: "Student Two",
         incidents: [], // 0 Incidents
-        caseState: "CERRADO",
+        caseState: "Cerrado",
       },
     ],
   }),

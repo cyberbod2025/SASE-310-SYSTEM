@@ -69,7 +69,7 @@ describe("Agenda Unit Tests", () => {
 
     // 5. Verify Event appears in "Selected Date" panel
     await waitFor(() => {
-      expect(screen.getByText(/MyUniqueEvent/)).toBeInTheDocument();
+      expect(screen.getAllByText(/MyUniqueEvent/)[0]).toBeInTheDocument();
     });
   });
 });

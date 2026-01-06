@@ -15,7 +15,7 @@ vi.mock("../store", () => ({
         id: "1",
         name: "Pattern Student",
         group: "2º A",
-        caseState: "PATRON_DETECTADO", // Triggers alert
+        caseState: "Patrón Detectado", // Triggers alert
         incidents: [{}, {}, {}],
       },
     ],
