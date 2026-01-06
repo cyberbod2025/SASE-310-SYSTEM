@@ -33,7 +33,7 @@ export type AuditActionType =
   | "ELIMINACION";
 
 interface AppContextType {
-  currentUserRole: UserRole;
+  currentUserRole: UserRole | null;
   switchRole: (role: UserRole) => void;
   students: Student[];
   addIncident: (
@@ -191,14 +191,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { user, role } = useAuth();
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole>(
-    UserRole.DOCENTE
-  );
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole | null>(null);
 
   // Sync role from AuthProvider
   useEffect(() => {
     if (role) {
       setCurrentUserRole(role);
+    } else {
+      setCurrentUserRole(null);
     }
   }, [role]);
   const [students, setStudents] = useState<Student[]>([]);

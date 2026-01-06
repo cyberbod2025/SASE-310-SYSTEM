@@ -44,7 +44,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <div className="flex flex-col items-center gap-3">
             <div className="size-32 flex items-center justify-center">
               <img
-                src={roleImages[currentUserRole] || "/branding/direccion.png"}
+                src={
+                  currentUserRole
+                    ? roleImages[currentUserRole] || "/branding/direccion.png"
+                    : "/branding/direccion.png"
+                }
                 alt="Logo Rol"
                 className="w-full h-full object-contain drop-shadow-md"
                 onError={(e) => {
@@ -203,9 +207,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </p>
           <select
             className="w-full text-sm border-gray-300 rounded-md p-2"
-            value={currentUserRole}
+            value={currentUserRole || ""}
             onChange={(e) => switchRole(e.target.value as UserRole)}
           >
+            <option value="" disabled>
+              Seleccionar Rol
+            </option>
             {Object.values(UserRole).map((role) => (
               <option key={role} value={role}>
                 {role}
@@ -230,14 +237,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           <div className="flex items-center gap-3">
             <div className="size-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">
-              {currentUserRole.substring(0, 2).toUpperCase()}
+              {currentUserRole
+                ? currentUserRole.substring(0, 2).toUpperCase()
+                : "??"}
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-bold text-white truncate">
                 Usuario Activo
               </p>
               <p className="text-xs text-gray-400 truncate uppercase tracking-wider">
-                {currentUserRole}
+                {currentUserRole || "Sin Rol"}
               </p>
             </div>
           </div>

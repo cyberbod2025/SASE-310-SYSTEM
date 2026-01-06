@@ -32,6 +32,21 @@ const MainContent = () => {
   if (currentModule === AppModule.REPORTES_DOCENTES)
     return <SolicitudReportesDocentes />;
 
+  if (!currentUserRole) {
+    return (
+      <div className="flex h-full w-full items-center justify-center flex-col gap-4 text-center p-8">
+        <span className="material-symbols-outlined text-6xl text-gray-300">
+          lock
+        </span>
+        <h2 className="text-xl font-bold text-gray-600">Acceso Restringido</h2>
+        <p className="text-gray-500 max-w-md">
+          Su usuario no tiene un rol asignado o no se ha podido verificar su
+          perfil. Por favor, contacte al administrador del sistema.
+        </p>
+      </div>
+    );
+  }
+
   switch (currentUserRole) {
     case UserRole.DOCENTE:
       return <DashboardDocente />;
@@ -49,7 +64,11 @@ const MainContent = () => {
     case UserRole.DIRECTIVO:
       return <DashboardDireccion />;
     default:
-      return <DashboardDocente />;
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <p>Rol desconocido: {currentUserRole}</p>
+        </div>
+      );
   }
 };
 
