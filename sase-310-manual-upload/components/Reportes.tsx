@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useApp } from "../store";
 import { CaseState, IncidentType } from "../types";
 import { printContent } from "./PrintButtons";
