@@ -122,7 +122,7 @@ export const AssistantBanner: React.FC<{
           <div className="relative size-full rounded-full overflow-hidden bg-gradient-to-br from-amber-900/30 to-blue-900/30 animate-[float_3s_ease-in-out_infinite]">
             {/* Base Image */}
             <img
-              src="/assets/branding/agent_avatar.jpg"
+              src="/assets/branding/IA-SASE.png"
               alt="SASE Agent"
               className="w-full h-full object-cover"
             />
