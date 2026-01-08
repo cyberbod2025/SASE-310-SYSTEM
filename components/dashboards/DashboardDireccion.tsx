@@ -143,7 +143,9 @@ export const DashboardDireccion = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center border-b border-white/10 pb-2">
               <div>
-                <p className="font-bold text-gray-200">3º B - Turno Matutino</p>
+                <p className="font-bold text-gray-200">
+                  3º B - Turno Vespertino
+                </p>
                 <p className="text-xs text-gray-400">Tutor: Prof. Rodríguez</p>
               </div>
               <span className="px-2 py-1 bg-red-900/30 text-red-200 border border-red-500/20 text-xs font-bold rounded-full">
@@ -152,7 +154,9 @@ export const DashboardDireccion = () => {
             </div>
             <div className="flex justify-between items-center border-b border-white/10 pb-2">
               <div>
-                <p className="font-bold text-gray-200">2º A - Turno Matutino</p>
+                <p className="font-bold text-gray-200">
+                  2º A - Turno Vespertino
+                </p>
                 <p className="text-xs text-gray-400">Tutor: Prof. Gómez</p>
               </div>
               <span className="px-2 py-1 bg-yellow-900/30 text-yellow-200 border border-yellow-500/20 text-xs font-bold rounded-full">

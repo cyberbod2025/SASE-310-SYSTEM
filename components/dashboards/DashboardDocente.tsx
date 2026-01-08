@@ -63,7 +63,7 @@ export const DashboardDocente = () => {
             <p className="text-teal-200 text-lg font-medium tracking-wide flex items-center gap-2">
               Vista actual:
               <span className="font-bold bg-teal-900/40 border border-teal-500/30 px-3 py-0.5 rounded-full text-sm text-teal-100">
-                3º B - Turno Matutino
+                3º B - Turno Vespertino
               </span>
             </p>
           </div>
