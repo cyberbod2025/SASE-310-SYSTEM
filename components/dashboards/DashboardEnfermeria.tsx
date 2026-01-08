@@ -41,9 +41,14 @@ export const DashboardEnfermeria = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="flex items-center gap-6">
             <img
-              src="/branding/enfermeria.png"
+              src="/assets/branding/ENFERMERIA.png"
               alt="Enfermeria Logo"
-              className="size-24 object-contain drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"
+              className="size-24 object-contain drop-shadow-2xl animate-float"
+              style={{
+                clipPath: "circle(48%)",
+                filter:
+                  "brightness(1.1) contrast(1.2) drop-shadow(0 0 15px rgba(239, 68, 68, 0.4))",
+              }}
             />
             <div>
               <h2

@@ -140,6 +140,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
 // Utility function for programmatic printing from any component
 export const printContent = (title: string, htmlContent: string) => {
   const printWindow = window.open("", "_blank");
+  const logoUrl = `${window.location.origin}/branding/escudo_oficial.png`;
   if (printWindow) {
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -168,27 +169,63 @@ export const printContent = (title: string, htmlContent: string) => {
           .badge-yellow { background: #fef3c7; color: #92400e; }
           .badge-green { background: #d1fae5; color: #065f46; }
           .badge-blue { background: #dbeafe; color: #1e40af; }
-          .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start;
+          
+          /* Official Header with Logo */
+          .official-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
             margin-bottom: 25px;
-            border-bottom: 3px solid #1a1a1a;
+            border-bottom: 3px double #1a1a1a;
             padding-bottom: 15px;
           }
-          .header-logo { font-size: 28px; font-weight: 900; }
-          .header-subtitle { font-size: 14px; color: #666; margin-top: 5px; }
-          .header-meta { text-align: right; font-size: 11px; color: #888; }
+          .official-logo {
+            width: 100px;
+            height: auto;
+            flex-shrink: 0;
+          }
+          .official-info {
+            flex: 1;
+            text-align: center;
+          }
+          .official-sep { font-weight: bold; font-size: 12px; color: #666; margin-bottom: 2px; }
+          .official-school { font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 2px; }
+          .official-name { font-size: 14px; font-weight: bold; color: #333; }
+          .official-location { font-size: 11px; color: #666; margin-top: 3px; }
+          .official-motto { font-size: 10px; font-style: italic; color: #888; margin-top: 5px; }
+          
+          .report-title {
+            text-align: center;
+            background: linear-gradient(90deg, #f5f5f5 0%, #e0e0e0 50%, #f5f5f5 100%);
+            padding: 10px 20px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          }
+          
+          .header-meta { 
+            text-align: right; 
+            font-size: 11px; 
+            color: #888; 
+            margin-top: -10px;
+            margin-bottom: 15px;
+          }
+          
           .footer {
             margin-top: 40px;
             padding-top: 15px;
-            border-top: 1px solid #ddd;
+            border-top: 2px solid #ddd;
             font-size: 9px;
             color: #888;
             text-align: center;
           }
+          .footer-system { font-weight: bold; margin-bottom: 3px; }
+          
           .signature-line {
-            margin-top: 50px;
+            margin-top: 60px;
             display: flex;
             justify-content: space-around;
           }
@@ -211,23 +248,40 @@ export const printContent = (title: string, htmlContent: string) => {
         </style>
       </head>
       <body>
-        <div class="header">
-          <div>
-            <div class="header-logo">SASE-310</div>
-            <div class="header-subtitle">${title}</div>
+        <!-- Official Header with Logo -->
+        <div class="official-header">
+          <img src="${logoUrl}" alt="Escudo Oficial" class="official-logo" />
+          <div class="official-info">
+            <div class="official-sep">SECRETARÍA DE EDUCACIÓN PÚBLICA</div>
+            <div class="official-school">Escuela Secundaria Diurna No. 310</div>
+            <div class="official-name">"Presidentes de México"</div>
+            <div class="official-location">Turno Vespertino • Iztapalapa, CDMX</div>
+            <div class="official-motto">"La Educación para un México Mejor"</div>
           </div>
-          <div class="header-meta">
-            <div>Fecha: ${new Date().toLocaleDateString("es-MX")}</div>
-            <div>Hora: ${new Date().toLocaleTimeString("es-MX", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}</div>
-          </div>
+          <img src="${logoUrl}" alt="Escudo Oficial" class="official-logo" />
         </div>
+        
+        <div class="header-meta">
+          <div>Fecha: ${new Date().toLocaleDateString("es-MX", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}</div>
+          <div>Hora: ${new Date().toLocaleTimeString("es-MX", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}</div>
+        </div>
+        
+        <div class="report-title">${title}</div>
+        
         ${htmlContent}
+        
         <div class="footer">
-          Sistema de Administración Escolar SASE-310 • Documento generado automáticamente<br>
-          Este documento es propiedad de la institución y su reproducción no autorizada está prohibida.
+          <div class="footer-system">Sistema de Administración Escolar SASE-310</div>
+          Documento generado automáticamente • Este documento es propiedad de la institución<br>
+          Su reproducción no autorizada está prohibida
         </div>
       </body>
       </html>
@@ -237,6 +291,6 @@ export const printContent = (title: string, htmlContent: string) => {
     setTimeout(() => {
       printWindow.print();
       printWindow.close();
-    }, 250);
+    }, 500);
   }
 };

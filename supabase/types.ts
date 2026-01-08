@@ -274,7 +274,8 @@ export type Database = {
         | "orientacion"
         | "trabajo_social"
         | "enfermeria"
-        | "secretaria";
+        | "secretaria"
+        | "udeii";
     };
   };
 };

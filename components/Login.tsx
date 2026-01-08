@@ -52,7 +52,7 @@ export const Login: React.FC = () => {
           className="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] animate-grid-flow"
           style={{
             backgroundImage:
-              "linear-gradient(#0052cc 1px, transparent 1px), linear-gradient(90deg, #0052cc 1px, transparent 1px)",
+              "linear-gradient(#b8860b 1px, transparent 1px), linear-gradient(90deg, #b8860b 1px, transparent 1px)",
             backgroundSize: "50px 50px",
             transform: "perspective(500px) rotateX(60deg)",
           }}
@@ -67,25 +67,29 @@ export const Login: React.FC = () => {
         <div className="absolute right-0 top-0 h-full bg-gradient-to-l from-transparent via-amber-400 to-white shadow-[0_0_20px_#fbbf24] blur-[1px] animate-horizon-scan origin-right"></div>
       </div>
 
-      {/* Ambient Glow */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[128px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[128px] pointer-events-none"></div>
+      {/* Ambient Glow - Golden/Silver */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-600/20 rounded-full blur-[128px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-500/15 rounded-full blur-[128px] pointer-events-none"></div>
 
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md p-1 mx-4 rounded-2xl overflow-hidden group">
-        {/* Tricolor Rainbow Glow Border */}
-        <div className="absolute inset-0 bg-[conic-gradient(from_0deg,red,green,blue,red)] animate-border-spin opacity-70 group-hover:opacity-100 transition-opacity blur-md"></div>
+        {/* Golden/Silver Gradient Border */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-yellow-400 to-gray-300 animate-border-spin opacity-60 group-hover:opacity-100 transition-opacity blur-md"></div>
 
         <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-8 h-full w-full">
           {/* Header & Logo */}
           <div className="text-center mb-1">
             <div className="flex justify-center mb-1">
               <div className="relative group">
-                <div className="absolute -inset-4 bg-blue-500/20 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+                <div className="absolute -inset-4 bg-amber-500/20 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
                 <img
-                  src="/branding/SASE.png"
+                  src="/assets/branding/SASE.png"
                   alt="SASE Logo"
-                  className="relative w-96 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                  style={{
+                    filter:
+                      "drop-shadow(0 0 30px rgba(218,165,32,0.6)) drop-shadow(0 0 60px rgba(192,192,192,0.4))",
+                  }}
+                  className="relative w-[350px] h-auto object-contain"
                 />
               </div>
             </div>
@@ -125,7 +129,7 @@ export const Login: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="usuario@sase.mx"
-                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
                 />
               </div>
             </div>
@@ -161,7 +165,7 @@ export const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-wait mt-4 flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-black font-bold py-3.5 rounded-lg shadow-lg shadow-amber-900/30 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-wait mt-4 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -179,7 +183,7 @@ export const Login: React.FC = () => {
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-sm text-gray-400 hover:text-blue-400 transition-colors"
+              className="text-sm text-gray-400 hover:text-amber-400 transition-colors"
             >
               ¿Olvidaste tu contraseña?
             </button>

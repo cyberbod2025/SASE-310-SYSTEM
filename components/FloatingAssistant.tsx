@@ -116,12 +116,14 @@ export const FloatingAssistant: React.FC = () => {
         }`}
       >
         <div className="flex items-center gap-3 mb-4 border-b border-white/10 pb-3">
-          <div className="relative size-10 shrink-0 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 animate-[spin_3s_linear_infinite] blur-sm opacity-80"></div>
-            <div className="absolute inset-0.5 rounded-full bg-black/90 flex items-center justify-center z-10">
-              <span className="material-symbols-outlined text-white text-[20px]">
-                smart_toy
-              </span>
+          <div className="relative size-12 shrink-0 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 animate-[spin_3s_linear_infinite] blur-sm opacity-50"></div>
+            <div className="absolute inset-0.5 rounded-full bg-black/90 flex items-center justify-center">
+              <img
+                src="/assets/branding/IA-SASE.png"
+                alt="IA SASE"
+                className="w-8 h-8 object-contain drop-shadow-lg"
+              />
             </div>
           </div>
           <div>
@@ -208,10 +210,14 @@ export const FloatingAssistant: React.FC = () => {
           ) : (
             <div className="relative size-full flex items-center justify-center">
               {/* Inner Orb Animation */}
-              <div className="absolute inset-3 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 opacity-20 animate-pulse"></div>
-              <span className="material-symbols-outlined text-transparent bg-clip-text bg-gradient-to-br from-blue-200 to-white text-3xl drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">
-                smart_toy
-              </span>
+              <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 opacity-20 animate-pulse"></div>
+              <div className="absolute inset-2 rounded-full bg-black/80 flex items-center justify-center">
+                <img
+                  src="/assets/branding/IA-SASE.png"
+                  alt="IA"
+                  className="w-8 h-8 object-contain drop-shadow-[0_0_10px_rgba(59,130,246,0.8)]"
+                />
+              </div>
             </div>
           )}
         </div>

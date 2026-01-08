@@ -8,14 +8,15 @@ import { FloatingAssistant } from "./FloatingAssistant";
 import { startProductTour } from "./TourGuide";
 
 const roleImages: Record<UserRole, string> = {
-  [UserRole.DIRECTIVO]: "/branding/direccion.png",
-  [UserRole.DOCENTE]: "/branding/docentes.png",
-  [UserRole.DOCENTE_TUTOR]: "/branding/docentes.png",
-  [UserRole.PREFECTURA]: "/branding/prefectura.png",
-  [UserRole.ORIENTACION]: "/branding/orientacion.png",
-  [UserRole.TRABAJO_SOCIAL]: "/branding/t social.png",
-  [UserRole.ENFERMERIA]: "/branding/enfermeria.png",
-  [UserRole.SECRETARIA]: "/branding/direccion.png", // Fallback
+  [UserRole.DIRECTIVO]: "/assets/branding/DIRECION.png",
+  [UserRole.DOCENTE]: "/assets/branding/DOCENTES.png",
+  [UserRole.DOCENTE_TUTOR]: "/assets/branding/DOCENTES.png",
+  [UserRole.PREFECTURA]: "/assets/branding/PREFECVTURA.png",
+  [UserRole.ORIENTACION]: "/assets/branding/ORIENTACION.png",
+  [UserRole.TRABAJO_SOCIAL]: "/assets/branding/T.SOCIAL.png",
+  [UserRole.ENFERMERIA]: "/assets/branding/ENFERMERIA.png",
+  [UserRole.SECRETARIA]: "/assets/branding/SECRETARIOS.png",
+  [UserRole.UDEII]: "/assets/branding/UDEII.png",
 };
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({
@@ -45,9 +46,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <div className="flex flex-col items-center gap-3">
             <div className="size-32 flex items-center justify-center">
               <img
-                src={roleImages[currentUserRole] || "/branding/direccion.png"}
+                src={
+                  roleImages[currentUserRole] ||
+                  "/assets/branding/logo_sase_official.png"
+                }
                 alt="Logo Rol"
-                className="w-full h-full object-contain drop-shadow-md"
+                className="w-full h-full object-contain drop-shadow-2xl animate-float"
+                style={{
+                  clipPath: "circle(48%)", // Recorta el fondo cuadrado
+                  filter:
+                    "brightness(1.1) contrast(1.2) drop-shadow(0 0 10px rgba(251, 191, 36, 0.3))",
+                }}
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                   e.currentTarget.nextElementSibling?.classList.remove(
@@ -257,7 +266,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <p className="text-sm font-bold text-white truncate">
                 Usuario Activo
               </p>
-              <p className="text-xs text-gray-400 truncate uppercase tracking-wider">
+              <p className="text-[10px] text-gray-400 truncate uppercase tracking-wider">
+                CCT 09DES4310M | Vespertino
+              </p>
+              <p className="text-xs text-blue-400 truncate uppercase tracking-wider">
                 {currentUserRole}
               </p>
             </div>

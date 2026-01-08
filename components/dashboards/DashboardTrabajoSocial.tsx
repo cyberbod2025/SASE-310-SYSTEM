@@ -140,9 +140,12 @@ export const DashboardTrabajoSocial = () => {
             <div className="absolute inset-0 rounded-full border border-white/10 pointer-events-none"></div>
             <div className="relative rounded-full overflow-hidden">
               <img
-                src="/branding/t social.png"
+                src="/assets/branding/T.SOCIAL.png"
                 alt="Trabajo Social Logo"
-                className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(249,115,22,0.5)] z-10 relative"
+                className="w-24 h-24 object-contain drop-shadow-2xl z-10 relative animate-float"
+                style={{
+                  filter: "drop-shadow(0 0 15px rgba(249,115,22,0.6))",
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent -translate-x-full animate-shine-sweep pointer-events-none z-20"></div>
             </div>

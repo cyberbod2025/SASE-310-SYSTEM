@@ -46,9 +46,12 @@ export const DashboardDocente = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div className="flex items-center gap-6">
           <img
-            src="/branding/docentes.png"
+            src="/assets/branding/DOCENTES.png"
             alt="Docentes Logo"
-            className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(20,184,166,0.5)]"
+            className="w-24 h-24 object-contain drop-shadow-2xl animate-float"
+            style={{
+              filter: "drop-shadow(0 0 15px rgba(20, 184, 166, 0.6))",
+            }}
           />
           <div className="flex flex-col gap-1">
             <h1
