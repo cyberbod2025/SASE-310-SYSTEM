@@ -219,7 +219,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             Simular Rol (Demo)
           </p>
           <select
-            className="w-full text-sm border-gray-300 rounded-md p-2"
+            className="w-full text-sm border-gray-300 rounded-md p-2 text-gray-900"
             value={currentUserRole}
             onChange={(e) => switchRole(e.target.value as UserRole)}
           >
