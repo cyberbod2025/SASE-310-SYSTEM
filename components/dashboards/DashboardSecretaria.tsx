@@ -106,9 +106,12 @@ export const DashboardSecretaria = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-4">
         <div className="flex items-center gap-6">
           <img
-            src="/branding/direccion.png"
+            src="/assets/branding/SECRETARIOS.png"
             alt="Secretaria Logo"
-            className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+            className="w-24 h-24 object-contain drop-shadow-2xl animate-float"
+            style={{
+              filter: "drop-shadow(0 0 15px rgba(59, 130, 246, 0.6))",
+            }}
           />
           <div className="flex flex-col gap-1">
             <h1

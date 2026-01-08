@@ -26,9 +26,12 @@ export const DashboardDireccion = () => {
       >
         <div className="flex items-center gap-6">
           <img
-            src="/branding/direccion.png"
+            src="/assets/branding/DIRECION.png"
             alt="Dirección Logo"
-            className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+            className="w-24 h-24 object-contain drop-shadow-2xl animate-float"
+            style={{
+              filter: "drop-shadow(0 0 15px rgba(251, 191, 36, 0.6))",
+            }}
           />
           <div className="flex flex-col gap-1">
             <h1

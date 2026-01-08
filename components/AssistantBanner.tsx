@@ -116,17 +116,105 @@ export const AssistantBanner: React.FC<{
       }`}
     >
       <div className="flex items-start gap-4">
-        {/* Gemini Orb Animation */}
-        <div className="relative size-12 shrink-0 flex items-center justify-center">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 animate-[spin_3s_linear_infinite] blur-md opacity-60"></div>
-          <div className="absolute inset-1 rounded-full bg-black flex items-center justify-center z-10 overflow-hidden">
-            <div className="relative size-full animate-[spin_10s_linear_infinite]">
-              <div className="absolute inset-0 border-[3px] border-transparent border-t-cyan-400 border-b-purple-500 rounded-full animate-spin"></div>
-              <div className="absolute inset-2 border-[3px] border-transparent border-l-yellow-400 border-r-pink-500 rounded-full animate-[spin_3s_linear_infinite_reverse]"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_15px_white] animate-pulse"></div>
+        {/* SASE Agent Avatar with Animated Reflections */}
+        <div className="relative size-16 shrink-0 flex items-center justify-center">
+          {/* Agent Avatar Image with Overlay Effects */}
+          <div className="relative size-full rounded-full overflow-hidden bg-gradient-to-br from-amber-900/30 to-blue-900/30 animate-[float_3s_ease-in-out_infinite]">
+            {/* Base Image */}
+            <img
+              src="/assets/branding/agent_avatar.jpg"
+              alt="SASE Agent"
+              className="w-full h-full object-cover"
+            />
+
+            {/* Animated Golden Reflections Moving Over the Logo */}
+            <div className="absolute inset-0 overflow-hidden">
+              {/* Diagonal sweep reflection 1 */}
+              <div
+                className="absolute inset-0 bg-gradient-to-br from-transparent via-amber-300/40 to-transparent"
+                style={{
+                  animation: "sweep-diagonal 4s ease-in-out infinite",
+                  transform:
+                    "translateX(-100%) translateY(-100%) rotate(45deg)",
+                  width: "200%",
+                  height: "200%",
+                }}
+              ></div>
+
+              {/* Diagonal sweep reflection 2 (opposite direction) */}
+              <div
+                className="absolute inset-0 bg-gradient-to-tl from-transparent via-amber-400/30 to-transparent"
+                style={{
+                  animation:
+                    "sweep-diagonal-reverse 5s ease-in-out infinite 1s",
+                  transform: "translateX(100%) translateY(100%) rotate(-45deg)",
+                  width: "200%",
+                  height: "200%",
+                }}
+              ></div>
+
+              {/* Circular pulse glow overlay */}
+              <div
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle at center, rgba(251, 191, 36, 0.2) 0%, transparent 70%)",
+                  animation: "pulse-glow-overlay 3s ease-in-out infinite",
+                }}
+              ></div>
+
+              {/* Rotating shimmer spots */}
+              <div
+                className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-200/60 rounded-full blur-sm"
+                style={{
+                  animation: "orbit-shimmer 6s linear infinite",
+                  transformOrigin: "100% 100%",
+                }}
+              ></div>
+              <div
+                className="absolute bottom-1/4 right-1/4 w-2 h-2 bg-amber-300/50 rounded-full blur-sm"
+                style={{
+                  animation: "orbit-shimmer 6s linear infinite 3s",
+                  transformOrigin: "-100% -100%",
+                }}
+              ></div>
             </div>
+
+            {/* Subtle border glow */}
+            <div className="absolute inset-0 rounded-full ring-1 ring-amber-400/30 animate-pulse"></div>
           </div>
         </div>
+
+        {/* Custom animations */}
+        <style>{`
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+          }
+          
+          @keyframes sweep-diagonal {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+            100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+          }
+          
+          @keyframes sweep-diagonal-reverse {
+            0% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
+            50% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
+          }
+          
+          @keyframes pulse-glow-overlay {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+          }
+          
+          @keyframes orbit-shimmer {
+            0% { transform: rotate(0deg) translateX(20px) rotate(0deg); opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { transform: rotate(360deg) translateX(20px) rotate(-360deg); opacity: 0.4; }
+          }
+        `}</style>
 
         <div className="flex-1 min-w-0">
           <h4 className="text-xs font-bold uppercase tracking-widest mb-1 text-blue-300/80 flex justify-between items-center">

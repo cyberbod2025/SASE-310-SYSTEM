@@ -87,9 +87,14 @@ export const DashboardPrefectura = () => {
       >
         <div className="flex items-center gap-6">
           <img
-            src="/branding/prefectura.png"
+            src="/assets/branding/PREFECVTURA.png"
             alt="Prefectura Logo"
-            className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+            className="w-24 h-24 object-contain drop-shadow-2xl animate-float"
+            style={{
+              clipPath: "circle(48%)",
+              filter:
+                "brightness(1.1) contrast(1.2) drop-shadow(0 0 15px rgba(59, 130, 246, 0.4))",
+            }}
           />
           <div className="flex flex-col gap-1">
             <h1

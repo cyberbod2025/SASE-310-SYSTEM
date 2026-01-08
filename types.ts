@@ -7,6 +7,7 @@ export enum UserRole {
   TRABAJO_SOCIAL = "trabajo_social",
   ENFERMERIA = "enfermeria",
   SECRETARIA = "secretaria",
+  UDEII = "udeii",
 }
 
 export const RoleLabels: Record<UserRole, string> = {
@@ -18,6 +19,7 @@ export const RoleLabels: Record<UserRole, string> = {
   [UserRole.TRABAJO_SOCIAL]: "Trabajo Social",
   [UserRole.ENFERMERIA]: "Enfermería",
   [UserRole.SECRETARIA]: "Secretaría",
+  [UserRole.UDEII]: "UDEII",
 };
 
 export enum CaseState {

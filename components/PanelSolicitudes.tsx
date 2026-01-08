@@ -233,8 +233,11 @@ export const PanelSolicitudes: React.FC = () => {
               assignment
             </span>
             Centro de Solicitudes
+            <span className="ml-3 px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200">
+              Turno Vespertino | CCT 09DES4310M
+            </span>
           </h1>
-          <p className="text-text-secondary">
+          <p className="text-gray-600">
             Gestión de documentos y comunicados institucionales
           </p>
         </div>
@@ -445,7 +448,7 @@ export const PanelSolicitudes: React.FC = () => {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Tipo de Documento *
                 </label>
                 <select
@@ -453,7 +456,7 @@ export const PanelSolicitudes: React.FC = () => {
                   onChange={(e) =>
                     setNewSolicitud({ ...newSolicitud, tipo: e.target.value })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm"
+                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                 >
                   <option value="">Seleccionar...</option>
                   {TIPOS_DOCUMENTO.map((tipo) => (
@@ -465,7 +468,7 @@ export const PanelSolicitudes: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Asignar a *
                 </label>
                 <select
@@ -497,13 +500,13 @@ export const PanelSolicitudes: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Alumno (si aplica)
                 </label>
                 <select
                   value={newSolicitud.alumnoId}
                   onChange={(e) => handleSelectStudent(e.target.value)}
-                  className="w-full p-2 border border-border-color rounded-lg text-sm"
+                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                 >
                   <option value="">Sin alumno específico</option>
                   {students.map((s) => (
@@ -525,7 +528,7 @@ export const PanelSolicitudes: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                     Prioridad
                   </label>
                   <select
@@ -536,7 +539,7 @@ export const PanelSolicitudes: React.FC = () => {
                         prioridad: e.target.value as any,
                       })
                     }
-                    className="w-full p-2 border border-border-color rounded-lg text-sm"
+                    className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                   >
                     <option value="baja">Baja</option>
                     <option value="normal">Normal</option>
@@ -545,7 +548,7 @@ export const PanelSolicitudes: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                  <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                     Fecha Límite
                   </label>
                   <input
@@ -557,13 +560,13 @@ export const PanelSolicitudes: React.FC = () => {
                         fechaLimite: e.target.value,
                       })
                     }
-                    className="w-full p-2 border border-border-color rounded-lg text-sm"
+                    className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Descripción
                 </label>
                 <textarea
@@ -575,7 +578,7 @@ export const PanelSolicitudes: React.FC = () => {
                     })
                   }
                   rows={3}
-                  className="w-full p-2 border border-border-color rounded-lg text-sm resize-none"
+                  className="w-full p-2 border border-border-color rounded-lg text-sm resize-none text-gray-900 bg-white"
                   placeholder="Detalles adicionales..."
                 />
               </div>
@@ -604,7 +607,7 @@ export const PanelSolicitudes: React.FC = () => {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Tipo *
                 </label>
                 <select
@@ -615,7 +618,7 @@ export const PanelSolicitudes: React.FC = () => {
                       tipo: e.target.value as any,
                     })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm"
+                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                 >
                   <option value="comunicado">Comunicado General</option>
                   <option value="evento">Evento</option>
@@ -625,7 +628,7 @@ export const PanelSolicitudes: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Título *
                 </label>
                 <input
@@ -637,13 +640,13 @@ export const PanelSolicitudes: React.FC = () => {
                       titulo: e.target.value,
                     })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm"
+                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                   placeholder="Asunto del comunicado..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Audiencia *
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -672,7 +675,7 @@ export const PanelSolicitudes: React.FC = () => {
               {newComunicado.tipo === "evento" && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                       Fecha del Evento
                     </label>
                     <input
@@ -684,11 +687,11 @@ export const PanelSolicitudes: React.FC = () => {
                           fechaEvento: e.target.value,
                         })
                       }
-                      className="w-full p-2 border border-border-color rounded-lg text-sm"
+                      className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                       Hora
                     </label>
                     <input
@@ -700,14 +703,14 @@ export const PanelSolicitudes: React.FC = () => {
                           horaEvento: e.target.value,
                         })
                       }
-                      className="w-full p-2 border border-border-color rounded-lg text-sm"
+                      className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-1">
                   Mensaje
                 </label>
                 <textarea
@@ -719,7 +722,7 @@ export const PanelSolicitudes: React.FC = () => {
                     })
                   }
                   rows={3}
-                  className="w-full p-2 border border-border-color rounded-lg text-sm resize-none"
+                  className="w-full p-2 border border-border-color rounded-lg text-sm resize-none text-gray-900 bg-white"
                   placeholder="Contenido del comunicado..."
                 />
               </div>

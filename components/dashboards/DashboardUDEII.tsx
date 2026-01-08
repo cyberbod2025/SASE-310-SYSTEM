@@ -10,11 +10,16 @@ export const DashboardUDEII = () => {
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div className="flex items-center gap-6">
-          <div className="size-24 rounded-2xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(147,51,234,0.3)]">
-            <span className="material-symbols-outlined text-5xl text-purple-400">
-              group_add
-            </span>
-          </div>
+          <img
+            src="/assets/branding/UDEII.png"
+            alt="UDEII Logo"
+            className="w-24 h-24 object-contain drop-shadow-2xl animate-float"
+            style={{
+              clipPath: "circle(48%)",
+              filter:
+                "brightness(1.1) contrast(1.2) drop-shadow(0 0 15px rgba(168, 85, 247, 0.4))",
+            }}
+          />
           <div className="flex flex-col gap-1">
             <h1
               className="text-white text-3xl md:text-5xl font-black tracking-tight"

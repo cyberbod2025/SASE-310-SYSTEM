@@ -524,7 +524,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // Generate institutional message based on Role + Data State
     let msg = "";
-    const greeting = "Buenos días.";
+    const greeting = "Buenas tardes";
+    const contextPrefix = `${greeting}. (Turno Vespertino | CCT 09DES4310M).`;
 
     switch (currentUserRole) {
       case UserRole.DOCENTE:
@@ -533,42 +534,49 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             s.caseState === CaseState.PATRON_DETECTADO ||
             s.caseState === CaseState.INTERVENCION
         ).length;
-        msg = `${greeting} Docente. Tiene ${highRisk} alumnos que requieren seguimiento cercano hoy.`;
+        msg =
+          highRisk > 0
+            ? `${contextPrefix} Hoy hay ${highRisk} alumnos que requieren seguimiento prioritario.`
+            : `${contextPrefix} Sin alertas activas. Todos los grupos estables.`;
         break;
       case UserRole.PREFECTURA:
         const lateToday = 32; // Mocked from dashboard
-        msg = `${greeting} Prefectura. Se detecta un patrón de retardos en 3º B (5 casos hoy). Se sugiere revisión de uniforme.`;
+        msg = `${contextPrefix} Patrón detectado: 5 retardos en 3º B. Se sugiere revisión de uniforme.`;
         break;
       case UserRole.ENFERMERIA:
-        msg = `${greeting} Enfermería. Inventario bajo: Vendas elásticas (4 unidades). Revise el stock de emergencia.`;
+        msg = `${contextPrefix} Alerta de inventario: Vendas elásticas (4 unidades). Revisar stock de emergencia.`;
         break;
       case UserRole.ORIENTACION:
         const pendingCases = students.filter(
           (s) => s.caseState === CaseState.PATRON_DETECTADO
         ).length;
-        msg = `${greeting} Orientación. Se han detectado ${pendingCases} nuevos patrones de conducta esta semana que requieren análisis.`;
+        msg =
+          pendingCases > 0
+            ? `${contextPrefix} ${pendingCases} patrones de conducta detectados esta semana. Requieren análisis.`
+            : `${contextPrefix} Sin patrones nuevos. Seguimientos al día.`;
         break;
       case UserRole.TRABAJO_SOCIAL:
-        msg = `${greeting} Trabajo Social. Tiene 2 seguimientos domiciliarios pendientes y 1 justificante por validar.`;
+        msg = `${contextPrefix} 2 seguimientos domiciliarios pendientes. 1 justificante por validar.`;
         break;
       case UserRole.SECRETARIA:
-        msg = `${greeting} Secretaría. El sistema está listo para la carga masiva. Recuerde verificar la integridad de los CURP antes de importar.`;
+        msg = `${contextPrefix} Sistema listo para carga masiva. Verificar integridad de CURP antes de importar.`;
         break;
       case UserRole.DIRECTIVO:
         const totalIncidents = students.reduce(
           (acc, s) => acc + s.incidents.length,
           0
         );
-        msg = `${greeting} Director. Resumen global: ${totalIncidents} incidencias registradas este mes. La asistencia general es del 92%.`;
+        msg = `${contextPrefix} Resumen ejecutivo: ${totalIncidents} incidencias este mes. Asistencia global: 92%.`;
         break;
-      /* UDEII Temporarily disabled until Role added in DB
-        case UserRole.UDEII:
-             const bapStudents = students.filter(s => s.bapInfo?.hasBAP).length;
-             msg = `${greeting} UDEII. Hay ${bapStudents} alumnos con BAP activos. Se recomienda actualizar los ajustes razonables del grupo 2º A.`;
-             break; 
-        */
+
+      case UserRole.UDEII:
+        // UDEII Logic enabled
+        const bapStudents = students.filter((s) => s.bapInfo?.hasBAP).length;
+        msg = `${contextPrefix} ${bapStudents} alumnos con BAP activos. Actualizar ajustes razonables de 2º A.`;
+        break;
+
       default:
-        msg = "Bienvenido al Sistema SASE-310.";
+        msg = `${contextPrefix} Bienvenido al Sistema SASE-310.`;
     }
 
     setAssistantMessage(msg);
