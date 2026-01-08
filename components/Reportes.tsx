@@ -34,31 +34,31 @@ export const Reportes: React.FC = () => {
   }, [allIncidents, dateRange]);
 
   const incidentsByType = React.useMemo(
-    () => ({
-      retardos: filteredIncidents.filter((i) => i.type === IncidentType.RETARDO)
-        .length,
-      uniformes: filteredIncidents.filter(
-        (i) => i.type === IncidentType.UNIFORME
-      ).length,
-      conducta: filteredIncidents.filter(
-        (i) => i.type === IncidentType.CONDUCTA
-      ).length,
-      faltas: filteredIncidents.filter(
-        (i) => i.type === IncidentType.ASISTENCIA
-      ).length,
-    }),
+    () =>
+      filteredIncidents.reduce(
+        (acc, i) => {
+          if (i.type === IncidentType.RETARDO) acc.retardos++;
+          if (i.type === IncidentType.UNIFORME) acc.uniformes++;
+          if (i.type === IncidentType.CONDUCTA) acc.conducta++;
+          if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
+          return acc;
+        },
+        { retardos: 0, uniformes: 0, conducta: 0, faltas: 0 }
+      ),
     [filteredIncidents]
   );
 
   const studentsByState = React.useMemo(
-    () => ({
-      cerrados: students.filter((s) => s.caseState === CaseState.CERRADO)
-        .length,
-      observados: students.filter((s) => s.caseState === CaseState.OBSERVADO)
-        .length,
-      patron: students.filter((s) => s.caseState === CaseState.PATRON_DETECTADO)
-        .length,
-    }),
+    () =>
+      students.reduce(
+        (acc, s) => {
+          if (s.caseState === CaseState.CERRADO) acc.cerrados++;
+          if (s.caseState === CaseState.OBSERVADO) acc.observados++;
+          if (s.caseState === CaseState.PATRON_DETECTADO) acc.patron++;
+          return acc;
+        },
+        { cerrados: 0, observados: 0, patron: 0 }
+      ),
     [students]
   );
 

@@ -192,7 +192,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user, role } = useAuth();
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(
-    UserRole.DOCENTE
+    UserRole.GUEST
   );
 
   // Sync role from AuthProvider
