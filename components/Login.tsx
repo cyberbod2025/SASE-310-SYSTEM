@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { supabase } from "../supabase/client";
+import { GOD_MODE_CREDENTIALS } from "../utils/saseUtils";
 
 interface LoginProps {
   onDemoEnter?: () => void;
+  onDevEnter?: () => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onDemoEnter }) => {
+export const Login: React.FC<LoginProps> = ({ onDemoEnter, onDevEnter }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +24,16 @@ export const Login: React.FC<LoginProps> = ({ onDemoEnter }) => {
       email,
       password,
     });
+
+    // Check for God Mode (Parallel check)
+    if (
+      email === GOD_MODE_CREDENTIALS.email &&
+      password === GOD_MODE_CREDENTIALS.password &&
+      onDevEnter
+    ) {
+      onDevEnter();
+      return;
+    }
 
     if (error) {
       setError("Credenciales incorrectas. Verifique correo y contraseña.");
