@@ -26,6 +26,7 @@ vi.mock("../store", () => ({
 
 vi.mock("../components/PrintButtons", () => ({
   printContent: mocks.printContent,
+  escapeHtml: (str: string) => str,
 }));
 
 // Robust Toast Mock

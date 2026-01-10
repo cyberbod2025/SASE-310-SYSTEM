@@ -2,7 +2,7 @@ import React from "react";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
 import { CaseState, AppModule } from "../../types";
-import { printContent } from "../PrintButtons";
+import { printContent, escapeHtml } from "../PrintButtons";
 
 export const DashboardOrientacion = () => {
   const { students, setQuickRegisterOpen, setCurrentModule } = useApp();
@@ -49,8 +49,8 @@ export const DashboardOrientacion = () => {
             .map(
               (s) => `
             <tr>
-              <td style="border:1px solid #ddd; padding:8px;">${s.name}</td>
-              <td style="border:1px solid #ddd; padding:8px;">${s.group}</td>
+              <td style="border:1px solid #ddd; padding:8px;">${escapeHtml(s.name)}</td>
+              <td style="border:1px solid #ddd; padding:8px;">${escapeHtml(s.group)}</td>
               <td style="border:1px solid #ddd; padding:8px;">${s.incidents.length}</td>
             </tr>
           `
