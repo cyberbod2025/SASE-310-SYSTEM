@@ -13,6 +13,7 @@ import {
   calculateState,
   AppModule,
 } from "./types";
+import { evaluateEscalation } from "./utils/saseUtils";
 
 export interface Notification {
   id: string;
@@ -187,13 +188,12 @@ const INITIAL_STUDENTS: Student[] = [
   },
 ];
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AppProvider: React.FC<{
+  children: React.ReactNode;
+  initialRole?: UserRole;
+}> = ({ children, initialRole = UserRole.GUEST }) => {
   const { user, role } = useAuth();
-  const [currentUserRole, setCurrentUserRole] = useState<UserRole>(
-    UserRole.GUEST
-  );
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole>(initialRole);
 
   // Sync role from AuthProvider
   useEffect(() => {
@@ -406,11 +406,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     // Update local state immediately
+    let escalationResult = null;
+
     setStudents((prev) =>
       prev.map((s) => {
         if (s.id !== studentId) return s;
         const newIncidents = [newIncidentLocal, ...s.incidents];
-        // Minimal Auto-Escalation Logic locally
+
+        // Calculate Escalation (3-strikes, etc)
+        escalationResult = evaluateEscalation(newIncidentLocal, s.incidents);
+
+        // Minimal Auto-Escalation Logic locally for visual State
         let newState = s.caseState;
         if (newIncidents.length >= 3 && s.caseState === CaseState.OBSERVADO) {
           newState = CaseState.PATRON_DETECTADO;
@@ -418,6 +424,44 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         return { ...s, incidents: newIncidents, caseState: newState };
       })
     );
+
+    // Dispatch Notifications based on Escalation Engine
+    if (escalationResult && (escalationResult as any).notifyRoles) {
+      const { notifyRoles, priority, message } = escalationResult as any;
+      const newNotifs = notifyRoles.map((role: UserRole) => ({
+        id: Math.random().toString(36).substr(2, 9),
+        title:
+          priority === "CRITICAL"
+            ? "🚨 ALERTA DE PROTOCOLO"
+            : "Aviso de Seguimiento",
+        message: `${message} (Alumno: ${
+          students.find((s) => s.id === studentId)?.name || "N/A"
+        })`,
+        read: false,
+        time: "Ahora mismo",
+        type:
+          priority === "CRITICAL"
+            ? "error"
+            : priority === "HIGH"
+            ? "warning"
+            : "info",
+        actionModule: AppModule.REPORTES,
+        targetRole: role, // We will filter by this in Layout/Sidebar later if needed, or just push to global for now
+      }));
+
+      setNotifications((prev) => [...newNotifs, ...prev]);
+
+      if (priority === "CRITICAL") {
+        // Also log to audit for history
+        logAudit(
+          "CREACION",
+          `Protocolo Activado: ${message}`,
+          "incidencias",
+          tempId,
+          students.find((s) => s.id === studentId)?.name
+        );
+      }
+    }
 
     // Persist to Supabase
     try {

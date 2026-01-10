@@ -18,6 +18,7 @@ const roleImages: Record<UserRole, string> = {
   [UserRole.SECRETARIA]: "/assets/branding/SECRETARIOS.png",
   [UserRole.UDEII]: "/assets/branding/UDEII.png",
   [UserRole.GUEST]: "/assets/branding/logo_sase_official.png",
+  [UserRole.DEVELOPER]: "/assets/branding/SASE_LOGO.png",
 };
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({
@@ -107,7 +108,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             }}
           />
 
-          {currentUserRole === UserRole.DOCENTE && (
+          {(currentUserRole === UserRole.DOCENTE ||
+            currentUserRole === UserRole.DEVELOPER) && (
             <NavItem
               icon="groups"
               label="Mis Grupos"
@@ -118,7 +120,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               }}
             />
           )}
-          {currentUserRole === UserRole.PREFECTURA && (
+          {(currentUserRole === UserRole.PREFECTURA ||
+            currentUserRole === UserRole.DEVELOPER) && (
             <NavItem
               icon="fact_check"
               label="Asistencias"
@@ -126,7 +129,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               onClick={() => setIsSidebarOpen(false)}
             />
           )}
-          {currentUserRole === UserRole.ENFERMERIA && (
+          {(currentUserRole === UserRole.ENFERMERIA ||
+            currentUserRole === UserRole.DEVELOPER) && (
             <NavItem
               icon="medical_services"
               label="Inventario"
@@ -134,7 +138,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               onClick={() => setIsSidebarOpen(false)}
             />
           )}
-          {currentUserRole === UserRole.ORIENTACION && (
+          {(currentUserRole === UserRole.ORIENTACION ||
+            currentUserRole === UserRole.DEVELOPER) && (
             <NavItem
               icon="folder_shared"
               label="Expedientes"
@@ -143,7 +148,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             />
           )}
 
-          {currentUserRole === UserRole.TRABAJO_SOCIAL && (
+          {(currentUserRole === UserRole.TRABAJO_SOCIAL ||
+            currentUserRole === UserRole.DEVELOPER) && (
             <>
               <NavItem
                 icon="history_edu"
@@ -160,7 +166,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </>
           )}
 
-          {currentUserRole === UserRole.SECRETARIA && (
+          {(currentUserRole === UserRole.SECRETARIA ||
+            currentUserRole === UserRole.DEVELOPER) && (
             <>
               <NavItem
                 icon="badge"
@@ -198,7 +205,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </>
           )}
 
-          {currentUserRole === UserRole.DIRECTIVO && (
+          {(currentUserRole === UserRole.DIRECTIVO ||
+            currentUserRole === UserRole.DEVELOPER) && (
             <>
               <NavItem
                 icon="assignment"

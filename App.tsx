@@ -132,6 +132,7 @@ const MainContent = () => {
           case UserRole.UDEII:
             return <DashboardUDEII />;
           case UserRole.DIRECTIVO:
+          case UserRole.DEVELOPER: // Dev sees Director Dashboard by default
             return <DashboardDireccion />;
           default:
             return <DashboardDocente />;
@@ -145,6 +146,7 @@ const App: React.FC = () => {
   const [showIntro, setShowIntro] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const { session, loading } = useAuth();
 
   // 1. Show Intro Video First
@@ -166,11 +168,19 @@ const App: React.FC = () => {
   }
 
   if (!session && !isDemoMode) {
-    return <Login onDemoEnter={() => setIsDemoMode(true)} />;
+    return (
+      <Login
+        onDemoEnter={() => setIsDemoMode(true)}
+        onDevEnter={() => {
+          setInitialRole(UserRole.DEVELOPER);
+          setIsDemoMode(true);
+        }}
+      />
+    );
   }
 
   return (
-    <AppProvider>
+    <AppProvider initialRole={initialRole}>
       <Toaster position="top-center" reverseOrder={false} />
       <ErrorBoundary>
         <Layout>
