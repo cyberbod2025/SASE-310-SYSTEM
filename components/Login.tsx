@@ -62,30 +62,11 @@ export const Login: React.FC<LoginProps> = ({ onDemoEnter, onDevEnter }) => {
 
   return (
     <div className="relative min-h-screen w-full bg-black flex items-center justify-center overflow-hidden font-sans">
-      {/* Background Effects (Matching Splash Screen) */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div
-          className="absolute w-[200%] h-[200%] -left-[50%] -top-[50%] animate-grid-flow"
-          style={{
-            backgroundImage:
-              "linear-gradient(#b8860b 1px, transparent 1px), linear-gradient(90deg, #b8860b 1px, transparent 1px)",
-            backgroundSize: "50px 50px",
-            transform: "perspective(500px) rotateX(60deg)",
-          }}
-        ></div>
+      {/* Video Background */}
+      {/* Background - Static Dark Gradient */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-gradient-to-br from-gray-900 via-black to-slate-900">
+        <div className="absolute inset-0 bg-[url('/assets/branding/grid.png')] opacity-20 z-10 mix-blend-overlay"></div>
       </div>
-
-      {/* Golden Horizon Beams */}
-      <div className="absolute top-[28%] left-0 w-full h-[2px] z-0 pointer-events-none overflow-hidden">
-        {/* Left Beam */}
-        <div className="absolute left-0 top-0 h-full bg-gradient-to-r from-transparent via-amber-400 to-white shadow-[0_0_20px_#fbbf24] blur-[1px] animate-horizon-scan origin-left"></div>
-        {/* Right Beam */}
-        <div className="absolute right-0 top-0 h-full bg-gradient-to-l from-transparent via-amber-400 to-white shadow-[0_0_20px_#fbbf24] blur-[1px] animate-horizon-scan origin-right"></div>
-      </div>
-
-      {/* Ambient Glow - Golden/Silver */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-600/20 rounded-full blur-[128px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-500/15 rounded-full blur-[128px] pointer-events-none"></div>
 
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md p-1 mx-4 rounded-2xl overflow-hidden group">
@@ -194,26 +175,7 @@ export const Login: React.FC<LoginProps> = ({ onDemoEnter, onDevEnter }) => {
             </button>
           </form>
 
-          {/* Footer Actions */}
-          <div className="mt-6 text-center space-y-4">
-            <button
-              type="button"
-              onClick={handleForgotPassword}
-              className="text-sm text-gray-400 hover:text-amber-400 transition-colors block w-full"
-            >
-              ¿Olvidaste tu contraseña?
-            </button>
-
-            {onDemoEnter && (
-              <button
-                type="button"
-                onClick={onDemoEnter}
-                className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors border border-blue-500/30 rounded px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20"
-              >
-                ACCESO DEMOSTRATIVO (EVIDENCIA)
-              </button>
-            )}
-          </div>
+          {/* Demo Access Button Removed */}
         </div>
 
         {/* Footer Disclaimer */}

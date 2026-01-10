@@ -50,7 +50,7 @@ export const DashboardEnfermeria = () => {
                   "brightness(1.1) contrast(1.2) drop-shadow(0 0 15px rgba(239, 68, 68, 0.4))",
               }}
             />
-            <div>
+            <div id="enfermeria-header">
               <h2
                 className="text-3xl md:text-5xl font-black text-white tracking-tight"
                 style={{ textShadow: "0 0 20px rgba(239,68,68,0.6)" }}
@@ -75,7 +75,10 @@ export const DashboardEnfermeria = () => {
         </div>
 
         {/* Urgent Alerts Ticker */}
-        <div className="bg-red-900/20 border border-red-500/30 rounded-2xl p-4 flex items-start sm:items-center gap-4 shadow-[0_0_20px_-5px_rgba(239,68,68,0.3)] backdrop-blur-md">
+        <div
+          id="enfermeria-alerts"
+          className="bg-red-900/20 border border-red-500/30 rounded-2xl p-4 flex items-start sm:items-center gap-4 shadow-[0_0_20px_-5px_rgba(239,68,68,0.3)] backdrop-blur-md"
+        >
           <div className="bg-alert-red/10 p-2 rounded-full shrink-0">
             <span className="material-symbols-outlined text-alert-red">
               campaign
@@ -296,81 +299,123 @@ export const DashboardEnfermeria = () => {
             </div>
 
             {/* Inventory Widget */}
-            <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg p-6 flex-1">
+            <div
+              id="enfermeria-inventory"
+              className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg p-6 flex-1 flex flex-col"
+            >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-white">Inventario Crítico</h3>
+                <h3 className="font-bold text-white">Inventario (Simulado)</h3>
+                <button
+                  onClick={() =>
+                    toast.success("Inventario guardado localmente", {
+                      icon: "💾",
+                    })
+                  }
+                  className="text-xs text-primary font-medium hover:underline flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">
+                    save
+                  </span>
+                  Guardar
+                </button>
+              </div>
+
+              <InventoryList />
+
+              <div className="mt-4 pt-4 border-t border-white/10">
                 <button
                   onClick={() =>
                     toast(
-                      "Módulo de Gestión de Inventario en desarrollo. (Funcionalidad pendiente)",
-                      { icon: "🚧" }
+                      "Solicitud de reabastecimiento enviada a Administración",
+                      { icon: "🚚" }
                     )
                   }
-                  className="text-xs text-primary font-medium hover:underline"
+                  className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg text-xs font-bold text-gray-300 transition-colors flex items-center justify-center gap-2"
                 >
-                  Gestionar
+                  <span className="material-symbols-outlined text-sm">
+                    inventory_2
+                  </span>
+                  Solicitar Reabastecimiento
                 </button>
-              </div>
-              <div className="space-y-4">
-                {/* Item 1 */}
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-white">
-                      Paracetamol 500mg
-                    </span>
-                    <span className="text-xs font-bold text-alert-red">
-                      2 unid.
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-alert-red h-2 rounded-full"
-                      style={{ width: "10%" }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Reabastecer urgente
-                  </p>
-                </div>
-                {/* Item 2 */}
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-white">
-                      Vendas elásticas #5
-                    </span>
-                    <span className="text-xs font-bold text-alert-yellow">
-                      5 unid.
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-alert-yellow h-2 rounded-full"
-                      style={{ width: "25%" }}
-                    ></div>
-                  </div>
-                </div>
-                {/* Item 3 */}
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-medium text-white">
-                      Alcohol Antiséptico
-                    </span>
-                    <span className="text-xs font-bold text-success-green">
-                      Ok
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div
-                      className="bg-success-green h-2 rounded-full"
-                      style={{ width: "75%" }}
-                    ></div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+// Subcomponent for Inventory to handle its own state cleanly
+const InventoryList = () => {
+  const [items, setItems] = React.useState([
+    { id: 1, name: "Paracetamol 500mg", quantity: 2, max: 20, unit: "unid." },
+    { id: 2, name: "Vendas elásticas #5", quantity: 5, max: 20, unit: "unid." },
+    { id: 3, name: "Alcohol Antiséptico", quantity: 15, max: 20, unit: "bot." },
+    { id: 4, name: "Gasas estériles", quantity: 8, max: 50, unit: "paq." },
+  ]);
+
+  const updateStock = (id: number, delta: number) => {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const newQ = Math.max(0, item.quantity + delta);
+          return { ...item, quantity: newQ };
+        }
+        return item;
+      })
+    );
+  };
+
+  return (
+    <div className="space-y-4 flex-1 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+      {items.map((item) => {
+        const percentage = (item.quantity / item.max) * 100;
+        let colorClass = "bg-success-green";
+        let textClass = "text-success-green";
+        if (percentage < 30) {
+          colorClass = "bg-alert-red";
+          textClass = "text-alert-red";
+        } else if (percentage < 60) {
+          colorClass = "bg-alert-yellow";
+          textClass = "text-alert-yellow";
+        }
+
+        return (
+          <div key={item.id}>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-sm font-medium text-white">
+                {item.name}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => updateStock(item.id, -1)}
+                  className="size-5 flex items-center justify-center rounded bg-white/10 hover:bg-white/20 text-white font-bold"
+                >
+                  -
+                </button>
+                <span
+                  className={`text-xs font-bold w-12 text-center ${textClass}`}
+                >
+                  {item.quantity} {item.unit}
+                </span>
+                <button
+                  onClick={() => updateStock(item.id, 1)}
+                  className="size-5 flex items-center justify-center rounded bg-white/10 hover:bg-white/20 text-white font-bold"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="w-full bg-gray-700/50 rounded-full h-1.5 mt-1">
+              <div
+                className={`${colorClass} h-1.5 rounded-full transition-all duration-300`}
+                style={{ width: `${Math.min(100, percentage)}%` }}
+              ></div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

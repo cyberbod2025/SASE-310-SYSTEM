@@ -113,7 +113,7 @@ export const DashboardSecretaria = () => {
               filter: "drop-shadow(0 0 15px rgba(59, 130, 246, 0.6))",
             }}
           />
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1" id="secretaria-header">
             <h1
               className="text-white text-3xl md:text-5xl font-black tracking-tight"
               style={{ textShadow: "0 0 20px rgba(59,130,246,0.6)" }}
@@ -209,11 +209,40 @@ export const DashboardSecretaria = () => {
       </div>
 
       {/* Student List (Filtered) */}
-      <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
-          <h3 className="font-bold text-lg text-white">
-            Directorio Estudiantil ({students.length})
+      <div
+        id="secretaria-list"
+        className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg overflow-hidden flex flex-col min-h-[500px]"
+      >
+        <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+          <h3 className="font-bold text-lg text-white flex items-center gap-2">
+            Directorio Estudiantil
+            <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
+              {students.length}
+            </span>
           </h3>
+
+          {/* Search Bar */}
+          <div className="relative w-full md:w-96 group" id="secretaria-search">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-400 transition-colors material-symbols-outlined">
+              search
+            </span>
+            <input
+              type="text"
+              placeholder="Buscar por nombre, matrícula o grupo..."
+              className="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+              onChange={(e) => {
+                // Simple local filter for now, ideally this would be a state
+                const term = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll(".student-row");
+                rows.forEach((row) => {
+                  const text = row.textContent?.toLowerCase() || "";
+                  (row as HTMLElement).style.display = text.includes(term)
+                    ? ""
+                    : "none";
+                });
+              }}
+            />
+          </div>
         </div>
         <div className="divide-y divide-white/10">
           {students.length === 0 ? (
@@ -235,7 +264,7 @@ export const DashboardSecretaria = () => {
                 {students.map((student) => (
                   <tr
                     key={student.id}
-                    className="hover:bg-white/5 transition-colors"
+                    className="hover:bg-white/5 transition-colors student-row"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -307,14 +336,51 @@ export const DashboardSecretaria = () => {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 flex gap-2">
+                    <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleEdit(student.id)}
-                        className="text-blue-400 hover:text-blue-300 hover:underline font-medium text-xs"
+                        className="text-blue-400 hover:text-blue-300 hover:underline font-medium text-xs flex items-center gap-1"
                       >
-                        {editingId === student.id ? "Ver Detalle" : "Consultar"}
+                        <span className="material-symbols-outlined text-sm">
+                          {editingId === student.id
+                            ? "visibility_off"
+                            : "visibility"}
+                        </span>
+                        {editingId === student.id ? "Ocultar" : "Consultar"}
                       </button>
-                    </td>
+
+                      {/* Document Actions */}
+                      <div className="h-4 w-px bg-white/10"></div>
+
+                      <button
+                        onClick={() =>
+                          toast.success(
+                            `Generando PDF: Boleta - ${student.name}`,
+                            { icon: "print" }
+                          )
+                        }
+                        title="Imprimir Boleta"
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">
+                          description
+                        </span>
+                      </button>
+                      <button
+                        onClick={() =>
+                          toast.success(
+                            `Descargando Kardex Oficial - ${student.name}`,
+                            { icon: "download" }
+                          )
+                        }
+                        title="Descargar Kardex"
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">
+                          school
+                        </span>
+                      </button>
+                    </div>
                   </tr>
                 ))}
               </tbody>

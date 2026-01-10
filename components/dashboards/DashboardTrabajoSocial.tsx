@@ -30,7 +30,10 @@ const JustificanteGenerator = () => {
   };
 
   return (
-    <div className="bg-black/20 backdrop-blur-xl p-6 rounded-xl border border-white/10 shadow-lg">
+    <div
+      id="ts-generator"
+      className="bg-black/20 backdrop-blur-xl p-6 rounded-xl border border-white/10 shadow-lg"
+    >
       <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-white">
         <span className="material-symbols-outlined text-orange-400">
           history_edu
@@ -160,6 +163,7 @@ export const DashboardTrabajoSocial = () => {
           </div>
           <div className="flex flex-col gap-1">
             <h1
+              id="ts-header"
               className="text-white text-3xl md:text-5xl font-black tracking-tight"
               style={{ textShadow: "0 0 20px rgba(249,115,22,0.6)" }}
             >

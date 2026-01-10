@@ -124,7 +124,10 @@ export const DashboardPrefectura = () => {
         id="pref-kpi-grid"
       >
         {/* Card 1 */}
-        <div className="flex flex-col gap-2 rounded-2xl p-5 bg-black/20 backdrop-blur-xl border border-white/10 shadow-lg hover:bg-white/5 transition-all group">
+        <div
+          id="pref-stats-attendance"
+          className="flex flex-col gap-2 rounded-2xl p-5 bg-black/20 backdrop-blur-xl border border-white/10 shadow-lg hover:bg-white/5 transition-all group"
+        >
           <div className="flex items-center justify-between">
             <p className="text-gray-400 text-sm font-bold uppercase tracking-wider">
               Asistencia Total

@@ -6,6 +6,8 @@ import { AssistantBanner } from "./AssistantBanner";
 import { supabase } from "../supabase/client";
 import { FloatingAssistant } from "./FloatingAssistant";
 import { startProductTour } from "./TourGuide";
+import { FeedbackWidget } from "./FeedbackWidget";
+import { TutorialController } from "./Tutorials/TutorialController";
 
 const roleImages: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "/assets/branding/DIRECION.png",
@@ -40,9 +42,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <div className="flex h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900 via-slate-900 to-black text-slate-100 overflow-hidden selection:bg-blue-500/30">
+      <TutorialController /> {/* Added TutorialController */}
       <QuickRegisterModal />
       <FloatingAssistant />
-
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
@@ -50,7 +52,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
-
       {/* Sidebar - Role Based Content */}
       <aside
         className={`fixed md:relative inset-y-0 left-0 z-50 w-64 bg-black/80 md:bg-black/20 backdrop-blur-xl border-r border-white/10 flex flex-col shrink-0 transition-transform duration-300 shadow-[5px_0_30px_0_rgba(0,0,0,0.3)] ${
@@ -339,7 +340,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </div>
         </div>
       </aside>
-
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
@@ -476,10 +476,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto bg-transparent relative custom-scrollbar">
+        <main className="flex-1 overflow-y-auto bg-transparent relative custom-scrollbar animate-fade-in">
           <AssistantBanner
             onOpenNotifications={() => setShowNotifications(true)}
           />
+          <FeedbackWidget />
           {children}
         </main>
       </div>

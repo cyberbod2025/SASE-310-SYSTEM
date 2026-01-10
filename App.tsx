@@ -49,6 +49,11 @@ const DashboardUDEII = React.lazy(() =>
     default: module.DashboardUDEII,
   }))
 );
+const DashboardDeveloper = React.lazy(() =>
+  import("./components/dashboards/DashboardDeveloper").then((module) => ({
+    default: module.DashboardDeveloper,
+  }))
+);
 
 // Modules (Lazy Loaded)
 const Agenda = React.lazy(() =>
@@ -87,6 +92,11 @@ const ProtocolsView = React.lazy(() =>
     default: module.ProtocolsView,
   }))
 );
+const NotFound = React.lazy(() =>
+  import("./components/NotFound").then((module) => ({
+    default: module.NotFound,
+  }))
+);
 
 // Loading Component
 const LoadingSpinner = () => (
@@ -115,6 +125,7 @@ const MainContent = () => {
         if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
         if (currentModule === AppModule.ARCHIVO) return <Archivo />;
         if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
+        if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
         switch (currentUserRole) {
           case UserRole.DOCENTE:
@@ -132,8 +143,9 @@ const MainContent = () => {
           case UserRole.UDEII:
             return <DashboardUDEII />;
           case UserRole.DIRECTIVO:
-          case UserRole.DEVELOPER: // Dev sees Director Dashboard by default
             return <DashboardDireccion />;
+          case UserRole.DEVELOPER:
+            return <DashboardDeveloper />;
           default:
             return <DashboardDocente />;
         }
@@ -143,7 +155,7 @@ const MainContent = () => {
 };
 
 const App: React.FC = () => {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);

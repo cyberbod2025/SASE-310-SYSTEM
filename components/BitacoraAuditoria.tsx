@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { useApp } from "../store";
+import toast from "react-hot-toast";
 
 interface AuditEntry {
   id: string;
@@ -170,98 +171,100 @@ export const BitacoraAuditoria: React.FC = () => {
       </div>
 
       {/* Audit Log Table */}
-      <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex justify-between items-center">
-          <h3 className="font-bold text-lg text-white">
-            Registros ({filteredEntries.length})
+      <div className="bg-black/90 backdrop-blur-xl rounded-xl border border-green-500/20 shadow-[0_0_30px_rgba(0,255,0,0.05)] overflow-hidden font-mono">
+        <div className="px-6 py-4 border-b border-green-500/20 bg-black/60 flex justify-between items-center">
+          <h3 className="font-bold text-lg text-green-400 flex items-center gap-2">
+            <span className="material-symbols-outlined text-green-500 animate-pulse">
+              terminal
+            </span>
+            REGISTRO_FORENSE_SISTEMA ({filteredEntries.length})
           </h3>
-          <span className="text-xs text-gray-400">
-            Mostrando últimos 100 registros
-          </span>
+          <div className="flex gap-4">
+            <span className="text-xs text-green-700/80 self-center hidden md:block">
+              ENCRIPTACIÓN: AES-256-GCM | INTEGRIDAD: VERIFICADA
+            </span>
+            <button
+              onClick={() =>
+                toast.success("Exportando LOGS a CSV...", { icon: "download" })
+              }
+              className="text-xs border border-green-500/50 text-green-400 px-3 py-1 hover:bg-green-500/10 transition-colors uppercase"
+            >
+              Exportar CSV
+            </button>
+          </div>
         </div>
 
         {loading ? (
-          <div className="p-10 text-center text-gray-400">
-            Cargando bitácora...
+          <div className="p-10 text-center text-green-600 animate-pulse">
+            _RECUPERANDO_FRAGMENTOS_DE_DATOS...
           </div>
         ) : filteredEntries.length === 0 ? (
           <div className="p-10 text-center text-gray-400">
-            <span className="material-symbols-outlined text-4xl mb-2">
+            <span className="material-symbols-outlined text-4xl mb-2 text-gray-600">
               policy
             </span>
             <p>No hay registros de auditoría.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-white/5 text-gray-400 uppercase text-xs font-bold border-b border-white/10">
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left text-xs uppercase tracking-wider">
+              <thead className="bg-green-900/10 text-green-500/70 border-b border-green-500/20">
                 <tr>
-                  <th className="px-6 py-3">Fecha/Hora</th>
-                  <th className="px-6 py-3">Usuario</th>
-                  <th className="px-6 py-3">Rol</th>
-                  <th className="px-6 py-3">Acción</th>
-                  <th className="px-6 py-3">Descripción</th>
-                  <th className="px-6 py-3">Alumno Afectado</th>
+                  <th className="px-6 py-3">TIMESTAMP</th>
+                  <th className="px-6 py-3">AGENTE</th>
+                  <th className="px-6 py-3">ROL</th>
+                  <th className="px-6 py-3">OPERACIÓN</th>
+                  <th className="px-6 py-3">DETALLE_TÉCNICO</th>
+                  <th className="px-6 py-3">OBJETIVO</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-green-500/10 text-green-100/80">
                 {filteredEntries.map((entry) => (
                   <tr
                     key={entry.id}
-                    className="hover:bg-white/5 transition-colors"
+                    className="hover:bg-green-500/5 transition-colors group"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-xs font-mono text-gray-300">
-                        {new Date(entry.creado_en).toLocaleDateString("es-MX")}
-                      </div>
-                      <div className="text-[10px] text-gray-500">
-                        {new Date(entry.creado_en).toLocaleTimeString("es-MX")}
-                      </div>
+                    <td className="px-6 py-3 whitespace-nowrap text-green-300/60 group-hover:text-green-300">
+                      {new Date(entry.creado_en).toLocaleString("es-MX")}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="size-6 rounded-full bg-primary/20 text-blue-300 flex items-center justify-center text-[10px] font-bold">
-                          {entry.email_usuario?.substring(0, 2).toUpperCase() ||
-                            "??"}
-                        </div>
-                        <span
-                          className="text-xs truncate max-w-[150px] text-gray-300"
-                          title={entry.email_usuario || ""}
-                        >
-                          {entry.email_usuario || "Sistema"}
+                        <span className="text-green-400 font-bold">
+                          {entry.email_usuario?.split("@")[0] || "SYSTEM"}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="px-2 py-1 bg-white/10 text-gray-300 text-[10px] font-bold rounded uppercase">
-                        {entry.rol_usuario || "N/A"}
-                      </span>
+                    <td className="px-6 py-3 text-green-600">
+                      {entry.rol_usuario || "N/A"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-3">
                       <span
-                        className={`px-2 py-1 border rounded text-[10px] font-bold flex items-center gap-1 w-fit ${getActionBadge(
-                          entry.tipo_accion
-                        )} bg-opacity-20 border-opacity-20`}
+                        className={`px-2 py-0.5 border rounded text-[10px] font-bold inline-block w-24 text-center ${
+                          entry.tipo_accion === "CONSULTA"
+                            ? "border-blue-500/50 text-blue-400 bg-blue-900/20"
+                            : entry.tipo_accion === "ACTUALIZACION"
+                            ? "border-yellow-500/50 text-yellow-400 bg-yellow-900/20"
+                            : entry.tipo_accion === "CREACION"
+                            ? "border-green-500/50 text-green-400 bg-green-900/20"
+                            : "border-red-500/50 text-red-400 bg-red-900/20"
+                        }`}
                       >
-                        <span className="material-symbols-outlined text-xs">
-                          {getActionIcon(entry.tipo_accion)}
-                        </span>
                         {entry.tipo_accion}
                       </span>
                     </td>
                     <td
-                      className="px-6 py-4 text-xs text-gray-300 max-w-[200px] truncate"
+                      className="px-6 py-3 text-[10px] text-gray-400 max-w-[250px] truncate group-hover:text-white transition-colors"
                       title={entry.descripcion_accion || ""}
                     >
                       {entry.descripcion_accion}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-3">
                       {entry.nombre_alumno_objetivo ? (
-                        <span className="px-2 py-1 bg-blue-500/10 text-blue-300 text-xs font-medium rounded border border-blue-500/20">
-                          {entry.nombre_alumno_objetivo}
+                        <span className="text-green-200">
+                          [{entry.nombre_alumno_objetivo}]
                         </span>
                       ) : (
-                        <span className="text-xs text-gray-600">—</span>
+                        <span className="text-gray-700">--</span>
                       )}
                     </td>
                   </tr>

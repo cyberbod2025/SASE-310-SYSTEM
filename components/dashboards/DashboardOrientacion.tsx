@@ -247,51 +247,154 @@ export const DashboardOrientacion = () => {
 
           {/* Right Column */}
           <div className="flex flex-col gap-8">
-            {/* Requests Module */}
-            <section className="bg-black/20 backdrop-blur-xl rounded-xl shadow-sm border border-white/10 p-5">
+            {/* Requests & Follow-up Module */}
+            <section className="bg-black/20 backdrop-blur-xl rounded-xl shadow-sm border border-white/10 p-5 flex-1 flex flex-col">
               <h3 className="text-base font-bold text-white mb-4 flex items-center justify-between">
                 Solicitudes a Docentes
-                <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full">
+                <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full border border-yellow-500/30">
                   2 Pendientes
                 </span>
               </h3>
-              <div className="flex flex-col gap-4">
-                <div className="border-l-2 border-orange-400 pl-3 py-1">
-                  <p className="text-sm font-medium text-gray-300">
-                    Reporte de Conducta
-                  </p>
-                  <p className="text-xs text-gray-500">Para: Prof. Ramírez</p>
+
+              <div className="flex-1 space-y-4 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+                {/* Request Item 1 */}
+                <div className="bg-white/5 border-l-4 border-orange-500 pl-4 py-3 rounded-r-lg hover:bg-white/10 transition-colors group cursor-pointer relative">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm font-bold text-white mb-1">
+                        Reporte Conductual
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Para:{" "}
+                        <span className="text-gray-300">
+                          Prof. Ramírez (Matemáticas)
+                        </span>
+                      </p>
+                      <p className="text-xs text-orange-300 mt-1">
+                        Alumno: Carlos H. - 2º B
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-gray-500">Hace 2h</span>
+                  </div>
+                  <div className="mt-3 flex gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                    <button className="text-[10px] bg-orange-500/20 text-orange-300 px-2 py-1 rounded hover:bg-orange-500/40 font-bold uppercase">
+                      Recordar
+                    </button>
+                    <button className="text-[10px] bg-white/10 text-gray-300 px-2 py-1 rounded hover:bg-white/20 font-bold uppercase">
+                      Ver Detalle
+                    </button>
+                  </div>
                 </div>
+
+                {/* Request Item 2 */}
+                <div className="bg-white/5 border-l-4 border-blue-500 pl-4 py-3 rounded-r-lg hover:bg-white/10 transition-colors group cursor-pointer relative">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm font-bold text-white mb-1">
+                        Ficha Canalización UDEII
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Para:{" "}
+                        <span className="text-gray-300">Psic. Ana (UDEII)</span>
+                      </p>
+                      <p className="text-xs text-blue-300 mt-1">
+                        Alumno: Sofia G. - 3º A
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-gray-500">Ayer</span>
+                  </div>
+                </div>
+
+                {/* New Request Button */}
+                <button
+                  onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
+                  className="w-full py-3 border-2 border-dashed border-white/10 rounded-lg text-gray-400 text-xs font-bold hover:border-yellow-500/50 hover:text-yellow-200 hover:bg-yellow-500/5 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    add_circle
+                  </span>
+                  Nueva Solicitud Interna
+                </button>
               </div>
             </section>
 
-            {/* Intervention */}
-            <section className="bg-primary text-white rounded-xl shadow-lg p-6 relative overflow-hidden">
-              <div className="relative z-10">
-                <h3 className="text-lg font-bold mb-1">
-                  Seguimiento con Padres
-                </h3>
-                <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 mb-6 border border-white/10 mt-4">
-                  <p className="font-bold text-sm">{nextAppointment.family}</p>
-                  <div className="flex items-center gap-2 text-xs font-medium bg-black/20 w-fit px-2 py-1 rounded mt-2">
+            {/* Intervention & Citatorios */}
+            <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5 shadow-lg">
+              <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-yellow-400">
+                  event_available
+                </span>
+                Gestión de Citatorios
+              </h3>
+
+              <div className="space-y-4">
+                {/* Next Appointment Card */}
+                <div className="bg-gradient-to-br from-yellow-900/30 to-black/30 border border-yellow-500/20 rounded-lg p-4 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-2 opacity-30 group-hover:opacity-100 transition-opacity">
+                    <span className="material-symbols-outlined text-yellow-400">
+                      edit
+                    </span>
+                  </div>
+                  <p className="text-xs text-yellow-400/80 uppercase font-bold mb-1">
+                    Próxima Cita
+                  </p>
+                  <p className="font-bold text-white text-lg">
+                    {nextAppointment.family}
+                  </p>
+                  <p className="text-sm text-gray-300 mb-3">
+                    {nextAppointment.student}
+                  </p>
+                  <div className="flex items-center gap-2 text-xs font-bold bg-yellow-400/10 text-yellow-200 w-fit px-3 py-1.5 rounded-full border border-yellow-500/20">
                     <span className="material-symbols-outlined text-[16px]">
                       schedule
                     </span>
                     {nextAppointment.time}
                   </div>
                 </div>
-                <button
-                  onClick={() =>
-                    toast("Agenda Google Calendar próximamente...", {
-                      icon: "📅",
-                    })
-                  }
-                  className="w-full bg-white text-primary font-bold py-2.5 rounded-lg shadow-md hover:bg-blue-50 transition-colors text-sm"
-                >
-                  Registrar Nueva Cita
-                </button>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() =>
+                      toast("Módulo de Agenda en desarrollo", { icon: "📅" })
+                    }
+                    className="bg-white/10 hover:bg-white/20 border border-white/10 text-white py-3 rounded-lg text-xs font-bold flex flex-col items-center gap-1 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-xl">
+                      calendar_add_on
+                    </span>
+                    Agendar Cita
+                  </button>
+                  <button
+                    onClick={() =>
+                      toast("Formato de entrevista generado", { icon: "📝" })
+                    }
+                    className="bg-white/10 hover:bg-white/20 border border-white/10 text-white py-3 rounded-lg text-xs font-bold flex flex-col items-center gap-1 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-xl">
+                      history_edu
+                    </span>
+                    Entrevista
+                  </button>
+                </div>
+
+                {/* Quick Stats */}
+                <div className="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-white">8</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider">
+                      Citas esta semana
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-black text-green-400">92%</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider">
+                      Asistencia Padres
+                    </p>
+                  </div>
+                </div>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>

@@ -59,11 +59,16 @@ export const Inscripciones: React.FC = () => {
     },
   });
 
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null); // Documento Salud
+  const [fileStudent, setFileStudent] = useState<File | null>(null); // Foto Alumno
+  const [fileGuardian, setFileGuardian] = useState<File | null>(null); // Foto Tutor
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<File | null>>
+  ) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      setter(e.target.files[0]);
     }
   };
 
@@ -139,7 +144,52 @@ export const Inscripciones: React.FC = () => {
       primaryContactPhone = formData.telTutor;
     }
 
+    // Upload Helper
+    const uploadFile = async (
+      fileToUpload: File,
+      bucket: string,
+      prefix: string
+    ) => {
+      const fileExt = fileToUpload.name.split(".").pop();
+      const fileName = `${prefix}_${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, fileToUpload);
+      if (uploadError) throw uploadError;
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      return publicUrl;
+    };
+
     try {
+      let studentPhotoUrl = `https://i.pravatar.cc/150?u=${Math.random()}`; // Default
+      let guardianPhotoUrl = "";
+
+      if (fileStudent) {
+        try {
+          studentPhotoUrl = await uploadFile(
+            fileStudent,
+            "avatars",
+            `student_${formData.curp}`
+          );
+        } catch (e) {
+          console.error("Error uploading student photo", e);
+        }
+      }
+
+      if (fileGuardian) {
+        try {
+          guardianPhotoUrl = await uploadFile(
+            fileGuardian,
+            "avatars",
+            `guardian_${formData.curp}`
+          );
+        } catch (e) {
+          console.error("Error uploading guardian photo", e);
+        }
+      }
+
       const { data: newStudentData, error: studentError } = await (
         supabase.from("alumnos") as any
       )
@@ -154,7 +204,7 @@ export const Inscripciones: React.FC = () => {
             fecha_nacimiento: formData.fechaNacimiento || null,
             genero: formData.genero,
             promedio_anterior: formData.promedioAnterior,
-            avatar_url: `https://i.pravatar.cc/150?u=${Math.random()}`,
+            avatar_url: studentPhotoUrl, // Saved here
             datos_tutor: {
               name: primaryContactName || "No registrado",
               relationship: primaryContactRel,
@@ -164,7 +214,9 @@ export const Inscripciones: React.FC = () => {
                 vive_con: formData.viveCon,
                 persona_inscribe: formData.personaInscribe,
                 detalle_persona_inscribe: formData.detallePersonaInscribe,
+                is_udeii: formData.isUdeii,
               },
+              photoUrl: guardianPhotoUrl, // Saved here
             },
             modificado_por: "Secretaría (Web)",
             modificado_en: new Date().toISOString(),
@@ -187,7 +239,7 @@ export const Inscripciones: React.FC = () => {
           if (uploadError) {
             console.error("Error uploading file:", uploadError);
             alert(
-              "Error al subir el documento, pero el alumno fue registrado."
+              "Error al subir el documento de salud, pero el alumno fue registrado."
             );
           } else {
             const {
@@ -271,6 +323,8 @@ export const Inscripciones: React.FC = () => {
         },
       });
       setFile(null);
+      setFileStudent(null);
+      setFileGuardian(null);
     } catch (err: any) {
       console.error("Error registering student:", err);
       alert("Error al registrar alumno: " + err.message);
@@ -480,6 +534,23 @@ export const Inscripciones: React.FC = () => {
               />
               <p className="text-[10px] text-text-secondary mt-1">
                 Dato crucial para la IA de balanceo de grupos
+              </p>
+            </div>
+            <div className="mt-4 md:col-span-3 bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300">
+              <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                <span className="material-symbols-outlined text-purple-600">
+                  add_a_photo
+                </span>
+                Fotografía del Alumno (Rostro Descubierto)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileChange(e, setFileStudent)}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-all"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Sube una foto clara para identificación rápida en incidencias.
               </p>
             </div>
           </div>
@@ -901,7 +972,7 @@ export const Inscripciones: React.FC = () => {
                   type="file"
                   accept=".pdf,.jpg,.png"
                   className="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  onChange={handleFileChange}
+                  onChange={(e) => handleFileChange(e, setFile)}
                 />
               )}
             </div>

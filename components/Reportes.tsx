@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useApp } from "../store";
 import { CaseState, IncidentType } from "../types";
 import { printContent } from "./PrintButtons";
+import { anonymizeName } from "../utils/saseUtils";
 
 type ReportType = "incidencias" | "asistencia" | "estudiantes" | "bitacora";
 
@@ -136,7 +137,7 @@ export const Reportes: React.FC = () => {
                   (i) => `
                 <tr>
                   <td>${new Date(i.date).toLocaleDateString("es-MX")}</td>
-                  <td>${i.studentName}</td>
+                  <td>${anonymizeName(i.studentName)}</td>
                   <td>${i.group}</td>
                   <td><span class="badge badge-${
                     i.type === IncidentType.RETARDO
@@ -211,7 +212,7 @@ export const Reportes: React.FC = () => {
                   (s, idx) => `
                 <tr>
                   <td>${idx + 1}</td>
-                  <td>${s.name}</td>
+                  <td>${anonymizeName(s.name)}</td>
                   <td>${s.matricula}</td>
                   <td>${s.group}</td>
                   <td><span class="badge badge-${
@@ -281,7 +282,7 @@ export const Reportes: React.FC = () => {
                 .map(
                   (s) => `
                   <tr>
-                    <td>${s.name}</td>
+                    <td>${anonymizeName(s.name)}</td>
                     <td>${s.group}</td>
                     <td>${s.faltas}</td>
                     <td>${s.retardos}</td>

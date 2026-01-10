@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
+    "date-fns": "^4.1.0",
     "driver.js": "^1.4.0",
     "puppeteer": "^24.34.0",
     "react": "^19.2.3",

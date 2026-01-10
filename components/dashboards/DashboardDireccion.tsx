@@ -1,13 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useApp } from "../../store";
-import { CaseState } from "../../types";
+import { CaseState, Student } from "../../types";
 import { printContent } from "../PrintButtons";
+import { supabase } from "../../supabase/client";
 
 export const DashboardDireccion = () => {
   const { students } = useApp();
-  const studentsAtRisk = students.filter(
-    (s) => s.caseState === CaseState.PATRON_DETECTADO
-  );
+  const [stats, setStats] = useState({
+    totalIncidents: 0,
+    riskCases: 0,
+    attendanceRate: 92, // Placeholder real calculation would need attendance table
+  });
+
+  const [groupRisk, setGroupRisk] = useState<
+    { group: string; count: number; tutor: string }[]
+  >([]);
+
+  useEffect(() => {
+    // Calculate Stats from Store (Memory)
+    const risk = students.filter(
+      (s) =>
+        s.caseState === CaseState.PATRON_DETECTADO ||
+        s.caseState === CaseState.INTERVENCION
+    ).length;
+
+    const incidents = students.reduce((acc, s) => acc + s.incidents.length, 0);
+
+    setStats((prev) => ({
+      ...prev,
+      totalIncidents: incidents,
+      riskCases: risk,
+    }));
+
+    // Calculate Group Risk
+    const groups: Record<string, number> = {};
+    students.forEach((s) => {
+      if (s.incidents.length > 0) {
+        groups[s.group] = (groups[s.group] || 0) + s.incidents.length;
+      }
+    });
+
+    // Mock Tutors for now (Logic to fetch from DB later)
+    const sortedGroups = Object.entries(groups)
+      .map(([group, count]) => ({ group, count, tutor: "Tutor Asignado" }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3); // Top 3
+
+    setGroupRisk(sortedGroups);
+  }, [students]);
 
   const [checklist, setChecklist] = useState({
     actas: false,
@@ -19,7 +59,7 @@ export const DashboardDireccion = () => {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in-up">
       <div
         className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8"
         id="dashboard-header"
@@ -56,12 +96,9 @@ export const DashboardDireccion = () => {
               <p>Fecha: ${new Date().toLocaleDateString()}</p>
               <h2>Indicadores Clave</h2>
               <ul>
-                <li>Asistencia Global: 92%</li>
-                <li>Casos en Riesgo: ${studentsAtRisk.length}</li>
-                <li>Total Incidencias: ${students.reduce(
-                  (acc, s) => acc + s.incidents.length,
-                  0
-                )}</li>
+                <li>Asistencia Global: ${stats.attendanceRate}%</li>
+                <li>Casos en Riesgo: ${stats.riskCases}</li>
+                <li>Total Incidencias: ${stats.totalIncidents}</li>
               </ul>
             `
               )
@@ -87,7 +124,7 @@ export const DashboardDireccion = () => {
           </h4>
           <div className="flex items-end gap-3">
             <span className="text-4xl font-black text-white group-hover:scale-105 transition-transform">
-              92%
+              {stats.attendanceRate}%
             </span>
             <span className="text-sm font-bold text-green-400 mb-1 flex items-center gap-1">
               <span className="material-symbols-outlined text-sm">
@@ -106,10 +143,10 @@ export const DashboardDireccion = () => {
           </h4>
           <div className="flex items-end gap-3">
             <span className="text-4xl font-black text-red-500 group-hover:scale-105 transition-transform">
-              {studentsAtRisk.length}
+              {stats.riskCases}
             </span>
             <span className="text-sm font-bold text-gray-400 mb-1">
-              Estudiantes detectados
+              Estudiantes (Patrón/Intervención)
             </span>
           </div>
         </div>
@@ -122,10 +159,10 @@ export const DashboardDireccion = () => {
           </h4>
           <div className="flex items-end gap-3">
             <span className="text-4xl font-black text-white group-hover:scale-105 transition-transform">
-              {students.reduce((acc, s) => acc + s.incidents.length, 0)}
+              {stats.totalIncidents}
             </span>
             <span className="text-sm font-bold text-gray-400 mb-1">
-              Total Global
+              Acumuladas (Todos)
             </span>
           </div>
         </div>
@@ -141,28 +178,37 @@ export const DashboardDireccion = () => {
             Grupos con Mayor Índice de Riesgo
           </h3>
           <div className="space-y-4">
-            <div className="flex justify-between items-center border-b border-white/10 pb-2">
-              <div>
-                <p className="font-bold text-gray-200">
-                  3º B - Turno Vespertino
-                </p>
-                <p className="text-xs text-gray-400">Tutor: Prof. Rodríguez</p>
-              </div>
-              <span className="px-2 py-1 bg-red-900/30 text-red-200 border border-red-500/20 text-xs font-bold rounded-full">
-                Alta Prioridad
-              </span>
-            </div>
-            <div className="flex justify-between items-center border-b border-white/10 pb-2">
-              <div>
-                <p className="font-bold text-gray-200">
-                  2º A - Turno Vespertino
-                </p>
-                <p className="text-xs text-gray-400">Tutor: Prof. Gómez</p>
-              </div>
-              <span className="px-2 py-1 bg-yellow-900/30 text-yellow-200 border border-yellow-500/20 text-xs font-bold rounded-full">
-                Seguimiento
-              </span>
-            </div>
+            {groupRisk.length === 0 ? (
+              <p className="text-gray-400 text-sm">
+                No hay datos suficientes aún.
+              </p>
+            ) : (
+              groupRisk.map((g, idx) => (
+                <div
+                  key={g.group}
+                  className="flex justify-between items-center border-b border-white/10 pb-2 last:border-0"
+                >
+                  <div>
+                    <p className="font-bold text-gray-200">{g.group}</p>
+                    <p className="text-xs text-gray-400">{g.tutor}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-white">
+                      {g.count} Incidencias
+                    </span>
+                    <span
+                      className={`px-2 py-1 text-xs font-bold rounded-full border ${
+                        idx === 0
+                          ? "bg-red-900/30 text-red-200 border-red-500/20"
+                          : "bg-yellow-900/30 text-yellow-200 border-yellow-500/20"
+                      }`}
+                    >
+                      {idx === 0 ? "Critico" : "Atención"}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

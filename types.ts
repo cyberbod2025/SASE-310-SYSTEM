@@ -81,6 +81,8 @@ export interface GuardianInfo {
   phoneSecondary?: string;
   email?: string;
   address?: string;
+  details?: any; // Para metadatos extra como 'is_udeii'
+  photoUrl?: string; // New: Foto del Responsable
 }
 
 export interface Student {
@@ -155,4 +157,5 @@ export enum AppModule {
   SOLICITUDES = "solicitudes",
   REPORTES_DOCENTES = "reportes_docentes",
   PROTOCOLOS = "protocolos",
+  NOT_FOUND = "not_found",
 }
