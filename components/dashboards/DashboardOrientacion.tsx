@@ -137,32 +137,32 @@ export const DashboardOrientacion = () => {
                   Ver todas
                 </button>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div className="bg-black/20 backdrop-blur-xl rounded-xl shadow-sm border border-white/10 overflow-hidden">
                 {patternAlerts.length === 0 ? (
-                  <div className="p-6 text-center text-slate-500">
+                  <div className="p-6 text-center text-gray-400">
                     No hay patrones críticos detectados hoy.
                   </div>
                 ) : (
                   patternAlerts.map((s) => (
                     <div
                       key={s.id}
-                      className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
+                      className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border-b border-white/10 hover:bg-white/5 transition-colors group"
                     >
-                      <div className="size-12 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                      <div className="size-12 rounded-full bg-red-900/30 text-red-400 flex items-center justify-center shrink-0">
                         <span className="material-symbols-outlined">
                           person_alert
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="text-base font-bold text-slate-900 dark:text-white truncate">
+                          <h4 className="text-base font-bold text-white truncate">
                             {s.name}
                           </h4>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 uppercase tracking-wide">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/10 text-gray-300 uppercase tracking-wide">
                             {s.group}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-1">
+                        <p className="text-sm text-gray-400 line-clamp-1">
                           ALERTA CRÍTICA: Patrón de conducta recurrente
                           detectado.
                         </p>
@@ -174,7 +174,7 @@ export const DashboardOrientacion = () => {
                               duration: 2000,
                             })
                           }
-                          className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm"
+                          className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs font-bold text-gray-200 shadow-sm hover:bg-white/20"
                         >
                           Expediente
                         </button>
@@ -185,7 +185,7 @@ export const DashboardOrientacion = () => {
                               { icon: "📨" }
                             )
                           }
-                          className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-xs font-bold text-red-700 dark:text-red-400 shadow-sm"
+                          className="px-3 py-1.5 rounded-lg bg-red-900/20 border border-red-500/30 text-xs font-bold text-red-400 shadow-sm hover:bg-red-900/30"
                         >
                           Contactar
                         </button>
@@ -198,41 +198,45 @@ export const DashboardOrientacion = () => {
 
             {/* Charts Section (Mocked for now) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-80">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-6">
+              <div className="bg-black/20 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-white/10 flex flex-col h-80">
+                <h3 className="text-base font-bold text-white mb-6">
                   Incidencias por Grado
                 </h3>
                 <div className="flex-1 flex items-end justify-between gap-4 px-2">
-                  <div className="w-full bg-blue-100 rounded-t h-[40%] relative group">
-                    <div className="absolute bottom-0 w-full bg-primary h-full rounded-t opacity-80"></div>
+                  <div className="w-full bg-blue-500/20 rounded-t h-[40%] relative group">
+                    <div className="absolute bottom-0 w-full bg-blue-500 h-full rounded-t opacity-60"></div>
                   </div>
-                  <div className="w-full bg-blue-100 rounded-t h-[70%] relative group">
-                    <div className="absolute bottom-0 w-full bg-primary h-full rounded-t opacity-80"></div>
+                  <div className="w-full bg-blue-500/20 rounded-t h-[70%] relative group">
+                    <div className="absolute bottom-0 w-full bg-blue-500 h-full rounded-t opacity-60"></div>
                   </div>
-                  <div className="w-full bg-blue-100 rounded-t h-[50%] relative group">
-                    <div className="absolute bottom-0 w-full bg-primary h-full rounded-t opacity-80"></div>
+                  <div className="w-full bg-blue-500/20 rounded-t h-[50%] relative group">
+                    <div className="absolute bottom-0 w-full bg-blue-500 h-full rounded-t opacity-60"></div>
                   </div>
                 </div>
-                <div className="flex justify-between text-xs text-slate-500 mt-2 px-2">
+                <div className="flex justify-between text-xs text-gray-400 mt-2 px-2">
                   <span>1°</span>
                   <span>2°</span>
                   <span>3°</span>
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-80">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">
+              <div className="bg-black/20 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-white/10 flex flex-col h-80">
+                <h3 className="text-base font-bold text-white mb-4">
                   Reportes por Docente
                 </h3>
                 <div className="space-y-3 overflow-y-auto">
-                  <div className="flex justify-between items-center p-2 bg-slate-50 rounded">
-                    <span className="text-sm font-bold">Prof. Ramírez</span>
-                    <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded font-bold">
+                  <div className="flex justify-between items-center p-2 bg-white/5 rounded">
+                    <span className="text-sm font-bold text-gray-300">
+                      Prof. Ramírez
+                    </span>
+                    <span className="text-xs bg-red-900/40 text-red-400 px-2 py-1 rounded font-bold">
                       12
                     </span>
                   </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-slate-50 rounded">
-                    <span className="text-sm font-bold">Prof. Dávila</span>
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded font-bold">
+                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded transition-colors">
+                    <span className="text-sm font-bold text-gray-300">
+                      Prof. Dávila
+                    </span>
+                    <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded font-bold">
                       5
                     </span>
                   </div>
@@ -244,17 +248,19 @@ export const DashboardOrientacion = () => {
           {/* Right Column */}
           <div className="flex flex-col gap-8">
             {/* Requests Module */}
-            <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center justify-between">
+            <section className="bg-black/20 backdrop-blur-xl rounded-xl shadow-sm border border-white/10 p-5">
+              <h3 className="text-base font-bold text-white mb-4 flex items-center justify-between">
                 Solicitudes a Docentes
-                <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full">
                   2 Pendientes
                 </span>
               </h3>
               <div className="flex flex-col gap-4">
                 <div className="border-l-2 border-orange-400 pl-3 py-1">
-                  <p className="text-sm font-medium">Reporte de Conducta</p>
-                  <p className="text-xs text-slate-500">Para: Prof. Ramírez</p>
+                  <p className="text-sm font-medium text-gray-300">
+                    Reporte de Conducta
+                  </p>
+                  <p className="text-xs text-gray-500">Para: Prof. Ramírez</p>
                 </div>
               </div>
             </section>

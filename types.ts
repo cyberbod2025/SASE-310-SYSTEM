@@ -9,6 +9,7 @@ export enum UserRole {
   SECRETARIA = "secretaria",
   UDEII = "udeii",
   GUEST = "guest",
+  DEVELOPER = "developer", // God Mode
 }
 
 export const RoleLabels: Record<UserRole, string> = {
@@ -22,6 +23,7 @@ export const RoleLabels: Record<UserRole, string> = {
   [UserRole.SECRETARIA]: "Secretaría",
   [UserRole.UDEII]: "UDEII",
   [UserRole.GUEST]: "Invitado",
+  [UserRole.DEVELOPER]: "Desarrollador (Acceso Total)",
 };
 
 export enum CaseState {
@@ -101,6 +103,39 @@ export interface Student {
   justificantes: Justificante[];
 }
 
+export type ProtocolType = "convivencia" | "salud" | "proteccion_civil";
+
+export interface Protocol {
+  id: string;
+  titulo: string;
+  tipo: ProtocolType;
+  objetivo: string;
+  activacion: string;
+  fuente: string;
+  roles_responsables: string[];
+  icono: string;
+}
+
+export interface ProtocolStep {
+  id: string;
+  protocolo_id: string;
+  orden: number;
+  accion: string;
+  descripcion_detalle?: string;
+  es_advertencia: boolean;
+  rol_responsable?: string;
+}
+
+export interface ProtocolActivation {
+  id: string;
+  protocolo_id: string;
+  incidencia_id?: string;
+  usuario_id: string;
+  fecha_inicio: string;
+  estado: "activo" | "finalizado";
+  paso_actual?: number;
+}
+
 // Helper to determine state based on incident count
 export const calculateState = (incidents: Incident[]): CaseState => {
   const recentCount = incidents.length;
@@ -119,4 +154,5 @@ export enum AppModule {
   BITACORA = "bitacora",
   SOLICITUDES = "solicitudes",
   REPORTES_DOCENTES = "reportes_docentes",
+  PROTOCOLOS = "protocolos",
 }
