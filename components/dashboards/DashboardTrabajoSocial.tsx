@@ -30,26 +30,28 @@ const JustificanteGenerator = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm">
-      <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-        <span className="material-symbols-outlined text-primary">
+    <div className="bg-black/20 backdrop-blur-xl p-6 rounded-xl border border-white/10 shadow-lg">
+      <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-white">
+        <span className="material-symbols-outlined text-orange-400">
           history_edu
         </span>
         Emitir Justificante Oficial
       </h3>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
             Alumno
           </label>
           <select
-            className="w-full border border-gray-300 rounded-md p-2 text-sm"
+            className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm text-white focus:border-orange-500/50 outline-none"
             value={selectedStudent}
             onChange={(e) => setSelectedStudent(e.target.value)}
           >
-            <option value="">Seleccione alumno...</option>
+            <option value="" className="text-gray-500">
+              Seleccione alumno...
+            </option>
             {students.map((s) => (
-              <option key={s.id} value={s.id}>
+              <option key={s.id} value={s.id} className="text-black">
                 {s.name} - {s.group}
               </option>
             ))}
@@ -57,51 +59,57 @@ const JustificanteGenerator = () => {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
               Desde
             </label>
             <input
               type="date"
-              className="w-full border border-gray-300 rounded-md p-2 text-sm"
+              className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm text-white focus:border-orange-500/50 outline-none scheme-dark"
               value={dates.start}
               onChange={(e) => setDates({ ...dates, start: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
               Hasta
             </label>
             <input
               type="date"
-              className="w-full border border-gray-300 rounded-md p-2 text-sm"
+              className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm text-white focus:border-orange-500/50 outline-none scheme-dark"
               value={dates.end}
               onChange={(e) => setDates({ ...dates, end: e.target.value })}
             />
           </div>
         </div>
         <div>
-          <label className="block text-xs font-bold text-text-secondary uppercase mb-1">
+          <label className="block text-xs font-bold text-gray-400 uppercase mb-1">
             Motivo
           </label>
           <select
-            className="w-full border border-gray-300 rounded-md p-2 text-sm"
+            className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm text-white focus:border-orange-500/50 outline-none"
             value={reason}
             onChange={(e) => setReason(e.target.value as any)}
           >
-            <option value="Médico">Médico</option>
-            <option value="Social">Social / Familiar</option>
-            <option value="Legal">Trámite Legal</option>
+            <option value="Médico" className="text-black">
+              Médico
+            </option>
+            <option value="Social" className="text-black">
+              Social / Familiar
+            </option>
+            <option value="Legal" className="text-black">
+              Trámite Legal
+            </option>
           </select>
         </div>
         <div>
           <div className="flex justify-between items-center mb-1">
-            <label className="block text-xs font-bold text-text-secondary uppercase">
+            <label className="block text-xs font-bold text-gray-400 uppercase">
               Observaciones
             </label>
             <VoiceInput onTranscript={handleVoiceInput} className="scale-75" />
           </div>
           <textarea
-            className="w-full border border-gray-300 rounded-md p-2 text-sm h-20"
+            className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm h-20 text-white placeholder-gray-600 focus:border-orange-500/50 outline-none"
             placeholder="Detalles para el expediente..."
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
@@ -110,7 +118,7 @@ const JustificanteGenerator = () => {
         <button
           onClick={handleGenerate}
           disabled={!selectedStudent}
-          className="w-full py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-hover disabled:opacity-50"
+          className="w-full py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold rounded-lg hover:from-orange-500 hover:to-amber-500 shadow-lg shadow-orange-900/30 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Generar y Timbrar
         </button>

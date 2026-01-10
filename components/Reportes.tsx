@@ -401,7 +401,7 @@ export const Reportes: React.FC = () => {
               onChange={(e) =>
                 setDateRange({ ...dateRange, start: e.target.value })
               }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none text-gray-900 bg-white"
             />
             <span className="text-text-secondary" aria-hidden="true">
               al
@@ -417,7 +417,7 @@ export const Reportes: React.FC = () => {
               onChange={(e) =>
                 setDateRange({ ...dateRange, end: e.target.value })
               }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none"
+              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none text-gray-900 bg-white"
             />
           </div>
 

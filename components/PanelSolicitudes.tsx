@@ -112,9 +112,15 @@ export const PanelSolicitudes: React.FC = () => {
     (s) => s.id === newSolicitud.asignadoA
   );
 
-  // Form state for new comunicado
-  const [newComunicado, setNewComunicado] = useState({
-    tipo: "comunicado" as const,
+  const [newComunicado, setNewComunicado] = useState<{
+    tipo: "evento" | "comunicado" | "recordatorio" | "urgente";
+    titulo: string;
+    descripcion: string;
+    audiencia: string[];
+    fechaEvento: string;
+    horaEvento: string;
+  }>({
+    tipo: "comunicado",
     titulo: "",
     descripcion: "",
     audiencia: [] as string[],
@@ -479,7 +485,7 @@ export const PanelSolicitudes: React.FC = () => {
                       asignadoA: e.target.value,
                     })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm"
+                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
                 >
                   <option value="">Seleccionar secretario...</option>
                   {SECRETARIOS.filter((s) => s.id !== "gaby").map((sec) => (

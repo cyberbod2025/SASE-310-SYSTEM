@@ -7,6 +7,7 @@ import { UserRole, AppModule } from "./types";
 import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Login } from "./components/Login";
+import { IntroPlayer } from "./components/IntroPlayer";
 // Dashboards (Lazy Loaded)
 const DashboardDocente = React.lazy(() =>
   import("./components/dashboards/DashboardDocente").then((module) => ({
@@ -81,6 +82,11 @@ const Inscripciones = React.lazy(() =>
 const Archivo = React.lazy(() =>
   import("./components/Archivo").then((module) => ({ default: module.Archivo }))
 );
+const ProtocolsView = React.lazy(() =>
+  import("./components/Protocols/ProtocolsView").then((module) => ({
+    default: module.ProtocolsView,
+  }))
+);
 
 // Loading Component
 const LoadingSpinner = () => (
@@ -108,6 +114,7 @@ const MainContent = () => {
           return <SolicitudReportesDocentes />;
         if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
         if (currentModule === AppModule.ARCHIVO) return <Archivo />;
+        if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
 
         switch (currentUserRole) {
           case UserRole.DOCENTE:
@@ -135,10 +142,17 @@ const MainContent = () => {
 };
 
 const App: React.FC = () => {
+  const [showIntro, setShowIntro] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const { session, loading } = useAuth();
 
-  // Show splash screen primarily
+  // 1. Show Intro Video First
+  if (showIntro) {
+    return <IntroPlayer onComplete={() => setShowIntro(false)} />;
+  }
+
+  // 2. Show splash screen after intro
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
@@ -151,8 +165,8 @@ const App: React.FC = () => {
     );
   }
 
-  if (!session) {
-    return <Login />;
+  if (!session && !isDemoMode) {
+    return <Login onDemoEnter={() => setIsDemoMode(true)} />;
   }
 
   return (

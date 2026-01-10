@@ -17,6 +17,7 @@ const roleImages: Record<UserRole, string> = {
   [UserRole.ENFERMERIA]: "/assets/branding/ENFERMERIA.png",
   [UserRole.SECRETARIA]: "/assets/branding/SECRETARIOS.png",
   [UserRole.UDEII]: "/assets/branding/UDEII.png",
+  [UserRole.GUEST]: "/assets/branding/logo_sase_official.png",
 };
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({
@@ -33,6 +34,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   } = useApp();
 
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
@@ -40,10 +42,25 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       <QuickRegisterModal />
       <FloatingAssistant />
 
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar - Role Based Content */}
-      <aside className="w-64 bg-black/20 backdrop-blur-xl border-r border-white/10 flex flex-col shrink-0 hidden md:flex h-full shadow-[5px_0_30px_0_rgba(0,0,0,0.3)]">
-        <div className="p-6 border-b border-white/10" id="sidebar-logo">
-          <div className="flex flex-col items-center gap-3">
+      <aside
+        className={`fixed md:relative inset-y-0 left-0 z-50 w-64 bg-black/80 md:bg-black/20 backdrop-blur-xl border-r border-white/10 flex flex-col shrink-0 transition-transform duration-300 shadow-[5px_0_30px_0_rgba(0,0,0,0.3)] ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
+        <div
+          className="p-6 border-b border-white/10 flex justify-between items-start"
+          id="sidebar-logo"
+        >
+          <div className="flex flex-col items-center gap-3 w-full">
             <div className="size-32 flex items-center justify-center">
               <img
                 src={
@@ -68,8 +85,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 <span className="material-symbols-outlined">school</span>
               </div>
             </div>
-            {/* SASE-310 Text Removed */}
           </div>
+          {/* Close button for mobile */}
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="md:hidden text-gray-400 hover:text-white"
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto" id="sidebar-nav">
@@ -78,7 +101,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             label="Tablero"
             active={currentModule === AppModule.DASHBOARD}
             id="nav-dashboard"
-            onClick={() => setCurrentModule(AppModule.DASHBOARD)}
+            onClick={() => {
+              setCurrentModule(AppModule.DASHBOARD);
+              setIsSidebarOpen(false);
+            }}
           />
 
           {currentUserRole === UserRole.DOCENTE && (
@@ -86,7 +112,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               icon="groups"
               label="Mis Grupos"
               active={false}
-              onClick={() => {}}
+              onClick={() => {
+                setCurrentModule(AppModule.DASHBOARD);
+                setIsSidebarOpen(false);
+              }}
             />
           )}
           {currentUserRole === UserRole.PREFECTURA && (
@@ -94,7 +123,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               icon="fact_check"
               label="Asistencias"
               active={false}
-              onClick={() => {}}
+              onClick={() => setIsSidebarOpen(false)}
             />
           )}
           {currentUserRole === UserRole.ENFERMERIA && (
@@ -102,7 +131,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               icon="medical_services"
               label="Inventario"
               active={false}
-              onClick={() => {}}
+              onClick={() => setIsSidebarOpen(false)}
             />
           )}
           {currentUserRole === UserRole.ORIENTACION && (
@@ -110,7 +139,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               icon="folder_shared"
               label="Expedientes"
               active={false}
-              onClick={() => {}}
+              onClick={() => setIsSidebarOpen(false)}
             />
           )}
 
@@ -120,13 +149,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 icon="history_edu"
                 label="Justificantes"
                 active={false}
-                onClick={() => {}}
+                onClick={() => setIsSidebarOpen(false)}
               />
               <NavItem
                 icon="family_restroom"
                 label="Estudios Socio."
                 active={false}
-                onClick={() => {}}
+                onClick={() => setIsSidebarOpen(false)}
               />
             </>
           )}
@@ -138,13 +167,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 label="Inscripciones"
                 id="nav-inscripciones"
                 active={currentModule === AppModule.INSCRIPCIONES}
-                onClick={() => setCurrentModule(AppModule.INSCRIPCIONES)}
+                onClick={() => {
+                  setCurrentModule(AppModule.INSCRIPCIONES);
+                  setIsSidebarOpen(false);
+                }}
               />
               <NavItem
                 icon="folder_special"
                 label="Archivo"
                 active={currentModule === AppModule.ARCHIVO}
-                onClick={() => setCurrentModule(AppModule.ARCHIVO)}
+                onClick={() => {
+                  setCurrentModule(AppModule.ARCHIVO);
+                  setIsSidebarOpen(false);
+                }}
               />
             </>
           )}
@@ -155,19 +190,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 icon="psychology"
                 label="Reportes Docentes"
                 active={currentModule === AppModule.REPORTES_DOCENTES}
-                onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
+                onClick={() => {
+                  setCurrentModule(AppModule.REPORTES_DOCENTES);
+                  setIsSidebarOpen(false);
+                }}
               />
             </>
           )}
-
-          {/* UDEII Disabled until role exists
-          {currentUserRole === UserRole.UDEII && (
-             <>
-                <NavItem icon="psychology" label="Diagnósticos" active={false} onClick={() => {}} />
-                <NavItem icon="accessibility_new" label="Ajustes Razonables" active={false} onClick={() => {}} />
-             </>
-          )}
-          */}
 
           {currentUserRole === UserRole.DIRECTIVO && (
             <>
@@ -176,36 +205,59 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 label="Solicitudes"
                 id="nav-solicitudes"
                 active={currentModule === AppModule.SOLICITUDES}
-                onClick={() => setCurrentModule(AppModule.SOLICITUDES)}
+                onClick={() => {
+                  setCurrentModule(AppModule.SOLICITUDES);
+                  setIsSidebarOpen(false);
+                }}
               />
               <NavItem
                 icon="analytics"
                 label="Indicadores"
                 active={false}
-                onClick={() => {}}
+                onClick={() => setIsSidebarOpen(false)}
               />
               <NavItem
                 icon="policy"
                 label="Bitácora"
                 active={currentModule === AppModule.BITACORA}
-                onClick={() => setCurrentModule(AppModule.BITACORA)}
+                onClick={() => {
+                  setCurrentModule(AppModule.BITACORA);
+                  setIsSidebarOpen(false);
+                }}
               />
             </>
           )}
 
           <div className="pt-4 mt-4 border-t border-gray-100">
             <NavItem
+              icon="local_library"
+              label="Protocolos"
+              active={currentModule === AppModule.PROTOCOLOS}
+              id="nav-protocolos"
+              onClick={() => {
+                setCurrentModule(AppModule.PROTOCOLOS);
+                setIsSidebarOpen(false);
+              }}
+            />
+
+            <NavItem
               icon="description"
               label="Reportes"
               id="nav-reportes"
               active={currentModule === AppModule.REPORTES}
-              onClick={() => setCurrentModule(AppModule.REPORTES)}
+              onClick={() => {
+                setCurrentModule(AppModule.REPORTES);
+                setIsSidebarOpen(false);
+              }}
             />
             <NavItem
               icon="calendar_month"
               label="Agenda"
               active={currentModule === AppModule.AGENDA}
-              onClick={() => setCurrentModule(AppModule.AGENDA)}
+              onClick={() => {
+                setCurrentModule(AppModule.AGENDA);
+                setIsSidebarOpen(false);
+              }}
             />
           </div>
         </nav>
@@ -221,7 +273,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <select
             className="w-full text-sm border-gray-300 rounded-md p-2 text-gray-900"
             value={currentUserRole}
-            onChange={(e) => switchRole(e.target.value as UserRole)}
+            onChange={(e) => {
+              switchRole(e.target.value as UserRole);
+              setIsSidebarOpen(false);
+            }}
           >
             {Object.values(UserRole).map((role) => (
               <option key={role} value={role}>
@@ -231,9 +286,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </select>
           <button
             onClick={() => {
-              const name =
-                prompt("¡Bienvenido a la demo! ¿Cómo te llamas?") || "Colega";
+              const name = "Evaluador";
               startProductTour(name, currentUserRole);
+              setIsSidebarOpen(false);
             }}
             className="w-full mt-3 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all animate-pulse-slow"
           >
@@ -248,7 +303,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <button
             onClick={async () => {
               await supabase.auth.signOut();
-              window.location.reload(); // Force reload to clear states
+              window.location.reload();
             }}
             className="w-full flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 py-2 rounded-lg text-sm font-bold transition-colors"
           >
@@ -282,7 +337,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         {/* Header */}
         <header className="h-16 bg-white/5 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-6 shrink-0 z-20 relative shadow-md">
           <div className="flex items-center gap-4">
-            <button className="md:hidden text-text-secondary">
+            <button
+              className="md:hidden text-text-secondary p-2 hover:bg-white/10 rounded-lg transition-colors"
+              onClick={() => setIsSidebarOpen(true)}
+            >
               <span className="material-symbols-outlined">menu</span>
             </button>
             <h2 className="font-bold text-lg text-text-main hidden sm:block">

@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { supabase } from "../supabase/client";
 
-export const Login: React.FC = () => {
+interface LoginProps {
+  onDemoEnter?: () => void;
+}
+
+export const Login: React.FC<LoginProps> = ({ onDemoEnter }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -116,11 +120,11 @@ export const Login: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">
+              <label className="text-xs font-medium text-gray-300 uppercase tracking-wider ml-1">
                 Correo Institucional
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 material-symbols-outlined text-[20px]">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">
                   mail
                 </span>
                 <input
@@ -129,17 +133,17 @@ export const Login: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="usuario@sase.mx"
-                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400 uppercase tracking-wider ml-1">
+              <label className="text-xs font-medium text-gray-300 uppercase tracking-wider ml-1">
                 Contraseña
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 material-symbols-outlined text-[20px]">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">
                   lock
                 </span>
                 <input
@@ -148,12 +152,12 @@ export const Login: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-12 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                 >
                   <span className="material-symbols-outlined text-[20px]">
                     {showPassword ? "visibility_off" : "visibility"}
@@ -179,19 +183,29 @@ export const Login: React.FC = () => {
           </form>
 
           {/* Footer Actions */}
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-4">
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-sm text-gray-400 hover:text-amber-400 transition-colors"
+              className="text-sm text-gray-400 hover:text-amber-400 transition-colors block w-full"
             >
               ¿Olvidaste tu contraseña?
             </button>
+
+            {onDemoEnter && (
+              <button
+                type="button"
+                onClick={onDemoEnter}
+                className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors border border-blue-500/30 rounded px-3 py-1 bg-blue-500/10 hover:bg-blue-500/20"
+              >
+                ACCESO DEMOSTRATIVO (EVIDENCIA)
+              </button>
+            )}
           </div>
         </div>
 
         {/* Footer Disclaimer */}
-        <p className="text-center text-xs text-gray-600 mt-8 leading-relaxed max-w-xs mx-auto">
+        <p className="text-center text-xs text-gray-400 mt-8 leading-relaxed max-w-xs mx-auto">
           Acceso restringido únicamente a personal autorizado.
         </p>
       </div>

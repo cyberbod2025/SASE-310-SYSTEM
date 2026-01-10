@@ -278,7 +278,7 @@ export const Inscripciones: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto pb-20">
+    <div className="p-6 max-w-6xl mx-auto pb-20 text-gray-900">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-2xl font-bold text-text-main">
@@ -294,19 +294,19 @@ export const Inscripciones: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* SECTION 1: DATOS DEL ALUMNO */}
-        <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm">
+        <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
           <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
             <span className="material-symbols-outlined">person</span> Datos del
             Alumno
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 Apellido Paterno
               </label>
               <input
                 type="text"
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded text-gray-900 bg-white"
                 required
                 value={formData.apellidoPaterno}
                 onChange={(e) =>
@@ -318,12 +318,12 @@ export const Inscripciones: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 Apellido Materno
               </label>
               <input
                 type="text"
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded text-gray-900 bg-white"
                 value={formData.apellidoMaterno}
                 onChange={(e) =>
                   setFormData({
@@ -334,12 +334,12 @@ export const Inscripciones: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 Nombre(s)
               </label>
               <input
                 type="text"
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded text-gray-900 bg-white"
                 required
                 value={formData.nombre}
                 onChange={(e) =>
@@ -354,13 +354,13 @@ export const Inscripciones: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 CURP
               </label>
               <div className="flex gap-2">
                 <input
                   type="text"
-                  className={`w-full border p-2 rounded uppercase ${
+                  className={`w-full border p-2 rounded uppercase text-gray-900 bg-white ${
                     formData.verifiedCurp ? "border-green-500 bg-green-50" : ""
                   }`}
                   required
@@ -387,11 +387,11 @@ export const Inscripciones: React.FC = () => {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 Grupo Asignado
               </label>
               <select
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded text-gray-900 bg-white"
                 value={formData.group}
                 onChange={(e) =>
                   setFormData({ ...formData, group: e.target.value })
@@ -424,13 +424,13 @@ export const Inscripciones: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-gray-100">
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 Fecha de Nacimiento
               </label>
               <input
                 type="date"
                 required
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded text-gray-900 bg-white"
                 value={formData.fechaNacimiento}
                 onChange={(e) =>
                   setFormData({ ...formData, fechaNacimiento: e.target.value })
@@ -444,11 +444,11 @@ export const Inscripciones: React.FC = () => {
               </p>
             </div>
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 Género
               </label>
               <select
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded text-gray-900 bg-white"
                 value={formData.genero}
                 onChange={(e) =>
                   setFormData({ ...formData, genero: e.target.value })
@@ -460,7 +460,7 @@ export const Inscripciones: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
+              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
                 Promedio Grado Anterior
               </label>
               <input
@@ -468,7 +468,7 @@ export const Inscripciones: React.FC = () => {
                 step="0.1"
                 min="0"
                 max="10"
-                className="w-full border p-2 rounded"
+                className="w-full border p-2 rounded text-gray-900 bg-white"
                 placeholder="Ej. 8.5"
                 value={formData.promedioAnterior}
                 onChange={(e) =>
@@ -486,7 +486,7 @@ export const Inscripciones: React.FC = () => {
         </div>
 
         {/* SECTION 2: DATOS FAMILIARES */}
-        <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm">
+        <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
           <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
             <span className="material-symbols-outlined">family_restroom</span>{" "}
             Datos Familiares
@@ -494,7 +494,7 @@ export const Inscripciones: React.FC = () => {
 
           {/* Living Situation */}
           <div className="mb-6">
-            <label className="block text-xs font-bold text-text-secondary mb-2 uppercase">
+            <label className="block text-xs font-bold text-gray-600 mb-2 uppercase">
               Vive Con:
             </label>
             <div className="flex flex-wrap gap-4">
@@ -506,7 +506,7 @@ export const Inscripciones: React.FC = () => {
               ].map((opt) => (
                 <label
                   key={opt.val}
-                  className={`px-4 py-2 rounded-lg border cursor-pointer transition-colors ${
+                  className={`px-4 py-2 rounded-lg border cursor-pointer transition-colors text-gray-900 ${
                     formData.viveCon === opt.val
                       ? "bg-primary text-white border-primary"
                       : "bg-white border-gray-300 hover:bg-gray-50"
@@ -531,12 +531,12 @@ export const Inscripciones: React.FC = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-text-secondary mb-1">
+                <label className="block text-xs font-bold text-gray-600 mb-1">
                   Nombre de la Madre
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded disabled:bg-gray-100 disabled:text-gray-400"
+                  className="w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400"
                   value={formData.nombreMadre}
                   disabled={
                     formData.viveCon === "papa" || formData.viveCon === "tutor"
@@ -547,12 +547,12 @@ export const Inscripciones: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-text-secondary mb-1">
+                <label className="block text-xs font-bold text-gray-600 mb-1">
                   Celular Madre
                 </label>
                 <input
                   type="tel"
-                  className={`w-full border p-2 rounded disabled:bg-gray-100 disabled:text-gray-400 ${
+                  className={`w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400 ${
                     verifiedPhones.mama ? "border-green-500 bg-green-50" : ""
                   }`}
                   value={formData.telMadre}
@@ -579,7 +579,7 @@ export const Inscripciones: React.FC = () => {
                           <input
                             type="text"
                             maxLength={4}
-                            className="w-16 border rounded p-1 text-center text-sm"
+                            className="w-16 border rounded p-1 text-center text-sm text-gray-900 bg-white"
                             value={verificationCode}
                             onChange={(e) =>
                               setVerificationCode(e.target.value)
@@ -629,12 +629,12 @@ export const Inscripciones: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-text-secondary mb-1">
+                <label className="block text-xs font-bold text-gray-600 mb-1">
                   Nombre del Padre
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded disabled:bg-gray-100 disabled:text-gray-400"
+                  className="w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400"
                   value={formData.nombrePadre}
                   disabled={
                     formData.viveCon === "mama" || formData.viveCon === "tutor"
@@ -645,12 +645,12 @@ export const Inscripciones: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-text-secondary mb-1">
+                <label className="block text-xs font-bold text-gray-600 mb-1">
                   Celular Padre
                 </label>
                 <input
                   type="tel"
-                  className={`w-full border p-2 rounded disabled:bg-gray-100 disabled:text-gray-400 ${
+                  className={`w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400 ${
                     verifiedPhones.papa ? "border-green-500 bg-green-50" : ""
                   }`}
                   value={formData.telPadre}
@@ -677,7 +677,7 @@ export const Inscripciones: React.FC = () => {
                           <input
                             type="text"
                             maxLength={4}
-                            className="w-16 border rounded p-1 text-center text-sm"
+                            className="w-16 border rounded p-1 text-center text-sm text-gray-900 bg-white"
                             value={verificationCode}
                             onChange={(e) =>
                               setVerificationCode(e.target.value)
@@ -728,12 +728,12 @@ export const Inscripciones: React.FC = () => {
             {formData.viveCon === "tutor" && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100 animate-fade-in">
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-text-secondary mb-1">
+                  <label className="block text-xs font-bold text-gray-600 mb-1">
                     Nombre del Tutor
                   </label>
                   <input
                     type="text"
-                    className="w-full border p-2 rounded"
+                    className="w-full border p-2 rounded text-gray-900 bg-white"
                     value={formData.nombreTutor}
                     onChange={(e) =>
                       setFormData({ ...formData, nombreTutor: e.target.value })
@@ -741,11 +741,11 @@ export const Inscripciones: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-text-secondary mb-1">
+                  <label className="block text-xs font-bold text-gray-600 mb-1">
                     Parentesco
                   </label>
                   <select
-                    className="w-full border p-2 rounded"
+                    className="w-full border p-2 rounded text-gray-900 bg-white"
                     value={formData.parentescoTutor}
                     onChange={(e) =>
                       setFormData({
@@ -763,12 +763,12 @@ export const Inscripciones: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-text-secondary mb-1">
+                  <label className="block text-xs font-bold text-gray-600 mb-1">
                     Celular Tutor
                   </label>
                   <input
                     type="tel"
-                    className={`w-full border p-2 rounded ${
+                    className={`w-full border p-2 rounded text-gray-900 bg-white ${
                       verifiedPhones.tutor ? "border-green-500 bg-green-50" : ""
                     }`}
                     value={formData.telTutor}
@@ -787,7 +787,7 @@ export const Inscripciones: React.FC = () => {
                           <input
                             type="text"
                             maxLength={4}
-                            className="w-16 border rounded p-1 text-center text-sm"
+                            className="w-16 border rounded p-1 text-center text-sm text-gray-900 bg-white"
                             value={verificationCode}
                             onChange={(e) =>
                               setVerificationCode(e.target.value)
@@ -835,192 +835,120 @@ export const Inscripciones: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
 
-            <div className="pt-2">
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
-                Teléfono de Emergencia Adicional
-              </label>
-              <input
-                type="tel"
-                className="w-full md:w-1/3 border p-2 rounded"
-                placeholder="Ej. Vecino, Oficina, etc."
-                value={formData.telEmergencia}
-                onChange={(e) =>
-                  setFormData({ ...formData, telEmergencia: e.target.value })
-                }
-              />
-            </div>
+          <div className="mt-6">
+            <label className="block text-xs font-bold text-gray-600 mb-2 uppercase">
+              Teléfono de Emergencia Adicional
+            </label>
+            <input
+              type="tel"
+              className="w-full md:w-1/3 border p-2 rounded text-gray-900 bg-white"
+              placeholder="Ej. Vecino, Oficina, etc."
+              value={formData.telEmergencia}
+              onChange={(e) =>
+                setFormData({ ...formData, telEmergencia: e.target.value })
+              }
+            />
           </div>
         </div>
 
-        {/* SECTION 3: SALUD Y CHECKLIST */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm">
+        {/* SECTION 3: SALUD Y DOCUMENTOS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
             <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2">
               Salud
             </h3>
-            <div className="mb-4">
-              <label className="block text-xs font-bold text-text-secondary mb-1">
-                Situación Médica de Riesgo
-              </label>
-              <textarea
-                className="w-full border p-2 rounded h-20 text-sm"
-                placeholder="Alergias, Padecimientos crónicos, etc."
-                value={formData.situacionRiesgo}
-                onChange={(e) =>
-                  setFormData({ ...formData, situacionRiesgo: e.target.value })
-                }
-              ></textarea>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="doc_medico"
-                className="rounded text-primary focus:ring-primary"
-                checked={formData.hasMedicalDoc}
-                onChange={(e) =>
-                  setFormData({ ...formData, hasMedicalDoc: e.target.checked })
-                }
-              />
-              <label htmlFor="doc_medico" className="text-sm font-medium">
-                Presenta documento médico probatorio
-              </label>
-            </div>
-            {formData.hasMedicalDoc && (
-              <div className="relative mt-4 p-4 border-2 border-dashed border-gray-300 rounded-lg text-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors">
-                <span className="material-symbols-outlined text-3xl text-gray-400">
-                  add_a_photo
-                </span>
-                <p className="text-sm text-gray-500 font-medium">
-                  {file ? file.name : "Subir foto del documento"}
-                </p>
-                <input
-                  type="file"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  accept="image/*,application/pdf"
-                  onChange={handleFileChange}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm">
-            <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2">
-              Documentación Entregada
-            </h3>
-            <div className="grid grid-cols-1 gap-2">
-              <label className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.docs.actaNacimiento}
-                  onChange={() => handleCheckboxChange("actaNacimiento")}
-                  className="rounded text-primary size-5"
-                />
-                <span className="text-sm">Acta de Nacimiento</span>
-              </label>
-              <label className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.docs.curpDoc}
-                  onChange={() => handleCheckboxChange("curpDoc")}
-                  className="rounded text-primary size-5"
-                />
-                <span className="text-sm">CURP Impresa</span>
-              </label>
-              <label className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.docs.comprobanteDomicilio}
-                  onChange={() => handleCheckboxChange("comprobanteDomicilio")}
-                  className="rounded text-primary size-5"
-                />
-                <span className="text-sm">Comprobante de Domicilio</span>
-              </label>
-              <label className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.docs.boletaPrimaria}
-                  onChange={() => handleCheckboxChange("boletaPrimaria")}
-                  className="rounded text-primary size-5"
-                />
-                <span className="text-sm">Boleta Primaria (Solo 1º)</span>
-              </label>
-              <label className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.docs.boletaSecundaria}
-                  onChange={() => handleCheckboxChange("boletaSecundaria")}
-                  className="rounded text-primary size-5"
-                />
-                <span className="text-sm">Boleta Grado Anterior</span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* SECTION 4: DETALLES DE ALTA */}
-        <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
-                Motivo de Alta
-              </label>
-              <select
-                className="w-full border p-2 rounded bg-gray-50"
-                value={formData.motivoAlta}
-                onChange={(e) =>
-                  setFormData({ ...formData, motivoAlta: e.target.value })
-                }
-              >
-                <option value="nuevo_ingreso">
-                  Nuevo Ingreso (Inscripción Ordinaria)
-                </option>
-                <option value="cambio_escuela">
-                  Traslado / Cambio de Escuela
-                </option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-text-secondary mb-1 uppercase">
-                Quién realiza el trámite
-              </label>
-              <select
-                className="w-full border p-2 rounded"
-                value={formData.personaInscribe}
-                onChange={(e) =>
-                  setFormData({ ...formData, personaInscribe: e.target.value })
-                }
-              >
-                <option value="padre">Padre</option>
-                <option value="madre">Madre</option>
-                <option value="tutor">Tutor</option>
-                <option value="otro">Otro Familiar</option>
-              </select>
-              {formData.personaInscribe === "otro" && (
-                <input
-                  type="text"
-                  placeholder="¿Quién?"
-                  className="w-full border p-2 rounded mt-2 text-sm bg-yellow-50"
-                  value={formData.detallePersonaInscribe}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-600 mb-1">
+                  Situación Médica de Riesgo
+                </label>
+                <textarea
+                  className="w-full border p-2 rounded text-gray-900 bg-white h-24"
+                  placeholder="Alergias, Padecimientos crónicos, etc."
+                  value={formData.situacionRiesgo}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      detallePersonaInscribe: e.target.value,
+                      situacionRiesgo: e.target.value,
                     })
                   }
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="medicalDoc"
+                  className="size-4"
+                  checked={formData.hasMedicalDoc}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      hasMedicalDoc: e.target.checked,
+                    })
+                  }
+                />
+                <label
+                  htmlFor="medicalDoc"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Presenta documento médico probatorio
+                </label>
+              </div>
+              {formData.hasMedicalDoc && (
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.png"
+                  className="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  onChange={handleFileChange}
                 />
               )}
             </div>
           </div>
+
+          <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
+            <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2">
+              Documentación Entregada
+            </h3>
+            <div className="space-y-3">
+              {[
+                { id: "actaNacimiento", label: "Acta de Nacimiento" },
+                { id: "curpDoc", label: "CURP Impresa" },
+                {
+                  id: "comprobanteDomicilio",
+                  label: "Comprobante de Domicilio",
+                },
+                { id: "boletaPrimaria", label: "Boleta Primaria (Solo 1º)" },
+                {
+                  id: "boletaSecundaria",
+                  label: "Boleta Grado Anterior (2º y 3º)",
+                },
+              ].map((doc) => (
+                <div key={doc.id} className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id={doc.id}
+                    className="size-5"
+                    checked={(formData.docs as any)[doc.id]}
+                    onChange={() => handleCheckboxChange(doc.id as any)}
+                  />
+                  <label htmlFor={doc.id} className="text-sm text-gray-700">
+                    {doc.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-6 border-t border-gray-100">
           <button
             type="submit"
-            className="bg-primary text-white font-bold py-4 px-10 rounded-xl shadow-lg hover:bg-primary-hover transform active:scale-95 transition-all text-lg flex items-center gap-2"
+            className="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center gap-2"
           >
             <span className="material-symbols-outlined">save</span>
-            Guardar Expediente
+            Finalizar Inscripción
           </button>
         </div>
       </form>

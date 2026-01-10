@@ -3,6 +3,10 @@ import { useApp } from "../store";
 import { IncidentType, UserRole } from "../types";
 import { VoiceInput } from "./VoiceInput";
 import { startRegisterModalTour } from "./TourGuide";
+import { supabase } from "../supabase/client";
+import { Protocol } from "../types";
+import { ProtocolDetailModal } from "./Protocols/ProtocolDetailModal";
+import { toast } from "react-hot-toast";
 
 export const QuickRegisterModal: React.FC = () => {
   const {
@@ -17,6 +21,10 @@ export const QuickRegisterModal: React.FC = () => {
   const [type, setType] = useState<IncidentType>(IncidentType.CONDUCTA);
   const [description, setDescription] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
+  const [detectedProtocol, setDetectedProtocol] = useState<Protocol | null>(
+    null
+  );
+  const [showProtocolModal, setShowProtocolModal] = useState(false);
 
   // React on open to check for tour
   React.useEffect(() => {
@@ -45,13 +53,63 @@ export const QuickRegisterModal: React.FC = () => {
         )
       : [];
 
-  const handleRegister = () => {
-    if (!selectedStudentId) return;
+  const handleRegister = async () => {
+    if (!selectedStudentId) {
+      toast.error("Debes seleccionar un alumno de la lista", {
+        icon: "👆",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      return;
+    }
+
+    // 1. Add Incident
     addIncident(
       selectedStudentId,
       type,
       description || "Reporte rápido sin descripción"
     );
+
+    // 2. Check for Protocol Triggers (Simple keyword matching for demo)
+    const lowerDesc = description.toLowerCase();
+    let protocolTitleToFind = "";
+
+    if (
+      lowerDesc.includes("convuls") ||
+      lowerDesc.includes("desmay") ||
+      type === IncidentType.SALUD
+    ) {
+      protocolTitleToFind = "Crisis Convulsiva";
+    } else if (lowerDesc.includes("sismo") || lowerDesc.includes("temblor")) {
+      protocolTitleToFind = "Sismo";
+    } else if (
+      lowerDesc.includes("acoso") ||
+      lowerDesc.includes("bullying") ||
+      lowerDesc.includes("golpe")
+    ) {
+      protocolTitleToFind = "Acoso Escolar (Bullying)"; // Matches DB title
+    }
+
+    if (protocolTitleToFind) {
+      try {
+        const { data } = await supabase
+          .from("protocolos" as any)
+          .select("*")
+          .ilike("titulo", `%${protocolTitleToFind}%`)
+          .limit(1)
+          .single();
+
+        if (data) {
+          setDetectedProtocol(data as any);
+        }
+      } catch (e) {
+        console.error("Error finding protocol", e);
+      }
+    }
+
     setIsSuccess(true);
 
     // Clean up tour if it was active
@@ -59,13 +117,17 @@ export const QuickRegisterModal: React.FC = () => {
       localStorage.removeItem("sase_tour_active");
     }
 
-    setTimeout(() => {
-      setIsSuccess(false);
-      setQuickRegisterOpen(false);
-      setSearchTerm("");
-      setSelectedStudentId("");
-      setDescription("");
-    }, 2500); // Increased time to enjoy the success message
+    // Auto-close logic only if no protocol detected, otherwise keep open to show button
+    if (!protocolTitleToFind) {
+      setTimeout(() => {
+        setIsSuccess(false);
+        setQuickRegisterOpen(false);
+        setSearchTerm("");
+        setSelectedStudentId("");
+        setDescription("");
+        setDetectedProtocol(null);
+      }, 2500);
+    }
   };
 
   const isDemoMode = localStorage.getItem("sase_tour_active") === "true";
@@ -113,30 +175,132 @@ export const QuickRegisterModal: React.FC = () => {
         </div>
 
         {isSuccess ? (
-          <div className="p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-20 h-20 bg-gradient-to-tr from-green-400 to-emerald-600 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-green-500/30">
-              <span className="material-symbols-outlined text-white text-5xl">
-                {isDemoMode ? "military_tech" : "check"}
-              </span>
-            </div>
-            <h4 className="text-2xl font-bold text-white mb-2">
-              {isDemoMode
-                ? "¡Misión Completada! 🚀"
-                : "Registrado Correctamente"}
-            </h4>
-            <p className="text-gray-300">
-              {isDemoMode
-                ? "Has dominado el registro rápido. ¡Tu campus está bajo control!"
-                : "La incidencia se ha guardado en el expediente."}
-            </p>
-            {isDemoMode && (
-              <div className="mt-6 flex gap-2 justify-center">
-                <span className="text-2xl animate-pulse">🎉</span>
-                <span className="text-2xl animate-pulse delay-100">⭐</span>
-                <span className="text-2xl animate-pulse delay-200">🎉</span>
+          description.toLowerCase().includes("acoso") ? (
+            <div className="p-8 bg-red-900/20">
+              <div className="flex items-center gap-4 mb-6 border-b border-red-500/30 pb-4">
+                <div className="p-3 bg-red-500/20 rounded-lg animate-pulse">
+                  <span className="material-symbols-outlined text-red-500 text-4xl">
+                    warning
+                  </span>
+                </div>
+                <div>
+                  <h4 className="text-2xl font-bold text-white">
+                    Protocolo Activado
+                  </h4>
+                  <p className="text-red-300 font-bold">
+                    Nivel 3: Probable Acoso Escolar
+                  </p>
+                </div>
               </div>
-            )}
-          </div>
+
+              <div className="space-y-4 mb-6">
+                <div className="p-4 bg-black/40 rounded-lg border-l-4 border-red-500">
+                  <p className="text-sm text-gray-400 mb-1">
+                    Paso 1 (Inmediato)
+                  </p>
+                  <p className="text-white font-medium">
+                    Resguardar al alumno en sitio seguro y evitar
+                    revictimización.
+                  </p>
+                </div>
+                <div className="p-4 bg-black/40 rounded-lg border-l-4 border-orange-500">
+                  <p className="text-sm text-gray-400 mb-1">
+                    Paso 2 (Notificación)
+                  </p>
+                  <p className="text-white font-medium">
+                    El sistema ha notificado a: Dirección, Orientación y Trabajo
+                    Social.
+                  </p>
+                </div>
+                <div className="p-4 bg-black/40 rounded-lg border-l-4 border-yellow-500">
+                  <p className="text-sm text-gray-400 mb-1">
+                    Paso 3 (Documentación)
+                  </p>
+                  <p className="text-white font-medium">
+                    Levantar acta de hechos "Anexo 2" (Formato precargado
+                    disponible).
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setQuickRegisterOpen(false)}
+                  className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg shadow-red-900/50 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined">description</span>
+                  Ir a Actas
+                </button>
+                <button
+                  onClick={() => setQuickRegisterOpen(false)}
+                  className="px-4 py-3 border border-white/10 hover:bg-white/5 rounded-lg text-gray-300 font-medium"
+                >
+                  Cerrar Alerta
+                </button>
+              </div>
+              <p className="mt-4 text-xs text-center text-gray-500">
+                Folio de Protocolo: {new Date().getTime().toString().slice(-6)}{" "}
+                | Referencia Normativa: Marco Local de Convivencia
+              </p>
+            </div>
+          ) : (
+            <div className="p-12 flex flex-col items-center justify-center text-center">
+              <div className="w-20 h-20 bg-gradient-to-tr from-green-400 to-emerald-600 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-green-500/30">
+                <span className="material-symbols-outlined text-white text-5xl">
+                  {isDemoMode ? "military_tech" : "check"}
+                </span>
+              </div>
+              <h4 className="text-2xl font-bold text-white mb-2">
+                {isDemoMode
+                  ? "¡Misión Completada! 🚀"
+                  : "Registrado Correctamente"}
+              </h4>
+              <p className="text-gray-300 mb-6">
+                {isDemoMode
+                  ? "Has dominado el registro rápido. ¡Tu campus está bajo control!"
+                  : "La incidencia se ha guardado en el expediente."}
+              </p>
+
+              {/* Protocol Detected Action */}
+              {detectedProtocol && (
+                <div className="w-full bg-red-500/20 border border-red-500/50 rounded-xl p-4 animate-fade-in-up">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="p-2 bg-red-500 rounded-lg animate-pulse">
+                      <span className="material-symbols-outlined text-white">
+                        warning
+                      </span>
+                    </span>
+                    <div className="text-left">
+                      <p className="text-xs text-red-300 font-bold uppercase tracking-wider">
+                        Protocolo Sugerido
+                      </p>
+                      <p className="font-bold text-white text-lg leading-none">
+                        {detectedProtocol.titulo}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-400 text-left mb-4 line-clamp-2">
+                    {detectedProtocol.objetivo}
+                  </p>
+                  <button
+                    onClick={() => setShowProtocolModal(true)}
+                    className="w-full py-3 bg-white text-red-600 font-bold rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">menu_book</span>
+                    Activar Protocolo Ahora
+                  </button>
+                </div>
+              )}
+
+              {isDemoMode && (
+                <div className="mt-6 flex gap-2 justify-center">
+                  <span className="text-2xl animate-pulse">🎉</span>
+                  <span className="text-2xl animate-pulse delay-100">⭐</span>
+                  <span className="text-2xl animate-pulse delay-200">🎉</span>
+                </div>
+              )}
+            </div>
+          )
         ) : (
           <div className="p-6 space-y-4">
             {/* Student Search */}
@@ -258,26 +422,53 @@ export const QuickRegisterModal: React.FC = () => {
             </div>
 
             {/* Footer Actions */}
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                onClick={() => setQuickRegisterOpen(false)}
-                className="px-4 py-2 text-gray-300 font-medium hover:bg-white/10 rounded-lg transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                id="qr-save"
-                onClick={handleRegister}
-                disabled={!selectedStudentId}
-                className="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-md hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                <span className="material-symbols-outlined text-lg">save</span>
-                Registrar
-              </button>
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setQuickRegisterOpen(false)}
+                  className="px-4 py-2 text-gray-300 font-medium hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  id="qr-save"
+                  onClick={handleRegister}
+                  className={`px-6 py-2 font-bold rounded-lg shadow-md transition-all flex items-center gap-2 ${
+                    !selectedStudentId
+                      ? "bg-gray-600 text-gray-400 cursor-not-allowed opacity-50"
+                      : "bg-primary text-white hover:bg-primary-hover active:scale-95"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    save
+                  </span>
+                  Registrar
+                </button>
+              </div>
+              {!selectedStudentId && searchTerm.length > 0 && (
+                <p className="text-xs text-right text-orange-400 font-medium animate-pulse">
+                  ⚠ Por favor seleccione un alumno de la lista desplegable
+                </p>
+              )}
             </div>
           </div>
         )}
       </div>
+
+      {showProtocolModal && detectedProtocol && (
+        <ProtocolDetailModal
+          protocol={detectedProtocol}
+          onClose={() => {
+            setShowProtocolModal(false);
+            setQuickRegisterOpen(false);
+            setIsSuccess(false);
+            setSearchTerm("");
+            setSelectedStudentId("");
+            setDescription("");
+            setDetectedProtocol(null);
+          }}
+        />
+      )}
     </div>
   );
 };
