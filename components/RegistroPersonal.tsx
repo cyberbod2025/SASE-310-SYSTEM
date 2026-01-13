@@ -225,46 +225,69 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
   // Formulario principal
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a1128] via-[#0f172a] to-[#020510] py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        {/* HEADER */}
-        <div className="bg-[#0a1128] border border-blue-500/20 rounded-2xl p-8 mb-6 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5"></div>
+    <div className="min-h-screen w-full relative font-sans text-slate-100 bg-black overflow-x-hidden">
+      {/* 1. Nebula Background Fixed */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center opacity-40 pointer-events-none"
+        style={{
+          backgroundImage: 'url("/assets/branding/login_background_final.png")',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black"></div>
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto py-12 px-4">
+        {/* HEADER - Futuristic Terminal Style */}
+        <div className="bg-black/60 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-8 mb-8 text-center relative overflow-hidden shadow-[0_0_50px_rgba(30,58,138,0.3)] group">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-400 to-transparent"></div>
+
           <div className="relative z-10">
             <img
               src="/assets/branding/SASE.png"
               alt="Logo SASE"
-              className="h-16 mx-auto mb-3 drop-shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+              className="h-20 mx-auto mb-4 drop-shadow-[0_0_20px_rgba(59,130,246,0.6)] animate-pulse"
             />
-            <p className="text-blue-400 text-xs uppercase tracking-[0.3em] mb-1">
-              Sistema de Acompañamiento y Seguimiento Educativo
-            </p>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Alta Institucional de Personal
+            <div className="flex items-center justify-center gap-4 mb-2">
+              <div className="h-[1px] w-12 bg-blue-500/30"></div>
+              <p className="text-blue-400 text-[10px] uppercase tracking-[0.5em] font-black">
+                PROTOCOLOS INSTITUCIONALES 2026
+              </p>
+              <div className="h-[1px] w-12 bg-blue-500/30"></div>
+            </div>
+            <h1
+              className="text-4xl font-black text-white mb-2 tracking-tight"
+              style={{ textShadow: "0 0 15px rgba(255,255,255,0.2)" }}
+            >
+              ALTA DE PERSONAL{" "}
+              <span className="text-blue-500 underline decoration-blue-500/30">
+                SASE-310
+              </span>
             </h1>
-            <p className="text-gray-500 text-xs flex items-center justify-center gap-2">
-              <span className="material-symbols-outlined text-xs">lock</span>
-              Uso interno · Acceso auditado
-            </p>
+            <div className="flex items-center justify-center gap-3 text-blue-300/40 text-[10px] font-bold tracking-widest uppercase mt-4">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+              CCT 09DES4310M · TRANSMISIÓN CIFRADA · ACCESO AUDITADO
+            </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* BLOQUE 1: IDENTIDAD INSTITUCIONAL */}
-          <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-emerald-500/20 rounded-2xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30">
-                <span className="material-symbols-outlined text-emerald-400">
-                  badge
+          <div className="bg-black/40 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8 shadow-2xl relative group hover:border-blue-500/40 transition-colors">
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-blue-500/50 rounded-tl-xl"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-blue-500/50 rounded-br-xl"></div>
+
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                <span className="material-symbols-outlined text-blue-400 text-2xl">
+                  verified_user
                 </span>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-emerald-400">
-                  1. Identidad Institucional
+                <h2 className="text-2xl font-black text-white tracking-wider">
+                  01. IDENTIDAD INSTITUCIONAL
                 </h2>
-                <p className="text-gray-500 text-xs">
-                  Identificación en el sistema SASE
-                </p>
+                <div className="h-0.5 w-16 bg-blue-600 rounded-full mt-1"></div>
               </div>
             </div>
 
@@ -290,83 +313,63 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 <label className="text-sm font-medium text-gray-300 mb-3 block">
                   Rol(es) Solicitado(s) *
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {[
-                    { id: "docente", label: "Docente", icon: "school" },
+                    { id: "docente", label: "DOCENTE", icon: "school" },
                     {
                       id: "prefectura",
-                      label: "Prefectura",
+                      label: "PREFECTURA",
                       icon: "verified_user",
                     },
-                    { id: "tutor", label: "Tutor", icon: "groups" },
+                    { id: "tutor", label: "TUTOR", icon: "groups" },
                     {
                       id: "orientacion",
-                      label: "Orientación",
+                      label: "ORIENTACIÓN",
                       icon: "psychology",
                     },
                     {
                       id: "trabajo_social",
-                      label: "Trabajo Social",
+                      label: "TRABAJO SOCIAL",
                       icon: "volunteer_activism",
                     },
                     {
-                      id: "enfermeria",
-                      label: "Enfermería",
-                      icon: "medical_services",
-                    },
-                    {
-                      id: "promotoria_lectura",
-                      label: "Promotoría Lectura",
-                      icon: "menu_book",
-                    },
-                    {
-                      id: "secretaria",
-                      label: "Secretaría",
-                      icon: "description",
-                    },
-                    { id: "udeii", label: "UDEII", icon: "psychology_alt" },
-                    {
-                      id: "contralor",
-                      label: "Contraloría",
-                      icon: "inventory",
-                    },
-                    {
                       id: "subdireccion",
-                      label: "Subdirección",
+                      label: "SUBDIRECCIÓN",
                       icon: "manage_accounts",
                     },
                     {
                       id: "direccion",
-                      label: "Dirección",
+                      label: "DIRECCIÓN",
                       icon: "admin_panel_settings",
                     },
+                    { id: "udeii", label: "UDEII", icon: "psychology_alt" },
                   ].map((rol) => (
                     <button
                       key={rol.id}
                       type="button"
                       onClick={() => handleRolToggle(rol.id)}
-                      className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 text-sm ${
+                      className={`p-4 rounded-xl border-2 transition-all flex items-center gap-3 text-[11px] font-black tracking-tighter ${
                         formData.rolesSeleccionados.includes(rol.id)
-                          ? "bg-emerald-500/20 border-emerald-500 text-emerald-300"
-                          : "bg-black/20 border-white/10 text-gray-400 hover:border-white/30"
+                          ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-[1.02]"
+                          : "bg-black/50 border-white/5 text-slate-400 hover:border-blue-500/30 hover:bg-black/80"
                       }`}
                     >
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-symbols-outlined">
                         {rol.icon}
                       </span>
-                      <span className="font-medium">{rol.label}</span>
+                      <span>{rol.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Turno */}
-              <div>
-                <label className="text-sm text-gray-300 mb-2 block">
-                  Turno *
+              <div className="md:col-span-1">
+                <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-3 block">
+                  TURNO ASIGNADO
                 </label>
-                <div className="h-12 bg-black/40 border border-white/10 rounded-lg flex items-center px-4 text-gray-400">
-                  Vespertino
+                <div className="h-14 bg-blue-900/10 border border-blue-500/50 rounded-xl flex items-center px-5 text-blue-300 font-black tracking-widest uppercase">
+                  VESPERTINO
                 </div>
                 <input type="hidden" name="turno" value="vespertino" />
               </div>
@@ -374,20 +377,18 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           </div>
 
           {/* BLOQUE 2: DATOS PERSONALES (SENSIBLES) */}
-          <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-amber-500/20 rounded-2xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/30">
-                <span className="material-symbols-outlined text-amber-400">
-                  person
+          <div className="bg-black/40 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8 shadow-2xl relative">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30">
+                <span className="material-symbols-outlined text-emerald-400 text-2xl">
+                  fingerprint
                 </span>
               </div>
               <div>
-                <h2 className="text-xl font-bold text-amber-400">
-                  2. Datos Personales
+                <h2 className="text-2xl font-black text-white tracking-wider">
+                  02. DATOS DEL PERSONAL
                 </h2>
-                <p className="text-gray-500 text-xs">
-                  Información confidencial protegida
-                </p>
+                <div className="h-0.5 w-16 bg-emerald-600 rounded-full mt-1"></div>
               </div>
             </div>
 
