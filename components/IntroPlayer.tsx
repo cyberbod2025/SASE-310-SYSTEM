@@ -37,6 +37,8 @@ export const IntroPlayer: React.FC<IntroPlayerProps> = ({ onComplete }) => {
         className="w-full h-full object-contain bg-black"
         onEnded={handleVideoEnd}
         autoPlay
+        muted
+        controls
         playsInline
         onError={(e) => {
           console.warn("Video source failed. Skipping intro.", e);
