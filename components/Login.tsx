@@ -60,83 +60,85 @@ export const Login: React.FC<LoginProps> = ({
       </div>
 
       {/* 2. Overlaid Interactive Login Area */}
-      {/* We position this relative to where the blue frame is in the background image */}
-      <div className="relative z-10 w-full max-w-lg md:mr-[30%] flex flex-col items-center animate-fadeInSlow">
-        {/* We reuse the SASE branding headers but keep them minimal since they are in the background */}
-        <div className="w-full flex flex-col items-center mb-6 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
-          {/* These are invisible by default to let the background shine, but can be functional if needed */}
-        </div>
-
-        {/* This container will hold the ACTUAL inputs, positioned where the user expects them */}
-        <div className="bg-black/20 backdrop-blur-sm border border-blue-400/20 rounded-2xl p-6 md:p-8 shadow-2xl w-full max-w-sm">
-          <form onSubmit={handleLogin} className="space-y-4">
+      {/* Precisely aligned with the blue digital panel in the video frame */}
+      <div className="relative z-10 w-full max-w-lg md:ml-[5%] lg:ml-[2%] translate-x-[-15%] md:translate-x-[-22%] flex flex-col items-center animate-fadeInQuick">
+        {/* Transparent container to hold inputs, aligned with the video's UI panel */}
+        <div className="w-full max-w-[340px] space-y-6 pt-12">
+          <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="bg-red-900/60 border border-red-500/50 p-3 rounded-lg text-red-100 text-[10px] flex items-center gap-2 animate-shake">
-                <span className="material-symbols-outlined text-sm">
-                  warning
-                </span>
+              <div className="bg-red-600/80 border border-red-400 p-3 rounded text-white text-[10px] font-bold flex items-center gap-2 animate-shake shadow-lg">
+                <span className="material-symbols-outlined text-sm">error</span>
                 {error}
               </div>
             )}
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-blue-300 uppercase tracking-widest ml-1">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black text-white uppercase tracking-[0.2em] drop-shadow-md">
                 E-MAIL INSTITUCIONAL
               </label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-black/40 border border-blue-500/30 rounded-lg py-3 px-4 text-white focus:bg-black/60 focus:border-blue-400 outline-none transition-all placeholder:text-blue-200/20 text-sm font-mono"
-                placeholder="USUARIO@SASE.MX"
-              />
+              <div className="relative group">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-black/60 border border-blue-400/50 rounded-sm py-3 px-4 text-white focus:bg-black/80 focus:border-blue-300 outline-none transition-all placeholder:text-white/20 text-sm font-mono shadow-[inset_0_0_10px_rgba(59,130,246,0.2)]"
+                  placeholder="USUARIO@SASE.MX"
+                />
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-black text-blue-300 uppercase tracking-widest ml-1">
+            <div className="space-y-1.5">
+              <label className="text-[11px] font-black text-white uppercase tracking-[0.2em] drop-shadow-md">
                 CLAVE DE ACCESO
               </label>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-black/40 border border-blue-500/30 rounded-lg py-3 px-4 text-white focus:bg-black/60 focus:border-blue-400 outline-none transition-all placeholder:text-blue-200/20 text-sm font-mono"
+                  className="w-full bg-black/60 border border-blue-400/50 rounded-sm py-3 px-4 text-white focus:bg-black/80 focus:border-blue-300 outline-none transition-all placeholder:text-white/20 text-sm font-mono shadow-[inset_0_0_10px_rgba(59,130,246,0.2)]"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400/40 hover:text-blue-400"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-blue-300 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-sm">
+                  <span className="material-symbols-outlined text-base">
                     {showPassword ? "visibility_off" : "visibility"}
                   </span>
                 </button>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600/80 hover:bg-blue-500 text-white font-black py-4 rounded-lg transition-all flex items-center justify-center gap-2 active:scale-[0.98] border border-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,0.3)] mt-6"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <span className="tracking-[0.3em] text-[10px]">
-                  INICIAR SESIÓN
-                </span>
-              )}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98] border border-blue-300/50 shadow-[0_0_20px_rgba(59,130,246,0.5)] group"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <span className="tracking-[0.4em] text-[11px]">
+                      INICIAR SESIÓN
+                    </span>
+                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+                      arrow_forward
+                    </span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
 
-          <div className="mt-6 flex flex-col items-center gap-2">
+          <div className="pt-4 flex flex-col items-center">
             <button
               onClick={onRegisterClick}
-              className="text-[9px] text-blue-200/40 hover:text-blue-300 transition-colors uppercase tracking-widest font-black"
+              className="text-[10px] text-blue-200/60 hover:text-white transition-colors uppercase tracking-[0.2em] font-bold"
             >
               SOLICITAR REGISTRO
             </button>
@@ -149,16 +151,16 @@ export const Login: React.FC<LoginProps> = ({
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        @keyframes fadeInSlow {
-          0% { opacity: 0; transform: translateY(10px); }
-          50% { opacity: 0; }
+        @keyframes fadeInQuick {
+          0% { opacity: 0; transform: translateY(5px); }
+          80% { opacity: 0; }
           100% { opacity: 1; transform: translateY(0); }
         }
         .animate-fadeIn {
-          animation: fadeIn 1s ease-in-out forwards;
+          animation: fadeIn 0.5s ease-in-out forwards;
         }
-        .animate-fadeInSlow {
-          animation: fadeInSlow 2.5s ease-in-out forwards;
+        .animate-fadeInQuick {
+          animation: fadeInQuick 1.2s ease-in-out forwards;
         }
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
