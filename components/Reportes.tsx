@@ -234,12 +234,10 @@ export const Reportes: React.FC = () => {
 
       case "asistencia":
         title = "Reporte de Asistencia";
-        const faltasCount = filteredIncidents.filter(
-          (i) => i.type === IncidentType.ASISTENCIA
-        ).length;
-        const retardosCount = filteredIncidents.filter(
-          (i) => i.type === IncidentType.RETARDO
-        ).length;
+        // Use memoized values instead of re-filtering
+        const faltasCount = incidentsByType.faltas;
+        const retardosCount = incidentsByType.retardos;
+
         htmlContent = `
           <h2>Período: ${dateRange.start} al ${dateRange.end}</h2>
           <h3>Indicadores de Asistencia</h3>
@@ -267,15 +265,18 @@ export const Reportes: React.FC = () => {
             </thead>
             <tbody>
               ${students
-                .map((s) => ({
-                  ...s,
-                  faltas: s.incidents.filter(
-                    (i) => i.type === IncidentType.ASISTENCIA
-                  ).length,
-                  retardos: s.incidents.filter(
-                    (i) => i.type === IncidentType.RETARDO
-                  ).length,
-                }))
+                .map((s) => {
+                  // Optimization: Single pass reduction instead of multiple filters
+                  const counts = s.incidents.reduce(
+                    (acc, i) => {
+                      if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
+                      if (i.type === IncidentType.RETARDO) acc.retardos++;
+                      return acc;
+                    },
+                    { faltas: 0, retardos: 0 }
+                  );
+                  return { ...s, ...counts };
+                })
                 .filter((s) => s.faltas > 0 || s.retardos > 0)
                 .sort((a, b) => b.faltas + b.retardos - (a.faltas + a.retardos))
                 .slice(0, 20)

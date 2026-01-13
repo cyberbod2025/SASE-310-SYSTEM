@@ -3,15 +3,14 @@ import { UserRole, RoleLabels } from "../../types";
 import { GOD_MODE_CREDENTIALS } from "../../utils/saseUtils";
 
 const QRCodeSVG = ({ url }: { url: string }) => {
-  // Simple QR Placeholder (In real app better use a lib like qrcode.react)
   return (
-    <div className="bg-white p-2 rounded-lg border-2 border-black inline-block">
+    <div className="bg-white p-2.5 rounded-xl border border-slate-200 inline-block shadow-sm">
       <img
         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
           url
         )}`}
         alt="Login QR"
-        className="size-32"
+        className="size-32 mix-blend-multiply"
       />
     </div>
   );
@@ -49,75 +48,78 @@ export const InvitationGenerator: React.FC = () => {
     };
     const roleLabel = RoleLabels[selectedRole];
 
-    // HTML Template for Print
     const content = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Carta de Acceso SASE-310</title>
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-          body { font-family: 'Montserrat', sans-serif; background: #fff; color: #000; margin: 0; padding: 40px; }
-          .container { max-width: 800px; margin: 0 auto; border: 1px solid #ddd; padding: 40px; position: relative; }
-          .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 20px; }
-          .logo { max-width: 150px; margin-bottom: 10px; }
-          .title { font-size: 24px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
-          .subtitle { font-size: 14px; text-transform: uppercase; color: #555; margin-top: 5px; }
-          .content { line-height: 1.6; font-size: 16px; margin-bottom: 40px; }
-          .credentials-box { background: #f5f5f5; border: 2px dashed #333; padding: 20px; margin: 30px 0; text-align: center; border-radius: 10px; }
-          .cred-item { margin: 10px 0; font-size: 18px; }
-          .cred-label { font-weight: bold; text-transform: uppercase; font-size: 12px; color: #666; }
-          .cred-value { font-family: monospace; font-size: 24px; font-weight: bold; color: #000; }
-          .qr-section { text-align: center; margin-top: 40px; }
-          .footer { margin-top: 60px; font-size: 10px; text-align: center; color: #999; border-top: 1px solid #eee; padding-top: 20px; }
-          .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 120px; color: rgba(0,0,0,0.03); font-weight: bold; z-index: -1; }
+          @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
+          body { font-family: 'Montserrat', sans-serif; background: #fff; color: #1e293b; margin: 0; padding: 40px; }
+          .container { max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; padding: 60px; position: relative; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+          .header { text-align: center; margin-bottom: 50px; border-bottom: 2px solid #f1f5f9; padding-bottom: 30px; }
+          .logo { max-width: 180px; margin-bottom: 15px; }
+          .title { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; color: #0f172a; }
+          .subtitle { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-top: 8px; letter-spacing: 2px; }
+          .content { line-height: 1.7; font-size: 15px; margin-bottom: 50px; color: #334155; }
+          .credentials-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 40px; margin: 40px 0; text-align: center; border-radius: 24px; }
+          .cred-item { margin: 25px 0; }
+          .cred-label { font-weight: 800; text-transform: uppercase; font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 5px; }
+          .cred-value { font-family: 'Courier New', monospace; font-size: 26px; font-weight: 900; color: #0f172a; }
+          .role-badge { display: inline-block; padding: 6px 16px; background: #eff6ff; color: #1d4ed8; font-size: 12px; font-weight: 900; border-radius: 100px; text-transform: uppercase; border: 1px solid #dbeafe; }
+          .qr-section { text-align: center; margin-top: 50px; }
+          .qr-box { display: inline-block; padding: 15px; background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+          .footer { margin-top: 80px; font-size: 9px; text-align: center; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 30px; font-weight: 700; text-transform: uppercase; }
+          .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 120px; color: rgba(0,0,0,0.02); font-weight: 900; z-index: -1; pointer-events: none; }
         </style>
       </head>
       <body>
         <div class="container">
-          <div class="watermark">CONFIDENCIAL</div>
+          <div class="watermark">INSTITUCIONAL</div>
           <div class="header">
-            <img src="/assets/branding/logo-full.png" alt="SASE Logo" class="logo" onerror="this.src='https://via.placeholder.com/150?text=SASE+LOGO'">
+            <img src="/assets/branding/logo-full.png" alt="SASE Logo" class="logo" onerror="this.src='/assets/branding/SASE_LOGO.png'">
             <div class="title">Credenciales de Acceso</div>
-            <div class="subtitle">Sistema de Administración Escolar SASE-310</div>
+            <div class="subtitle">Secretaría de Educación Pública • SASE-310</div>
           </div>
 
           <div class="content">
             <p>Estimado(a) <strong>${customName || roleLabel}</strong>,</p>
-            <p>Se le ha asignado acceso oficial a la plataforma SASE-310 para el ciclo escolar 2024-2025. Esta herramienta centraliza la gestión de incidencias, asistencia y expediente digital de nuestra institución.</p>
-            <p>A continuación, encontrará sus credenciales personales e intransferibles. Por favor, asegúrese de iniciar sesión y cambiar su contraseña en el primer acceso si el sistema lo solicita.</p>
+            <p>Se formaliza su acceso al ecosistema digital <strong>SASE-310</strong> para el presente periodo académico. Este sistema es el canal oficial para la gestión educativa y operativa de nuestra institución.</p>
+            <p>Sus credenciales son de uso estrictamente confidencial. Se recomienda realizar su primer ingreso desde una conexión segura.</p>
             
             <div class="credentials-box">
               <div class="cred-item">
-                <div class="cred-label">Usuario / Correo Institucional</div>
+                <div class="cred-label">Identificador de Usuario</div>
                 <div class="cred-value">${creds.user}</div>
               </div>
               <div class="cred-item">
-                <div class="cred-label">Contraseña Temporal</div>
+                <div class="cred-label">Clave Temporal de Acceso</div>
                 <div class="cred-value">${creds.pass}</div>
               </div>
               <div class="cred-item">
-                <div class="cred-label">Rol Asignado</div>
-                <div class="cred-value" style="color: #4f46e5;">${roleLabel.toUpperCase()}</div>
+                <div class="cred-label">Responsabilidad Asignada</div>
+                <div class="role-badge">${roleLabel}</div>
               </div>
             </div>
 
-            <p>Para ingresar, puede escanear el siguiente código QR con su dispositivo móvil o acceder directamente a la dirección web desde una computadora.</p>
+            <p>Para un acceso ágil, escanee el código QR adjunto o diríjase a la URL institucional indicada.</p>
           </div>
 
           <div class="qr-section">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-              accessLink
-            )}" alt="Acceso QR" width="150" />
-            <p style="font-size: 12px; margin-top: 10px;">${accessLink}</p>
+            <div class="qr-box">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+                accessLink
+              )}" alt="Acceso QR" width="120" />
+            </div>
+            <p style="font-size: 11px; margin-top: 15px; font-weight: 800; color: #64748b;">${accessLink}</p>
           </div>
 
           <div class="footer">
-            <p>Este documento contiene información sensible. Si usted no es el destinatario, por favor destrúyalo. © 2024 SASE Systems.</p>
+            <p>Documento oficial emitido por el Departamento de Control Escolar SASE-310. © 2024-2025.</p>
           </div>
         </div>
         <script>
-          setTimeout(() => { window.print(); }, 500);
+          setTimeout(() => { window.print(); }, 800);
         </script>
       </body>
       </html>
@@ -128,30 +130,30 @@ export const InvitationGenerator: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-900 p-6 rounded-xl border border-white/10 shadow-2xl max-w-2xl mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="bg-amber-500/20 p-3 rounded-full text-amber-500">
-          <span className="material-symbols-outlined text-2xl">mail_lock</span>
+    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-2xl mx-auto space-y-8 animate-fade-in">
+      <div className="flex items-center gap-5">
+        <div className="bg-amber-100/50 p-4 rounded-2xl text-amber-700 border border-amber-200/50">
+          <span className="material-symbols-outlined text-3xl">mail_lock</span>
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">
-            Generador de Cartas de Acceso
+          <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase italic">
+            Cartas de Acceso
           </h2>
-          <p className="text-gray-400 text-sm">
-            Crea documentos PDF oficiales para entregar credenciales.
+          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">
+            Generación de credenciales impresas oficiales
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <label className="block text-gray-400 text-xs font-bold uppercase mb-2">
-            Seleccionar Rol
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+            Rol Institucional
           </label>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as UserRole)}
-            className="w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white focus:border-amber-500 outline-none transition-colors"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none uppercase"
           >
             {Object.values(UserRole).map((role) => (
               <option key={role} value={role}>
@@ -160,36 +162,44 @@ export const InvitationGenerator: React.FC = () => {
             ))}
           </select>
         </div>
-        <div>
-          <label className="block text-gray-400 text-xs font-bold uppercase mb-2">
-            Nombre del Destinatario (Opcional)
+        <div className="space-y-2">
+          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+            Nombre del Destinatario
           </label>
           <input
             type="text"
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
-            placeholder="Ej. Prof. Juan Pérez"
-            className="w-full bg-black/40 border border-white/20 rounded-lg p-3 text-white focus:border-amber-500 outline-none transition-colors"
+            placeholder="EJ. PROF. ALEJANDRO RAMÍREZ"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none uppercase"
           />
         </div>
       </div>
 
-      <div className="bg-black/20 p-4 rounded-lg border border-white/5 mb-6 flex gap-4 items-center">
+      <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex gap-6 items-center shadow-inner">
         <QRCodeSVG url={accessLink} />
-        <div className="text-sm text-gray-400">
-          <p>Se generará un documento con este código QR.</p>
-          <p className="mt-1 text-xs">
-            Destino: <span className="text-amber-400">{accessLink}</span>
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-slate-800 uppercase tracking-widest">
+            Previsualización de Enlace
+          </p>
+          <p className="text-[11px] font-bold text-slate-500 flex items-center gap-2">
+            <span className="material-symbols-outlined text-[16px] text-amber-600">
+              link
+            </span>
+            {accessLink}
+          </p>
+          <p className="text-[9px] font-bold text-slate-400 uppercase italic">
+            El código QR redirige al portal de acceso institucional vigente.
           </p>
         </div>
       </div>
 
       <button
         onClick={handlePrint}
-        className="w-full py-4 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold rounded-xl shadow-lg shadow-amber-900/40 transition-all flex items-center justify-center gap-2 transform active:scale-95"
+        className="w-full py-5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-amber-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
       >
-        <span className="material-symbols-outlined">print</span>
-        Generar e Imprimir Carta
+        <span className="material-symbols-outlined text-[20px]">print</span>
+        Imprimir Carta de Credenciales
       </button>
     </div>
   );

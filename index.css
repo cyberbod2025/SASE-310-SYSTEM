@@ -2,35 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+:root {
+  --sase-blue: #1e3a8a;
+  --sase-blue-dark: #172554;
+  --sase-cyan: #0891b2;
+  --sase-slate: #f8fafc;
+  --sase-text: #1e293b;
+  --sase-border: #e2e8f0;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+body {
+  @apply bg-[#020510] text-slate-100 font-sans;
+  -webkit-font-smoothing: antialiased;
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3); /* Blueish tint */
-  border-radius: 4px;
+/* Institutional Design System */
+@layer components {
+  .inst-input {
+    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 transition-all 
+           placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-600;
+  }
+
+  .inst-card {
+    @apply bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+
+  .inst-heading {
+    @apply text-slate-800 font-black tracking-tight uppercase;
+  }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
+/* Discreet Institutional Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-/* Glassmorphism Utilities */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
 }
 
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+}
+
+/* Animations */
 .animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes fadeIn {
@@ -44,27 +62,23 @@
   }
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+.animate-pulse-subtle {
+  animation: pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulseSubtle {
+  0%,
+  100% {
+    opacity: 1;
   }
-  to {
-    transform: rotate(360deg);
+  50% {
+    opacity: 0.7;
   }
 }
 
-.animate-spin-slow {
-  animation: spin 3s linear infinite;
-}
-
-.text-shadow-glow {
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5),
-    0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-.glass-panel {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+/* Deprecated / Legacy Support (to be removed once fully migrated) */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }

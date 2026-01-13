@@ -46,7 +46,6 @@ export const DashboardSecretaria = () => {
   const handleEdit = (id: string) => {
     const student = students.find((s) => s.id === id);
     setEditingId(id);
-    // Registrar consulta en la bitácora con nombre del alumno
     logAccess(
       `Consultar Expediente (Usuario: ${activeUser.name})`,
       id,
@@ -57,26 +56,22 @@ export const DashboardSecretaria = () => {
   const handleSaveAudit = async (studentId: string) => {
     const student = students.find((s) => s.id === studentId);
 
-    // Registrar actualización en la bitácora de Supabase
     await logAudit(
       "ACTUALIZACION",
       `Expediente modificado por ${activeUser.name} (${activeUser.role})`,
       "alumnos",
       studentId,
       student?.name,
-      null, // oldValues - could be captured if needed
+      null,
       { modifiedBy: activeUser.name, modifiedAt: new Date().toISOString() }
     );
 
     updateStudentAudit(studentId, activeUser.name);
-    toast.success(`[AUDITORÍA] Cambios guardados por: ${activeUser.name}`, {
-      duration: 4000,
-    });
+    toast.success(`[AUDITORÍA] Cambios guardados por: ${activeUser.name}`);
     setEditingId(null);
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Mock Import Logic
     if (e.target.files && e.target.files.length > 0) {
       const loadingToast = toast.loading("Validando CURPs y cargando datos...");
       setTimeout(() => {
@@ -102,38 +97,40 @@ export const DashboardSecretaria = () => {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-4">
-        <div className="flex items-center gap-6">
-          <img
-            src="/assets/branding/SECRETARIOS.png"
-            alt="Secretaria Logo"
-            className="w-24 h-24 object-contain drop-shadow-2xl animate-float"
-            style={{
-              filter: "drop-shadow(0 0 15px rgba(59, 130, 246, 0.6))",
-            }}
-          />
-          <div className="flex flex-col gap-1" id="secretaria-header">
-            <h1
-              className="text-white text-3xl md:text-5xl font-black tracking-tight"
-              style={{ textShadow: "0 0 20px rgba(59,130,246,0.6)" }}
-            >
-              Secretaría Académica
+    <div className="flex-1 w-full space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+        <div className="flex items-center gap-5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1 h-full bg-cyan-500"></div>
+            <img
+              src="/assets/branding/SECRETARIOS.png"
+              alt="Secretaría"
+              className="w-14 h-14 object-contain"
+            />
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+              Secretaría Escolar
             </h1>
-            <p className="text-blue-200 text-lg font-medium tracking-wide">
-              Gestión de Expedientes y Control Escolar
-            </p>
+            <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
+              <span className="flex items-center gap-1.5 text-cyan-700">
+                <span className="w-2 h-2 bg-cyan-500 rounded-full"></span>
+                Control Escolar
+              </span>
+              <span className="text-slate-300">|</span>
+              <span>Expedientes y Auditoría</span>
+            </div>
           </div>
         </div>
 
-        {/* User Switcher for Demo */}
-        <div className="bg-black/40 border border-white/10 p-2 rounded-xl shadow-lg flex items-center gap-3 backdrop-blur-md">
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] uppercase font-bold text-gray-400">
-              Usuario Activo (Login)
+        <div className="flex items-center gap-4 bg-white border border-slate-200 p-2 rounded-xl shadow-sm">
+          <div className="flex flex-col items-end px-2">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Sesión de Auditoría
             </span>
             <select
-              className="text-sm font-bold text-white bg-transparent outline-none text-right cursor-pointer"
+              className="text-xs font-black text-slate-800 bg-transparent outline-none cursor-pointer uppercase hover:text-cyan-600 transition-colors"
               value={currentUser}
               onChange={(e) => setCurrentUser(e.target.value)}
             >
@@ -144,94 +141,111 @@ export const DashboardSecretaria = () => {
               ))}
             </select>
           </div>
-          <div className="h-8 w-8 rounded-full bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-xs uppercase border border-blue-500/30">
+          <div className="size-10 rounded-lg bg-cyan-50 border border-cyan-100 text-cyan-700 flex items-center justify-center font-black text-sm uppercase">
             {activeUser.name.substring(0, 2)}
           </div>
         </div>
       </div>
 
-      {/* Access Badge */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-xs font-bold text-gray-400 uppercase">
-          Permisos de Acceso:
-        </span>
-        <span className="px-2 py-1 bg-green-900/30 text-green-300 text-xs font-bold rounded border border-green-500/20 flex items-center gap-1">
-          <span className="material-symbols-outlined text-sm">public</span>{" "}
-          Acceso Global (Auditado)
-        </span>
-        <span className="text-xs text-gray-400 ml-2">
-          Sesión iniciada como: <strong>{activeUser.name}</strong> (
-          {activeUser.role})
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-orange-900/20 border border-orange-500/30 p-4 rounded-xl flex items-center gap-3">
-          <span className="material-symbols-outlined text-orange-400">
-            lock
+      {/* Access Badge & Context */}
+      <div className="flex flex-wrap items-center gap-6 p-4 bg-slate-50 border border-slate-200 rounded-xl shadow-inner">
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-emerald-600 text-[20px]">
+            verified_user
           </span>
-          <p className="text-sm text-orange-200 font-medium">
-            Modo Privacidad Activo: Usted tiene acceso a datos sensibles
-            (Tutores, Teléfonos, Direcciones). Toda consulta queda registrada en
-            la bitácora de seguridad.
+          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+            Nivel de Acceso:{" "}
+            <span className="text-emerald-700">Total (Supervisado)</span>
           </p>
         </div>
+        <div className="hidden md:block w-px h-4 bg-slate-200"></div>
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+          <span className="material-symbols-outlined text-[18px]">policy</span>
+          Bitácora Activa: Toda consulta de expediente queda registrada
+          institucionalmente.
+        </p>
+      </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Data Import Card */}
-        <div className="bg-black/20 backdrop-blur-xl border border-white/10 p-4 rounded-xl flex items-center justify-between shadow-lg">
-          <div>
-            <h4 className="font-bold text-white text-sm">
-              Carga Masiva (Excel/CSV)
-            </h4>
-            <p className="text-xs text-gray-400">
-              Importar alumnos desde archivo oficial.
-            </p>
+        <div className="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex flex-col justify-between group">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+                Carga Masiva
+              </h3>
+              <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">
+                Layout SEP / Excel / CSV
+              </p>
+            </div>
+            <div className="p-2 bg-slate-50 rounded-xl border border-slate-100 text-slate-400 group-hover:text-cyan-600 group-hover:border-cyan-200 transition-colors">
+              <span className="material-symbols-outlined">cloud_upload</span>
+            </div>
           </div>
-          <div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept=".csv,.xlsx"
-              onChange={handleImport}
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-2 bg-white text-black text-xs font-bold rounded hover:bg-gray-200 flex items-center gap-2 transition-colors"
-            >
-              <span className="material-symbols-outlined text-sm">
-                upload_file
-              </span>
-              Importar
-            </button>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept=".csv,.xlsx"
+            onChange={handleImport}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full py-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-600 uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2 mt-4"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              upload_file
+            </span>
+            Seleccionar Archivo
+          </button>
+        </div>
+
+        {/* Info Card */}
+        <div className="md:col-span-2 bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between">
+          <div className="flex gap-6 items-center">
+            <div className="size-16 rounded-2xl bg-cyan-50 flex items-center justify-center border border-cyan-100 text-cyan-600 shadow-inner">
+              <span className="material-symbols-outlined text-4xl">school</span>
+            </div>
+            <div>
+              <h3 className="text-slate-800 font-black text-xl uppercase tracking-tighter italic">
+                Total de Matrícula
+              </h3>
+              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
+                Ciclo Escolar Vigente 2024-2025
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="block text-5xl font-black text-slate-800 tabular-nums">
+              {students.length}
+            </span>
+            <span className="text-[10px] font-black text-cyan-700 uppercase tracking-widest bg-cyan-50 px-2 py-0.5 rounded border border-cyan-100">
+              Registros Activos
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Student List (Filtered) */}
-      <div
-        id="secretaria-list"
-        className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg overflow-hidden flex flex-col min-h-[500px]"
-      >
-        <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-          <h3 className="font-bold text-lg text-white flex items-center gap-2">
-            Directorio Estudiantil
-            <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full">
-              {students.length}
+      {/* Student List */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+        <div className="px-6 py-5 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/50">
+          <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
+            <span className="material-symbols-outlined text-cyan-600">
+              folder_shared
             </span>
+            Directorio Estudiantil Institucional
           </h3>
 
-          {/* Search Bar */}
-          <div className="relative w-full md:w-96 group" id="secretaria-search">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-400 transition-colors material-symbols-outlined">
+          <div className="relative w-full md:w-96">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined">
               search
             </span>
             <input
               type="text"
-              placeholder="Buscar por nombre, matrícula o grupo..."
-              className="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+              placeholder="BUSCAR NOMBRE O MATRÍCULA..."
+              className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm font-black text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500/50 transition-all uppercase"
               onChange={(e) => {
-                // Simple local filter for now, ideally this would be a state
                 const term = e.target.value.toLowerCase();
                 const rows = document.querySelectorAll(".student-row");
                 rows.forEach((row) => {
@@ -244,143 +258,170 @@ export const DashboardSecretaria = () => {
             />
           </div>
         </div>
-        <div className="divide-y divide-white/10">
+
+        <div className="overflow-x-auto">
           {students.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              No hay alumnos registrados.
+            <div className="p-20 text-center">
+              <span className="material-symbols-outlined text-6xl text-slate-200 mb-4">
+                folder_off
+              </span>
+              <p className="text-slate-400 font-black uppercase text-xs tracking-widest italic">
+                Base de datos local vacía
+              </p>
             </div>
           ) : (
-            <table className="w-full text-left text-sm">
-              <thead className="bg-white/5 text-gray-400 uppercase text-xs font-bold">
-                <tr>
-                  <th className="px-6 py-3">Alumno</th>
-                  <th className="px-6 py-3">Grupo</th>
-                  <th className="px-6 py-3">Estado</th>
-                  <th className="px-6 py-3">Padre/Tutor</th>
-                  <th className="px-6 py-3">Acciones</th>
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-100">
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                    Estudiante
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                    Grupo / Matrícula
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                    Estado Administrativo
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                    Detalle Tutor
+                  </th>
+                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                    Protocolo
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="divide-y divide-slate-100">
                 {students.map((student) => (
                   <tr
                     key={student.id}
-                    className="hover:bg-white/5 transition-colors student-row"
+                    className="student-row hover:bg-slate-50/50 transition-colors group"
                   >
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4">
                         <img
                           src={student.avatar}
-                          alt="Avatar"
-                          className="size-8 rounded-full bg-gray-200 object-cover"
+                          alt=""
+                          className="size-10 rounded-full border border-slate-200 shadow-sm"
                         />
-                        <span className="font-bold text-white">
+                        <span className="font-black text-slate-800 uppercase italic text-sm group-hover:text-cyan-700 transition-colors">
                           {student.name}
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs text-gray-300">
-                      {student.group}
+                    <td className="px-6 py-4 text-xs">
+                      <p className="font-black text-slate-700">
+                        {student.group}
+                      </p>
+                      <p className="font-bold text-slate-400 mt-0.5">
+                        {student.matricula}
+                      </p>
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-bold ${
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black border uppercase ${
                           student.caseState === CaseState.CERRADO
-                            ? "bg-green-900/30 text-green-300 border border-green-500/20"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                             : student.caseState === CaseState.OBSERVADO
-                            ? "bg-blue-900/30 text-blue-300 border border-blue-500/20"
-                            : "bg-red-900/30 text-red-300 border border-red-500/20"
+                            ? "bg-blue-50 text-blue-700 border-blue-100"
+                            : "bg-red-50 text-red-700 border-red-100"
                         }`}
                       >
+                        <span
+                          className={`size-1.5 rounded-full ${
+                            student.caseState === CaseState.CERRADO
+                              ? "bg-emerald-500"
+                              : student.caseState === CaseState.OBSERVADO
+                              ? "bg-blue-500"
+                              : "bg-red-500"
+                          }`}
+                        ></span>
                         {student.caseState}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       {editingId === student.id ? (
-                        <div className="text-xs bg-blue-50 p-2 rounded border border-blue-100">
-                          <div>
-                            <p>
-                              <strong>{student.guardianInfo?.name}</strong>
+                        <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-lg animate-fade-in-up scale-100 max-w-xs ring-4 ring-cyan-500/10">
+                          <h4 className="text-[10px] font-black text-cyan-700 uppercase mb-3 border-b border-cyan-50 pb-2">
+                            Expediente del Tutor
+                          </h4>
+                          <div className="space-y-2">
+                            <p className="text-xs font-black text-slate-800 uppercase italic">
+                              {student.guardianInfo?.name}
                             </p>
-                            <p>{student.guardianInfo?.phonePrimary}</p>
-                            <span className="truncate">
-                              {student.guardianInfo?.address || "No registrada"}
-                            </span>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase">
+                              <span className="material-symbols-outlined text-sm">
+                                call
+                              </span>
+                              {student.guardianInfo?.phonePrimary}
+                            </div>
+                            <p className="text-[9px] font-bold text-slate-400 italic">
+                              {student.guardianInfo?.address ||
+                                "Domicilio no suministrado"}
+                            </p>
                           </div>
-                          <div className="mt-4 flex justify-between items-center border-t border-blue-200 pt-3">
-                            <div className="text-xs text-blue-800">
-                              <p>
-                                <strong>Ultima Modificación:</strong>{" "}
-                                {student.lastModifiedBy || "N/A"}
-                              </p>
-                              <p>{student.lastModifiedAt || ""}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => setEditingId(null)}
-                                className="text-xs font-bold text-gray-500 hover:text-gray-700"
-                              >
-                                Cancelar
-                              </button>
-                              <button
-                                onClick={() => handleSaveAudit(student.id)}
-                                className="bg-blue-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-blue-700 shadow-sm"
-                              >
-                                Guardar
-                              </button>
-                            </div>
+                          <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="text-[9px] font-black text-slate-400 hover:text-slate-600 uppercase"
+                            >
+                              Cerrar
+                            </button>
+                            <button
+                              onClick={() => handleSaveAudit(student.id)}
+                              className="px-3 py-1.5 bg-cyan-600 text-white rounded-lg text-[9px] font-black uppercase hover:bg-cyan-700 shadow-md"
+                            >
+                              Auditar y Guardar
+                            </button>
                           </div>
                         </div>
                       ) : (
-                        <span className="text-gray-500 text-xs italic">
-                          Datos ocultos
-                        </span>
+                        <div className="flex items-center gap-2 text-slate-300">
+                          <span className="material-symbols-outlined text-[18px]">
+                            lock_person
+                          </span>
+                          <span className="text-[10px] font-black uppercase tracking-widest italic">
+                            Confidencial
+                          </span>
+                        </div>
                       )}
                     </td>
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => handleEdit(student.id)}
-                        className="text-blue-400 hover:text-blue-300 hover:underline font-medium text-xs flex items-center gap-1"
-                      >
-                        <span className="material-symbols-outlined text-sm">
-                          {editingId === student.id
-                            ? "visibility_off"
-                            : "visibility"}
-                        </span>
-                        {editingId === student.id ? "Ocultar" : "Consultar"}
-                      </button>
-
-                      {/* Document Actions */}
-                      <div className="h-4 w-px bg-white/10"></div>
-
-                      <button
-                        onClick={() =>
-                          toast.success(
-                            `Generando PDF: Boleta - ${student.name}`,
-                            { icon: "print" }
-                          )
-                        }
-                        title="Imprimir Boleta"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">
-                          description
-                        </span>
-                      </button>
-                      <button
-                        onClick={() =>
-                          toast.success(
-                            `Descargando Kardex Oficial - ${student.name}`,
-                            { icon: "download" }
-                          )
-                        }
-                        title="Descargar Kardex"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">
-                          school
-                        </span>
-                      </button>
-                    </div>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() => handleEdit(student.id)}
+                          className={`p-2 rounded-lg transition-all border ${
+                            editingId === student.id
+                              ? "bg-cyan-50 text-cyan-700 border-cyan-200 shadow-inner"
+                              : "bg-white text-slate-400 hover:text-cyan-600 border-slate-200 hover:border-cyan-300"
+                          }`}
+                          title="Abrir Expediente"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            {editingId === student.id
+                              ? "visibility_off"
+                              : "visibility"}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => toast.success("Kardex generado")}
+                          className="p-2 rounded-lg bg-white text-slate-400 hover:text-emerald-600 border border-slate-200 hover:border-emerald-300 transition-all"
+                          title="Imprimir Kardex"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            print
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => toast.success("Exportando datos")}
+                          className="p-2 rounded-lg bg-white text-slate-400 hover:text-indigo-600 border border-slate-200 hover:border-indigo-300 transition-all"
+                          title="Exportar Registro"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            file_download
+                          </span>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -157,5 +157,21 @@ export enum AppModule {
   SOLICITUDES = "solicitudes",
   REPORTES_DOCENTES = "reportes_docentes",
   PROTOCOLOS = "protocolos",
+  APROBACIONES_PERSONAL = "aprobaciones_personal",
   NOT_FOUND = "not_found",
+  HOME = "home",
+}
+
+export interface Group {
+  id: string;
+  nombre: string;
+  tutor_id?: string;
+  ciclo_escolar: string;
+}
+
+export interface TeacherAssignment {
+  id: string;
+  profesor_id: string;
+  grupo_id: string;
+  materia: string;
 }

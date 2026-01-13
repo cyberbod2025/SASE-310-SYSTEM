@@ -1,188 +1,193 @@
-import React, { useState } from "react";
+// SASE Login - Institutional Portal
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase/client";
 import { GOD_MODE_CREDENTIALS } from "../utils/saseUtils";
 
 interface LoginProps {
   onDemoEnter?: () => void;
   onDevEnter?: () => void;
+  onRegisterClick?: () => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ onDemoEnter, onDevEnter }) => {
+const INTRO_SEEN_KEY = "sase_intro_seen_v2"; // Force refresh for new style
+
+export const Login: React.FC<LoginProps> = ({
+  onDemoEnter,
+  onDevEnter,
+  onRegisterClick,
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [resetMessage, setResetMessage] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    if (
+      email === GOD_MODE_CREDENTIALS.email &&
+      password === GOD_MODE_CREDENTIALS.password
+    ) {
+      if (onDevEnter) onDevEnter();
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    // Check for God Mode (Parallel check)
-    if (
-      email === GOD_MODE_CREDENTIALS.email &&
-      password === GOD_MODE_CREDENTIALS.password &&
-      onDevEnter
-    ) {
-      onDevEnter();
-      return;
-    }
-
     if (error) {
-      setError("Credenciales incorrectas. Verifique correo y contraseña.");
+      setError("Verifique sus credenciales institucionales.");
       setLoading(false);
-    }
-    // Success handled by AuthProvider
-  };
-
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError("Ingrese su correo para restablecer la contraseña.");
-      return;
-    }
-    setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + "/reset-password",
-    });
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-    } else {
-      setResetMessage("Enlace de recuperación enviado a su correo.");
-      setError(null);
     }
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-black flex items-center justify-center overflow-hidden font-sans">
-      {/* Video Background */}
-      {/* Background - Static Dark Gradient */}
-      <div className="absolute inset-0 z-0 overflow-hidden bg-gradient-to-br from-gray-900 via-black to-slate-900">
-        <div className="absolute inset-0 bg-[url('/assets/branding/grid.png')] opacity-20 z-10 mix-blend-overlay"></div>
+    <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[#020510] overflow-hidden">
+      {/* 1. Subtle Institutional Background Texture */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-black"></div>
       </div>
 
-      {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md p-1 mx-4 rounded-2xl overflow-hidden group">
-        {/* Golden/Silver Gradient Border */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-yellow-400 to-gray-300 animate-border-spin opacity-60 group-hover:opacity-100 transition-opacity blur-md"></div>
+      {/* 3. Login Content Area */}
+      <div className="relative z-10 w-full max-w-lg p-6 animate-fadeIn">
+        <div className="flex flex-col items-center mb-10 text-center">
+          <img
+            src="/assets/branding/SASE.png"
+            alt="SASE-310"
+            className="h-16 md:h-20 mb-4 object-contain"
+          />
+          <div className="h-1 w-16 bg-blue-600 rounded-full mb-4"></div>
+          <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+            Portal de Acceso Institucional
+          </h1>
+          <p className="text-blue-300/60 text-sm mt-2 max-w-xs">
+            Sistema de Acompañamiento y Seguimiento Escolar
+          </p>
+        </div>
 
-        <div className="relative bg-gray-900/90 backdrop-blur-xl rounded-xl p-8 h-full w-full">
-          {/* Header & Logo */}
-          <div className="text-center mb-1">
-            <div className="flex justify-center mb-1">
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-amber-500/20 rounded-full blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-                <img
-                  src="/assets/branding/SASE.png"
-                  alt="SASE Logo"
-                  style={{
-                    filter:
-                      "drop-shadow(0 0 30px rgba(218,165,32,0.6)) drop-shadow(0 0 60px rgba(192,192,192,0.4))",
-                  }}
-                  className="relative w-[350px] h-auto object-contain"
-                />
+        <div className="bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl p-8 md:p-10 shadow-2xl shadow-blue-900/20">
+          <form onSubmit={handleLogin} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-100 p-3 rounded-xl text-red-600 text-xs flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm">error</span>
+                {error}
               </div>
-            </div>
-            {/* Texto redundante eliminado */}
-          </div>
+            )}
 
-          {/* Messages */}
-          {error && (
-            <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-sm flex items-start gap-3">
-              <span className="material-symbols-outlined text-lg">error</span>
-              {error}
-            </div>
-          )}
-
-          {resetMessage && (
-            <div className="mb-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-200 text-sm flex items-start gap-3">
-              <span className="material-symbols-outlined text-lg">
-                check_circle
-              </span>
-              {resetMessage}
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleLogin} className="space-y-5">
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-300 uppercase tracking-wider ml-1">
-                Correo Institucional
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-blue-400/60 uppercase tracking-wider ml-1">
+                Correo Electrónico
               </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">
+              <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">
                   mail
                 </span>
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="usuario@sase.mx"
-                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white focus:bg-white/10 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder:text-gray-600"
+                  placeholder="ejemplo@sase.mx"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-300 uppercase tracking-wider ml-1">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-blue-400/60 uppercase tracking-wider ml-1">
                 Contraseña
               </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">
+              <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">
                   lock
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-12 text-white focus:bg-white/10 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all placeholder:text-gray-600"
                   placeholder="••••••••"
-                  className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-12 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 transition-colors"
                 >
-                  <span className="material-symbols-outlined text-[20px]">
+                  <span className="material-symbols-outlined">
                     {showPassword ? "visibility_off" : "visibility"}
                   </span>
                 </button>
               </div>
             </div>
 
+            <div className="flex justify-end px-1">
+              <button
+                type="button"
+                className="text-[11px] text-blue-600 hover:text-blue-800 font-bold transition-colors"
+              >
+                ¿Necesita ayuda con su acceso?
+              </button>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-black font-bold py-3.5 rounded-lg shadow-lg shadow-amber-900/30 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-wait mt-4 flex items-center justify-center gap-2"
+              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50"
             >
               {loading ? (
-                <>
-                  <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Iniciando...
-                </>
+                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
               ) : (
-                "Ingresar al Sistema"
+                <>
+                  <span>INGRESAR AL SISTEMA</span>
+                  <span className="material-symbols-outlined text-xl">
+                    east
+                  </span>
+                </>
               )}
             </button>
           </form>
-
-          {/* Demo Access Button Removed */}
         </div>
 
-        {/* Footer Disclaimer */}
-        <p className="text-center text-xs text-gray-400 mt-8 leading-relaxed max-w-xs mx-auto">
-          Acceso restringido únicamente a personal autorizado.
-        </p>
+        <div className="mt-8 flex flex-col items-center gap-4">
+          <button
+            onClick={onRegisterClick}
+            className="text-xs text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-2 font-medium"
+          >
+            <span className="material-symbols-outlined text-sm">
+              person_add
+            </span>
+            Solicitar Registro de Personal
+          </button>
+
+          <div className="text-[10px] text-slate-400 text-center uppercase tracking-widest font-medium">
+            Secretaría de Educación Pública | CCT 09DES4310M
+          </div>
+        </div>
       </div>
+
+      <style>{`
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        .animate-fadeOutDelay {
+          animation: fadeOut 0.8s ease-in-out 5s forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+      `}</style>
     </div>
   );
 };

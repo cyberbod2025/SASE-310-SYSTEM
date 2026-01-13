@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useApp } from "../store";
 import { Student, CaseState } from "../types";
 import { supabase } from "../supabase/client";
+import toast from "react-hot-toast";
 
 export const Inscripciones: React.FC = () => {
   const { importStudents } = useApp();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // -- Local State for the Complex Form --
   const [formData, setFormData] = useState({
-    // Student Core
     apellidoPaterno: "",
     apellidoMaterno: "",
     nombre: "",
@@ -18,37 +18,24 @@ export const Inscripciones: React.FC = () => {
     genero: "M",
     promedioAnterior: 0,
     group: "Provisional",
-
-    // Family & Guardian
     nombrePadre: "",
     telPadre: "",
-
     nombreMadre: "",
     telMadre: "",
-
     nombreTutor: "",
     telTutor: "",
-    parentescoTutor: "", // Abuelo, Tío, Hermano, etc.
-
-    viveCon: "ambos", // ambos, mama, papa, tutor, otro
+    parentescoTutor: "",
+    viveCon: "ambos",
     telEmergencia: "",
-
-    // Enrollment Details
-    motivoAlta: "nuevo_ingreso", // nuevo_ingreso, cambio_escuela
+    motivoAlta: "nuevo_ingreso",
     isUdeii: false,
-    personaInscribe: "padre", // padre, madre, tutor
-
-    // Health
+    personaInscribe: "padre",
     situacionRiesgo: "",
     hasMedicalDoc: false,
-    detallePersonaInscribe: "", // For "Otro"
-
-    // UI Verification State
+    detallePersonaInscribe: "",
     verificationCode: "",
     verifyingPhone: null as "mama" | "papa" | "tutor" | null,
     verifiedPhones: { mama: false, papa: false, tutor: false },
-
-    // Documents Checklist
     docs: {
       actaNacimiento: false,
       comprobanteDomicilio: false,
@@ -59,33 +46,26 @@ export const Inscripciones: React.FC = () => {
     },
   });
 
-  const [file, setFile] = useState<File | null>(null); // Documento Salud
-  const [fileStudent, setFileStudent] = useState<File | null>(null); // Foto Alumno
-  const [fileGuardian, setFileGuardian] = useState<File | null>(null); // Foto Tutor
+  const [file, setFile] = useState<File | null>(null);
+  const [fileStudent, setFileStudent] = useState<File | null>(null);
+  const [fileGuardian, setFileGuardian] = useState<File | null>(null);
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: React.Dispatch<React.SetStateAction<File | null>>
   ) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setter(e.target.files[0]);
-    }
+    if (e.target.files && e.target.files.length > 0) setter(e.target.files[0]);
   };
 
   const handleVerifyCurp = () => {
-    // Simulation of external validation
     if (formData.curp.length < 18) {
-      alert("El CURP debe tener 18 caracteres.");
+      toast.error("CURP inválido");
       return;
     }
-    // Open RENAPO in new tab just for "realism" or simulate verification
-    const confirm = window.confirm(
-      "¿Desea verificar este CURP en el portal oficial de RENAPO?\n(Esto abrirá una nueva ventana)"
-    );
-    if (confirm) {
+    if (window.confirm("¿Validar CURP en RENAPO?"))
       window.open("https://www.gob.mx/curp/", "_blank");
-    }
     setFormData({ ...formData, verifiedCurp: true });
+    toast.success("CURP verificado");
   };
 
   const handleCheckboxChange = (doc: keyof typeof formData.docs) => {
@@ -95,41 +75,37 @@ export const Inscripciones: React.FC = () => {
     });
   };
 
-  /* -- PHONE VERIFICATION LOGIC (MOCK) -- */
-  const [verifyingPhone, setVerifyingPhone] = useState<
-    "mama" | "papa" | "tutor" | null
-  >(null);
-  const [verificationCode, setVerificationCode] = useState("");
-  const [verifiedPhones, setVerifiedPhones] = useState({
-    mama: false,
-    papa: false,
-    tutor: false,
-  });
-
   const startVerification = (type: "mama" | "papa" | "tutor") => {
-    setVerifyingPhone(type);
-    setVerificationCode("");
-    alert(`[SIMULACIÓN SMS] Enviando código 1234 al número registrado...`);
+    setFormData({ ...formData, verifyingPhone: type, verificationCode: "" });
+    toast.success(`Código enviado al ${type} (Simulación: 1234)`);
   };
 
   const verifyCode = () => {
-    if (verificationCode === "1234") {
-      setVerifiedPhones({ ...verifiedPhones, [verifyingPhone!]: true });
-      setVerifyingPhone(null);
-      alert("¡Teléfono verificado exitosamente!");
+    if (formData.verificationCode === "1234") {
+      setFormData({
+        ...formData,
+        verifiedPhones: {
+          ...formData.verifiedPhones,
+          [formData.verifyingPhone!]: true,
+        },
+        verifyingPhone: null,
+      });
+      toast.success("Teléfono verificado");
     } else {
-      alert("Código incorrecto (Use 1234)");
+      toast.error("Código incorrecto");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    const loadingToast = toast.loading("Registrando inscripción...");
 
-    // Construct Full Name
     const fullName =
-      `${formData.apellidoPaterno} ${formData.apellidoMaterno} ${formData.nombre}`.trim();
+      `${formData.apellidoPaterno} ${formData.apellidoMaterno} ${formData.nombre}`
+        .trim()
+        .toUpperCase();
 
-    // Determine Guardian Info based on "Persona que Inscribe" or "Vive Con" logic
     let primaryContactName = formData.nombrePadre;
     let primaryContactRel = "Padre";
     let primaryContactPhone = formData.telPadre;
@@ -144,7 +120,6 @@ export const Inscripciones: React.FC = () => {
       primaryContactPhone = formData.telTutor;
     }
 
-    // Upload Helper
     const uploadFile = async (
       fileToUpload: File,
       bucket: string,
@@ -163,40 +138,29 @@ export const Inscripciones: React.FC = () => {
     };
 
     try {
-      let studentPhotoUrl = `https://i.pravatar.cc/150?u=${Math.random()}`; // Default
+      let studentPhotoUrl = `https://i.pravatar.cc/150?u=${Math.random()}`;
       let guardianPhotoUrl = "";
 
-      if (fileStudent) {
-        try {
-          studentPhotoUrl = await uploadFile(
-            fileStudent,
-            "avatars",
-            `student_${formData.curp}`
-          );
-        } catch (e) {
-          console.error("Error uploading student photo", e);
-        }
-      }
+      if (fileStudent)
+        studentPhotoUrl = await uploadFile(
+          fileStudent,
+          "avatars",
+          `student_${formData.curp}`
+        );
+      if (fileGuardian)
+        guardianPhotoUrl = await uploadFile(
+          fileGuardian,
+          "avatars",
+          `guardian_${formData.curp}`
+        );
 
-      if (fileGuardian) {
-        try {
-          guardianPhotoUrl = await uploadFile(
-            fileGuardian,
-            "avatars",
-            `guardian_${formData.curp}`
-          );
-        } catch (e) {
-          console.error("Error uploading guardian photo", e);
-        }
-      }
-
-      const { data: newStudentData, error: studentError } = await (
+      const { data: newStudent, error: studentError } = await (
         supabase.from("alumnos") as any
       )
         .insert([
           {
             nombre_completo: fullName,
-            matricula: formData.curp, // Using CURP as matricula initially
+            matricula: formData.curp,
             curp: formData.curp,
             grado: formData.group.split(" ")[0] || "1º",
             grupo: formData.group,
@@ -204,21 +168,20 @@ export const Inscripciones: React.FC = () => {
             fecha_nacimiento: formData.fechaNacimiento || null,
             genero: formData.genero,
             promedio_anterior: formData.promedioAnterior,
-            avatar_url: studentPhotoUrl, // Saved here
+            avatar_url: studentPhotoUrl,
             datos_tutor: {
               name: primaryContactName || "No registrado",
               relationship: primaryContactRel,
               phonePrimary: primaryContactPhone || formData.telEmergencia,
-              address: "Dirección pendiente de registro",
+              address: "Pendiente",
               details: {
                 vive_con: formData.viveCon,
                 persona_inscribe: formData.personaInscribe,
-                detalle_persona_inscribe: formData.detallePersonaInscribe,
                 is_udeii: formData.isUdeii,
               },
-              photoUrl: guardianPhotoUrl, // Saved here
+              photoUrl: guardianPhotoUrl,
             },
-            modificado_por: "Secretaría (Web)",
+            modificado_por: "Secretaría",
             modificado_en: new Date().toISOString(),
           },
         ])
@@ -227,140 +190,78 @@ export const Inscripciones: React.FC = () => {
 
       if (studentError) throw studentError;
 
-      if (newStudentData && formData.situacionRiesgo) {
+      if (newStudent && formData.situacionRiesgo) {
         let docUrl = null;
-        if (file) {
-          const fileExt = file.name.split(".").pop();
-          const fileName = `${newStudentData.id}_${Date.now()}.${fileExt}`;
-          const { error: uploadError } = await supabase.storage
-            .from("documentos_salud")
-            .upload(fileName, file);
-
-          if (uploadError) {
-            console.error("Error uploading file:", uploadError);
-            alert(
-              "Error al subir el documento de salud, pero el alumno fue registrado."
-            );
-          } else {
-            const {
-              data: { publicUrl },
-            } = supabase.storage
-              .from("documentos_salud")
-              .getPublicUrl(fileName);
-            docUrl = publicUrl;
-          }
-        }
-
-        const { error: healthError } = await supabase.from("salud").insert([
+        if (file)
+          docUrl = await uploadFile(
+            file,
+            "documentos_salud",
+            `${newStudent.id}_salud`
+          );
+        await supabase.from("salud").insert([
           {
-            alumno_id: newStudentData.id,
+            alumno_id: newStudent.id,
             padecimiento: formData.situacionRiesgo,
             documento_url: docUrl,
           },
         ]);
-        if (healthError)
-          console.error("Error saving health info:", healthError);
       }
 
-      // Also update local store for immediate feedback
-      if (newStudentData) {
-        const student = newStudentData as any;
-        const mappedStudent: Student = {
-          id: student.id,
-          matricula: student.matricula || "PENDIENTE",
-          name: student.nombre_completo,
-          group: student.grupo,
-          avatar: student.avatar_url || "",
-          caseState: student.estado_caso as CaseState,
-          incidents: [],
-          justificantes: [],
-          guardianInfo: student.datos_tutor as any,
-          // ... map other fields if needed
-        };
-        importStudents([mappedStudent]);
-      }
+      const mapped: Student = {
+        id: newStudent.id,
+        matricula: newStudent.matricula,
+        name: newStudent.nombre_completo,
+        group: newStudent.grupo,
+        avatar: newStudent.avatar_url,
+        caseState: newStudent.estado_caso as CaseState,
+        incidents: [],
+        justificantes: [],
+        guardianInfo: newStudent.datos_tutor as any,
+      };
+      importStudents([mapped]);
 
-      alert(
-        `Alumno ${fullName} inscrito correctamente en SUPABASE.\nExpediente Digital 2024 Abierto.`
-      );
-
-      // Reset Form
+      toast.success(`Expediente de ${fullName} creado`, { id: loadingToast });
       setFormData({
+        ...formData,
         apellidoPaterno: "",
         apellidoMaterno: "",
         nombre: "",
         curp: "",
         verifiedCurp: false,
-        group: "Provisional",
-        fechaNacimiento: "",
-        genero: "M",
-        promedioAnterior: 0,
-        nombrePadre: "",
-        telPadre: "",
-        nombreMadre: "",
-        telMadre: "",
-        nombreTutor: "",
-        telTutor: "",
-        parentescoTutor: "",
-        viveCon: "ambos",
-        telEmergencia: "",
-        motivoAlta: "nuevo_ingreso",
-        isUdeii: false,
-        personaInscribe: "padre",
-        situacionRiesgo: "",
-        hasMedicalDoc: false,
-        detallePersonaInscribe: "",
-        verificationCode: "",
-        verifyingPhone: null,
-        verifiedPhones: { mama: false, papa: false, tutor: false },
-        docs: {
-          actaNacimiento: false,
-          comprobanteDomicilio: false,
-          curpDoc: false,
-          boletaPrimaria: false,
-          boletaSecundaria: false,
-          cambioEscuelaDoc: false,
-        },
       });
-      setFile(null);
-      setFileStudent(null);
-      setFileGuardian(null);
     } catch (err: any) {
-      console.error("Error registering student:", err);
-      alert("Error al registrar alumno: " + err.message);
+      toast.error("Error: " + err.message, { id: loadingToast });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto pb-20 text-gray-900">
-      <div className="flex justify-between items-center mb-6">
+    <div className="flex-1 w-full space-y-8 animate-fade-in pb-20">
+      <header className="flex items-center gap-5 pb-6 border-b border-slate-200">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-1 h-full bg-cyan-600"></div>
+          <span className="material-symbols-outlined text-4xl text-cyan-700">
+            person_add
+          </span>
+        </div>
         <div>
-          <h2 className="text-2xl font-bold text-text-main">
-            Ficha de Inscripción
-          </h2>
-          <p className="text-text-secondary">Ciclo Escolar 2024-2025</p>
+          <h1 className="text-3xl font-black text-slate-800 tracking-tight">
+            Registro de Inscripción
+          </h1>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+            Control Escolar • Ciclo 2024-2025
+          </p>
         </div>
-        <div className="text-right text-xs text-text-secondary">
-          <p>Fecha: {new Date().toLocaleDateString()}</p>
-          <p>Hora: {new Date().toLocaleTimeString()}</p>
-        </div>
-      </div>
+      </header>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* SECTION 1: DATOS DEL ALUMNO */}
-        <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
-          <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
-            <span className="material-symbols-outlined">person</span> Datos del
-            Alumno
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                Apellido Paterno
-              </label>
+      <form onSubmit={handleSubmit} className="space-y-12">
+        <Section title="01. Datos del Alumno" icon="person">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <FormField label="Apellido Paterno" required>
               <input
                 type="text"
-                className="w-full border p-2 rounded text-gray-900 bg-white"
+                className="inst-input"
                 required
                 value={formData.apellidoPaterno}
                 onChange={(e) =>
@@ -370,14 +271,11 @@ export const Inscripciones: React.FC = () => {
                   })
                 }
               />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                Apellido Materno
-              </label>
+            </FormField>
+            <FormField label="Apellido Materno">
               <input
                 type="text"
-                className="w-full border p-2 rounded text-gray-900 bg-white"
+                className="inst-input"
                 value={formData.apellidoMaterno}
                 onChange={(e) =>
                   setFormData({
@@ -386,14 +284,11 @@ export const Inscripciones: React.FC = () => {
                   })
                 }
               />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                Nombre(s)
-              </label>
+            </FormField>
+            <FormField label="Nombre(s)" required>
               <input
                 type="text"
-                className="w-full border p-2 rounded text-gray-900 bg-white"
+                className="inst-input"
                 required
                 value={formData.nombre}
                 onChange={(e) =>
@@ -403,22 +298,18 @@ export const Inscripciones: React.FC = () => {
                   })
                 }
               />
-            </div>
+            </FormField>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                CURP
-              </label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+            <FormField label="CURP" required>
               <div className="flex gap-2">
                 <input
                   type="text"
-                  className={`w-full border p-2 rounded uppercase text-gray-900 bg-white ${
-                    formData.verifiedCurp ? "border-green-500 bg-green-50" : ""
+                  maxLength={18}
+                  className={`inst-input ${
+                    formData.verifiedCurp ? "bg-green-50 border-green-200" : ""
                   }`}
                   required
-                  maxLength={18}
                   value={formData.curp}
                   onChange={(e) =>
                     setFormData({
@@ -430,38 +321,35 @@ export const Inscripciones: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleVerifyCurp}
-                  className={`px-3 py-1 rounded text-xs font-bold ${
+                  className={`px-4 rounded-xl text-[10px] font-black uppercase ${
                     formData.verifiedCurp
                       ? "bg-green-600 text-white"
-                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      : "bg-slate-100 text-slate-500"
                   }`}
                 >
-                  {formData.verifiedCurp ? "VALIDADO" : "VERIFICAR"}
+                  {formData.verifiedCurp ? "OK" : "Verificar"}
                 </button>
               </div>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                Grupo Asignado
-              </label>
+            </FormField>
+            <FormField label="Grupo">
               <select
-                className="w-full border p-2 rounded text-gray-900 bg-white"
+                className="inst-input"
                 value={formData.group}
                 onChange={(e) =>
                   setFormData({ ...formData, group: e.target.value })
                 }
               >
-                <option value="Provisional">Provisional (Nuevo Ingreso)</option>
+                <option value="Provisional">Provisional</option>
                 {["1º A", "1º B", "2º A", "2º B", "3º A", "3º B"].map((g) => (
                   <option key={g}>{g}</option>
                 ))}
               </select>
-            </div>
-            <div className="flex items-center gap-2 pt-6">
+            </FormField>
+            <div className="flex items-center gap-3 pt-6">
               <input
                 type="checkbox"
                 id="udeii"
-                className="size-5 text-primary focus:ring-primary rounded"
+                className="size-5 rounded border-slate-300 text-cyan-600"
                 checked={formData.isUdeii}
                 onChange={(e) =>
                   setFormData({ ...formData, isUdeii: e.target.checked })
@@ -469,40 +357,27 @@ export const Inscripciones: React.FC = () => {
               />
               <label
                 htmlFor="udeii"
-                className="font-bold text-gray-700 cursor-pointer"
+                className="text-xs font-black text-slate-700 uppercase tracking-widest cursor-pointer"
               >
-                ¿Es alumno UDEII?
+                Alumno UDEII
               </label>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-gray-100">
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                Fecha de Nacimiento
-              </label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+            <FormField label="Nacimiento">
               <input
                 type="date"
                 required
-                className="w-full border p-2 rounded text-gray-900 bg-white"
+                className="inst-input"
                 value={formData.fechaNacimiento}
                 onChange={(e) =>
                   setFormData({ ...formData, fechaNacimiento: e.target.value })
                 }
               />
-              <p className="text-[10px] text-blue-600 mt-1 flex items-center gap-1">
-                <span className="material-symbols-outlined text-[10px]">
-                  cake
-                </span>
-                Genera alerta de cumpleaños automática
-              </p>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                Género
-              </label>
+            </FormField>
+            <FormField label="Género">
               <select
-                className="w-full border p-2 rounded text-gray-900 bg-white"
+                className="inst-input"
                 value={formData.genero}
                 onChange={(e) =>
                   setFormData({ ...formData, genero: e.target.value })
@@ -510,20 +385,14 @@ export const Inscripciones: React.FC = () => {
               >
                 <option value="M">Masculino</option>
                 <option value="F">Femenino</option>
-                <option value="X">No binario / Otro</option>
+                <option value="X">Otro</option>
               </select>
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">
-                Promedio Grado Anterior
-              </label>
+            </FormField>
+            <FormField label="Promedio">
               <input
                 type="number"
                 step="0.1"
-                min="0"
-                max="10"
-                className="w-full border p-2 rounded text-gray-900 bg-white"
-                placeholder="Ej. 8.5"
+                className="inst-input"
                 value={formData.promedioAnterior}
                 onChange={(e) =>
                   setFormData({
@@ -532,497 +401,269 @@ export const Inscripciones: React.FC = () => {
                   })
                 }
               />
-              <p className="text-[10px] text-text-secondary mt-1">
-                Dato crucial para la IA de balanceo de grupos
-              </p>
-            </div>
-            <div className="mt-4 md:col-span-3 bg-gray-50 p-4 rounded-lg border border-dashed border-gray-300">
-              <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                <span className="material-symbols-outlined text-purple-600">
-                  add_a_photo
-                </span>
-                Fotografía del Alumno (Rostro Descubierto)
-              </label>
+            </FormField>
+          </div>
+          <div className="mt-8 p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+            <FormField label="Fotografía Estudiante">
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleFileChange(e, setFileStudent)}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-all"
+                className="text-[10px] file:bg-white file:border file:border-slate-200 file:rounded-xl file:px-4 file:py-2 file:mr-4 file:font-black file:uppercase file:text-slate-600"
               />
-              <p className="text-xs text-gray-400 mt-1">
-                Sube una foto clara para identificación rápida en incidencias.
-              </p>
-            </div>
+            </FormField>
           </div>
-        </div>
+        </Section>
 
-        {/* SECTION 2: DATOS FAMILIARES */}
-        <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
-          <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
-            <span className="material-symbols-outlined">family_restroom</span>{" "}
-            Datos Familiares
-          </h3>
-
-          {/* Living Situation */}
-          <div className="mb-6">
-            <label className="block text-xs font-bold text-gray-600 mb-2 uppercase">
-              Vive Con:
+        <Section title="02. Datos Familiares" icon="family_restroom">
+          <div className="mb-8 space-y-4">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              Residencia:
             </label>
-            <div className="flex flex-wrap gap-4">
-              {[
-                { val: "ambos", label: "Ambos Padres" },
-                { val: "mama", label: "Solo Mamá" },
-                { val: "papa", label: "Solo Papá" },
-                { val: "tutor", label: "Tutor / Familiar" },
-              ].map((opt) => (
-                <label
-                  key={opt.val}
-                  className={`px-4 py-2 rounded-lg border cursor-pointer transition-colors text-gray-900 ${
-                    formData.viveCon === opt.val
-                      ? "bg-primary text-white border-primary"
-                      : "bg-white border-gray-300 hover:bg-gray-50"
+            <div className="flex flex-wrap gap-3">
+              {["ambos", "mama", "papa", "tutor"].map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, viveCon: v })}
+                  className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                    formData.viveCon === v
+                      ? "bg-slate-800 text-white border-slate-800"
+                      : "bg-white text-slate-500 border-slate-200"
                   }`}
                 >
-                  <input
-                    type="radio"
-                    name="viveCon"
-                    className="hidden"
-                    value={opt.val}
-                    checked={formData.viveCon === opt.val}
-                    onChange={(e) =>
-                      setFormData({ ...formData, viveCon: e.target.value })
-                    }
-                  />
-                  {opt.label}
-                </label>
+                  {v}
+                </button>
               ))}
             </div>
           </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-600 mb-1">
-                  Nombre de la Madre
-                </label>
-                <input
-                  type="text"
-                  className="w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400"
-                  value={formData.nombreMadre}
-                  disabled={
-                    formData.viveCon === "papa" || formData.viveCon === "tutor"
-                  }
-                  onChange={(e) =>
-                    setFormData({ ...formData, nombreMadre: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-600 mb-1">
-                  Celular Madre
-                </label>
-                <input
-                  type="tel"
-                  className={`w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400 ${
-                    verifiedPhones.mama ? "border-green-500 bg-green-50" : ""
-                  }`}
-                  value={formData.telMadre}
-                  disabled={
-                    formData.viveCon === "papa" ||
-                    formData.viveCon === "tutor" ||
-                    verifiedPhones.mama
-                  }
-                  onChange={(e) =>
-                    setFormData({ ...formData, telMadre: e.target.value })
-                  }
-                />
-                {!(
-                  formData.viveCon === "papa" || formData.viveCon === "tutor"
-                ) &&
-                  formData.telMadre.length >= 10 &&
-                  !verifiedPhones.mama && (
-                    <div className="mt-2 text-right">
-                      {verifyingPhone === "mama" ? (
-                        <div className="flex gap-2 justify-end items-center animate-fade-in">
-                          <span className="text-xs text-text-secondary">
-                            Código (1234):
-                          </span>
-                          <input
-                            type="text"
-                            maxLength={4}
-                            className="w-16 border rounded p-1 text-center text-sm text-gray-900 bg-white"
-                            value={verificationCode}
-                            onChange={(e) =>
-                              setVerificationCode(e.target.value)
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={verifyCode}
-                            className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold hover:bg-green-700"
-                          >
-                            OK
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setVerifyingPhone(null)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <span className="material-symbols-outlined text-sm">
-                              close
-                            </span>
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => startVerification("mama")}
-                          className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 justify-end ml-auto"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            sms
-                          </span>{" "}
-                          Verificar Celular
-                        </button>
-                      )}
-                    </div>
-                  )}
-                {verifiedPhones.mama && (
-                  <p className="text-xs text-green-600 font-bold mt-1 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">
-                      check_circle
-                    </span>{" "}
-                    Verificado{" "}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
-              <div className="md:col-span-2">
-                <label className="block text-xs font-bold text-gray-600 mb-1">
-                  Nombre del Padre
-                </label>
-                <input
-                  type="text"
-                  className="w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400"
-                  value={formData.nombrePadre}
-                  disabled={
-                    formData.viveCon === "mama" || formData.viveCon === "tutor"
-                  }
-                  onChange={(e) =>
-                    setFormData({ ...formData, nombrePadre: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-600 mb-1">
-                  Celular Padre
-                </label>
-                <input
-                  type="tel"
-                  className={`w-full border p-2 rounded text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400 ${
-                    verifiedPhones.papa ? "border-green-500 bg-green-50" : ""
-                  }`}
-                  value={formData.telPadre}
-                  disabled={
-                    formData.viveCon === "mama" ||
-                    formData.viveCon === "tutor" ||
-                    verifiedPhones.papa
-                  }
-                  onChange={(e) =>
-                    setFormData({ ...formData, telPadre: e.target.value })
-                  }
-                />
-                {!(
-                  formData.viveCon === "mama" || formData.viveCon === "tutor"
-                ) &&
-                  formData.telPadre.length >= 10 &&
-                  !verifiedPhones.papa && (
-                    <div className="mt-2 text-right">
-                      {verifyingPhone === "papa" ? (
-                        <div className="flex gap-2 justify-end items-center animate-fade-in">
-                          <span className="text-xs text-text-secondary">
-                            Código (1234):
-                          </span>
-                          <input
-                            type="text"
-                            maxLength={4}
-                            className="w-16 border rounded p-1 text-center text-sm text-gray-900 bg-white"
-                            value={verificationCode}
-                            onChange={(e) =>
-                              setVerificationCode(e.target.value)
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={verifyCode}
-                            className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold hover:bg-green-700"
-                          >
-                            OK
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setVerifyingPhone(null)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <span className="material-symbols-outlined text-sm">
-                              close
-                            </span>
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => startVerification("papa")}
-                          className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 justify-end ml-auto"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            sms
-                          </span>{" "}
-                          Verificar Celular
-                        </button>
-                      )}
-                    </div>
-                  )}
-                {verifiedPhones.papa && (
-                  <p className="text-xs text-green-600 font-bold mt-1 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">
-                      check_circle
-                    </span>{" "}
-                    Verificado{" "}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {formData.viveCon === "tutor" && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-100 animate-fade-in">
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-gray-600 mb-1">
-                    Nombre del Tutor
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border p-2 rounded text-gray-900 bg-white"
-                    value={formData.nombreTutor}
-                    onChange={(e) =>
-                      setFormData({ ...formData, nombreTutor: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-600 mb-1">
-                    Parentesco
-                  </label>
-                  <select
-                    className="w-full border p-2 rounded text-gray-900 bg-white"
-                    value={formData.parentescoTutor}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        parentescoTutor: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="">Seleccione...</option>
-                    <option value="Abuelo">Abuelo(a)</option>
-                    <option value="Tio">Tío(a)</option>
-                    <option value="Hermano">Hermano(a)</option>
-                    <option value="Padrastro">Padrastro/Madrastra</option>
-                    <option value="Otro">Otro</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-600 mb-1">
-                    Celular Tutor
-                  </label>
-                  <input
-                    type="tel"
-                    className={`w-full border p-2 rounded text-gray-900 bg-white ${
-                      verifiedPhones.tutor ? "border-green-500 bg-green-50" : ""
-                    }`}
-                    value={formData.telTutor}
-                    onChange={(e) =>
-                      setFormData({ ...formData, telTutor: e.target.value })
-                    }
-                    disabled={verifiedPhones.tutor}
-                  />
-                  {formData.telTutor.length >= 10 && !verifiedPhones.tutor && (
-                    <div className="mt-2 text-right">
-                      {verifyingPhone === "tutor" ? (
-                        <div className="flex gap-2 justify-end items-center animate-fade-in">
-                          <span className="text-xs text-text-secondary">
-                            Código (1234):
-                          </span>
-                          <input
-                            type="text"
-                            maxLength={4}
-                            className="w-16 border rounded p-1 text-center text-sm text-gray-900 bg-white"
-                            value={verificationCode}
-                            onChange={(e) =>
-                              setVerificationCode(e.target.value)
-                            }
-                          />
-                          <button
-                            type="button"
-                            onClick={verifyCode}
-                            className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold hover:bg-green-700"
-                          >
-                            OK
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setVerifyingPhone(null)}
-                            className="text-red-500 hover:text-red-700"
-                          >
-                            <span className="material-symbols-outlined text-sm">
-                              close
-                            </span>
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => startVerification("tutor")}
-                          className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 justify-end ml-auto"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            sms
-                          </span>{" "}
-                          Verificar Celular
-                        </button>
-                      )}
-                    </div>
-                  )}
-                  {verifiedPhones.tutor && (
-                    <p className="text-xs text-green-600 font-bold mt-1 flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">
-                        check_circle
-                      </span>{" "}
-                      Verificado{" "}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6">
-            <label className="block text-xs font-bold text-gray-600 mb-2 uppercase">
-              Teléfono de Emergencia Adicional
-            </label>
-            <input
-              type="tel"
-              className="w-full md:w-1/3 border p-2 rounded text-gray-900 bg-white"
-              placeholder="Ej. Vecino, Oficina, etc."
-              value={formData.telEmergencia}
-              onChange={(e) =>
-                setFormData({ ...formData, telEmergencia: e.target.value })
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ParentCard
+              role="Madre"
+              name={formData.nombreMadre}
+              phone={formData.telMadre}
+              verified={formData.verifiedPhones.mama}
+              disabled={
+                formData.viveCon === "papa" || formData.viveCon === "tutor"
               }
+              onName={(v) => setFormData({ ...formData, nombreMadre: v })}
+              onPhone={(v) => setFormData({ ...formData, telMadre: v })}
+              onVerify={() => startVerification("mama")}
+            />
+            <ParentCard
+              role="Padre"
+              name={formData.nombrePadre}
+              phone={formData.telPadre}
+              verified={formData.verifiedPhones.papa}
+              disabled={
+                formData.viveCon === "mama" || formData.viveCon === "tutor"
+              }
+              onName={(v) => setFormData({ ...formData, nombrePadre: v })}
+              onPhone={(v) => setFormData({ ...formData, telPadre: v })}
+              onVerify={() => startVerification("papa")}
             />
           </div>
-        </div>
-
-        {/* SECTION 3: SALUD Y DOCUMENTOS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
-            <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2">
-              Salud
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-600 mb-1">
-                  Situación Médica de Riesgo
-                </label>
-                <textarea
-                  className="w-full border p-2 rounded text-gray-900 bg-white h-24"
-                  placeholder="Alergias, Padecimientos crónicos, etc."
-                  value={formData.situacionRiesgo}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      situacionRiesgo: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="flex items-center gap-2">
+          {formData.verifyingPhone && (
+            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+              <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full space-y-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-black text-slate-800 uppercase italic">
+                    Verificar Línea
+                  </h3>
+                </div>
                 <input
-                  type="checkbox"
-                  id="medicalDoc"
-                  className="size-4"
-                  checked={formData.hasMedicalDoc}
+                  type="text"
+                  maxLength={4}
+                  className="w-full text-center text-4xl font-black py-4 bg-slate-50 rounded-2xl border"
+                  value={formData.verificationCode}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      hasMedicalDoc: e.target.checked,
+                      verificationCode: e.target.value,
                     })
                   }
                 />
-                <label
-                  htmlFor="medicalDoc"
-                  className="text-sm font-medium text-gray-700"
+                <button
+                  type="button"
+                  onClick={verifyCode}
+                  className="w-full py-4 bg-cyan-700 text-white rounded-2xl font-black text-[10px] uppercase"
                 >
-                  Presenta documento médico probatorio
-                </label>
+                  Confirmar Código
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, verifyingPhone: null })
+                  }
+                  className="w-full text-[10px] font-black text-slate-400 uppercase"
+                >
+                  Cancelar
+                </button>
               </div>
-              {formData.hasMedicalDoc && (
-                <input
-                  type="file"
-                  accept=".pdf,.jpg,.png"
-                  className="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  onChange={(e) => handleFileChange(e, setFile)}
-                />
-              )}
             </div>
-          </div>
+          )}
+        </Section>
 
-          <div className="bg-white p-6 rounded-xl border border-border-color shadow-sm text-gray-900">
-            <h3 className="font-bold text-lg text-primary mb-4 border-b border-gray-100 pb-2">
-              Documentación Entregada
-            </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Section title="03. Salud" icon="medical_services">
+            <textarea
+              className="inst-input h-32 resize-none"
+              placeholder="Situación médica..."
+              value={formData.situacionRiesgo}
+              onChange={(e) =>
+                setFormData({ ...formData, situacionRiesgo: e.target.value })
+              }
+            />
+            <div className="flex items-center gap-3 mt-4">
+              <input
+                type="checkbox"
+                id="mDoc"
+                className="size-5 rounded border-slate-300 text-cyan-600"
+                checked={formData.hasMedicalDoc}
+                onChange={(e) =>
+                  setFormData({ ...formData, hasMedicalDoc: e.target.checked })
+                }
+              />
+              <label
+                htmlFor="mDoc"
+                className="text-xs font-black text-slate-700 uppercase tracking-widest"
+              >
+                Anexar Expediente Médico
+              </label>
+            </div>
+            {formData.hasMedicalDoc && (
+              <input
+                type="file"
+                onChange={(e) => handleFileChange(e, setFile)}
+                className="mt-4 text-xs"
+              />
+            )}
+          </Section>
+
+          <Section title="04. Documentos" icon="fact_check">
             <div className="space-y-3">
               {[
-                { id: "actaNacimiento", label: "Acta de Nacimiento" },
-                { id: "curpDoc", label: "CURP Impresa" },
-                {
-                  id: "comprobanteDomicilio",
-                  label: "Comprobante de Domicilio",
-                },
-                { id: "boletaPrimaria", label: "Boleta Primaria (Solo 1º)" },
-                {
-                  id: "boletaSecundaria",
-                  label: "Boleta Grado Anterior (2º y 3º)",
-                },
-              ].map((doc) => (
-                <div key={doc.id} className="flex items-center gap-3">
+                "actaNacimiento",
+                "curpDoc",
+                "comprobanteDomicilio",
+                "boletaPrimaria",
+                "boletaSecundaria",
+              ].map((d) => (
+                <div key={d} className="flex items-center gap-3">
                   <input
                     type="checkbox"
-                    id={doc.id}
-                    className="size-5"
-                    checked={(formData.docs as any)[doc.id]}
-                    onChange={() => handleCheckboxChange(doc.id as any)}
+                    id={d}
+                    className="size-5 rounded border-slate-300"
+                    checked={(formData.docs as any)[d]}
+                    onChange={() => handleCheckboxChange(d as any)}
                   />
-                  <label htmlFor={doc.id} className="text-sm text-gray-700">
-                    {doc.label}
+                  <label
+                    htmlFor={d}
+                    className="text-xs font-bold text-slate-600 uppercase italic"
+                  >
+                    {(d as string).replace(/([A-Z])/g, " $1")}
                   </label>
                 </div>
               ))}
             </div>
-          </div>
+          </Section>
         </div>
 
-        <div className="flex justify-end pt-6 border-t border-gray-100">
-          <button
-            type="submit"
-            className="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transform active:scale-95 transition-all flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined">save</span>
-            Finalizar Inscripción
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full py-6 bg-cyan-700 hover:bg-cyan-800 text-white font-black text-xs uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-cyan-900/10 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+        >
+          <span className="material-symbols-outlined">
+            {isSubmitting ? "sync" : "save"}
+          </span>
+          {isSubmitting ? "Procesando..." : "Finalizar Inscripción Oficial"}
+        </button>
       </form>
     </div>
   );
 };
+
+const Section = ({ title, icon, children }: any) => (
+  <section className="space-y-6">
+    <div className="flex items-center gap-3 text-slate-800">
+      <span className="material-symbols-outlined text-2xl">{icon}</span>
+      <h2 className="text-sm font-black uppercase tracking-widest italic">
+        {title}
+      </h2>
+    </div>
+    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+      {children}
+    </div>
+  </section>
+);
+
+const FormField = ({ label, required, children }: any) => (
+  <div className="space-y-2">
+    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    {children}
+  </div>
+);
+
+const ParentCard = ({
+  role,
+  name,
+  phone,
+  verified,
+  disabled,
+  onName,
+  onPhone,
+  onVerify,
+}: any) => (
+  <div
+    className={`p-6 rounded-2xl border transition-all ${
+      disabled
+        ? "bg-slate-50 opacity-40 grayscale"
+        : "bg-white border-slate-200 shadow-sm"
+    }`}
+  >
+    <div className="flex items-center gap-2 mb-4 font-black text-slate-800 text-[11px] uppercase tracking-widest border-b pb-2">
+      {role}
+    </div>
+    <div className="space-y-4">
+      <FormField label="Nombre">
+        <input
+          type="text"
+          disabled={disabled}
+          className="inst-input"
+          value={name}
+          onChange={(e) => onName(e.target.value)}
+        />
+      </FormField>
+      <FormField label="Teléfono">
+        <div className="flex gap-2">
+          <input
+            type="tel"
+            disabled={disabled || verified}
+            className={`inst-input ${
+              verified ? "bg-green-50 border-green-200" : ""
+            }`}
+            value={phone}
+            onChange={(e) => onPhone(e.target.value)}
+          />
+          {!disabled && (
+            <button
+              type="button"
+              onClick={onVerify}
+              disabled={verified}
+              className={`px-3 rounded-xl text-[10px] font-black uppercase ${
+                verified
+                  ? "bg-green-600 text-white"
+                  : "bg-slate-100 text-slate-500"
+              }`}
+            >
+              {verified ? "OK" : "SMS"}
+            </button>
+          )}
+        </div>
+      </FormField>
+    </div>
+  </div>
+);

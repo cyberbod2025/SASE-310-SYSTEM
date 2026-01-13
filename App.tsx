@@ -92,9 +92,31 @@ const ProtocolsView = React.lazy(() =>
     default: module.ProtocolsView,
   }))
 );
+const PlaneacionNEM = React.lazy(() =>
+  import("./components/PlaneacionNEM").then((module) => ({
+    default: module.PlaneacionNEM,
+  }))
+);
 const NotFound = React.lazy(() =>
   import("./components/NotFound").then((module) => ({
     default: module.NotFound,
+  }))
+);
+const OrbNavigation = React.lazy(() =>
+  import("./components/OrbNavigation").then((module) => ({
+    default: module.OrbNavigation,
+  }))
+);
+
+const RegistroPersonal = React.lazy(() =>
+  import("./components/RegistroPersonal").then((module) => ({
+    default: module.RegistroPersonal,
+  }))
+);
+
+const AprobacionesPersonal = React.lazy(() =>
+  import("./components/AprobacionesPersonal").then((module) => ({
+    default: module.AprobacionesPersonal,
   }))
 );
 
@@ -125,29 +147,22 @@ const MainContent = () => {
         if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
         if (currentModule === AppModule.ARCHIVO) return <Archivo />;
         if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
+        if (currentModule === AppModule.APROBACIONES_PERSONAL)
+          return <AprobacionesPersonal />;
         if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
+
+        // If user is on DASHBOARD module, show the Orb Menu instead of the classic grid
+        // EXCEPT for developers who might want the raw dashboard
+        if (currentModule === AppModule.HOME) {
+          return <OrbNavigation />;
+        }
 
         switch (currentUserRole) {
           case UserRole.DOCENTE:
             return <DashboardDocente />;
-          case UserRole.PREFECTURA:
-            return <DashboardPrefectura />;
-          case UserRole.ENFERMERIA:
-            return <DashboardEnfermeria />;
-          case UserRole.ORIENTACION:
-            return <DashboardOrientacion />;
-          case UserRole.TRABAJO_SOCIAL:
-            return <DashboardTrabajoSocial />;
-          case UserRole.SECRETARIA:
-            return <DashboardSecretaria />;
-          case UserRole.UDEII:
-            return <DashboardUDEII />;
-          case UserRole.DIRECTIVO:
-            return <DashboardDireccion />;
-          case UserRole.DEVELOPER:
-            return <DashboardDeveloper />;
+          // ... fallback for safety
           default:
-            return <DashboardDocente />;
+            return <OrbNavigation />;
         }
       })()}
     </React.Suspense>
@@ -155,31 +170,35 @@ const MainContent = () => {
 };
 
 const App: React.FC = () => {
-  const [showIntro, setShowIntro] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const { session, loading } = useAuth();
 
-  // 1. Show Intro Video First
   if (showIntro) {
     return <IntroPlayer onComplete={() => setShowIntro(false)} />;
   }
 
-  // 2. Show splash screen after intro
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
-  }
-
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-gray-50 text-text-secondary font-bold">
-        Cargando SASE-310...
+      <div className="h-screen w-full flex items-center justify-center bg-[#020510] text-blue-400 font-bold font-mono tracking-widest uppercase">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+          <span>Iniciando SASE-310...</span>
+        </div>
       </div>
     );
   }
 
   if (!session && !isDemoMode) {
+    if (isRegistering) {
+      return (
+        <React.Suspense fallback={<LoadingSpinner />}>
+          <RegistroPersonal onBack={() => setIsRegistering(false)} />
+        </React.Suspense>
+      );
+    }
     return (
       <Login
         onDemoEnter={() => setIsDemoMode(true)}
@@ -187,6 +206,7 @@ const App: React.FC = () => {
           setInitialRole(UserRole.DEVELOPER);
           setIsDemoMode(true);
         }}
+        onRegisterClick={() => setIsRegistering(true)}
       />
     );
   }

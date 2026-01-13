@@ -5,7 +5,7 @@ import { CaseState, AppModule } from "../../types";
 import { printContent } from "../PrintButtons";
 
 export const DashboardOrientacion = () => {
-  const { students, setQuickRegisterOpen, setCurrentModule } = useApp();
+  const { students, setCurrentModule } = useApp();
 
   // Logic
   const studentsInTrouble = students.filter(
@@ -17,14 +17,12 @@ export const DashboardOrientacion = () => {
     (s) => s.caseState === CaseState.PATRON_DETECTADO
   );
 
-  // Mock next appointment
   const nextAppointment = {
     family: "Familia Hernández",
     student: "Carlos H. (2°B)",
     time: "Hoy, 10:00 AM",
   };
 
-  // Print weekly report
   const handlePrintReport = () => {
     const reportData = `
       <h1>Reporte Semanal - Orientación</h1>
@@ -35,363 +33,289 @@ export const DashboardOrientacion = () => {
         <li><strong>Patrones detectados:</strong> ${patternAlerts.length}</li>
         <li><strong>Total estudiantes:</strong> ${students.length}</li>
       </ul>
-      <h2>Alertas de Patrón</h2>
-      <table style="width:100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background:#f0f0f0;">
-            <th style="border:1px solid #ddd; padding:8px;">Alumno</th>
-            <th style="border:1px solid #ddd; padding:8px;">Grupo</th>
-            <th style="border:1px solid #ddd; padding:8px;">Incidencias</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${patternAlerts
-            .map(
-              (s) => `
-            <tr>
-              <td style="border:1px solid #ddd; padding:8px;">${s.name}</td>
-              <td style="border:1px solid #ddd; padding:8px;">${s.group}</td>
-              <td style="border:1px solid #ddd; padding:8px;">${s.incidents.length}</td>
-            </tr>
-          `
-            )
-            .join("")}
-        </tbody>
-      </table>
     `;
     printContent("Reporte Semanal - Orientación", reportData);
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 lg:p-8 scroll-smooth text-white">
-      <div className="max-w-[1400px] mx-auto flex flex-col gap-8">
-        {/* Page Heading */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <div className="relative group p-2">
-              <div className="absolute inset-0 rounded-full border-2 border-dashed border-yellow-400/50 animate-spin-pause pointer-events-none"></div>
-              <div className="absolute inset-0 rounded-full border border-white/10 pointer-events-none"></div>
-              <div className="relative rounded-full overflow-hidden">
-                <img
-                  src="/assets/branding/ORIENTACION.png"
-                  alt="Orientación Logo"
-                  className="w-24 h-24 object-contain drop-shadow-2xl z-10 relative animate-float"
-                  style={{
-                    filter: "drop-shadow(0 0 15px rgba(234, 179, 8, 0.6))",
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent -translate-x-full animate-shine-sweep pointer-events-none z-20"></div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <h1
-                className="text-white text-3xl md:text-5xl font-black tracking-tight"
-                style={{ textShadow: "0 0 20px rgba(234,179,8,0.6)" }}
-              >
-                Orientación
-              </h1>
-              <p className="text-yellow-200 text-lg font-medium tracking-wide">
-                Bienestar Estudiantil y Psicoeducación
-              </p>
-            </div>
+    <div className="flex-1 w-full space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+        <div className="flex items-center gap-5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1 h-full bg-amber-500"></div>
+            <img
+              src="/assets/branding/ORIENTACION.png"
+              alt="Orientación"
+              className="w-14 h-14 object-contain"
+            />
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={handlePrintReport}
-              className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white hover:bg-white/10 text-sm font-bold rounded-xl transition-all shadow-lg"
-            >
-              <span className="material-symbols-outlined text-[20px]">
-                print
+          <div>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+              Orientación Educativa
+            </h1>
+            <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
+              <span className="flex items-center gap-1.5 text-amber-700">
+                <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                Acompañamiento Psicoeducativo
               </span>
-              Reporte Semanal
-            </button>
-            <button
-              onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
-              className="flex items-center gap-2 px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-yellow-900/20 border border-white/10"
-            >
-              <span className="material-symbols-outlined text-[20px]">
-                psychology
-              </span>
-              Solicitar Reporte
-            </button>
+              <span className="text-slate-300">|</span>
+              <span>Prevención y Bienestar Estudiantil</span>
+            </div>
           </div>
         </div>
 
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* Left Column (Main Data) */}
-          <div className="xl:col-span-2 flex flex-col gap-8">
-            {/* Alerts Section */}
-            <section className="flex flex-col gap-4">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span className="material-symbols-outlined text-red-500">
-                    warning
-                  </span>
-                  Alertas de Patrón (Detectadas)
-                </h3>
-                <button
-                  onClick={() => setCurrentModule(AppModule.REPORTES)}
-                  className="text-sm font-semibold text-yellow-400 hover:text-yellow-300"
-                >
-                  Ver todas
-                </button>
-              </div>
-              <div className="bg-black/20 backdrop-blur-xl rounded-xl shadow-sm border border-white/10 overflow-hidden">
-                {patternAlerts.length === 0 ? (
-                  <div className="p-6 text-center text-gray-400">
-                    No hay patrones críticos detectados hoy.
-                  </div>
-                ) : (
-                  patternAlerts.map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 border-b border-white/10 hover:bg-white/5 transition-colors group"
-                    >
-                      <div className="size-12 rounded-full bg-red-900/30 text-red-400 flex items-center justify-center shrink-0">
-                        <span className="material-symbols-outlined">
-                          person_alert
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrintReport}
+            className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 uppercase tracking-widest shadow-sm transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">print</span>
+            Reporte Semanal
+          </button>
+          <button
+            onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
+            className="flex items-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white border border-amber-500 rounded-xl text-xs font-bold uppercase tracking-widest shadow-md transition-all active:scale-[0.98]"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              psychology
+            </span>
+            Solicitar Reporte
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2 space-y-8">
+          {/* Patrones de Riesgo */}
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+            <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                <span className="material-symbols-outlined text-amber-600 text-[20px]">
+                  warning
+                </span>
+                Patrones de Riesgo Detectados (IA)
+              </h3>
+              <button
+                onClick={() => setCurrentModule(AppModule.REPORTES)}
+                className="text-[10px] font-bold text-amber-700 hover:underline uppercase tracking-widest"
+              >
+                Ver Análisis Predictivo
+              </button>
+            </div>
+
+            <div className="divide-y divide-slate-100">
+              {patternAlerts.length === 0 ? (
+                <div className="p-12 text-center text-slate-400">
+                  <p className="font-bold uppercase text-sm italic tracking-widest">
+                    Sin alertas de patrón activas
+                  </p>
+                </div>
+              ) : (
+                patternAlerts.map((s) => (
+                  <div
+                    key={s.id}
+                    className="p-4 hover:bg-slate-50/50 transition-colors flex items-center gap-4 group"
+                  >
+                    <div className="size-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 shrink-0">
+                      <span className="material-symbols-outlined">
+                        person_alert
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="text-sm font-black text-slate-800 uppercase italic">
+                          {s.name}
+                        </p>
+                        <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded uppercase">
+                          {s.group}
                         </span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="text-base font-bold text-white truncate">
-                            {s.name}
-                          </h4>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/10 text-gray-300 uppercase tracking-wide">
-                            {s.group}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-400 line-clamp-1">
-                          ALERTA CRÍTICA: Patrón de conducta recurrente
-                          detectado.
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() =>
-                            toast.loading(`Abriendo expediente de: ${s.name}`, {
-                              duration: 2000,
-                            })
-                          }
-                          className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs font-bold text-gray-200 shadow-sm hover:bg-white/20"
-                        >
-                          Expediente
-                        </button>
-                        <button
-                          onClick={() =>
-                            toast.success(
-                              `Notificación enviada al tutor de: ${s.name}`,
-                              { icon: "📨" }
-                            )
-                          }
-                          className="px-3 py-1.5 rounded-lg bg-red-900/20 border border-red-500/30 text-xs font-bold text-red-400 shadow-sm hover:bg-red-900/30"
-                        >
-                          Contactar
-                        </button>
-                      </div>
+                      <p className="text-[10px] font-bold text-red-600 uppercase flex items-center gap-1 opacity-80">
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                        Comportamiento Recurrente: {s.incidents.length}{" "}
+                        Incidentes
+                      </p>
                     </div>
-                  ))
-                )}
-              </div>
-            </section>
-
-            {/* Charts Section (Mocked for now) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-black/20 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-white/10 flex flex-col h-80">
-                <h3 className="text-base font-bold text-white mb-6">
-                  Incidencias por Grado
-                </h3>
-                <div className="flex-1 flex items-end justify-between gap-4 px-2">
-                  <div className="w-full bg-blue-500/20 rounded-t h-[40%] relative group">
-                    <div className="absolute bottom-0 w-full bg-blue-500 h-full rounded-t opacity-60"></div>
+                    <div className="flex gap-2">
+                      <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[9px] font-black text-slate-600 uppercase hover:bg-slate-50">
+                        Expediente
+                      </button>
+                      <button className="px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-[9px] font-black text-amber-700 uppercase hover:bg-amber-100">
+                        Contactar
+                      </button>
+                    </div>
                   </div>
-                  <div className="w-full bg-blue-500/20 rounded-t h-[70%] relative group">
-                    <div className="absolute bottom-0 w-full bg-blue-500 h-full rounded-t opacity-60"></div>
-                  </div>
-                  <div className="w-full bg-blue-500/20 rounded-t h-[50%] relative group">
-                    <div className="absolute bottom-0 w-full bg-blue-500 h-full rounded-t opacity-60"></div>
-                  </div>
-                </div>
-                <div className="flex justify-between text-xs text-gray-400 mt-2 px-2">
-                  <span>1°</span>
-                  <span>2°</span>
-                  <span>3°</span>
-                </div>
-              </div>
-              <div className="bg-black/20 backdrop-blur-xl p-6 rounded-xl shadow-sm border border-white/10 flex flex-col h-80">
-                <h3 className="text-base font-bold text-white mb-4">
-                  Reportes por Docente
-                </h3>
-                <div className="space-y-3 overflow-y-auto">
-                  <div className="flex justify-between items-center p-2 bg-white/5 rounded">
-                    <span className="text-sm font-bold text-gray-300">
-                      Prof. Ramírez
-                    </span>
-                    <span className="text-xs bg-red-900/40 text-red-400 px-2 py-1 rounded font-bold">
-                      12
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center p-2 hover:bg-white/5 rounded transition-colors">
-                    <span className="text-sm font-bold text-gray-300">
-                      Prof. Dávila
-                    </span>
-                    <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded font-bold">
-                      5
-                    </span>
-                  </div>
-                </div>
-              </div>
+                ))
+              )}
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className="flex flex-col gap-8">
-            {/* Requests & Follow-up Module */}
-            <section className="bg-black/20 backdrop-blur-xl rounded-xl shadow-sm border border-white/10 p-5 flex-1 flex flex-col">
-              <h3 className="text-base font-bold text-white mb-4 flex items-center justify-between">
-                Solicitudes a Docentes
-                <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded-full border border-yellow-500/30">
-                  2 Pendientes
+          {/* Estadísticas de Seguimiento */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center justify-between">
+                Incidencias por Nivel Académico
+                <span className="material-symbols-outlined text-slate-300">
+                  bar_chart
                 </span>
               </h3>
+              <div className="h-48 flex items-end gap-6 px-4 pb-2 border-b border-slate-100">
+                <Bar
+                  height="40%"
+                  color="bg-blue-400"
+                  label="1º Grado"
+                  value="28"
+                />
+                <Bar
+                  height="70%"
+                  color="bg-amber-400"
+                  label="2º Grado"
+                  value="45"
+                />
+                <Bar
+                  height="50%"
+                  color="bg-indigo-400"
+                  label="3º Grado"
+                  value="32"
+                />
+              </div>
+            </div>
 
-              <div className="flex-1 space-y-4 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
-                {/* Request Item 1 */}
-                <div className="bg-white/5 border-l-4 border-orange-500 pl-4 py-3 rounded-r-lg hover:bg-white/10 transition-colors group cursor-pointer relative">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-bold text-white mb-1">
-                        Reporte Conductual
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Para:{" "}
-                        <span className="text-gray-300">
-                          Prof. Ramírez (Matemáticas)
-                        </span>
-                      </p>
-                      <p className="text-xs text-orange-300 mt-1">
-                        Alumno: Carlos H. - 2º B
-                      </p>
-                    </div>
-                    <span className="text-[10px] text-gray-500">Hace 2h</span>
-                  </div>
-                  <div className="mt-3 flex gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
-                    <button className="text-[10px] bg-orange-500/20 text-orange-300 px-2 py-1 rounded hover:bg-orange-500/40 font-bold uppercase">
-                      Recordar
-                    </button>
-                    <button className="text-[10px] bg-white/10 text-gray-300 px-2 py-1 rounded hover:bg-white/20 font-bold uppercase">
-                      Ver Detalle
-                    </button>
-                  </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center justify-between">
+                Reportes Recientes por Docente
+                <span className="material-symbols-outlined text-slate-300">
+                  group
+                </span>
+              </h3>
+              <div className="space-y-3">
+                <TeacherStat
+                  name="Prof. Ramírez"
+                  count={12}
+                  color="bg-amber-100 text-amber-700"
+                />
+                <TeacherStat
+                  name="Prof. Dávila"
+                  count={5}
+                  color="bg-slate-50 text-slate-500"
+                />
+                <TeacherStat
+                  name="Prof. Suarez"
+                  count={3}
+                  color="bg-slate-50 text-slate-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          {/* Solicitudes Internas */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest">
+                Solicitudes Internas
+              </h3>
+              <span className="bg-blue-50 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full">
+                2 NUEVAS
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              <div className="p-4 bg-slate-50 rounded-xl border-l-4 border-amber-500 hover:bg-slate-100 transition-colors cursor-pointer group">
+                <p className="text-xs font-black text-slate-800 uppercase mb-1">
+                  Reporte Conductual
+                </p>
+                <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase">
+                  <span>De: Prof. Ramírez</span>
+                  <span>Carlos H. (2ºB)</span>
                 </div>
+              </div>
 
-                {/* Request Item 2 */}
-                <div className="bg-white/5 border-l-4 border-blue-500 pl-4 py-3 rounded-r-lg hover:bg-white/10 transition-colors group cursor-pointer relative">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-bold text-white mb-1">
-                        Ficha Canalización UDEII
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Para:{" "}
-                        <span className="text-gray-300">Psic. Ana (UDEII)</span>
-                      </p>
-                      <p className="text-xs text-blue-300 mt-1">
-                        Alumno: Sofia G. - 3º A
-                      </p>
-                    </div>
-                    <span className="text-[10px] text-gray-500">Ayer</span>
-                  </div>
+              <div className="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-500 hover:bg-slate-100 transition-colors cursor-pointer">
+                <p className="text-xs font-black text-slate-800 uppercase mb-1">
+                  Canalización UDEII
+                </p>
+                <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase">
+                  <span>De: Psic. Ana</span>
+                  <span>Sofia G. (3ºA)</span>
                 </div>
+              </div>
 
-                {/* New Request Button */}
-                <button
-                  onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
-                  className="w-full py-3 border-2 border-dashed border-white/10 rounded-lg text-gray-400 text-xs font-bold hover:border-yellow-500/50 hover:text-yellow-200 hover:bg-yellow-500/5 transition-all flex items-center justify-center gap-2"
-                >
-                  <span className="material-symbols-outlined text-lg">
-                    add_circle
+              <button
+                onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
+                className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-[10px] font-black text-slate-400 uppercase hover:border-amber-500 hover:text-amber-500 transition-all flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[20px]">
+                  add_circle
+                </span>
+                Nueva Solicitud de Reporte
+              </button>
+            </div>
+          </div>
+
+          {/* Agenda & Citas */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-amber-50 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2 relative z-10">
+              <span className="material-symbols-outlined text-amber-600 text-[20px]">
+                calendar_month
+              </span>
+              Agenda de Seguimiento
+            </h3>
+
+            <div className="space-y-5 relative z-10">
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 group hover:border-amber-500 transition-all cursor-pointer">
+                <p className="text-[9px] font-black text-amber-700 uppercase mb-1.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                  PRÓXIMA SESIÓN
+                </p>
+                <p className="text-lg font-black text-slate-800 mb-1">
+                  {nextAppointment.family}
+                </p>
+                <p className="text-xs font-bold text-slate-400 uppercase italic mb-3">
+                  {nextAppointment.student}
+                </p>
+                <div className="flex items-center gap-2 bg-white border border-slate-100 px-3 py-1.5 rounded-lg w-fit text-[11px] font-black text-slate-600">
+                  <span className="material-symbols-outlined text-[16px]">
+                    schedule
                   </span>
-                  Nueva Solicitud Interna
+                  {nextAppointment.time}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button className="p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-all flex flex-col items-center gap-2">
+                  <span className="material-symbols-outlined text-slate-400">
+                    calendar_add_on
+                  </span>
+                  <span className="text-[9px] font-black text-slate-600 uppercase">
+                    Agendar Cita
+                  </span>
+                </button>
+                <button className="p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-all flex flex-col items-center gap-2">
+                  <span className="material-symbols-outlined text-slate-400">
+                    history_edu
+                  </span>
+                  <span className="text-[9px] font-black text-slate-600 uppercase">
+                    Entrevista
+                  </span>
                 </button>
               </div>
-            </section>
 
-            {/* Intervention & Citatorios */}
-            <div className="bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-5 shadow-lg">
-              <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-yellow-400">
-                  event_available
-                </span>
-                Gestión de Citatorios
-              </h3>
-
-              <div className="space-y-4">
-                {/* Next Appointment Card */}
-                <div className="bg-gradient-to-br from-yellow-900/30 to-black/30 border border-yellow-500/20 rounded-lg p-4 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-2 opacity-30 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-outlined text-yellow-400">
-                      edit
-                    </span>
-                  </div>
-                  <p className="text-xs text-yellow-400/80 uppercase font-bold mb-1">
-                    Próxima Cita
+              <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <p className="text-xl font-black text-slate-800">8</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                    Citatorios
                   </p>
-                  <p className="font-bold text-white text-lg">
-                    {nextAppointment.family}
-                  </p>
-                  <p className="text-sm text-gray-300 mb-3">
-                    {nextAppointment.student}
-                  </p>
-                  <div className="flex items-center gap-2 text-xs font-bold bg-yellow-400/10 text-yellow-200 w-fit px-3 py-1.5 rounded-full border border-yellow-500/20">
-                    <span className="material-symbols-outlined text-[16px]">
-                      schedule
-                    </span>
-                    {nextAppointment.time}
-                  </div>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() =>
-                      toast("Módulo de Agenda en desarrollo", { icon: "📅" })
-                    }
-                    className="bg-white/10 hover:bg-white/20 border border-white/10 text-white py-3 rounded-lg text-xs font-bold flex flex-col items-center gap-1 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-xl">
-                      calendar_add_on
-                    </span>
-                    Agendar Cita
-                  </button>
-                  <button
-                    onClick={() =>
-                      toast("Formato de entrevista generado", { icon: "📝" })
-                    }
-                    className="bg-white/10 hover:bg-white/20 border border-white/10 text-white py-3 rounded-lg text-xs font-bold flex flex-col items-center gap-1 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-xl">
-                      history_edu
-                    </span>
-                    Entrevista
-                  </button>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-black text-white">8</p>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider">
-                      Citas esta semana
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-black text-green-400">92%</p>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider">
-                      Asistencia Padres
-                    </p>
-                  </div>
+                <div className="text-center">
+                  <p className="text-xl font-black text-emerald-600">92%</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                    Efectividad
+                  </p>
                 </div>
               </div>
             </div>
@@ -401,3 +325,34 @@ export const DashboardOrientacion = () => {
     </div>
   );
 };
+
+const Bar = ({ height, color, label, value }: any) => (
+  <div className="flex-1 flex flex-col items-center gap-2 h-full">
+    <div className="flex-1 w-full flex items-end">
+      <div
+        className={`w-full ${color} rounded-t-lg transition-all hover:brightness-110 relative group/bar`}
+        style={{ height }}
+      >
+        <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-black text-slate-800 opacity-0 group-hover/bar:opacity-100 transition-opacity">
+          {value}
+        </div>
+      </div>
+    </div>
+    <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter whitespace-nowrap">
+      {label}
+    </span>
+  </div>
+);
+
+const TeacherStat = ({ name, count, color }: any) => (
+  <div
+    className={`flex justify-between items-center p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors group cursor-pointer`}
+  >
+    <span className="text-xs font-bold text-slate-600 uppercase">{name}</span>
+    <span
+      className={`text-[10px] font-black px-2 py-0.5 rounded-lg border border-transparent group-hover:border-amber-200 ${color}`}
+    >
+      {count} CAPS
+    </span>
+  </div>
+);

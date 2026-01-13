@@ -4,6 +4,8 @@ import { useApp } from "../../store";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { InvitationGenerator } from "../onboarding/InvitationGenerator";
+import { seedDatabase } from "../../utils/seedData";
+import toast from "react-hot-toast";
 
 interface FeedbackItem {
   id: number;
@@ -37,7 +39,6 @@ export const DashboardDeveloper: React.FC = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    // Fetch Feedback
     const { data: fbData } = await (
       supabase.from("system_feedback" as any) as any
     )
@@ -47,7 +48,6 @@ export const DashboardDeveloper: React.FC = () => {
 
     if (fbData) setFeedback(fbData as any);
 
-    // Fetch Audit (Caja Negra)
     const { data: auditData } = await supabase
       .from("auditoria")
       .select("*")
@@ -60,7 +60,6 @@ export const DashboardDeveloper: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-    // Real-time subscription could go here
     const channel = supabase
       .channel("dev_dashboard")
       .on(
@@ -78,138 +77,180 @@ export const DashboardDeveloper: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-6 min-h-screen bg-gray-900 text-white font-sans">
-      <header className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-yellow-200">
-            <span className="material-symbols-outlined align-bottom mr-2 text-3xl text-amber-500">
-              admin_panel_settings
+    <div className="flex-1 w-full space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+        <div className="flex items-center gap-5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1 h-full bg-slate-800"></div>
+            <span className="material-symbols-outlined text-4xl text-slate-700">
+              settings_applications
             </span>
-            Centro de Comando (Modo Dios)
-          </h1>
-          <p className="text-gray-400 mt-1">
-            Supervisión global del sistema SASE-310 y Feedback de Piloto.
-          </p>
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+              Panel de Control Técnico
+            </h1>
+            <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
+              <span className="flex items-center gap-1.5 text-slate-700">
+                <span className="w-2 h-2 bg-slate-500 rounded-full"></span>
+                Administración Global
+              </span>
+              <span className="text-slate-300">|</span>
+              <span>Supervisión de Sistema (SASE-310)</span>
+            </div>
+          </div>
         </div>
-        <button
-          onClick={fetchData}
-          className="p-2 hover:bg-white/10 rounded-full transition-colors"
-          title="Recargar Datos"
-        >
-          <span className="material-symbols-outlined">refresh</span>
-        </button>
-      </header>
+
+        <div className="flex gap-3">
+          <button
+            onClick={async () => {
+              if (
+                !confirm(
+                  "¿Desea sincronizar el ambiente con datos de demostración?"
+                )
+              )
+                return;
+              const loadingToast = toast.loading("Poblando Base de Datos...");
+              const { success, errors } = await seedDatabase();
+              toast.dismiss(loadingToast);
+              if (errors.length === 0) {
+                toast.success("Sincronización de Base de Datos Exitosa");
+                fetchData();
+              } else {
+                toast.error(`Errores detectados. Revisa la consola técnica.`);
+              }
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+            title="Sincronizar Datos Base"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              database
+            </span>
+            Sync Ambiente
+          </button>
+          <button
+            onClick={fetchData}
+            className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-600 uppercase tracking-widest shadow-sm transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              refresh
+            </span>
+            Actualizar
+          </button>
+        </div>
+      </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-6 border-b border-white/10">
-        <button
-          onClick={() => setActiveTab("feedback")}
-          className={`pb-3 px-4 text-sm font-bold transition-all relative ${
-            activeTab === "feedback"
-              ? "text-amber-400"
-              : "text-gray-500 hover:text-gray-300"
-          }`}
-        >
-          Feedback de Usuarios
-          {activeTab === "feedback" && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-400 shadow-[0_0_10px_#fbbf24]"></div>
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab("audit")}
-          className={`pb-3 px-4 text-sm font-bold transition-all relative ${
-            activeTab === "audit"
-              ? "text-blue-400"
-              : "text-gray-500 hover:text-gray-300"
-          }`}
-        >
-          Caja Negra (Auditoría)
-          {activeTab === "audit" && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-400 shadow-[0_0_10px_#60a5fa]"></div>
-          )}
-        </button>
-        <button
-          onClick={() => setActiveTab("onboarding")}
-          className={`pb-3 px-4 text-sm font-bold transition-all relative ${
-            activeTab === "onboarding"
-              ? "text-green-400"
-              : "text-gray-500 hover:text-gray-300"
-          }`}
-        >
-          Material Onboarding
-          {activeTab === "onboarding" && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-green-400 shadow-[0_0_10px_#4ade80]"></div>
-          )}
-        </button>
+      <div className="flex gap-1 bg-slate-100 p-1.5 rounded-2xl w-fit">
+        {[
+          {
+            id: "feedback",
+            label: "Retroalimentación",
+            icon: "forum",
+            color: "text-amber-700",
+          },
+          {
+            id: "audit",
+            label: "Bitácora de Auditoría",
+            icon: "security",
+            color: "text-blue-700",
+          },
+          {
+            id: "onboarding",
+            label: "Cuentas Institucionales",
+            icon: "badge",
+            color: "text-emerald-700",
+          },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
+              activeTab === tab.id
+                ? `bg-white text-slate-800 shadow-sm ${tab.color}`
+                : "text-slate-400 hover:text-slate-600 hover:bg-white/50"
+            }`}
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              {tab.icon}
+            </span>
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <div className="w-12 h-12 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+            Cargando Datos Técnicos
+          </p>
         </div>
       ) : (
-        <div className="space-y-6 animate-fade-in-up">
+        <div className="space-y-8 animate-fade-in">
           {activeTab === "onboarding" && <InvitationGenerator />}
 
           {activeTab === "feedback" && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-black/30 p-4 rounded-xl border border-white/5">
-                  <h3 className="text-gray-400 text-xs uppercase tracking-widest font-bold">
-                    Total Feedback
-                  </h3>
-                  <p className="text-2xl font-bold">{feedback.length}</p>
-                </div>
-                <div className="bg-black/30 p-4 rounded-xl border border-white/5">
-                  <h3 className="text-gray-400 text-xs uppercase tracking-widest font-bold">
-                    Bugs Reportados
-                  </h3>
-                  <p className="text-2xl font-bold text-red-400">
-                    {feedback.filter((f) => f.type === "bug").length}
-                  </p>
-                </div>
-                <div className="bg-black/30 p-4 rounded-xl border border-white/5">
-                  <h3 className="text-gray-400 text-xs uppercase tracking-widest font-bold">
-                    Sugerencias
-                  </h3>
-                  <p className="text-2xl font-bold text-blue-400">
-                    {feedback.filter((f) => f.type !== "bug").length}
-                  </p>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <StatCard
+                  label="Feedback Total"
+                  value={feedback.length}
+                  icon="chat"
+                  color="bg-slate-50 text-slate-800"
+                />
+                <StatCard
+                  label="Reportes de Falla"
+                  value={feedback.filter((f) => f.type === "bug").length}
+                  icon="bug_report"
+                  color="bg-red-50 text-red-700"
+                />
+                <StatCard
+                  label="Mejoras Sugeridas"
+                  value={feedback.filter((f) => f.type !== "bug").length}
+                  icon="tips_and_updates"
+                  color="bg-blue-50 text-blue-700"
+                />
               </div>
 
-              <div className="bg-black/20 rounded-xl overflow-hidden border border-white/5">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-white/5 text-gray-300 font-medium">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden min-h-[400px]">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-50/50 border-b border-slate-100">
                     <tr>
-                      <th className="p-4">Tipo</th>
-                      <th className="p-4">Comentario</th>
-                      <th className="p-4">Usuario</th>
-                      <th className="p-4">Contexto</th>
-                      <th className="p-4">Hace...</th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        Incidencia
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        Comentario
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        Usuario Emisor
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        Ubicación
+                      </th>
+                      <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                        Tiempo
+                      </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-slate-100">
                     {feedback.map((item) => (
                       <tr
                         key={item.id}
-                        className="hover:bg-white/5 transition-colors"
+                        className="hover:bg-slate-50/50 transition-colors group"
                       >
-                        <td className="p-4">
+                        <td className="px-6 py-4">
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-bold border ${
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black border uppercase ${
                               item.type === "bug"
-                                ? "bg-red-500/10 text-red-400 border-red-500/20"
+                                ? "bg-red-50 text-red-700 border-red-100"
                                 : item.type === "ux"
-                                ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                                : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                ? "bg-purple-50 text-purple-700 border-purple-100"
+                                : "bg-blue-50 text-blue-700 border-blue-100"
                             }`}
                           >
-                            {item.type === "bug"
-                              ? "error"
-                              : item.type === "ux"
-                              ? "brush"
-                              : "lightbulb"}
                             <span className="material-symbols-outlined text-[14px]">
                               {item.type === "bug"
                                 ? "bug_report"
@@ -217,30 +258,28 @@ export const DashboardDeveloper: React.FC = () => {
                                 ? "palette"
                                 : "lightbulb"}
                             </span>
-                            {item.type.toUpperCase()}
+                            {item.type}
                           </span>
                         </td>
-                        <td className="p-4 max-w-md">
-                          <p className="whitespace-pre-wrap">{item.comment}</p>
+                        <td className="px-6 py-4 text-xs">
+                          <p className="font-bold text-slate-700 italic max-w-md">
+                            {item.comment}
+                          </p>
                         </td>
-                        <td className="p-4">
+                        <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className="text-white font-medium">
-                              {item.email || "Anonimo"}
+                            <span className="text-xs font-black text-slate-800 uppercase italic">
+                              {item.email || "Usuario Invitado"}
                             </span>
-                            <span className="text-xs text-gray-500">
-                              {item.user_agent?.split(")")[0] + ")" ||
-                                "Unknown Device"}
+                            <span className="text-[10px] text-slate-400 font-bold uppercase truncate max-w-[200px]">
+                              {item.user_agent?.split(")")[0] + ")"}
                             </span>
                           </div>
                         </td>
-                        <td
-                          className="p-4 max-w-xs truncate text-gray-400"
-                          title={item.url}
-                        >
+                        <td className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-tight">
                           {item.url?.replace(window.location.origin, "")}
                         </td>
-                        <td className="p-4 text-gray-400 whitespace-nowrap">
+                        <td className="px-6 py-4 text-right text-[10px] font-black text-slate-500 uppercase tabular-nums">
                           {formatDistanceToNow(new Date(item.created_at), {
                             addSuffix: true,
                             locale: es,
@@ -248,59 +287,66 @@ export const DashboardDeveloper: React.FC = () => {
                         </td>
                       </tr>
                     ))}
-                    {feedback.length === 0 && (
-                      <tr>
-                        <td
-                          colSpan={5}
-                          className="p-10 text-center text-gray-500"
-                        >
-                          No hay feedback registrado aún en la base de datos.
-                        </td>
-                      </tr>
-                    )}
                   </tbody>
                 </table>
+                {feedback.length === 0 && <EmptyTableMessage />}
               </div>
             </>
           )}
 
           {activeTab === "audit" && (
-            <div className="bg-black/20 rounded-xl overflow-hidden border border-white/5">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-white/5 text-gray-300 font-medium">
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50/50 border-b border-slate-100">
                   <tr>
-                    <th className="p-4">Acción</th>
-                    <th className="p-4">Descripción</th>
-                    <th className="p-4">Usuario</th>
-                    <th className="p-4">Rol</th>
-                    <th className="p-4">Fecha</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                      Acción
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                      Descripción Técnica
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                      Usuario
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                      Rol SASE
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">
+                      Sello de Tiempo
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {auditLog.map((log) => (
                     <tr
                       key={log.id}
-                      className="hover:bg-white/5 transition-colors font-mono text-xs"
+                      className="hover:bg-slate-50/50 transition-colors group text-[11px] font-bold"
                     >
-                      <td className="p-4">
+                      <td className="px-6 py-4">
                         <span
-                          className={`font-bold ${
+                          className={`font-black uppercase italic ${
                             log.tipo_accion === "ELIMINACION"
-                              ? "text-red-400"
+                              ? "text-red-700"
                               : log.tipo_accion === "CREACION"
-                              ? "text-green-400"
-                              : "text-blue-400"
+                              ? "text-emerald-700"
+                              : "text-blue-700"
                           }`}
                         >
                           {log.tipo_accion}
                         </span>
                       </td>
-                      <td className="p-4 text-gray-300">
+                      <td className="px-6 py-4 text-slate-600 italic">
                         {log.descripcion_accion}
                       </td>
-                      <td className="p-4 text-gray-400">{log.email_usuario}</td>
-                      <td className="p-4 text-gray-500">{log.rol_usuario}</td>
-                      <td className="p-4 text-gray-500">
+                      <td className="px-6 py-4 text-slate-500 lowercase">
+                        {log.email_usuario}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                          {log.rol_usuario}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right text-slate-400 font-mono text-[10px]">
                         {new Date(log.created_at).toLocaleString()}
                       </td>
                     </tr>
@@ -314,3 +360,30 @@ export const DashboardDeveloper: React.FC = () => {
     </div>
   );
 };
+
+const StatCard = ({ label, value, icon, color }: any) => (
+  <div
+    className={`p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between ${color}`}
+  >
+    <div className="flex flex-col">
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-1">
+        {label}
+      </span>
+      <span className="text-3xl font-black tabular-nums">{value}</span>
+    </div>
+    <span className="material-symbols-outlined text-4xl opacity-20">
+      {icon}
+    </span>
+  </div>
+);
+
+const EmptyTableMessage = () => (
+  <div className="p-20 text-center">
+    <span className="material-symbols-outlined text-6xl text-slate-200 mb-4">
+      database_off
+    </span>
+    <p className="text-slate-400 font-black uppercase text-xs tracking-widest italic">
+      Registros no encontrados
+    </p>
+  </div>
+);
