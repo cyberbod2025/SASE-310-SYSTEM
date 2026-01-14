@@ -326,251 +326,193 @@ export const Reportes: React.FC = () => {
   ];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text-main flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in font-sans">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-slate-200">
+        <div className="flex items-center gap-5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1 h-full bg-blue-600"></div>
+            <span className="material-symbols-outlined text-blue-700 text-4xl">
               analytics
             </span>
-            Reportes y Estadísticas
-          </h1>
-          <p className="text-text-secondary">
-            Generación de reportes institucionales
-          </p>
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3 uppercase italic">
+              Centro de <span className="text-blue-700">Estadística</span>
+            </h1>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-1">
+              Inteligencia de Datos Institucionales
+            </p>
+          </div>
         </div>
         <button
           onClick={handlePrintReport}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary-hover transition-colors shadow-sm"
+          className="flex items-center gap-3 px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-100"
         >
-          <span className="material-symbols-outlined">print</span>
-          Imprimir Reporte
+          <span className="material-symbols-outlined text-[20px]">print</span>
+          Generar Informe Oficial
         </button>
       </div>
 
-      {/* Report Type Selector */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Report Type Selector - Premium Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {reportOptions.map((opt) => (
           <button
             key={opt.id}
             onClick={() => setSelectedReport(opt.id as ReportType)}
-            aria-pressed={selectedReport === opt.id}
-            className={`p-4 rounded-xl border-2 transition-all text-left focus:ring-2 focus:ring-primary focus:outline-none ${
+            className={`p-6 rounded-[2rem] border-2 transition-all text-left relative group overflow-hidden ${
               selectedReport === opt.id
-                ? "border-primary bg-primary/5"
-                : "border-border-color bg-white hover:border-primary/50"
+                ? "border-blue-700 bg-white shadow-xl shadow-blue-900/5 scale-[1.02]"
+                : "border-slate-100 bg-slate-50/50 hover:border-blue-200 hover:bg-white"
             }`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-4 relative z-10">
               <div
-                className={`size-10 rounded-lg flex items-center justify-center ${
+                className={`size-12 rounded-2xl flex items-center justify-center transition-colors ${
                   selectedReport === opt.id
-                    ? "bg-primary text-white"
-                    : "bg-gray-100 text-gray-600"
+                    ? "bg-blue-700 text-white shadow-lg shadow-blue-700/20"
+                    : "bg-white text-slate-400 border border-slate-100"
                 }`}
               >
                 <span className="material-symbols-outlined">{opt.icon}</span>
               </div>
               <div>
-                <p className="font-bold text-text-main">{opt.label}</p>
-                <p className="text-xs text-text-secondary">{opt.description}</p>
+                <p
+                  className={`font-black text-sm uppercase italic tracking-tight ${
+                    selectedReport === opt.id
+                      ? "text-blue-700"
+                      : "text-slate-600"
+                  }`}
+                >
+                  {opt.label}
+                </p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase mt-1 leading-relaxed opacity-70">
+                  {opt.description}
+                </p>
               </div>
             </div>
           </button>
         ))}
       </div>
 
-      {/* Date Range Filter */}
-      <div className="bg-white p-4 rounded-xl border border-border-color shadow-sm">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-text-secondary">
-              date_range
-            </span>
-            <span className="text-sm font-medium text-text-secondary">
-              Período:
+      {/* Filter Bar - Modern & Clean */}
+      <div className="bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
+        <div className="flex flex-col md:flex-row items-center gap-8">
+          <div className="flex items-center gap-3">
+            <div className="size-8 bg-slate-100 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-[18px] text-slate-500">
+                date_range
+              </span>
+            </div>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Periodo de Análisis
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <label htmlFor="startDate" className="sr-only">
-              Fecha de inicio
-            </label>
+
+          <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
             <input
-              id="startDate"
               type="date"
-              aria-label="Fecha de inicio"
               value={dateRange.start}
               onChange={(e) =>
                 setDateRange({ ...dateRange, start: e.target.value })
               }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none text-gray-900 bg-white"
+              className="bg-transparent border-none text-xs font-black text-slate-700 outline-none p-2 cursor-pointer"
             />
-            <span className="text-text-secondary" aria-hidden="true">
+            <span className="text-slate-300 font-bold text-xs uppercase">
               al
             </span>
-            <label htmlFor="endDate" className="sr-only">
-              Fecha de fin
-            </label>
             <input
-              id="endDate"
               type="date"
-              aria-label="Fecha de fin"
               value={dateRange.end}
               onChange={(e) =>
                 setDateRange({ ...dateRange, end: e.target.value })
               }
-              className="px-3 py-2 border border-border-color rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none text-gray-900 bg-white"
+              className="bg-transparent border-none text-xs font-black text-slate-700 outline-none p-2 cursor-pointer"
             />
           </div>
 
-          <div
-            className="flex flex-wrap gap-2"
-            role="group"
-            aria-label="Filtros rápidos de fecha"
-          >
-            <button
-              aria-label="Seleccionar última semana"
-              onClick={() => {
-                const end = new Date();
-                const start = new Date();
-                start.setDate(end.getDate() - 7);
-                setDateRange({
-                  start: start.toISOString().split("T")[0],
-                  end: end.toISOString().split("T")[0],
-                });
-              }}
-              className="px-3 py-1 text-xs font-medium text-primary bg-primary/5 border border-primary/20 rounded-full hover:bg-primary/10 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
-            >
-              Semana
-            </button>
-            <button
-              aria-label="Seleccionar último mes"
-              onClick={() => {
-                const end = new Date();
-                const start = new Date();
-                start.setMonth(end.getMonth() - 1);
-                setDateRange({
-                  start: start.toISOString().split("T")[0],
-                  end: end.toISOString().split("T")[0],
-                });
-              }}
-              className="px-3 py-1 text-xs font-medium text-primary bg-primary/5 border border-primary/20 rounded-full hover:bg-primary/10 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
-            >
-              Mes
-            </button>
-            <button
-              aria-label="Seleccionar último año"
-              onClick={() => {
-                const end = new Date();
-                const start = new Date();
-                start.setFullYear(end.getFullYear() - 1);
-                setDateRange({
-                  start: start.toISOString().split("T")[0],
-                  end: end.toISOString().split("T")[0],
-                });
-              }}
-              className="px-3 py-1 text-xs font-medium text-primary bg-primary/5 border border-primary/20 rounded-full hover:bg-primary/10 transition-colors focus:ring-2 focus:ring-primary focus:outline-none"
-            >
-              Año
-            </button>
+          <div className="flex gap-2">
+            {["Semana", "Mes", "Año"].map((lbl) => (
+              <button
+                key={lbl}
+                className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all"
+              >
+                {lbl}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Report Preview */}
-      <div className="bg-white rounded-xl border border-border-color shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-border-color bg-gray-50 flex justify-between items-center">
-          <h3 className="font-bold text-lg text-text-main">
-            Vista Previa:{" "}
-            {reportOptions.find((r) => r.id === selectedReport)?.label}
-          </h3>
-          <span className="text-xs text-text-secondary">
-            {filteredIncidents.length} registros en período
+      {/* Preview Section - Executive High Contrast */}
+      <div className="bg-white border border-slate-200 rounded-[3rem] shadow-xl shadow-slate-200/50 overflow-hidden">
+        <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="w-1.5 h-6 bg-blue-700 rounded-full"></div>
+            <h3 className="font-black text-lg text-slate-800 uppercase italic tracking-tight">
+              Vista Previa Institucional
+            </h3>
+          </div>
+          <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100">
+            {filteredIncidents.length} Registros Activos
           </span>
         </div>
 
-        <div className="p-6">
+        <div className="p-10">
           {selectedReport === "incidencias" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <p className="text-xs font-bold text-yellow-700 uppercase">
-                    Retardos
-                  </p>
-                  <p className="text-2xl font-bold text-yellow-800">
-                    {incidentsByType.retardos}
-                  </p>
-                </div>
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-xs font-bold text-blue-700 uppercase">
-                    Uniforme
-                  </p>
-                  <p className="text-2xl font-bold text-blue-800">
-                    {incidentsByType.uniformes}
-                  </p>
-                </div>
-                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                  <p className="text-xs font-bold text-red-700 uppercase">
-                    Conducta
-                  </p>
-                  <p className="text-2xl font-bold text-red-800">
-                    {incidentsByType.conducta}
-                  </p>
-                </div>
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <p className="text-xs font-bold text-gray-700 uppercase">
-                    Faltas
-                  </p>
-                  <p className="text-2xl font-bold text-gray-800">
-                    {incidentsByType.faltas}
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-text-secondary text-center">
-                Total: <strong>{filteredIncidents.length}</strong> incidencias
-                en el período seleccionado
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <ReportStat
+                label="Retardos"
+                value={incidentsByType.retardos}
+                color="amber"
+                icon="timer"
+              />
+              <ReportStat
+                label="Uniforme"
+                value={incidentsByType.uniformes}
+                color="blue"
+                icon="checkroom"
+              />
+              <ReportStat
+                label="Conducta"
+                value={incidentsByType.conducta}
+                color="red"
+                icon="gavel"
+              />
+              <ReportStat
+                label="Faltas"
+                value={incidentsByType.faltas}
+                color="slate"
+                icon="event_busy"
+              />
             </div>
           )}
 
           {selectedReport === "estudiantes" && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200 text-center">
-                  <p className="text-xs font-bold text-green-700 uppercase">
-                    Cerrado
-                  </p>
-                  <p className="text-2xl font-bold text-green-800">
-                    {studentsByState.cerrados}
-                  </p>
-                </div>
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
-                  <p className="text-xs font-bold text-blue-700 uppercase">
-                    Observado
-                  </p>
-                  <p className="text-2xl font-bold text-blue-800">
-                    {studentsByState.observados}
-                  </p>
-                </div>
-                <div className="p-4 bg-red-50 rounded-lg border border-red-200 text-center">
-                  <p className="text-xs font-bold text-red-700 uppercase">
-                    Patrón Detectado
-                  </p>
-                  <p className="text-2xl font-bold text-red-800">
-                    {studentsByState.patron}
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-text-secondary text-center">
-                Total: <strong>{students.length}</strong> estudiantes
-                registrados
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <ReportStat
+                label="Cerrado"
+                value={studentsByState.cerrados}
+                color="green"
+                icon="task_alt"
+              />
+              <ReportStat
+                label="Observación"
+                value={studentsByState.observados}
+                color="blue"
+                icon="visibility"
+              />
+              <ReportStat
+                label="En Riesgo"
+                value={studentsByState.patron}
+                color="red"
+                icon="warning"
+              />
             </div>
           )}
 
           {selectedReport === "asistencia" && (
-            <div className="text-center py-4">
-              <p className="text-4xl font-bold text-primary mb-2">
+            <div className="flex flex-col items-center py-12 bg-slate-50/50 rounded-[2rem] border border-slate-100 border-dashed">
+              <p className="text-7xl font-black text-blue-700 italic tracking-tighter mb-4">
                 {students.length > 0
                   ? (
                       100 -
@@ -579,17 +521,52 @@ export const Reportes: React.FC = () => {
                   : 100}
                 %
               </p>
-              <p className="text-sm text-text-secondary">
-                Tasa de Asistencia Estimada
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                Eficiencia de Asistencia Global
               </p>
-              <p className="text-xs text-text-secondary mt-2">
-                {incidentsByType.faltas} faltas • {incidentsByType.retardos}{" "}
-                retardos
-              </p>
+              <div className="flex gap-8 mt-8">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 bg-slate-300 rounded-full"></span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    {incidentsByType.faltas} Faltas
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="size-2 bg-blue-400 rounded-full"></span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    {incidentsByType.retardos} Retardos
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
+    </div>
+  );
+};
+
+const ReportStat = ({ label, value, color, icon }: any) => {
+  const colors: any = {
+    amber: "border-amber-200 text-amber-700 bg-amber-50/50",
+    blue: "border-blue-200 text-blue-700 bg-blue-50/50",
+    red: "border-red-200 text-red-700 bg-red-50/50",
+    green: "border-green-200 text-green-700 bg-green-50/50",
+    slate: "border-slate-200 text-slate-700 bg-slate-50/50",
+  };
+  return (
+    <div
+      className={`p-8 rounded-[2rem] border shadow-sm flex flex-col items-center text-center group transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 ${colors[color]}`}
+    >
+      <span className="material-symbols-outlined text-4xl mb-4 opacity-40 group-hover:scale-110 transition-transform">
+        {icon}
+      </span>
+      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">
+        {label}
+      </p>
+      <p className="text-5xl font-black tracking-tight text-slate-800 italic">
+        {value}
+      </p>
     </div>
   );
 };

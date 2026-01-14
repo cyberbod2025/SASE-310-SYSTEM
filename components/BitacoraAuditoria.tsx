@@ -13,7 +13,7 @@ interface AuditEntry {
   tabla_objetivo: string | null;
   id_registro_objetivo: string | null;
   nombre_alumno_objetivo: string | null;
-  creado_en: string; // Corrected column name
+  creado_en: string;
 }
 
 export const BitacoraAuditoria: React.FC = () => {
@@ -30,16 +30,14 @@ export const BitacoraAuditoria: React.FC = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("auditoria") // Corrected table name
+        .from("auditoria")
         .select("*")
-        .order("creado_en", { ascending: false }) // Corrected sort column
+        .order("creado_en", { ascending: false })
         .limit(100);
 
       if (error) {
         console.error("Error fetching audit log:", error);
       } else {
-        // Force cast to match interface if strict typing complains about nulls vs assumed strings,
-        // but Supabase types are usually aligned.
         setEntries((data as any) || []);
       }
     } catch (err) {
@@ -53,227 +51,267 @@ export const BitacoraAuditoria: React.FC = () => {
       ? entries
       : entries.filter((e) => e.tipo_accion === filter);
 
-  const getActionBadge = (actionType: string) => {
-    switch (actionType) {
-      case "CONSULTA":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "ACTUALIZACION":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "CREACION":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "ELIMINACION":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const getActionIcon = (actionType: string) => {
-    switch (actionType) {
-      case "CONSULTA":
-        return "visibility";
-      case "ACTUALIZACION":
-        return "edit";
-      case "CREACION":
-        return "add_circle";
-      case "ELIMINACION":
-        return "delete";
-      default:
-        return "info";
-    }
-  };
-
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">
-              policy
-            </span>
-            Bitácora de Auditoría
-          </h2>
-          <p className="text-gray-400">
-            Registro de accesos y modificaciones al sistema
-          </p>
+    <div className="flex-1 w-full space-y-8 animate-fadeIn">
+      {/* Header Institucional */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="flex items-center gap-5">
+          <div className="size-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-700 shadow-sm border border-blue-200/50">
+            <span className="material-symbols-outlined text-3xl">policy</span>
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase italic">
+              Bitácora <span className="text-blue-700">Institucional</span>
+            </h1>
+            <p className="text-emerald-600 font-bold text-xs uppercase tracking-widest mt-1 flex items-center gap-2">
+              <span className="size-2 bg-emerald-500 rounded-full animate-pulse"></span>
+              Seguridad y Auditoría del Sistema
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-3">
           <button
             onClick={fetchAuditLog}
-            className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-lg text-sm font-bold hover:bg-white/10 transition-colors flex items-center gap-2"
+            className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-bold text-sm shadow-sm active:scale-95"
           >
-            <span className="material-symbols-outlined text-sm">refresh</span>
-            Actualizar
+            <span className="material-symbols-outlined text-xl">refresh</span>
+            Sincronizar
           </button>
+
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-4 py-2 border border-white/10 rounded-lg text-sm font-bold bg-black/40 text-white focus:outline-none focus:border-primary"
+            className="bg-slate-100 border-none rounded-xl px-4 py-3 text-sm font-black text-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none uppercase tracking-wider"
           >
-            <option value="all" className="text-black">
-              Todas las acciones
-            </option>
-            <option value="CONSULTA" className="text-black">
-              Solo Consultas
-            </option>
-            <option value="ACTUALIZACION" className="text-black">
-              Solo Actualizaciones
-            </option>
-            <option value="CREACION" className="text-black">
-              Solo Creaciones
-            </option>
+            <option value="all">Todas las Acciones</option>
+            <option value="CONSULTA">Consultas</option>
+            <option value="ACTUALIZACION">Actualizaciones</option>
+            <option value="CREACION">Creaciones</option>
+            <option value="ELIMINACION">Eliminaciones</option>
           </select>
         </div>
       </div>
 
-      {/* Stats Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-sm">
-          <div className="flex items-center gap-2 text-blue-400 mb-1">
-            <span className="material-symbols-outlined text-lg">
-              visibility
-            </span>
-            <span className="text-xs font-bold uppercase">Consultas</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {entries.filter((e) => e.tipo_accion === "CONSULTA").length}
-          </p>
-        </div>
-        <div className="bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-sm">
-          <div className="flex items-center gap-2 text-yellow-400 mb-1">
-            <span className="material-symbols-outlined text-lg">edit</span>
-            <span className="text-xs font-bold uppercase">Actualizaciones</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {entries.filter((e) => e.tipo_accion === "ACTUALIZACION").length}
-          </p>
-        </div>
-        <div className="bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-sm">
-          <div className="flex items-center gap-2 text-green-400 mb-1">
-            <span className="material-symbols-outlined text-lg">
-              add_circle
-            </span>
-            <span className="text-xs font-bold uppercase">Creaciones</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {entries.filter((e) => e.tipo_accion === "CREACION").length}
-          </p>
-        </div>
-        <div className="bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/10 shadow-sm">
-          <div className="flex items-center gap-2 text-gray-400 mb-1">
-            <span className="material-symbols-outlined text-lg">people</span>
-            <span className="text-xs font-bold uppercase">Usuarios Únicos</span>
-          </div>
-          <p className="text-2xl font-bold text-white">
-            {new Set(entries.map((e) => e.email_usuario || "Sistema")).size}
-          </p>
-        </div>
+      {/* KPI Cards Estilo Institucional */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <StatCard
+          label="Consultas"
+          value={entries.filter((e) => e.tipo_accion === "CONSULTA").length}
+          icon="visibility"
+          color="blue"
+        />
+        <StatCard
+          label="Actualizaciones"
+          value={
+            entries.filter((e) => e.tipo_accion === "ACTUALIZACION").length
+          }
+          icon="edit_note"
+          color="amber"
+        />
+        <StatCard
+          label="Creaciones"
+          value={entries.filter((e) => e.tipo_accion === "CREACION").length}
+          icon="add_circle"
+          color="emerald"
+        />
+        <StatCard
+          label="Personal Activo"
+          value={new Set(entries.map((e) => e.email_usuario)).size}
+          icon="group"
+          color="indigo"
+        />
       </div>
 
-      {/* Audit Log Table */}
-      <div className="bg-black/90 backdrop-blur-xl rounded-xl border border-green-500/20 shadow-[0_0_30px_rgba(0,255,0,0.05)] overflow-hidden font-mono">
-        <div className="px-6 py-4 border-b border-green-500/20 bg-black/60 flex justify-between items-center">
-          <h3 className="font-bold text-lg text-green-400 flex items-center gap-2">
-            <span className="material-symbols-outlined text-green-500 animate-pulse">
-              terminal
-            </span>
-            REGISTRO_FORENSE_SISTEMA ({filteredEntries.length})
-          </h3>
-          <div className="flex gap-4">
-            <span className="text-xs text-green-700/80 self-center hidden md:block">
-              ENCRIPTACIÓN: AES-256-GCM | INTEGRIDAD: VERIFICADA
-            </span>
-            <button
-              onClick={() =>
-                toast.success("Exportando LOGS a CSV...", { icon: "download" })
-              }
-              className="text-xs border border-green-500/50 text-green-400 px-3 py-1 hover:bg-green-500/10 transition-colors uppercase"
-            >
-              Exportar CSV
-            </button>
+      {/* Tabla Institucional de Auditoría */}
+      <div className="bg-white border border-slate-200 rounded-[2rem] shadow-xl shadow-slate-200/50 overflow-hidden">
+        <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+              <span className="material-symbols-outlined text-blue-600">
+                history
+              </span>
+              Historial de Actividad del Plantel
+            </h3>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+              Registro inalterable de protocolos digitales
+            </p>
           </div>
+          <button
+            onClick={() => toast.success("Exportando registro oficial...")}
+            className="text-[10px] font-black text-blue-700 uppercase tracking-widest flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+          >
+            <span className="material-symbols-outlined text-sm">download</span>
+            Descargar Reporte CSV
+          </button>
         </div>
 
-        {loading ? (
-          <div className="p-10 text-center text-green-600 animate-pulse">
-            _RECUPERANDO_FRAGMENTOS_DE_DATOS...
-          </div>
-        ) : filteredEntries.length === 0 ? (
-          <div className="p-10 text-center text-gray-400">
-            <span className="material-symbols-outlined text-4xl mb-2 text-gray-600">
-              policy
-            </span>
-            <p>No hay registros de auditoría.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left text-xs uppercase tracking-wider">
-              <thead className="bg-green-900/10 text-green-500/70 border-b border-green-500/20">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  Fecha y Hora
+                </th>
+                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  Personal Responsable
+                </th>
+                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  Operación
+                </th>
+                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  Detalle de Acción
+                </th>
+                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  Afectado / Alumno
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {loading ? (
                 <tr>
-                  <th className="px-6 py-3">TIMESTAMP</th>
-                  <th className="px-6 py-3">AGENTE</th>
-                  <th className="px-6 py-3">ROL</th>
-                  <th className="px-6 py-3">OPERACIÓN</th>
-                  <th className="px-6 py-3">DETALLE_TÉCNICO</th>
-                  <th className="px-6 py-3">OBJETIVO</th>
+                  <td colSpan={5} className="px-8 py-20 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="size-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        Validando libros de registro...
+                      </p>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-green-500/10 text-green-100/80">
-                {filteredEntries.map((entry) => (
+              ) : filteredEntries.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-8 py-20 text-center text-slate-400"
+                  >
+                    <span className="material-symbols-outlined text-5xl opacity-20">
+                      inventory_2
+                    </span>
+                    <p className="text-xs font-bold uppercase mt-4">
+                      Sin registros para mostrar
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                filteredEntries.map((entry) => (
                   <tr
                     key={entry.id}
-                    className="hover:bg-green-500/5 transition-colors group"
+                    className="hover:bg-slate-50 transition-colors group"
                   >
-                    <td className="px-6 py-3 whitespace-nowrap text-green-300/60 group-hover:text-green-300">
-                      {new Date(entry.creado_en).toLocaleString("es-MX")}
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-green-400 font-bold">
-                          {entry.email_usuario?.split("@")[0] || "SYSTEM"}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 text-green-600">
-                      {entry.rol_usuario || "N/A"}
-                    </td>
-                    <td className="px-6 py-3">
-                      <span
-                        className={`px-2 py-0.5 border rounded text-[10px] font-bold inline-block w-24 text-center ${
-                          entry.tipo_accion === "CONSULTA"
-                            ? "border-blue-500/50 text-blue-400 bg-blue-900/20"
-                            : entry.tipo_accion === "ACTUALIZACION"
-                            ? "border-yellow-500/50 text-yellow-400 bg-yellow-900/20"
-                            : entry.tipo_accion === "CREACION"
-                            ? "border-green-500/50 text-green-400 bg-green-900/20"
-                            : "border-red-500/50 text-red-400 bg-red-900/20"
-                        }`}
-                      >
-                        {entry.tipo_accion}
+                    <td className="px-8 py-5">
+                      <span className="text-[11px] font-bold text-slate-500 block">
+                        {new Date(entry.creado_en).toLocaleDateString("es-MX", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
+                      </span>
+                      <span className="text-[10px] font-medium text-slate-400 block mt-0.5">
+                        {new Date(entry.creado_en).toLocaleTimeString("es-MX", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </span>
                     </td>
-                    <td
-                      className="px-6 py-3 text-[10px] text-gray-400 max-w-[250px] truncate group-hover:text-white transition-colors"
-                      title={entry.descripcion_accion || ""}
-                    >
-                      {entry.descripcion_accion}
+                    <td className="px-8 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-black text-[10px]">
+                          {(entry.rol_usuario || "S").charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-slate-700 truncate max-w-[150px]">
+                            {entry.email_usuario || "SISTEMA"}
+                          </p>
+                          <p className="text-[9px] font-bold text-blue-600 uppercase tracking-tighter">
+                            {entry.rol_usuario || "PROCESO AUTO"}
+                          </p>
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-8 py-5">
+                      <ActionBadge type={entry.tipo_accion} />
+                    </td>
+                    <td className="px-8 py-5">
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-[250px] line-clamp-2">
+                        {entry.descripcion_accion}
+                      </p>
+                    </td>
+                    <td className="px-8 py-5">
                       {entry.nombre_alumno_objetivo ? (
-                        <span className="text-green-200">
-                          [{entry.nombre_alumno_objetivo}]
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-sm text-slate-300">
+                            person
+                          </span>
+                          <span className="text-xs font-bold text-slate-700 italic">
+                            {entry.nombre_alumno_objetivo}
+                          </span>
+                        </div>
                       ) : (
-                        <span className="text-gray-700">--</span>
+                        <span className="text-slate-300 text-[10px] font-black uppercase">
+                          --
+                        </span>
                       )}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+  );
+};
+
+// --- Helper Components ---
+
+const StatCard: React.FC<{
+  label: string;
+  value: number | string;
+  icon: string;
+  color: string;
+}> = ({ label, value, icon, color }) => {
+  const colors: any = {
+    blue: "bg-blue-50 text-blue-600 border-blue-100",
+    amber: "bg-amber-50 text-amber-600 border-amber-100",
+    emerald: "bg-emerald-50 text-emerald-600 border-emerald-100",
+    indigo: "bg-indigo-50 text-indigo-600 border-indigo-100",
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5 hover:shadow-md transition-all">
+      <div
+        className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-sm`}
+      >
+        <span className="material-symbols-outlined text-2xl">{icon}</span>
+      </div>
+      <div>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          {label}
+        </p>
+        <p className="text-2xl font-black text-slate-800 tracking-tight">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const ActionBadge: React.FC<{ type: string }> = ({ type }) => {
+  const styles: any = {
+    CONSULTA: "bg-blue-50 text-blue-700 border-blue-100",
+    ACTUALIZACION: "bg-amber-50 text-amber-700 border-amber-100",
+    CREACION: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    ELIMINACION: "bg-red-50 text-red-700 border-red-100",
+  };
+
+  return (
+    <span
+      className={`px-3 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${
+        styles[type] || "bg-slate-50 text-slate-500"
+      }`}
+    >
+      {type}
+    </span>
   );
 };

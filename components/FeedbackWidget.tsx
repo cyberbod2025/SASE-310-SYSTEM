@@ -58,7 +58,7 @@ export const FeedbackWidget = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end gap-3 font-sans">
+    <div className="fixed bottom-24 right-6 z-[60] flex flex-col items-end gap-3 font-sans">
       {isOpen && (
         <div className="bg-slate-900 border border-white/20 rounded-xl shadow-2xl p-4 w-80 animate-fade-in-up backdrop-blur-md">
           <div className="flex justify-between items-center mb-3">
@@ -143,6 +143,7 @@ export const FeedbackWidget = () => {
             ? "bg-white text-black rotate-90"
             : "bg-gradient-to-br from-indigo-600 to-purple-600 text-white border border-white/20"
         }`}
+        title="Enviar comentarios/errores"
       >
         <span className="material-symbols-outlined text-[24px]">
           {isOpen ? "close" : "feedback"}

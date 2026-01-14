@@ -3,105 +3,228 @@ import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
 
 export const OrbNavigation = () => {
-  const { setCurrentModule } = useApp();
+  const { setCurrentModule, currentUserRole } = useApp();
 
-  const menuItems = [
-    {
-      id: AppModule.DASHBOARD,
-      label: "Tablero",
-      icon: "dashboard",
-      color: "from-blue-500 to-cyan-400",
-      delay: "0s",
-    },
-    {
-      id: AppModule.INSCRIPCIONES,
-      label: "Inscripción",
-      icon: "badge",
-      color: "from-purple-500 to-pink-400",
-      delay: "1s",
-    },
-    {
-      id: AppModule.REPORTES,
-      label: "Reportes",
-      icon: "analytics",
-      color: "from-amber-500 to-orange-400",
-      delay: "0.5s",
-    },
-    {
-      id: AppModule.PROTOCOLOS,
-      label: "Protocolos",
-      icon: "policy",
-      color: "from-emerald-500 to-green-400",
-      delay: "1.5s",
-    },
-    {
-      id: AppModule.AGENDA,
-      label: "Agenda",
-      icon: "calendar_month",
-      color: "from-indigo-500 to-blue-400",
-      delay: "0.2s",
-    },
-    {
-      id: AppModule.ARCHIVO,
-      label: "Archivo",
-      icon: "folder_special",
-      color: "from-rose-500 to-red-400",
-      delay: "0.8s",
-    },
-  ];
+  const getMenuItems = () => {
+    const baseItems = [
+      {
+        id: AppModule.DASHBOARD,
+        label: "Tablero",
+        icon: "dashboard",
+        color: "from-blue-600 to-cyan-500",
+        delay: "0s",
+      },
+    ];
+
+    switch (currentUserRole) {
+      case UserRole.DOCENTE:
+      case UserRole.DOCENTE_TUTOR:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.AGENDA,
+            label: "Agenda",
+            icon: "calendar_month",
+            color: "from-indigo-600 to-blue-500",
+            delay: "0.2s",
+          },
+          {
+            id: AppModule.REPORTES,
+            label: "Reportes",
+            icon: "analytics",
+            color: "from-amber-600 to-orange-500",
+            delay: "0.4s",
+          },
+          {
+            id: AppModule.PROTOCOLOS,
+            label: "Protocolos",
+            icon: "policy",
+            color: "from-emerald-600 to-green-500",
+            delay: "0.6s",
+          },
+          {
+            id: AppModule.ARCHIVO,
+            label: "Archivo",
+            icon: "folder_special",
+            color: "from-rose-600 to-red-500",
+            delay: "0.8s",
+          },
+        ];
+      case UserRole.SECRETARIA:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.INSCRIPCIONES,
+            label: "Admisión",
+            icon: "badge",
+            color: "from-purple-600 to-pink-500",
+            delay: "0.2s",
+          },
+          {
+            id: AppModule.ARCHIVO,
+            label: "Archivo",
+            icon: "folder_special",
+            color: "from-indigo-600 to-blue-500",
+            delay: "0.4s",
+          },
+          {
+            id: AppModule.AGENDA,
+            label: "Eventos",
+            icon: "calendar_month",
+            color: "from-emerald-600 to-green-500",
+            delay: "0.6s",
+          },
+        ];
+      case UserRole.DIRECTIVO:
+      case UserRole.DEVELOPER:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.BITACORA,
+            label: "Auditoría",
+            icon: "policy",
+            color: "from-slate-700 to-slate-900",
+            delay: "0.2s",
+          },
+          {
+            id: AppModule.REPORTES,
+            label: "Estadística",
+            icon: "analytics",
+            color: "from-blue-700 to-indigo-900",
+            delay: "0.4s",
+          },
+          {
+            id: AppModule.PROTOCOLOS,
+            label: "Jurídico",
+            icon: "gavel",
+            color: "from-amber-700 to-orange-900",
+            delay: "0.6s",
+          },
+          {
+            id: AppModule.ARCHIVO,
+            label: "Archivo Gral",
+            icon: "history_edu",
+            color: "from-emerald-600 to-teal-900",
+            delay: "0.8s",
+          },
+        ];
+      case UserRole.PREFECTURA:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.REPORTES,
+            label: "Disciplina",
+            icon: "description",
+            color: "from-rose-600 to-red-500",
+            delay: "0.2s",
+          },
+          {
+            id: AppModule.PROTOCOLOS,
+            label: "Seguridad",
+            icon: "security",
+            color: "from-blue-600 to-indigo-500",
+            delay: "0.4s",
+          },
+          {
+            id: AppModule.AGENDA,
+            label: "Guardias",
+            icon: "schedule",
+            color: "from-amber-600 to-orange-500",
+            delay: "0.6s",
+          },
+        ];
+      default:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.AGENDA,
+            label: "Agenda",
+            icon: "calendar_month",
+            color: "from-indigo-600 to-blue-500",
+            delay: "0.2s",
+          },
+          {
+            id: AppModule.PROTOCOLOS,
+            label: "Protocolos",
+            icon: "policy",
+            color: "from-emerald-600 to-green-500",
+            delay: "0.4s",
+          },
+        ];
+    }
+  };
+
+  const menuItems = getMenuItems();
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center relative overflow-hidden p-8 perspective-1000">
-      {/* Ambient particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping opacity-20"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-3 h-3 bg-purple-400 rounded-full animate-pulse opacity-20"></div>
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center relative overflow-hidden p-8 font-sans">
+      {/* Dynamic Background (Technical/Executive) */}
+      <div className="absolute inset-0 bg-[#f8fafc]">
+        {/* Subtle Mesh Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage:
+              "linear-gradient(#0f172a 1px, transparent 1px), linear-gradient(90deg, #0f172a 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        ></div>
+        {/* Soft Radial Depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8),transparent)]"></div>
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-500/[0.02] rounded-full blur-[120px]"></div>
       </div>
 
-      <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200 mb-12 animate-fade-in text-center drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-        Centro de Comando
-      </h1>
+      <div className="text-center relative z-20 mb-20 animate-fade-in">
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <span className="text-[10px] font-black text-blue-700 uppercase tracking-[0.4em] mb-2">
+            Plataforma Estratégica
+          </span>
+          <h1 className="text-5xl md:text-7xl font-black text-slate-800 tracking-tighter uppercase italic leading-none">
+            Centro de <span className="text-blue-700">Comando</span>
+          </h1>
+        </div>
+        <div className="h-1 w-24 bg-blue-700 rounded-full mx-auto mb-6"></div>
+        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.5em] flex items-center justify-center gap-4">
+          MÓDULOS DE GESTIÓN :: {currentUserRole}
+        </p>
+      </div>
 
-      {/* The "Tray" of Spheres */}
-      <div
-        className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 relative z-10"
-        style={{ transformStyle: "preserve-3d" }}
-      >
+      <div className="flex flex-wrap items-center justify-center gap-12 md:gap-16 max-w-6xl relative z-10 perspective-1000">
         {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setCurrentModule(item.id)}
-            className="group relative flex flex-col items-center justify-center"
-            style={{
-              animation: `float 4s ease-in-out infinite`,
-              animationDelay: item.delay,
-            }}
-          >
-            {/* The Sphere */}
-            <div
-              className={`relative size-24 md:size-32 rounded-full bg-gradient-to-br ${item.color} 
-                          shadow-[0_0_30px_rgba(255,255,255,0.1),inset_0_0_20px_rgba(255,255,255,0.3)]
-                          backdrop-blur-md border border-white/20
-                          group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 ease-out
-                          flex items-center justify-center overflow-hidden`}
+          <div key={item.id} className="flex flex-col items-center">
+            <button
+              onClick={() => setCurrentModule(item.id)}
+              className="group relative flex flex-col items-center justify-center transition-all duration-500 ease-out"
+              style={{
+                animation: `float 6s ease-in-out infinite`,
+                animationDelay: item.delay,
+              }}
             >
-              {/* Shine effect */}
-              <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/30 to-transparent rounded-t-full pointer-events-none"></div>
+              {/* Institutional Orb */}
+              <div
+                className={`relative size-28 md:size-36 rounded-[2.5rem] bg-gradient-to-br ${item.color} 
+                            shadow-xl shadow-blue-900/10 border border-white/20
+                            group-hover:scale-110 group-hover:rounded-full transition-all duration-500 ease-in-out
+                            flex items-center justify-center overflow-hidden`}
+              >
+                {/* Visual Polish */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.4),transparent)]"></div>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.1)_50%,transparent_75%)] bg-[length:250%_250%] animate-shine-sweep"></div>
 
-              {/* Icon */}
-              <span className="material-symbols-outlined text-4xl md:text-5xl text-white drop-shadow-md group-hover:animate-pulse">
-                {item.icon}
-              </span>
-            </div>
+                <span className="material-symbols-outlined text-4xl md:text-5xl text-white drop-shadow-lg group-hover:scale-110 transition-transform">
+                  {item.icon}
+                </span>
+              </div>
 
-            {/* Reflection/Shadow under sphere */}
-            <div className="absolute -bottom-6 w-16 h-4 bg-black/40 blur-xl rounded-[100%] group-hover:scale-75 group-hover:opacity-70 transition-all duration-500"></div>
-
-            {/* Label */}
-            <span className="mt-6 text-lg font-bold text-white tracking-wider opacity-80 group-hover:opacity-100 group-hover:text-blue-300 transition-colors uppercase text-shadow-glow">
-              {item.label}
-            </span>
-          </button>
+              {/* Modern Label */}
+              <div className="absolute -bottom-10 flex flex-col items-center">
+                <span className="text-sm font-black text-slate-700 uppercase tracking-widest opacity-80 group-hover:opacity-100 group-hover:text-blue-700 transition-all">
+                  {item.label}
+                </span>
+                <div className="h-1 w-0 bg-blue-600 rounded-full group-hover:w-full transition-all duration-300 mt-1"></div>
+              </div>
+            </button>
+          </div>
         ))}
       </div>
     </div>

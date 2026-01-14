@@ -1,3 +1,7 @@
+import React, { useState } from "react";
+import { useApp } from "../../store";
+import { AppModule } from "../../types";
+
 export const DashboardDocente = () => {
   const [activeTab, setActiveTab] = useState<
     "PANEL" | "ASISTENCIA" | "CALIFICACIONES"
@@ -37,7 +41,7 @@ export const DashboardDocente = () => {
             />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight text-shadow-none">
               Control Escolar del Grupo
             </h1>
             <div className="flex items-center gap-2 mt-1">
@@ -45,7 +49,7 @@ export const DashboardDocente = () => {
                 3º Grado :: Grupo B
               </span>
               <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
-                Ciclo Escolar 2025-2026
+                Ciclo Escolar 2024-2025
               </span>
             </div>
           </div>
@@ -80,7 +84,9 @@ export const DashboardDocente = () => {
           <span className="material-symbols-outlined">info</span>
         </div>
         <div className="flex-1">
-          <p className="text-sm font-bold">Aviso del Sistema</p>
+          <p className="text-sm font-bold uppercase tracking-tight">
+            Aviso del Sistema
+          </p>
           <p className="text-xs font-medium opacity-80">
             Faltan 3 días para el cierre de la captura de evaluaciones del
             segundo periodo trimestral.
@@ -143,8 +149,8 @@ export const DashboardDocente = () => {
             {/* Student List Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-blue-600">
+                <h3 className="text-xs font-black text-slate-800 flex items-center gap-2 uppercase tracking-widest">
+                  <span className="material-symbols-outlined text-blue-600 text-lg">
                     group
                   </span>
                   Listado de Alumnos
@@ -173,7 +179,7 @@ export const DashboardDocente = () => {
           {/* Side Actions & Alerts */}
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">
+              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
                 Accesos Directos
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -206,8 +212,8 @@ export const DashboardDocente = () => {
 
             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-[400px]">
               <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <h3 className="text-[10px] font-bold text-red-700 uppercase tracking-widest">
-                  Notificaciones del Grupo
+                <h3 className="text-[10px] font-black text-red-700 uppercase tracking-widest">
+                  Alertas del Grupo
                 </h3>
                 <span className="bg-red-50 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-100">
                   {alerts.length} alertas
@@ -220,15 +226,17 @@ export const DashboardDocente = () => {
                     className="p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:border-slate-300 transition-all cursor-pointer"
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-bold text-red-600 uppercase tracking-tighter">
+                      <span className="text-[10px] font-black text-red-600 uppercase tracking-tighter">
                         ALERTA
                       </span>
-                      <span className="text-[9px] text-slate-400">
+                      <span className="text-[9px] text-slate-400 font-bold uppercase">
                         Hace 15 min
                       </span>
                     </div>
-                    <p className="text-xs font-bold text-slate-800">{s.name}</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">
+                    <p className="text-xs font-black text-slate-800 uppercase italic transition-colors">
+                      {s.name}
+                    </p>
+                    <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-1 font-medium">
                       {s.incidents[0]?.description || "Requiere seguimiento."}
                     </p>
                   </div>
@@ -240,22 +248,22 @@ export const DashboardDocente = () => {
       )}
 
       {(activeTab === "ASISTENCIA" || activeTab === "CALIFICACIONES") && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center min-h-[400px] flex flex-col items-center justify-center shadow-sm">
-          <div className="size-16 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200 mb-4">
-            <span className="material-symbols-outlined text-slate-400 text-3xl">
+        <div className="bg-white border border-slate-200 rounded-3xl p-12 text-center min-h-[400px] flex flex-col items-center justify-center shadow-lg shadow-slate-200/50">
+          <div className="size-20 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 mb-6">
+            <span className="material-symbols-outlined text-slate-300 text-4xl">
               pending
             </span>
           </div>
-          <h2 className="text-xl font-bold text-slate-700 mb-2">
-            Módulo en Revisión Especial
+          <h2 className="text-2xl font-black text-slate-800 mb-2 uppercase tracking-tight italic">
+            Módulo en <span className="text-blue-600">Revisión Especial</span>
           </h2>
-          <p className="text-sm text-slate-500 max-w-sm mb-6">
+          <p className="text-xs font-bold text-slate-400 max-w-sm mb-8 uppercase tracking-widest leading-relaxed">
             Estamos optimizando la interfaz de seguimiento oficial para cumplir
             con los estándares de identidad pública.
           </p>
           <button
             onClick={() => setActiveTab("PANEL")}
-            className="px-6 py-2 bg-slate-800 text-white font-bold text-sm rounded-lg hover:bg-slate-900 transition-all"
+            className="px-8 py-3 bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-blue-800 transition-all shadow-lg shadow-blue-200"
           >
             Volver al Panel Principal
           </button>
@@ -267,28 +275,28 @@ export const DashboardDocente = () => {
 
 const StatCard = ({ label, value, color, icon }: any) => {
   const colors: any = {
-    red: "text-red-600 bg-red-50 border-red-100 shadow-red-50",
-    amber: "text-amber-600 bg-amber-50 border-amber-100 shadow-amber-50",
-    blue: "text-blue-600 bg-blue-50 border-blue-100 shadow-blue-50",
+    red: "text-red-700 bg-red-50 border-red-100",
+    amber: "text-amber-700 bg-amber-50 border-amber-100",
+    blue: "text-blue-700 bg-blue-50 border-blue-100",
   };
   return (
     <div
-      className={`p-5 rounded-2xl bg-white border border-slate-200 shadow-sm ${colors[color]} relative group overflow-hidden`}
+      className={`p-6 rounded-2xl bg-white border border-slate-200 shadow-sm relative group overflow-hidden transition-all hover:shadow-md`}
     >
-      <div className="flex justify-between items-start mb-3">
-        <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
+      <div className="flex justify-between items-start mb-4">
+        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
           {label}
         </span>
-        <span className="material-symbols-outlined text-[20px] opacity-20">
-          {icon}
-        </span>
+        <div className={`p-2 rounded-lg ${colors[color]} border`}>
+          <span className="material-symbols-outlined text-[20px]">{icon}</span>
+        </div>
       </div>
-      <p className="text-3xl font-black tracking-tight text-slate-800">
+      <p className="text-4xl font-black tracking-tight text-slate-800 italic">
         {value}
       </p>
-      <div className="h-1.5 w-full bg-slate-100 rounded-full mt-4 overflow-hidden border border-slate-50">
+      <div className="h-1 w-full bg-slate-100 rounded-full mt-5 overflow-hidden">
         <div
-          className={`h-full opacity-60 rounded-full ${
+          className={`h-full rounded-full ${
             color === "red"
               ? "bg-red-500"
               : color === "amber"
@@ -302,18 +310,57 @@ const StatCard = ({ label, value, color, icon }: any) => {
   );
 };
 
+const StudentCard = ({ student }: any) => {
+  return (
+    <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all group flex items-center gap-4">
+      <div className="size-12 rounded-full overflow-hidden border-2 border-slate-100 shrink-0">
+        <img
+          src={student.avatar}
+          alt={student.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-black text-slate-800 uppercase italic truncate group-hover:text-blue-700 transition-colors">
+          {student.name}
+        </p>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+          {student.matricula}
+        </p>
+      </div>
+      <div className="flex gap-2">
+        {student.incidents.length > 0 && (
+          <div
+            className={`p-1.5 rounded-lg border flex items-center justify-center ${
+              student.incidents.length >= 3
+                ? "bg-red-50 border-red-100 text-red-600"
+                : "bg-amber-50 border-amber-100 text-amber-600"
+            }`}
+            title="Alertas"
+          >
+            <span className="material-symbols-outlined text-sm font-black">
+              warning
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const QuickButton = ({ icon, label, onClick, color }: any) => {
   const colors: any = {
-    blue: "text-blue-600 bg-blue-50 border-blue-100 hover:bg-blue-100",
-    green: "text-green-600 bg-green-50 border-green-100 hover:bg-green-100",
+    blue: "text-blue-700 bg-blue-50 border-blue-100 hover:bg-blue-100",
+    green:
+      "text-emerald-700 bg-emerald-50 border-emerald-100 hover:bg-emerald-100",
     purple:
-      "text-purple-600 bg-purple-50 border-purple-100 hover:bg-purple-100",
-    amber: "text-amber-600 bg-amber-50 border-amber-100 hover:bg-amber-100",
+      "text-purple-700 bg-purple-50 border-purple-100 hover:bg-purple-100",
+    amber: "text-amber-700 bg-amber-50 border-amber-100 hover:bg-amber-100",
   };
   return (
     <button
       onClick={onClick}
-      className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 group ${colors[color]}`}
+      className={`p-4 rounded-2xl border transition-all flex flex-col items-center justify-center gap-2 group shadow-sm active:scale-95 ${colors[color]}`}
     >
       <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">
         {icon}

@@ -149,15 +149,18 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               Expediente Digital
             </div>
 
-            <NavItem
-              icon="policy"
-              label="Bitácora SASE"
-              active={currentModule === AppModule.BITACORA}
-              onClick={() => {
-                setCurrentModule(AppModule.BITACORA);
-                setIsSidebarOpen(false);
-              }}
-            />
+            {(currentUserRole === UserRole.DIRECTIVO ||
+              currentUserRole === UserRole.DEVELOPER) && (
+              <NavItem
+                icon="policy"
+                label="Bitácora SASE"
+                active={currentModule === AppModule.BITACORA}
+                onClick={() => {
+                  setCurrentModule(AppModule.BITACORA);
+                  setIsSidebarOpen(false);
+                }}
+              />
+            )}
             <NavItem
               icon="description"
               label="Reportes Oficiales"
@@ -210,39 +213,70 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 bg-slate-50 relative">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-30">
-          <div className="flex items-center gap-4">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#F9FBFF] relative overflow-hidden">
+        {/* Layered Institutional Depth */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {/* Executive Mesh Pattern */}
+          <div
+            className="absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage: `linear-gradient(#1e40af 0.5px, transparent 0.5px), linear-gradient(90deg, #1e40af 0.5px, transparent 0.5px)`,
+              backgroundSize: "40px 40px",
+            }}
+          ></div>
+          {/* Soft Depth Spheres */}
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/[0.03] rounded-full blur-[100px]"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8),transparent)]"></div>
+        </div>
+
+        <header className="h-20 bg-white/70 backdrop-blur-xl border-b border-slate-200/60 flex items-center justify-between px-8 shrink-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-8">
             <button
-              className="md:hidden text-slate-500 p-2 hover:bg-slate-100 rounded-lg"
+              className="md:hidden text-slate-500 p-2.5 hover:bg-slate-100 rounded-2xl transition-all"
               onClick={() => setIsSidebarOpen(true)}
             >
-              <span className="material-symbols-outlined">menu</span>
+              <span className="material-symbols-outlined">menu_open</span>
             </button>
-            <h2 className="font-black text-slate-800 text-sm uppercase tracking-tight flex items-center gap-3">
-              <span className="text-blue-700">SASE-310</span>
-              <span className="text-slate-300">/</span>
-              <span className="text-slate-500 font-bold opacity-70">
-                {currentModule.replace("_", " ").toUpperCase()}
-              </span>
-            </h2>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-3">
+                <h2 className="font-black text-slate-800 text-xl uppercase tracking-tighter italic">
+                  SASE
+                </h2>
+                <div className="w-px h-4 bg-slate-300"></div>
+                <span className="text-[11px] font-black text-blue-700 uppercase tracking-[0.3em] opacity-80">
+                  {currentModule.replace("_", " ")}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                Protocolo de Identidad Oficial :: CCT: 09DES4310M
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <div className="hidden lg:flex flex-col items-end mr-4">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Servidor 310
+              </span>
+              <span className="text-[10px] font-bold text-blue-600">
+                v2.4.0 PILOTO
+              </span>
+            </div>
+
             <button
               id="notif-btn"
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`size-10 flex items-center justify-center rounded-xl transition-all relative ${
+              className={`size-12 flex items-center justify-center rounded-2xl transition-all relative ${
                 showNotifications
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                  : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                  ? "bg-blue-600 text-white shadow-xl shadow-blue-500/30"
+                  : "bg-slate-50 text-slate-500 hover:bg-white hover:shadow-md border border-slate-100"
               }`}
             >
-              <span className="material-symbols-outlined text-[22px]">
+              <span className="material-symbols-outlined text-[24px]">
                 notifications
               </span>
               {unreadCount > 0 && (
-                <span className="absolute top-2 right-2 size-2.5 bg-red-600 rounded-full border-2 border-white animate-pulse"></span>
+                <span className="absolute top-3 right-3 size-2.5 bg-red-600 rounded-full border-2 border-white"></span>
               )}
             </button>
           </div>
@@ -250,7 +284,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
         {/* Improved Institutional Notification Popover */}
         {showNotifications && (
-          <div className="absolute top-16 right-6 w-80 bg-white border border-slate-200 shadow-2xl rounded-2xl z-40 animate-fade-in overflow-hidden">
+          <div className="absolute top-24 right-8 w-96 bg-white border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2rem] z-40 animate-fade-in overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">
                 Notificaciones
@@ -292,10 +326,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-          {children}
+        <main className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar relative">
+          {/* Subtle Institutional Decoration */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-100/50 rounded-full blur-3xl -ml-48 -mb-48 pointer-events-none"></div>
+
+          <div className="relative z-10 max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
+
+      {/* Floating System Tools */}
+      <FeedbackWidget />
+      <FloatingAssistant />
+      <TutorialController />
+      <QuickRegisterModal />
     </div>
   );
 };

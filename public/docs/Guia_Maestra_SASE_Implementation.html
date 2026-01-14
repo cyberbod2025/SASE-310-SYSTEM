@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SASE-310 | Guía Maestra de Implementación</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap");
+
+      :root {
+        --primary: #1e3a8a;
+        --secondary: #0891b2;
+        --accent: #f59e0b;
+        --text-dark: #0f172a;
+        --text-base: #334155;
+        --bg-page: #f1f5f9;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-page);
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      .watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-30deg);
+        font-size: 14vw;
+        font-weight: 900;
+        color: rgba(30, 58, 138, 0.03);
+        z-index: -1;
+        white-space: nowrap;
+        user-select: none;
+        text-transform: uppercase;
+      }
+
+      .document-container {
+        width: 21.59cm;
+        min-height: 27.94cm;
+        margin: 40px auto;
+        background: white;
+        padding: 2.5cm 2cm;
+        position: relative;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+        box-sizing: border-box;
+        border-top: 12px solid var(--primary);
+      }
+
+      header {
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 30px;
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .brand h1 {
+        font-size: 48px;
+        font-weight: 900;
+        color: var(--primary);
+        margin: 0;
+        letter-spacing: -3px;
+      }
+
+      .brand h1 span {
+        color: var(--secondary);
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+      }
+
+      .metadata {
+        text-align: right;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #94a3b8;
+      }
+
+      .metadata span {
+        color: var(--secondary);
+        display: block;
+      }
+
+      .hero-banner {
+        background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+        border-radius: 24px;
+        padding: 40px;
+        margin-bottom: 50px;
+        border: 1px solid #dbeafe;
+      }
+
+      .author-sign {
+        margin-bottom: 20px;
+      }
+
+      .author-name {
+        font-weight: 900;
+        font-size: 20px;
+        color: var(--primary);
+        display: block;
+      }
+
+      .author-title {
+        font-size: 11px;
+        color: var(--secondary);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .vision-text {
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-size: 18px;
+        color: #1e293b;
+        line-height: 1.5;
+        margin-top: 15px;
+      }
+
+      section {
+        margin-bottom: 45px;
+      }
+
+      h2 {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      h2::before {
+        content: "";
+        width: 30px;
+        height: 4px;
+        background: var(--secondary);
+        border-radius: 2px;
+      }
+
+      .grid-info {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+      }
+
+      .info-card {
+        border-left: 3px solid #f1f5f9;
+        padding-left: 20px;
+      }
+
+      .info-question {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--primary);
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .info-answer {
+        font-size: 13px;
+        color: var(--text-base);
+        text-align: justify;
+      }
+
+      .instruction-box {
+        background: var(--primary);
+        color: white;
+        padding: 40px;
+        border-radius: 30px;
+        margin-top: 40px;
+      }
+
+      .instruction-box h3 {
+        font-weight: 900;
+        font-size: 20px;
+        margin: 0 0 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--secondary);
+      }
+
+      .steps {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .step-item {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+        align-items: flex-start;
+      }
+
+      .step-num {
+        background: rgba(255, 255, 255, 0.1);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 14px;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .step-text {
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .step-text strong {
+        color: var(--secondary);
+      }
+
+      footer {
+        margin-top: 60px;
+        padding-top: 25px;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        font-size: 9px;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .pilot-label {
+        background: var(--accent);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-weight: 900;
+        font-size: 10px;
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+
+      @media print {
+        body {
+          background: none;
+        }
+        .document-container {
+          margin: 0;
+          box-shadow: none;
+          width: 100%;
+          border-top: 12px solid var(--primary) !important;
+        }
+        @page {
+          size: portrait;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="watermark">SASE-310</div>
+
+    <div class="document-container">
+      <header>
+        <div class="brand">
+          <h1>SASE <span>310</span></h1>
+          <p
+            style="
+              font-size: 10px;
+              font-weight: 700;
+              letter-spacing: 5px;
+              text-transform: uppercase;
+              color: var(--text-base);
+              margin-top: 5px;
+            "
+          >
+            Identidad Institucional
+          </p>
+        </div>
+        <div class="metadata">
+          Guía de Inducción Técnica y Operativa<br />
+          <span>Versión Preliminar v4.0.0</span>
+          Ciclo Escolar 2024-2025
+        </div>
+      </header>
+
+      <div class="pilot-label">DOCUMENTO EN FASE DE PRUEBA PILOTO</div>
+
+      <div class="hero-banner">
+        <div class="author-sign">
+          <span class="author-name">Prof. Hugo Sánchez Reséndiz</span>
+          <span class="author-title"
+            >Profesor de Matemáticas | Secundaria 310</span
+          >
+          <span
+            style="
+              display: block;
+              font-size: 9px;
+              color: #64748b;
+              font-weight: 700;
+              margin-top: 4px;
+            "
+            >Presidentes de México • Iztapalapa, CDMX</span
+          >
+        </div>
+        <p class="vision-text">
+          "SASE-310 no es un software genérico; es el resultado de transformar
+          los problemas que vivimos tú y yo en el aula en una solución de alta
+          ingeniería escolar. Nació de entender que tu tiempo es sagrado y que
+          nuestro trabajo merece una protección digital de primer nivel."
+        </p>
+      </div>
+
+      <section>
+        <h2>1. Origen y Valor de la Realidad</h2>
+        <div class="grid-info">
+          <div class="info-card">
+            <span class="info-question"
+              >¿Por qué estamos seguros de que funcionará de maravilla?</span
+            >
+            <p class="info-answer">
+              Porque SASE ha sido construido <strong>desde adentro</strong>. No
+              es una solución importada, es una herramienta artesanal programada
+              con el conocimiento real de lo que ocurre en los pasillos de la
+              310. Se adapta a nuestra dinámica porque nace de ella.
+            </p>
+          </div>
+          <div class="info-card">
+            <span class="info-question">¿Cuál es el costo del sistema?</span>
+            <p class="info-answer">
+              Actualmente estamos en una fase de
+              <strong>mapeo y optimización</strong>. Hugo Sánchez R. está
+              evaluando el potencial comercial futuro, pero hoy el enfoque
+              absoluto es que la herramienta atienda con excelencia las
+              necesidades de nuestra comunidad escolar. No es prioridad hablar
+              de números hoy.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>2. Seguridad y Protocolos</h2>
+        <div class="grid-info">
+          <div class="info-card">
+            <span class="info-question">¿Quién ve lo que yo registro?</span>
+            <p class="info-answer">
+              La información está compartimentada por roles. Un docente ve sus
+              grupos; un orientador solo ve los casos delegados. Esto garantiza
+              que el dato sensible solo sea visto por quien estrictamente debe
+              intervenir.
+            </p>
+          </div>
+          <div class="info-card">
+            <span class="info-question">¿Es para evaluar mi desempeño?</span>
+            <p class="info-answer">
+              No. Es una herramienta de
+              <strong>protección institucional</strong>. Su fin es documentar
+              procesos para blindar legalmente al docente y a la escuela ante
+              situaciones de riesgo o auditorías de la SEP.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="instruction-box">
+        <h3>Manual de Implementación Inmediata</h3>
+        <ul class="steps">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">
+              Acceda a la plataforma mediante la URL institucional
+              proporcionada.
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">
+              Inicie sesión con sus
+              <strong>credenciales de acceso personal</strong> (mismas que
+              usaremos en esta fase piloto).
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">
+              Explore su <strong>Tablero de Control</strong>. Si es docente,
+              verá la gestión de sus grupos; si es de otra área, verá las
+              herramientas específicas de su función.
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text">
+              <strong>Acción de Feedback:</strong> Busque el botón flotante en
+              la esquina inferior derecha. Úselo para reportar cualquier error,
+              sugerencia o idea. Estamos construyendo este sistema juntos.
+            </div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-text">
+              Registre incidencias reales para probar el motor de
+              <strong>Detección de Patrones</strong> y ver cómo se activan las
+              alertas institucionales automáticamente.
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <footer>
+        <div>Secretaría de Educación Pública | CCT 09DES4310M</div>
+        <div>SASE © 2024-2025 | Desarrollado por Prof. Hugo Sánchez R.</div>
+      </footer>
+    </div>
+  </body>
+</html>

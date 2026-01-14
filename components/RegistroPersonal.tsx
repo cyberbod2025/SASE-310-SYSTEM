@@ -204,7 +204,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 <li>Configuración de alcances y permisos</li>
                 <li>Activación de cuenta</li>
               </ol>
-              <p className="text-amber-300 text-xs mt-4 flex items-center gap-2">
+              <p className="text-orange-300 text-xs mt-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">email</span>
                 Recibirás notificación en:{" "}
                 <strong>{formData.correoInstitucional}</strong>
@@ -226,44 +226,57 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   // Formulario principal
   return (
     <div className="min-h-screen w-full relative font-sans text-slate-100 bg-black overflow-x-hidden">
-      {/* 1. Nebula Background Fixed */}
+      {/* 1. Nebula Background with Dynamic Pan */}
       <div
-        className="fixed inset-0 z-0 bg-cover bg-center opacity-40 pointer-events-none"
+        className="fixed inset-0 z-0 bg-cover bg-center md:bg-right scale-110 animate-backgroundDrift pointer-events-none"
         style={{
           backgroundImage: 'url("/assets/branding/login_background_final.png")',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80"></div>
+        {/* Mask over the "LONGU" area in the top left */}
+        <div className="absolute top-0 left-0 w-64 h-24 bg-black/60 blur-3xl z-10"></div>
       </div>
+
+      <style>{`
+        @keyframes backgroundDrift {
+          0% { transform: scale(1.1) translate(0, 0); }
+          50% { transform: scale(1.15) translate(-15px, -8px); }
+          100% { transform: scale(1.1) translate(0, 0); }
+        }
+        .animate-backgroundDrift {
+          animation: backgroundDrift 40s ease-in-out infinite;
+        }
+      `}</style>
 
       <div className="relative z-10 max-w-5xl mx-auto py-12 px-4">
         {/* HEADER - Futuristic Terminal Style */}
-        <div className="bg-black/60 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-8 mb-8 text-center relative overflow-hidden shadow-[0_0_50px_rgba(30,58,138,0.3)] group">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-400 to-transparent"></div>
+        <div className="bg-black/60 backdrop-blur-xl border border-orange-500/30 rounded-2xl p-8 mb-8 text-center relative overflow-hidden shadow-[0_0_50px_rgba(146,64,14,0.3)] group">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-400 to-transparent"></div>
 
           <div className="relative z-10">
             <img
               src="/assets/branding/SASE.png"
               alt="Logo SASE"
-              className="h-20 mx-auto mb-4 drop-shadow-[0_0_20px_rgba(59,130,246,0.6)] animate-pulse"
+              className="h-20 mx-auto mb-4 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)] animate-pulse"
             />
             <div className="flex items-center justify-center gap-4 mb-2">
-              <div className="h-[1px] w-12 bg-blue-500/30"></div>
-              <p className="text-blue-400 text-[10px] uppercase tracking-[0.5em] font-black">
+              <div className="h-[1px] w-12 bg-orange-500/30"></div>
+              <p className="text-orange-400 text-[10px] uppercase tracking-[0.5em] font-black">
                 PROTOCOLOS INSTITUCIONALES 2026
               </p>
-              <div className="h-[1px] w-12 bg-blue-500/30"></div>
+              <div className="h-[1px] w-12 bg-orange-500/30"></div>
             </div>
             <h1
               className="text-4xl font-black text-white mb-2 tracking-tight"
               style={{ textShadow: "0 0 15px rgba(255,255,255,0.2)" }}
             >
               ALTA DE PERSONAL{" "}
-              <span className="text-blue-500 underline decoration-blue-500/30">
+              <span className="text-orange-500 underline decoration-orange-500/30">
                 SASE-310
               </span>
             </h1>
-            <div className="flex items-center justify-center gap-3 text-blue-300/40 text-[10px] font-bold tracking-widest uppercase mt-4">
+            <div className="flex items-center justify-center gap-3 text-orange-300/40 text-[10px] font-bold tracking-widest uppercase mt-4">
               <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
               CCT 09DES4310M · TRANSMISIÓN CIFRADA · ACCESO AUDITADO
             </div>
@@ -272,14 +285,14 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* BLOQUE 1: IDENTIDAD INSTITUCIONAL */}
-          <div className="bg-black/40 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8 shadow-2xl relative group hover:border-blue-500/40 transition-colors">
+          <div className="bg-black/40 backdrop-blur-xl border border-orange-500/20 rounded-2xl p-8 shadow-2xl relative group hover:border-orange-500/40 transition-colors">
             {/* Corner Accents */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-blue-500/50 rounded-tl-xl"></div>
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-blue-500/50 rounded-br-xl"></div>
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-orange-500/50 rounded-tl-xl"></div>
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-orange-500/50 rounded-br-xl"></div>
 
             <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-                <span className="material-symbols-outlined text-blue-400 text-2xl">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                <span className="material-symbols-outlined text-orange-400 text-2xl">
                   verified_user
                 </span>
               </div>
@@ -287,7 +300,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 <h2 className="text-2xl font-black text-white tracking-wider">
                   01. IDENTIDAD INSTITUCIONAL
                 </h2>
-                <div className="h-0.5 w-16 bg-blue-600 rounded-full mt-1"></div>
+                <div className="h-0.5 w-16 bg-orange-600 rounded-full mt-1"></div>
               </div>
             </div>
 
@@ -297,7 +310,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 <label className="text-xs text-gray-400 mb-2 block flex items-center gap-2">
                   Matrícula SASE (generada automáticamente)
                   <span
-                    className="material-symbols-outlined text-xs text-blue-400"
+                    className="material-symbols-outlined text-xs text-orange-400"
                     title="Identificador interno visible en el sistema"
                   >
                     info
@@ -350,8 +363,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       onClick={() => handleRolToggle(rol.id)}
                       className={`p-4 rounded-xl border-2 transition-all flex items-center gap-3 text-[11px] font-black tracking-tighter ${
                         formData.rolesSeleccionados.includes(rol.id)
-                          ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-[1.02]"
-                          : "bg-black/50 border-white/5 text-slate-400 hover:border-blue-500/30 hover:bg-black/80"
+                          ? "bg-orange-600 border-orange-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-[1.02]"
+                          : "bg-black/50 border-white/5 text-slate-400 hover:border-orange-500/30 hover:bg-black/80"
                       }`}
                     >
                       <span className="material-symbols-outlined">
@@ -365,10 +378,10 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
               {/* Turno */}
               <div className="md:col-span-1">
-                <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-3 block">
+                <label className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-3 block">
                   TURNO ASIGNADO
                 </label>
-                <div className="h-14 bg-blue-900/10 border border-blue-500/50 rounded-xl flex items-center px-5 text-blue-300 font-black tracking-widest uppercase">
+                <div className="h-14 bg-orange-900/10 border border-orange-500/50 rounded-xl flex items-center px-5 text-orange-300 font-black tracking-widest uppercase">
                   VESPERTINO
                 </div>
                 <input type="hidden" name="turno" value="vespertino" />
@@ -377,7 +390,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           </div>
 
           {/* BLOQUE 2: DATOS PERSONALES (SENSIBLES) */}
-          <div className="bg-black/40 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8 shadow-2xl relative">
+          <div className="bg-black/40 backdrop-blur-xl border border-orange-500/20 rounded-2xl p-8 shadow-2xl relative">
             <div className="flex items-center gap-4 mb-8">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30">
                 <span className="material-symbols-outlined text-emerald-400 text-2xl">
@@ -404,7 +417,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   onChange={(e) =>
                     setFormData({ ...formData, nombres: e.target.value })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-amber-500 focus:outline-none"
+                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
                 />
               </div>
               <div>
@@ -421,7 +434,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       apellidoPaterno: e.target.value,
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-amber-500 focus:outline-none"
+                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
                 />
               </div>
               <div>
@@ -438,7 +451,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       apellidoMaterno: e.target.value,
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-amber-500 focus:outline-none"
+                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -459,13 +472,13 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       curp: e.target.value.toUpperCase(),
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-amber-500 focus:outline-none uppercase font-mono"
+                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none uppercase font-mono"
                 />
               </div>
               <div>
                 <label className="text-xs text-gray-300 mb-1 block">
                   Correo Institucional *
-                  <span className="text-amber-500 ml-2">
+                  <span className="text-orange-500 ml-2">
                     (@aefcm.gob.mx preferente)
                   </span>
                 </label>
@@ -479,7 +492,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       correoInstitucional: e.target.value,
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-amber-500 focus:outline-none"
+                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -497,17 +510,17 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   const val = e.target.value.replace(/\D/g, "");
                   setFormData({ ...formData, telefono: val });
                 }}
-                className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-amber-500 focus:outline-none font-mono tracking-wider"
+                className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none font-mono tracking-wider"
                 placeholder="5512345678"
               />
             </div>
 
             {/* Banner de privacidad */}
-            <div className="bg-amber-900/10 border border-amber-500/20 rounded-lg p-4 flex items-start gap-3">
-              <span className="material-symbols-outlined text-amber-500 text-xl flex-shrink-0">
+            <div className="bg-orange-900/10 border border-orange-500/20 rounded-lg p-4 flex items-start gap-3">
+              <span className="material-symbols-outlined text-orange-500 text-xl flex-shrink-0">
                 lock
               </span>
-              <p className="text-xs text-amber-200/80 leading-relaxed">
+              <p className="text-xs text-orange-200/80 leading-relaxed">
                 Los datos personales se resguardan conforme a la LFPDPPP. En
                 pantallas operativas se muestra <strong>matrícula SASE</strong>;
                 nombres solo con permisos de Dirección.
@@ -518,15 +531,15 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           {/* BLOQUE 3: INFORMACIÓN ACADÉMICA (Dinámico por rol) */}
           {(formData.rolesSeleccionados.includes("docente") ||
             formData.rolesSeleccionados.includes("promotoria_lectura")) && (
-            <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-8">
+            <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-orange-500/20 rounded-2xl p-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/30">
-                  <span className="material-symbols-outlined text-blue-400">
+                <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center border border-orange-500/30">
+                  <span className="material-symbols-outlined text-orange-400">
                     school
                   </span>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-blue-400">
+                  <h2 className="text-xl font-bold text-orange-400">
                     3. Información Académica
                   </h2>
                   <p className="text-gray-500 text-xs">
@@ -561,7 +574,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       onClick={() => handleArrayToggle("materias", materia)}
                       className={`px-3 py-2 rounded-lg border text-xs transition-all ${
                         formData.materias.includes(materia)
-                          ? "bg-blue-500/20 border-blue-500 text-blue-300"
+                          ? "bg-orange-500/20 border-orange-500 text-orange-300"
                           : "bg-black/20 border-white/10 text-gray-400 hover:border-white/30"
                       }`}
                     >
@@ -597,7 +610,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       onClick={() => handleArrayToggle("grupos", grupo)}
                       className={`px-3 py-2 rounded-lg border text-xs font-mono transition-all ${
                         formData.grupos.includes(grupo)
-                          ? "bg-blue-500/20 border-blue-500 text-blue-300"
+                          ? "bg-orange-500/20 border-orange-500 text-orange-300"
                           : "bg-black/20 border-white/10 text-gray-400 hover:border-white/30"
                       }`}
                     >
@@ -608,7 +621,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
               </div>
 
               {/* ¿Es tutor? */}
-              <div className="bg-blue-900/10 border border-blue-500/10 rounded-lg p-4">
+              <div className="bg-orange-900/10 border border-orange-500/10 rounded-lg p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -616,9 +629,9 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     onChange={(e) =>
                       setFormData({ ...formData, esTutor: e.target.checked })
                     }
-                    className="w-5 h-5 rounded border-gray-600 bg-gray-800 text-blue-500"
+                    className="w-5 h-5 rounded border-gray-600 bg-gray-800 text-orange-500"
                   />
-                  <span className="text-sm font-medium text-blue-300">
+                  <span className="text-sm font-medium text-orange-300">
                     ¿Es Tutor de Grupo?
                   </span>
                 </label>
@@ -633,7 +646,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       onChange={(e) =>
                         setFormData({ ...formData, grupoTutor: e.target.value })
                       }
-                      className="w-full h-11 bg-black/50 border border-blue-400/30 rounded-lg px-3 text-white focus:border-blue-400 focus:outline-none"
+                      className="w-full h-11 bg-black/50 border border-orange-400/30 rounded-lg px-3 text-white focus:border-orange-400 focus:outline-none"
                     >
                       <option value="">Seleccione...</option>
                       {[
@@ -814,7 +827,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
             <button
               type="button"
               onClick={() => setShowTerms(true)}
-              className="text-xs text-blue-400 hover:text-blue-300 underline"
+              className="text-xs text-orange-400 hover:text-orange-300 underline"
             >
               Ver términos completos
             </button>
@@ -868,14 +881,14 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
               <div className="space-y-6 text-sm text-gray-300">
                 <div>
-                  <h4 className="font-bold text-blue-400 mb-2">
+                  <h4 className="font-bold text-orange-400 mb-2">
                     Aviso de Privacidad
                   </h4>
                   <p className="leading-relaxed">{AVISO_PRIVACIDAD}</p>
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-amber-400 mb-2">
+                  <h4 className="font-bold text-orange-400 mb-2">
                     Compromiso Ético
                   </h4>
                   <p className="leading-relaxed">{COMPROMISO_ETICO}</p>
