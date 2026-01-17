@@ -1,15 +1,13 @@
-// SASE Login - Institutional Portal
-import React, { useState, useEffect, useRef } from "react";
+// SASE Login - Institutional Portal (Futuristic & Seamless Transition)
+import React, { useState, useRef, useEffect } from "react";
 import { supabase } from "../supabase/client";
-import { GOD_MODE_CREDENTIALS } from "../utils/saseUtils";
+import { UserRole } from "../types";
 
 interface LoginProps {
   onDemoEnter?: () => void;
   onDevEnter?: () => void;
   onRegisterClick?: () => void;
 }
-
-const INTRO_SEEN_KEY = "sase_intro_seen_v2"; // Force refresh for new style
 
 export const Login: React.FC<LoginProps> = ({
   onDemoEnter,
@@ -21,19 +19,23 @@ export const Login: React.FC<LoginProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false); // Only show after intro or jump
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // Check if the user has already seen the intro in this session
+    const introSeen = sessionStorage.getItem("sase_login_intro_seen");
+    if (introSeen && videoRef.current) {
+      // Skip to the end if already seen to avoid repetitive delay
+      videoRef.current.currentTime = 999;
+      setShowForm(true);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
-    if (
-      email === GOD_MODE_CREDENTIALS.email &&
-      password === GOD_MODE_CREDENTIALS.password
-    ) {
-      if (onDevEnter) onDevEnter();
-      return;
-    }
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -46,202 +48,201 @@ export const Login: React.FC<LoginProps> = ({
     }
   };
 
+  const handleAdminBypass = () => {
+    const pin = prompt("Protocolo de Acceso Administrativo (S.A.S.E.)");
+    if (pin === "31416") {
+      alert("Acceso Super Admin Concedido.");
+      if (onDevEnter) {
+        onDevEnter();
+      } else {
+        window.location.search = "?role=developer&mode=god";
+      }
+    }
+  };
+
+  const onVideoEnded = () => {
+    setShowForm(true);
+    sessionStorage.setItem("sase_login_intro_seen", "true");
+  };
+
+  // Skip intro helper
+  const skipIntro = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = videoRef.current.duration || 999;
+      onVideoEnded();
+    }
+  };
+
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[#020617] overflow-hidden px-4">
-      {/* 1. Deep Space Tech Background */}
-      <div className="absolute inset-0 z-0 select-none pointer-events-none">
-        {/* Subtle Nebula Background */}
-        <div
-          className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-screen"
-          style={{
-            backgroundImage:
-              'url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2022&auto=format&fit=crop")',
-          }}
-        ></div>
+    <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-black overflow-hidden">
+      {/* 1. SEAMLESS VIDEO BACKGROUND (Intro + Background) */}
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        onEnded={onVideoEnded}
+        onTimeUpdate={() => {
+          // Fade in form slightly before video ends for a smoother transition
+          if (
+            videoRef.current &&
+            videoRef.current.currentTime > videoRef.current.duration - 0.5
+          ) {
+            setShowForm(true);
+          }
+        }}
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/assets/videos/intro_sase_2026.mp4" type="video/mp4" />
+      </video>
 
-        {/* perspective Grid Floor */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(34, 211, 238, 0.2) 1px, transparent 0)`,
-            backgroundSize: "24px 24px",
-            perspective: "1200px",
-            transform: "rotateX(65deg) translateY(30%) scale(2.5)",
-            transformOrigin: "bottom",
-          }}
-        ></div>
+      {/* Subtle Overlay to make UI pop */}
+      <div
+        className={`absolute inset-0 bg-black/30 z-10 transition-opacity duration-1000 pointer-events-none ${
+          showForm ? "opacity-100" : "opacity-0"
+        }`}
+      ></div>
 
-        {/* Global Network Lines (Constellations) */}
-        <svg
-          className="absolute inset-0 w-full h-full opacity-30"
-          xmlns="http://www.w3.org/2000/svg"
+      {/* Skip Button Label (Only shown during video) */}
+      {!showForm && (
+        <button
+          onClick={skipIntro}
+          className="absolute top-8 right-8 z-50 text-white/20 hover:text-white/60 text-[10px] uppercase font-black tracking-[0.3em] transition-all"
         >
-          <defs>
-            <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="transparent" />
-              <stop offset="50%" stopColor="rgba(34, 211, 238, 0.4)" />
-              <stop offset="100%" stopColor="transparent" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M 0 100 L 400 300 L 800 100"
-            stroke="url(#lineGrad)"
-            strokeWidth="0.5"
-            fill="none"
-          />
-          <path
-            d="M 200 0 L 600 500 L 1000 200"
-            stroke="url(#lineGrad)"
-            strokeWidth="0.5"
-            fill="none"
-          />
-          <path
-            d="M 100 600 L 500 200 L 900 600"
-            stroke="url(#lineGrad)"
-            strokeWidth="0.5"
-            fill="none"
-          />
-          <circle
-            cx="400"
-            cy="300"
-            r="1.5"
-            fill="rgba(34, 211, 238, 0.8)"
-            className="animate-pulse"
-          />
-          <circle
-            cx="600"
-            cy="500"
-            r="1.5"
-            fill="rgba(34, 211, 238, 0.8)"
-            className="animate-pulse"
-            style={{ animationDelay: "1s" }}
-          />
-          <circle
-            cx="500"
-            cy="200"
-            r="1.5"
-            fill="rgba(34, 211, 238, 0.8)"
-            className="animate-pulse"
-            style={{ animationDelay: "2.5s" }}
-          />
-        </svg>
+          Saltar Intro »
+        </button>
+      )}
 
-        {/* Ambient Glows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-600/5 rounded-full blur-[150px]"></div>
-      </div>
-
-      {/* 2. Central Glass UI Container */}
-      <div className="relative z-10 w-full max-w-[420px] animate-fadeIn">
-        <div className="bg-[#0f172a]/40 backdrop-blur-[30px] border border-white/10 rounded-[2.5rem] p-12 md:p-16 shadow-[0_0_80px_rgba(0,0,0,0.5)] flex flex-col items-center">
-          {/* Logo Section */}
-          <div className="mb-14 text-center">
-            <div className="relative mb-6">
-              <div className="absolute inset-0 bg-cyan-500/20 blur-2xl rounded-full"></div>
-              <span className="material-symbols-outlined text-7xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
-                verified_user
-              </span>
-            </div>
-            <h1 className="text-6xl font-black text-white tracking-widest leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-              SASE
-            </h1>
-            <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.4em] mt-3">
-              Educational Support and Monitoring System
-            </p>
+      {/* 2. Login Card - Glassmorphism (Matches Video End Interface) */}
+      <div
+        className={`relative z-20 w-full max-w-[440px] transition-all duration-1000 transform ${
+          showForm
+            ? "opacity-100 translate-y-0 scale-100"
+            : "opacity-0 translate-y-10 scale-95 pointer-events-none"
+        }`}
+      >
+        <div className="bg-[#0f172a]/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-12 shadow-[0_0_100px_rgba(0,0,0,0.8)] relative overflow-hidden group">
+          {/* Pi Symbol in Top Right of the Card - Absolute positioning within the card */}
+          <div
+            className="absolute top-4 right-5 text-white/5 hover:text-white/40 cursor-pointer select-none transition-all text-[14px] font-bold z-30 p-2"
+            onClick={(e) => {
+              if (e.ctrlKey || e.detail >= 3) {
+                handleAdminBypass();
+              }
+            }}
+          >
+            π
           </div>
 
-          {/* Minimal Form */}
-          <form onSubmit={handleLogin} className="w-full space-y-5">
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-red-200 text-[10px] font-black uppercase text-center animate-shake tracking-wider">
-                {error}
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <input
-                type="email"
-                required
-                placeholder="Institutional email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4.5 px-6 text-white outline-none transition-all placeholder:text-white/20 focus:border-cyan-400/50 focus:bg-white/[0.06] text-sm font-medium"
+          <div className="flex flex-col items-center">
+            {/* Logo */}
+            <div className="w-40 h-24 mb-6 flex items-center justify-center">
+              <img
+                src="/assets/branding/SASE_LOGO.png"
+                alt="SASE Institucional"
+                className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
               />
+            </div>
 
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4.5 px-6 text-white outline-none transition-all placeholder:text-white/20 focus:border-cyan-400/50 focus:bg-white/[0.06] text-sm font-medium"
-                />
+            <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.35em] mb-10 text-center opacity-80 leading-relaxed">
+              Acompañamiento y<br />
+              Seguimiento Escolar
+            </p>
+
+            {/* Form */}
+            <form onSubmit={handleLogin} className="w-full space-y-6">
+              {error && (
+                <div className="bg-red-500/20 text-red-100 p-3 rounded-xl text-[10px] font-bold uppercase text-center border border-red-500/30 animate-shake">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest pl-2">
+                    Correo Institucional
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="ejemplo@aefcm.gob.mx"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3.5 px-5 outline-none focus:bg-white/10 focus:border-blue-500/50 transition-all text-sm font-medium placeholder:text-white/20"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest pl-2">
+                    Contraseña
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 text-white rounded-xl py-3.5 px-5 outline-none focus:bg-white/10 focus:border-blue-500/50 transition-all text-sm font-medium placeholder:text-white/20"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        {showPassword ? "visibility_off" : "visibility"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-6">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-black py-4 rounded-xl shadow-lg shadow-blue-900/40 active:scale-[0.98] transition-all uppercase tracking-widest text-xs"
+                >
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
+                  ) : (
+                    "Acceder al Sistema"
+                  )}
+                </button>
+
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-5 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+                  onClick={onRegisterClick}
+                  className="w-full bg-white/5 hover:bg-white/10 text-white font-black py-4 rounded-xl border border-white/10 active:scale-[0.98] transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-[20px]">
-                    {showPassword ? "visibility_off" : "visibility"}
+                  <span className="material-symbols-outlined text-[16px] italic">
+                    person_add
                   </span>
+                  Solicitar Registro
                 </button>
               </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#1d4ed8] hover:bg-blue-600 text-white font-black py-4.5 rounded-full transition-all flex items-center justify-center shadow-[0_10px_30px_rgba(29,78,216,0.3)] active:scale-[0.98] mt-6"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <span className="text-[13px] uppercase tracking-[0.2em]">
-                  Access the System
-                </span>
-              )}
-            </button>
-          </form>
-
-          {/* Simple Link Bar */}
-          <div className="mt-14 flex items-center gap-6">
-            <button
-              onClick={onDemoEnter}
-              className="text-white/30 hover:text-cyan-400 text-[10px] font-black uppercase tracking-widest transition-all"
-            >
-              Demo Access
-            </button>
-            <div className="w-px h-3 bg-white/10"></div>
-            <button
-              onClick={onRegisterClick}
-              className="text-white/30 hover:text-cyan-400 text-[10px] font-black uppercase tracking-widest transition-all"
-            >
-              Solicitar Registro
-            </button>
+            </form>
           </div>
         </div>
+
+        <p className="text-center mt-8 text-[9px] text-white/20 font-black uppercase tracking-[0.5em] select-none">
+          SASE Institucional v2.4.0
+        </p>
       </div>
 
       <style>{`
         @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeIn {
-          animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .animate-shake {
+          animation: shake 0.2s ease-in-out 0s 2 alternate;
         }
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-4px); }
           75% { transform: translateX(4px); }
-        }
-        .animate-shake {
-          animation: shake 0.2s ease-in-out 0s 2 alternate;
-        }
-        input::placeholder {
-          font-weight: 400;
-          text-transform: none;
-          letter-spacing: normal;
         }
       `}</style>
     </div>

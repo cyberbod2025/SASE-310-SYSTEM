@@ -282,13 +282,13 @@ export const SolicitudReportesDocentes: React.FC = () => {
                       <p className="font-bold text-text-main">
                         {selectedStudentData.name}
                       </p>
-                      <p className="text-xs text-text-secondary">
+                      <p className="text-xs text-slate-500 font-black uppercase tracking-widest mt-1">
                         {selectedStudentData.group} •{" "}
                         {selectedStudentData.matricula}
                       </p>
-                      <p className="text-xs text-blue-600 mt-1">
+                      <p className="text-xs text-blue-700 mt-1 font-black uppercase tracking-tight">
                         {selectedStudentData.incidents.length} incidencia(s)
-                        registrada(s)
+                        detectada(s)
                       </p>
                     </div>
                   </div>
@@ -495,23 +495,26 @@ export const SolicitudReportesDocentes: React.FC = () => {
                         <p className="font-bold text-text-main">
                           {sol.alumnoNombre}
                         </p>
-                        <p className="text-xs text-text-secondary">
+                        <p className="text-xs text-slate-500 font-black uppercase tracking-widest">
                           {sol.alumnoGrupo}
                         </p>
                         <div className="flex gap-2 mt-2">
                           {sol.tipoReporte.includes("academico") && (
-                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded">
+                            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-black rounded-lg border border-blue-200 uppercase tracking-widest shadow-sm">
                               ACADÉMICO
                             </span>
                           )}
                           {sol.tipoReporte.includes("conductual") && (
-                            <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded">
+                            <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-black rounded-lg border border-orange-200 uppercase tracking-widest shadow-sm">
                               CONDUCTUAL
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-text-secondary mt-2">
-                          Enviado a: {sol.docentesSolicitados.join(", ")}
+                        <p className="text-xs text-slate-600 mt-2 font-black uppercase tracking-tight leading-relaxed">
+                          Enviado a:{" "}
+                          <span className="text-blue-700">
+                            {sol.docentesSolicitados.join(", ")}
+                          </span>
                         </p>
                       </div>
                     </div>

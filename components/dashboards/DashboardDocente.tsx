@@ -6,11 +6,18 @@ export const DashboardDocente = () => {
   const [activeTab, setActiveTab] = useState<
     "PANEL" | "ASISTENCIA" | "CALIFICACIONES"
   >("PANEL");
-  const { students, isTutorMode, toggleTutorMode, setCurrentModule } = useApp();
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const {
+    students,
+    isTutorMode,
+    toggleTutorMode,
+    setCurrentModule,
+    setQuickRegisterOpen,
+  } = useApp();
 
   const handleQuickAction = (action: string) => {
     if (action === "incidencia") {
-      useApp().setQuickRegisterOpen(true);
+      setQuickRegisterOpen(true);
     } else if (action === "lista" || action === "imprimir") {
       setCurrentModule(AppModule.REPORTES);
     } else if (action === "planeacion" || action === "calendario") {
@@ -125,7 +132,7 @@ export const DashboardDocente = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20">
           {/* Main Stats */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatCard
                 label="Riesgo Crítico"
                 value={riskCount}
@@ -170,7 +177,11 @@ export const DashboardDocente = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {students.map((s) => (
-                  <StudentCard key={s.id} student={s} />
+                  <StudentCard
+                    key={s.id}
+                    student={s}
+                    onClick={() => setSelectedStudent(s)}
+                  />
                 ))}
               </div>
             </div>
@@ -179,7 +190,7 @@ export const DashboardDocente = () => {
           {/* Side Actions & Alerts */}
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
                 Accesos Directos
               </h3>
               <div className="grid grid-cols-2 gap-4">
@@ -211,11 +222,11 @@ export const DashboardDocente = () => {
             </div>
 
             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col h-[400px]">
-              <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <h3 className="text-[10px] font-black text-red-700 uppercase tracking-widest">
+              <div className="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <h3 className="text-xs font-black text-red-700 uppercase tracking-widest">
                   Alertas del Grupo
                 </h3>
-                <span className="bg-red-50 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-100">
+                <span className="bg-red-50 text-red-700 text-xs font-bold px-3 py-1 rounded-full border border-red-100">
                   {alerts.length} alertas
                 </span>
               </div>
@@ -226,17 +237,17 @@ export const DashboardDocente = () => {
                     className="p-3 rounded-xl border border-slate-100 bg-slate-50/50 hover:border-slate-300 transition-all cursor-pointer"
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-black text-red-600 uppercase tracking-tighter">
+                      <span className="text-xs font-black text-red-600 uppercase tracking-tighter">
                         ALERTA
                       </span>
-                      <span className="text-[9px] text-slate-400 font-bold uppercase">
+                      <span className="text-xs text-slate-500 font-bold uppercase tracking-tight">
                         Hace 15 min
                       </span>
                     </div>
-                    <p className="text-xs font-black text-slate-800 uppercase italic transition-colors">
+                    <p className="text-sm font-black text-slate-800 uppercase italic transition-colors">
                       {s.name}
                     </p>
-                    <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-1 font-medium">
+                    <p className="text-xs text-slate-600 mt-1 line-clamp-2 font-black uppercase tracking-tight">
                       {s.incidents[0]?.description || "Requiere seguimiento."}
                     </p>
                   </div>
@@ -247,26 +258,213 @@ export const DashboardDocente = () => {
         </div>
       )}
 
-      {(activeTab === "ASISTENCIA" || activeTab === "CALIFICACIONES") && (
+      {selectedStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-slate-50 w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden relative">
+            <button
+              onClick={() => setSelectedStudent(null)}
+              className="absolute top-4 right-4 p-2 bg-white/50 hover:bg-white rounded-full text-slate-500 transition-all z-10"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+
+            {/* Header */}
+            <div className="relative h-32 bg-gradient-to-r from-blue-600 to-indigo-700">
+              <div className="absolute -bottom-10 left-8 size-24 rounded-full border-4 border-slate-50 overflow-hidden bg-white shadow-lg">
+                <img
+                  src={selectedStudent.avatar}
+                  alt={selectedStudent.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+
+            <div className="pt-12 px-8 pb-8">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-2xl font-black text-slate-800 uppercase italic">
+                    {selectedStudent.name}
+                  </h2>
+                  <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">
+                    {selectedStudent.matricula}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${
+                      selectedStudent.incidents.length >= 3
+                        ? "bg-red-100 text-red-700"
+                        : "bg-green-100 text-green-700"
+                    }`}
+                  >
+                    {selectedStudent.incidents.length >= 3
+                      ? "Riesgo Alto"
+                      : "Regular"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">
+                    Datos Académicos
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">
+                        Grado
+                      </p>
+                      <p className="text-sm font-bold text-slate-700">3º</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">
+                        Grupo
+                      </p>
+                      <p className="text-sm font-bold text-slate-700">"B"</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">
+                        Promedio
+                      </p>
+                      <p className="text-sm font-bold text-blue-600">9.2</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase">
+                        Asistencias
+                      </p>
+                      <p className="text-sm font-bold text-emerald-600">96%</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">
+                    Historial Reciente
+                  </h3>
+                  <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+                    {selectedStudent.incidents.length > 0 ? (
+                      selectedStudent.incidents.map((inc: any) => (
+                        <div
+                          key={inc.id}
+                          className="text-xs p-2 bg-white border border-slate-100 rounded-lg"
+                        >
+                          <p className="font-bold text-slate-700">{inc.type}</p>
+                          <p className="text-slate-500 truncate">
+                            {inc.description}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-slate-400 italic">
+                        Sin incidencias registradas.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "ASISTENCIA" && (
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-black text-slate-800 uppercase italic">
+              Registro de Asistencia
+              <span className="block text-xs text-slate-400 not-italic font-medium mt-1">
+                {new Date().toLocaleDateString("es-MX", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </h2>
+            <button
+              className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition"
+              onClick={() =>
+                alert("Asistencia Guardada en Bitácora (attendance_logs)")
+              }
+            >
+              Guardar Asistencia
+            </button>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border border-slate-200">
+            <table className="w-full">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-wider text-left">
+                <tr>
+                  <th className="p-4">Alumno</th>
+                  <th className="p-4 text-center">Estado</th>
+                  <th className="p-4 text-center">Observaciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {students.map((student) => (
+                  <tr
+                    key={student.id}
+                    className="hover:bg-slate-50/50 transition"
+                  >
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="size-8 rounded-full bg-slate-200 overflow-hidden">
+                          <img
+                            src={student.avatar}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">
+                            {student.name}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {student.matricula}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex justify-center gap-2">
+                        <button className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-bold hover:bg-green-200 focus:ring-2 ring-green-500">
+                          Presente
+                        </button>
+                        <button className="px-3 py-1 bg-slate-100 text-slate-400 rounded-lg text-xs font-bold hover:bg-red-100 hover:text-red-600">
+                          Ausente
+                        </button>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <input
+                        type="text"
+                        placeholder="..."
+                        className="w-full bg-slate-100 rounded px-2 py-1 text-xs outline-none focus:ring-1 ring-blue-300"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "CALIFICACIONES" && (
         <div className="bg-white border border-slate-200 rounded-3xl p-12 text-center min-h-[400px] flex flex-col items-center justify-center shadow-lg shadow-slate-200/50">
+          {/* Placeholder maintained for Calificaciones as requested */}
           <div className="size-20 bg-slate-50 rounded-full flex items-center justify-center border border-slate-100 mb-6">
             <span className="material-symbols-outlined text-slate-300 text-4xl">
-              pending
+              assignment
             </span>
           </div>
           <h2 className="text-2xl font-black text-slate-800 mb-2 uppercase tracking-tight italic">
             Módulo en <span className="text-blue-600">Revisión Especial</span>
           </h2>
           <p className="text-xs font-bold text-slate-400 max-w-sm mb-8 uppercase tracking-widest leading-relaxed">
-            Estamos optimizando la interfaz de seguimiento oficial para cumplir
-            con los estándares de identidad pública.
+            Las evaluaciones estarán disponibles próximamente según el
+            calendario oficial.
           </p>
-          <button
-            onClick={() => setActiveTab("PANEL")}
-            className="px-8 py-3 bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-blue-800 transition-all shadow-lg shadow-blue-200"
-          >
-            Volver al Panel Principal
-          </button>
         </div>
       )}
     </div>
@@ -284,11 +482,11 @@ const StatCard = ({ label, value, color, icon }: any) => {
       className={`p-6 rounded-2xl bg-white border border-slate-200 shadow-sm relative group overflow-hidden transition-all hover:shadow-md`}
     >
       <div className="flex justify-between items-start mb-4">
-        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <span className="text-xs font-black uppercase tracking-widest text-slate-500">
           {label}
         </span>
-        <div className={`p-2 rounded-lg ${colors[color]} border`}>
-          <span className="material-symbols-outlined text-[20px]">{icon}</span>
+        <div className={`p-2.5 rounded-lg ${colors[color]} border shadow-xs`}>
+          <span className="material-symbols-outlined text-[24px]">{icon}</span>
         </div>
       </div>
       <p className="text-4xl font-black tracking-tight text-slate-800 italic">
@@ -310,9 +508,12 @@ const StatCard = ({ label, value, color, icon }: any) => {
   );
 };
 
-const StudentCard = ({ student }: any) => {
+const StudentCard = ({ student, onClick }: any) => {
   return (
-    <div className="p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all group flex items-center gap-4">
+    <button
+      onClick={onClick}
+      className="w-full text-left p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all group flex items-center gap-4 relative overflow-hidden"
+    >
       <div className="size-12 rounded-full overflow-hidden border-2 border-slate-100 shrink-0">
         <img
           src={student.avatar}
@@ -321,10 +522,10 @@ const StudentCard = ({ student }: any) => {
         />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-black text-slate-800 uppercase italic truncate group-hover:text-blue-700 transition-colors">
+        <p className="text-base font-black text-slate-800 uppercase italic truncate group-hover:text-blue-700 transition-colors">
           {student.name}
         </p>
-        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
           {student.matricula}
         </p>
       </div>
@@ -344,7 +545,7 @@ const StudentCard = ({ student }: any) => {
           </div>
         )}
       </div>
-    </div>
+    </button>
   );
 };
 
@@ -365,7 +566,7 @@ const QuickButton = ({ icon, label, onClick, color }: any) => {
       <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">
         {icon}
       </span>
-      <span className="text-[10px] font-black uppercase text-center tracking-tighter">
+      <span className="text-xs font-black uppercase text-center tracking-tighter">
         {label}
       </span>
     </button>

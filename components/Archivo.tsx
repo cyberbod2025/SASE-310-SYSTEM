@@ -100,19 +100,19 @@ export const Archivo: React.FC = () => {
             <table className="w-full text-left">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Alumno
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Matrícula
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Grupo
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Estatus
                   </th>
-                  <th className="px-6 py-4 text-xs font-bold text-text-secondary uppercase">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest text-right">
                     Acciones
                   </th>
                 </tr>
@@ -130,31 +130,31 @@ export const Archivo: React.FC = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-sm">
+                    <td className="px-6 py-4 font-mono text-xs font-black text-slate-600">
                       {s.matricula}
                     </td>
                     <td className="px-6 py-4 text-sm">{s.group}</td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-bold ${
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border uppercase ${
                           s.caseState === "Cerrado"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-green-100 text-green-800 border-green-200"
                             : s.caseState === "Observado"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-red-100 text-red-800"
+                            ? "bg-blue-100 text-blue-800 border-blue-200"
+                            : "bg-red-100 text-red-800 border-red-200"
                         }`}
                       >
                         {s.caseState}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-right">
                       <button
                         onClick={() =>
                           alert(
                             `Funcionalidad en desarrollo: Detalles de ${s.name}`
                           )
                         }
-                        className="text-primary hover:underline text-xs font-bold uppercase tracking-wide"
+                        className="text-blue-700 hover:text-blue-900 text-xs font-black uppercase tracking-widest underline decoration-2 underline-offset-4"
                       >
                         Ver Expediente
                       </button>

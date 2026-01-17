@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "isolatedModules": true,
+    "strict": true
+  }
+}

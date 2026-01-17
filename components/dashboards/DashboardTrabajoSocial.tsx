@@ -42,7 +42,7 @@ const JustificanteGenerator = () => {
 
       <div className="space-y-5">
         <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+          <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
             Alumno / Estudiante
           </label>
           <select
@@ -61,7 +61,7 @@ const JustificanteGenerator = () => {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
               Fecha Inicio
             </label>
             <input
@@ -72,7 +72,7 @@ const JustificanteGenerator = () => {
             />
           </div>
           <div>
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
               Fecha Término
             </label>
             <input
@@ -85,7 +85,7 @@ const JustificanteGenerator = () => {
         </div>
 
         <div>
-          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">
+          <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
             Tipo de Motivo
           </label>
           <select
@@ -101,7 +101,7 @@ const JustificanteGenerator = () => {
 
         <div>
           <div className="flex justify-between items-center mb-1.5 ml-1">
-            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">
               Observaciones
             </label>
             <VoiceInput
@@ -189,7 +189,7 @@ export const DashboardTrabajoSocial = () => {
                 </span>
                 Historial de Justificantes Emitidos
               </h3>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="text-xs font-black text-slate-500 uppercase tracking-widest">
                 {recentJustificantes.length} Registros totales
               </span>
             </div>
@@ -207,7 +207,7 @@ export const DashboardTrabajoSocial = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black border-b border-slate-100">
+                    <tr className="bg-slate-50 text-slate-500 text-xs uppercase font-black border-b border-slate-100">
                       <th className="px-6 py-4">Folio/ID</th>
                       <th className="px-6 py-4">Alumno/Estudiante</th>
                       <th className="px-6 py-4">Vigencia Oficial</th>
@@ -228,7 +228,7 @@ export const DashboardTrabajoSocial = () => {
                           <p className="font-bold text-slate-800 text-sm group-hover:text-orange-700 transition-colors uppercase italic">
                             {j.studentName}
                           </p>
-                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
+                          <p className="text-xs text-slate-500 font-bold uppercase tracking-tight">
                             {j.group}
                           </p>
                         </td>

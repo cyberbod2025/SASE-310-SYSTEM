@@ -69,95 +69,118 @@ export const Reportes: React.FC = () => {
 
     switch (selectedReport) {
       case "incidencias":
-        title = "Reporte de Incidencias";
+        title = "Reporte de Incidencias Institucional";
         htmlContent = `
-          <h2>Período: ${dateRange.start} al ${dateRange.end}</h2>
-          <h3>Resumen por Tipo</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Tipo</th>
-                <th>Cantidad</th>
-                <th>Porcentaje</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Retardos</td><td>${incidentsByType.retardos}</td><td>${
-          filteredIncidents.length > 0
-            ? (
-                (incidentsByType.retardos / filteredIncidents.length) *
-                100
-              ).toFixed(1)
-            : 0
-        }%</td></tr>
-              <tr><td>Uniforme</td><td>${incidentsByType.uniformes}</td><td>${
-          filteredIncidents.length > 0
-            ? (
-                (incidentsByType.uniformes / filteredIncidents.length) *
-                100
-              ).toFixed(1)
-            : 0
-        }%</td></tr>
-              <tr><td>Conducta</td><td>${incidentsByType.conducta}</td><td>${
-          filteredIncidents.length > 0
-            ? (
-                (incidentsByType.conducta / filteredIncidents.length) *
-                100
-              ).toFixed(1)
-            : 0
-        }%</td></tr>
-              <tr><td>Faltas</td><td>${incidentsByType.faltas}</td><td>${
-          filteredIncidents.length > 0
-            ? (
-                (incidentsByType.faltas / filteredIncidents.length) *
-                100
-              ).toFixed(1)
-            : 0
-        }%</td></tr>
-              <tr style="font-weight:bold;background:#f5f5f5"><td>TOTAL</td><td>${
-                filteredIncidents.length
-              }</td><td>100%</td></tr>
-            </tbody>
-          </table>
-          <h3>Detalle de Incidencias</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Alumno</th>
-                <th>Grupo</th>
-                <th>Tipo</th>
-                <th>Descripción</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${filteredIncidents
-                .slice(0, 50)
-                .map(
-                  (i) => `
-                <tr>
-                  <td>${new Date(i.date).toLocaleDateString("es-MX")}</td>
-                  <td>${anonymizeName(i.studentName)}</td>
-                  <td>${i.group}</td>
-                  <td><span class="badge badge-${
-                    i.type === IncidentType.RETARDO
-                      ? "yellow"
-                      : i.type === IncidentType.CONDUCTA
-                      ? "red"
-                      : "blue"
-                  }">${i.type}</span></td>
-                  <td>${i.description}</td>
+          <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 800px; margin: 0 auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px;">
+              <img src="/assets/branding/SASE_LOGO_OFICIAL.png" style="height: 60px;" />
+              <div style="text-align: right;">
+                <h1 style="margin: 0; font-size: 24px; color: #1d4ed8;">REPORTE DE INCIDENCIAS</h1>
+                <p style="margin: 5px 0 0; font-size: 14px; color: #64748b; font-weight: bold;">SISTEMA DE ASISTENCIA Y SEGUIMIENTO ESCOLAR</p>
+              </div>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+              <p style="margin: 0; font-size: 14px; font-weight: bold; color: #334155; text-transform: uppercase;">Período del Reporte:</p>
+              <h2 style="margin: 5px 0 0; font-size: 18px; color: #1e293b;">${dateRange.start} al ${dateRange.end}</h2>
+            </div>
+            <h3 style="font-size: 16px; border-left: 4px solid #1d4ed8; padding-left: 10px; margin-bottom: 20px; text-transform: uppercase;">Resumen por Categoría</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 14px;">
+              <thead>
+                <tr style="background: #f1f5f9; text-align: left;">
+                  <th style="padding: 12px; border: 1px solid #e2e8f0;">Tipo de Incidencia</th>
+                  <th style="padding: 12px; border: 1px solid #e2e8f0;">Cantidad Total</th>
+                  <th style="padding: 12px; border: 1px solid #e2e8f0;">Impacto (%)</th>
                 </tr>
-              `
-                )
-                .join("")}
-            </tbody>
-          </table>
-          ${
-            filteredIncidents.length > 50
-              ? `<p style="color:#888;font-size:11px">Mostrando primeros 50 de ${filteredIncidents.length} registros.</p>`
-              : ""
-          }
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Retardos de Entrada</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.retardos}</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                    filteredIncidents.length > 0
+                      ? ((incidentsByType.retardos / filteredIncidents.length) * 100).toFixed(1)
+                      : 0
+                  }%</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Faltas de Uniforme</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.uniformes}</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                    filteredIncidents.length > 0
+                      ? ((incidentsByType.uniformes / filteredIncidents.length) * 100).toFixed(1)
+                      : 0
+                  }%</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Reportes de Conducta</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.conducta}</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                    filteredIncidents.length > 0
+                      ? ((incidentsByType.conducta / filteredIncidents.length) * 100).toFixed(1)
+                      : 0
+                  }%</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Inasistencias Injustificadas</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.faltas}</td>
+                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                    filteredIncidents.length > 0
+                      ? ((incidentsByType.faltas / filteredIncidents.length) * 100).toFixed(1)
+                      : 0
+                  }%</td>
+                </tr>
+                <tr style="font-weight: bold; background: #e2e8f0;">
+                  <td style="padding: 12px; border: 1px solid #cbd5e1;">TOTAL GENERAL</td>
+                  <td style="padding: 12px; border: 1px solid #cbd5e1;">${filteredIncidents.length}</td>
+                  <td style="padding: 12px; border: 1px solid #cbd5e1;">100%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h3 style="font-size: 16px; border-left: 4px solid #1d4ed8; padding-left: 10px; margin-bottom: 20px; text-transform: uppercase;">Desglose Detallado</h3>
+            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+              <thead>
+                <tr style="background: #f1f5f9; text-align: left;">
+                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Fecha</th>
+                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Estudiante</th>
+                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Grupo</th>
+                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Categoría</th>
+                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Observaciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filteredIncidents
+                  .slice(0, 50)
+                  .map(
+                    (i) => `
+                  <tr>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0;">${new Date(i.date).toLocaleDateString("es-MX")}</td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${anonymizeName(i.studentName)}</td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0;">${i.group}</td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0;">
+                      <span style="padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; background: ${
+                        i.type === IncidentType.RETARDO ? "#fef3c7" : i.type === IncidentType.CONDUCTA ? "#fee2e2" : "#dbeafe"
+                      }; color: ${
+                        i.type === IncidentType.RETARDO ? "#92400e" : i.type === IncidentType.CONDUCTA ? "#991b1b" : "#1e40af"
+                      }; text-transform: uppercase;">${i.type}</span>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0; color: #64748b;">${i.description}</td>
+                  </tr>
+                `
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+            ${
+              filteredIncidents.length > 50
+                ? `<p style="color:#64748b; font-size:12px; margin-top: 20px; font-style: italic;">Mostrando los primeros 50 registros de un total de ${filteredIncidents.length}. Para el listado completo, consulte el sistema digital.</p>`
+                : ""
+            }
+            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 12px;">
+              Documento generado automáticamente por el Sistema SASE el ${new Date().toLocaleString("es-MX")}
+            </div>
+          </div>
         `;
         break;
 
@@ -339,7 +362,7 @@ export const Reportes: React.FC = () => {
             <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3 uppercase italic">
               Centro de <span className="text-blue-700">Estadística</span>
             </h1>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mt-1">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mt-1">
               Inteligencia de Datos Institucionales
             </p>
           </div>
@@ -385,7 +408,7 @@ export const Reportes: React.FC = () => {
                 >
                   {opt.label}
                 </p>
-                <p className="text-[10px] font-bold text-slate-400 uppercase mt-1 leading-relaxed opacity-70">
+                <p className="text-[11px] font-bold text-slate-500 uppercase mt-1 leading-relaxed opacity-80">
                   {opt.description}
                 </p>
               </div>
@@ -403,7 +426,7 @@ export const Reportes: React.FC = () => {
                 date_range
               </span>
             </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <span className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Periodo de Análisis
             </span>
           </div>
@@ -434,7 +457,7 @@ export const Reportes: React.FC = () => {
             {["Semana", "Mes", "Año"].map((lbl) => (
               <button
                 key={lbl}
-                className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all"
+                className="px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all"
               >
                 {lbl}
               </button>
@@ -452,7 +475,7 @@ export const Reportes: React.FC = () => {
               Vista Previa Institucional
             </h3>
           </div>
-          <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-blue-100">
+          <span className="px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-black uppercase tracking-widest border border-blue-100">
             {filteredIncidents.length} Registros Activos
           </span>
         </div>
@@ -521,19 +544,19 @@ export const Reportes: React.FC = () => {
                   : 100}
                 %
               </p>
-              <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em]">
+              <p className="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">
                 Eficiencia de Asistencia Global
               </p>
               <div className="flex gap-8 mt-8">
                 <div className="flex items-center gap-2">
                   <span className="size-2 bg-slate-300 rounded-full"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
                     {incidentsByType.faltas} Faltas
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="size-2 bg-blue-400 rounded-full"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
                     {incidentsByType.retardos} Retardos
                   </span>
                 </div>
@@ -561,7 +584,7 @@ const ReportStat = ({ label, value, color, icon }: any) => {
       <span className="material-symbols-outlined text-4xl mb-4 opacity-40 group-hover:scale-110 transition-transform">
         {icon}
       </span>
-      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">
+      <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">
         {label}
       </p>
       <p className="text-5xl font-black tracking-tight text-slate-800 italic">

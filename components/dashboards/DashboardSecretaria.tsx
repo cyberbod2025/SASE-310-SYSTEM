@@ -126,7 +126,7 @@ export const DashboardSecretaria = () => {
 
         <div className="flex items-center gap-4 bg-white border border-slate-200 p-2 rounded-xl shadow-sm">
           <div className="flex flex-col items-end px-2">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <span className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Sesión de Auditoría
             </span>
             <select
@@ -153,13 +153,13 @@ export const DashboardSecretaria = () => {
           <span className="material-symbols-outlined text-emerald-600 text-[20px]">
             verified_user
           </span>
-          <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+          <p className="text-xs font-black text-slate-600 uppercase tracking-widest">
             Nivel de Acceso:{" "}
             <span className="text-emerald-700">Total (Supervisado)</span>
           </p>
         </div>
         <div className="hidden md:block w-px h-4 bg-slate-200"></div>
-        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
           <span className="material-symbols-outlined text-[18px]">policy</span>
           Bitácora Activa: Toda consulta de expediente queda registrada
           institucionalmente.
@@ -174,7 +174,7 @@ export const DashboardSecretaria = () => {
               <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">
                 Carga Masiva
               </h3>
-              <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">
+              <p className="text-xs font-black text-slate-500 mt-1 uppercase tracking-widest">
                 Layout SEP / Excel / CSV
               </p>
             </div>
@@ -211,7 +211,7 @@ export const DashboardSecretaria = () => {
               <h3 className="text-slate-800 font-black text-xl uppercase tracking-tighter italic">
                 Total de Matrícula
               </h3>
-              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">
                 Ciclo Escolar Vigente 2024-2025
               </p>
             </div>
@@ -220,7 +220,7 @@ export const DashboardSecretaria = () => {
             <span className="block text-5xl font-black text-slate-800 tabular-nums">
               {students.length}
             </span>
-            <span className="text-[10px] font-black text-cyan-700 uppercase tracking-widest bg-cyan-50 px-2 py-0.5 rounded border border-cyan-100">
+            <span className="text-xs font-black text-cyan-700 uppercase tracking-widest bg-cyan-50 px-3 py-1 rounded border border-cyan-100">
               Registros Activos
             </span>
           </div>
@@ -265,7 +265,7 @@ export const DashboardSecretaria = () => {
               <span className="material-symbols-outlined text-6xl text-slate-200 mb-4">
                 folder_off
               </span>
-              <p className="text-slate-400 font-black uppercase text-xs tracking-widest italic">
+              <p className="text-slate-500 font-black uppercase text-xs tracking-widest italic">
                 Base de datos local vacía
               </p>
             </div>
@@ -273,19 +273,19 @@ export const DashboardSecretaria = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Estudiante
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Grupo / Matrícula
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Estado Administrativo
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
                     Detalle Tutor
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-center">
+                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest text-center">
                     Protocolo
                   </th>
                 </tr>
@@ -312,13 +312,13 @@ export const DashboardSecretaria = () => {
                       <p className="font-black text-slate-700">
                         {student.group}
                       </p>
-                      <p className="font-bold text-slate-400 mt-0.5">
+                      <p className="font-bold text-slate-500 mt-0.5 tracking-tight">
                         {student.matricula}
                       </p>
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black border uppercase ${
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border uppercase ${
                           student.caseState === CaseState.CERRADO
                             ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                             : student.caseState === CaseState.OBSERVADO
@@ -341,34 +341,34 @@ export const DashboardSecretaria = () => {
                     <td className="px-6 py-4">
                       {editingId === student.id ? (
                         <div className="bg-white border border-slate-200 p-4 rounded-xl shadow-lg animate-fade-in-up scale-100 max-w-xs ring-4 ring-cyan-500/10">
-                          <h4 className="text-[10px] font-black text-cyan-700 uppercase mb-3 border-b border-cyan-50 pb-2">
+                          <h4 className="text-xs font-black text-cyan-700 uppercase mb-3 border-b border-cyan-50 pb-2">
                             Expediente del Tutor
                           </h4>
                           <div className="space-y-2">
                             <p className="text-xs font-black text-slate-800 uppercase italic">
                               {student.guardianInfo?.name}
                             </p>
-                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase">
-                              <span className="material-symbols-outlined text-sm">
+                            <div className="flex items-center gap-2 text-xs font-black text-slate-600 uppercase">
+                              <span className="material-symbols-outlined text-sm text-cyan-600">
                                 call
                               </span>
                               {student.guardianInfo?.phonePrimary}
                             </div>
-                            <p className="text-[9px] font-bold text-slate-400 italic">
+                            <p className="text-[10px] font-black text-slate-500 italic mt-1 leading-tight">
                               {student.guardianInfo?.address ||
                                 "Domicilio no suministrado"}
                             </p>
                           </div>
-                          <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
+                          <div className="flex justify-end gap-3 mt-4 pt-3 border-t border-slate-100">
                             <button
                               onClick={() => setEditingId(null)}
-                              className="text-[9px] font-black text-slate-400 hover:text-slate-600 uppercase"
+                              className="px-3 py-2 text-xs font-black text-slate-500 hover:text-slate-700 uppercase tracking-widest transition-colors"
                             >
                               Cerrar
                             </button>
                             <button
                               onClick={() => handleSaveAudit(student.id)}
-                              className="px-3 py-1.5 bg-cyan-600 text-white rounded-lg text-[9px] font-black uppercase hover:bg-cyan-700 shadow-md"
+                              className="px-4 py-2 bg-cyan-600 text-white rounded-xl text-xs font-black uppercase hover:bg-cyan-700 shadow-md transition-all active:scale-95"
                             >
                               Auditar y Guardar
                             </button>
@@ -379,7 +379,7 @@ export const DashboardSecretaria = () => {
                           <span className="material-symbols-outlined text-[18px]">
                             lock_person
                           </span>
-                          <span className="text-[10px] font-black uppercase tracking-widest italic">
+                          <span className="text-xs font-black uppercase tracking-widest italic">
                             Confidencial
                           </span>
                         </div>

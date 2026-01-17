@@ -25,6 +25,34 @@ export const QuickRegisterModal: React.FC = () => {
     null
   );
   const [showProtocolModal, setShowProtocolModal] = useState(false);
+  const [supportProtocols, setSupportProtocols] = useState<Protocol[]>([]);
+
+  // Load support protocols on mount
+  React.useEffect(() => {
+    const loadSupport = async () => {
+      const titles = [
+        "Primeros Auxilios en el Aula",
+        "Violencia Escolar: prevención e intervención docente",
+      ];
+      const { data } = await supabase
+        .from("protocolos" as any)
+        .select("*")
+        .in("titulo", titles);
+      if (data) setSupportProtocols(data as any);
+    };
+    loadSupport();
+  }, []);
+
+  const currentSupportProtocol = supportProtocols.find((p) => {
+    if (type === IncidentType.SALUD && p.titulo.includes("Primeros Auxilios"))
+      return true;
+    if (
+      type === IncidentType.CONDUCTA &&
+      p.titulo.includes("Violencia Escolar")
+    )
+      return true;
+    return false;
+  });
 
   // React on open to check for tour
   React.useEffect(() => {
@@ -401,6 +429,27 @@ export const QuickRegisterModal: React.FC = () => {
               </div>
             </div>
 
+            {/* Contextual Protocol Support */}
+            {currentSupportProtocol && (
+              <div className="col-span-1 md:col-span-2 mt-[-10px] mb-2">
+                <button
+                  onClick={() => {
+                    setDetectedProtocol(currentSupportProtocol);
+                    setShowProtocolModal(true);
+                  }}
+                  className="flex items-center gap-2 text-xs text-blue-300 hover:text-blue-100 transition-colors bg-blue-500/10 px-3 py-1.5 rounded-lg border border-blue-500/20 w-fit"
+                >
+                  <span className="material-symbols-outlined text-[16px]">
+                    menu_book
+                  </span>
+                  <span className="font-bold">Material de Apoyo:</span>
+                  <span className="underline decoration-dotted">
+                    {currentSupportProtocol.titulo}
+                  </span>
+                </button>
+              </div>
+            )}
+
             {/* Description */}
             <div>
               <div className="flex justify-between items-center mb-1">
@@ -460,12 +509,18 @@ export const QuickRegisterModal: React.FC = () => {
           protocol={detectedProtocol}
           onClose={() => {
             setShowProtocolModal(false);
-            setQuickRegisterOpen(false);
-            setIsSuccess(false);
-            setSearchTerm("");
-            setSelectedStudentId("");
-            setDescription("");
-            setDetectedProtocol(null);
+            // Only close the main modal if we were in the success flow
+            if (isSuccess) {
+              setQuickRegisterOpen(false);
+              setIsSuccess(false);
+              setSearchTerm("");
+              setSelectedStudentId("");
+              setDescription("");
+              setDetectedProtocol(null);
+            } else {
+              // Just clear the viewed protocol so we return to form
+              setDetectedProtocol(null);
+            }
           }}
         />
       )}

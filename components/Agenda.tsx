@@ -118,7 +118,7 @@ export const Agenda: React.FC = () => {
             <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3 uppercase italic">
               Agenda <span className="text-blue-700">Institucional</span>
             </h1>
-            <div className="flex items-center gap-3 mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <div className="flex items-center gap-3 mt-1 text-[11px] font-black uppercase tracking-widest text-slate-500">
               <span>Planificación Estratégica</span>
               <span className="text-slate-200">|</span>
               <span className="text-blue-600">Ciclo 2024-2025</span>
@@ -175,13 +175,13 @@ export const Agenda: React.FC = () => {
             <div className="hidden md:flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <span className="size-2 bg-blue-500 rounded-full"></span>
-                <span className="text-[10px] font-black text-slate-400 uppercase">
+                <span className="text-xs font-black text-slate-500 uppercase">
                   Activo
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="size-2 bg-slate-200 rounded-full"></span>
-                <span className="text-[10px] font-black text-slate-400 uppercase">
+                <span className="text-xs font-black text-slate-500 uppercase">
                   Libre
                 </span>
               </div>
@@ -193,7 +193,7 @@ export const Agenda: React.FC = () => {
               {["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"].map((d) => (
                 <div
                   key={d}
-                  className="text-center text-[10px] font-black text-slate-400 tracking-widest"
+                  className="text-center text-xs font-black text-slate-500 tracking-widest"
                 >
                   {d}
                 </div>
@@ -227,7 +227,7 @@ export const Agenda: React.FC = () => {
         {/* Selected Activity Sidebar */}
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm p-8 pb-10">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+            <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
               <span className="material-symbols-outlined text-sm">event</span>
               Actividades del Día
             </h3>
@@ -261,7 +261,7 @@ export const Agenda: React.FC = () => {
                         {event.type}
                       </span>
                       {event.time && (
-                        <span className="text-[10px] font-bold text-slate-400">
+                        <span className="text-xs font-bold text-slate-500">
                           {event.time}
                         </span>
                       )}
@@ -281,13 +281,13 @@ export const Agenda: React.FC = () => {
 
             <div className="mt-8 pt-6 border-t border-slate-100">
               <div className="bg-blue-50/50 rounded-2xl p-4 border border-blue-100/50">
-                <p className="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-1 flex items-center gap-2">
+                <p className="text-xs font-black text-blue-700 uppercase tracking-widest mb-1 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">
                     lightbulb
                   </span>
                   Tip Institucional
                 </p>
-                <p className="text-[10px] text-blue-600/80 font-bold leading-relaxed italic">
+                <p className="text-xs text-blue-600/90 font-bold leading-relaxed italic">
                   Recuerda registrar tus actividades con al menos 48h de
                   anticipación para la revisión directiva.
                 </p>
@@ -315,7 +315,7 @@ export const Agenda: React.FC = () => {
 
             <div className="p-8 space-y-5">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                   Título de la Actividad
                 </label>
                 <input
@@ -332,7 +332,7 @@ export const Agenda: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                     Fecha
                   </label>
                   <input
@@ -345,7 +345,7 @@ export const Agenda: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                     Horario
                   </label>
                   <input
@@ -360,7 +360,7 @@ export const Agenda: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                   Descripción Breve
                 </label>
                 <textarea

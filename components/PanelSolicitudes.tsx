@@ -320,14 +320,14 @@ export const PanelSolicitudes: React.FC = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getPrioridadStyle(
+                          className={`px-2.5 py-1 rounded text-xs font-black uppercase tracking-widest ${getPrioridadStyle(
                             sol.prioridad
                           )}`}
                         >
                           {sol.prioridad}
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${getEstadoStyle(
+                          className={`px-2.5 py-1 rounded text-xs font-black uppercase tracking-widest ${getEstadoStyle(
                             sol.estado
                           )}`}
                         >
@@ -362,7 +362,7 @@ export const PanelSolicitudes: React.FC = () => {
                           )}
                         </p>
                       )}
-                      <p className="text-[10px] text-gray-400 mt-1">
+                      <p className="text-xs text-gray-400 mt-1 font-bold">
                         {new Date(sol.createdAt).toLocaleDateString("es-MX")}
                       </p>
                     </div>

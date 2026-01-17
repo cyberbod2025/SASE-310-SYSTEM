@@ -19,5 +19,11 @@
     "noEmit": true
   },
   "include": ["."],
-  "exclude": ["node_modules", "dist", "sase-310-manual-upload", "public"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "sase-310-manual-upload",
+    "public",
+    "supabase"
+  ]
 }

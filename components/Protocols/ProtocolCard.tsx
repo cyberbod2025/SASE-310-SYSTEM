@@ -11,12 +11,14 @@ const typeColors: Record<string, string> = {
   convivencia: "bg-red-500",
   salud: "bg-orange-500",
   proteccion_civil: "bg-blue-600",
+  apoyo: "bg-purple-600",
 };
 
 const typeLabels: Record<string, string> = {
   convivencia: "Convivencia y Disciplina",
   salud: "Bienestar y Salud",
   proteccion_civil: "Protección Civil",
+  apoyo: "Apoyo y Capacitación",
 };
 
 export const ProtocolCard: React.FC<ProtocolCardProps> = ({
@@ -37,6 +39,8 @@ export const ProtocolCard: React.FC<ProtocolCardProps> = ({
               ? "shield"
               : protocol.tipo === "salud"
               ? "medical_services"
+              : protocol.tipo === "apoyo"
+              ? "school"
               : "security"}
           </span>
           {typeLabels[protocol.tipo]}

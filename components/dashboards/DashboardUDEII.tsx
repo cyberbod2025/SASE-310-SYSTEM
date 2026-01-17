@@ -41,7 +41,7 @@ export const DashboardUDEII = () => {
             <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
             Alumnos en Seguimiento de Inclusión
           </h3>
-          <button className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md transition-all flex items-center gap-2">
+          <button className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-md transition-all flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]">add</span>
             Nuevo Expediente
           </button>
@@ -83,10 +83,10 @@ export const DashboardUDEII = () => {
                         {s.name}
                       </h4>
                       <div className="flex items-center gap-3 mt-1.5">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
+                        <span className="text-xs font-black text-slate-500 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded border border-slate-100">
                           GRUPO: {s.group}
                         </span>
-                        <span className="text-[10px] font-black text-purple-700 uppercase tracking-widest bg-purple-50 px-2 py-0.5 rounded border border-purple-100">
+                        <span className="text-xs font-black text-purple-700 uppercase tracking-widest bg-purple-50 px-3 py-1 rounded border border-purple-100">
                           EXP: {s.id.substring(0, 8)}
                         </span>
                       </div>
@@ -101,7 +101,7 @@ export const DashboardUDEII = () => {
                       <span className="material-symbols-outlined text-purple-600 text-[20px]">
                         lock_person
                       </span>
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                      <p className="text-xs font-black text-slate-600 uppercase tracking-widest">
                         Diagnóstico Especializado
                       </p>
                     </div>
@@ -116,7 +116,7 @@ export const DashboardUDEII = () => {
                       <span className="material-symbols-outlined text-emerald-600 text-[20px]">
                         task_alt
                       </span>
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                      <p className="text-xs font-black text-slate-600 uppercase tracking-widest">
                         Ajustes Razonables Sugeridos
                       </p>
                     </div>
@@ -131,7 +131,7 @@ export const DashboardUDEII = () => {
                         </li>
                       ))}
                       <button
-                        className="w-full flex items-center justify-center p-3 rounded-xl border-2 border-dashed border-slate-100 text-[10px] font-black text-slate-400 hover:text-purple-600 hover:border-purple-200 hover:bg-purple-50 transition-all uppercase gap-2"
+                        className="w-full flex items-center justify-center p-3 rounded-xl border-2 border-dashed border-slate-100 text-xs font-black text-slate-500 hover:text-purple-600 hover:border-purple-200 hover:bg-purple-50 transition-all uppercase gap-2"
                         onClick={() => {
                           const newAdj = prompt("Nuevo ajuste razonable:");
                           if (newAdj)
@@ -150,7 +150,7 @@ export const DashboardUDEII = () => {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end relative z-10">
-                  <button className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-black text-purple-700 uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
+                  <button className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-purple-700 uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
                     Consultar Bitácora de Inclusión
                     <span className="material-symbols-outlined text-[18px]">
                       arrow_right_alt

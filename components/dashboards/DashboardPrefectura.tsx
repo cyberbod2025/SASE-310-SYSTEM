@@ -106,7 +106,7 @@ export const DashboardPrefectura = () => {
           <p className="text-sm font-bold text-slate-800 capitalize">
             {todayDisplay}
           </p>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+          <p className="text-xs text-slate-500 font-black uppercase tracking-widest mt-1">
             Servicio de Guardia
           </p>
         </div>
@@ -158,7 +158,7 @@ export const DashboardPrefectura = () => {
 
             <div className="flex flex-col md:flex-row items-end gap-5 relative z-10">
               <div className="flex-1 w-full space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                   Matrícula / ID Alumno
                 </label>
                 <div className="relative">
@@ -175,7 +175,7 @@ export const DashboardPrefectura = () => {
               </div>
 
               <div className="flex-1 w-full space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                   Tipo de Incidencia
                 </label>
                 <div className="relative">
@@ -219,7 +219,7 @@ export const DashboardPrefectura = () => {
               </h3>
               <button
                 onClick={() => setCurrentModule(AppModule.REPORTES)}
-                className="text-[10px] font-bold text-blue-600 hover:underline uppercase tracking-widest"
+                className="text-xs font-bold text-blue-600 hover:underline uppercase tracking-widest"
               >
                 Bitácora Completa
               </button>
@@ -228,12 +228,12 @@ export const DashboardPrefectura = () => {
             <div className="overflow-x-auto font-sans">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black border-b border-slate-100">
-                    <th className="px-6 py-4">Horario</th>
-                    <th className="px-6 py-4">Estudiante</th>
-                    <th className="px-6 py-4">Grupo</th>
-                    <th className="px-6 py-4">Descripción</th>
-                    <th className="px-6 py-4">Estatus</th>
+                  <tr className="bg-slate-100 text-slate-600 text-xs uppercase font-black border-b border-slate-200">
+                    <th className="px-6 py-4 tracking-widest">Horario</th>
+                    <th className="px-6 py-4 tracking-widest">Estudiante</th>
+                    <th className="px-6 py-4 tracking-widest">Grupo</th>
+                    <th className="px-6 py-4 tracking-widest">Descripción</th>
+                    <th className="px-6 py-4 tracking-widest">Estatus</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -251,7 +251,7 @@ export const DashboardPrefectura = () => {
                         key={inc.id}
                         className="hover:bg-slate-50/50 transition-colors group"
                       >
-                        <td className="px-6 py-5 text-[10px] font-mono font-bold text-slate-400">
+                        <td className="px-6 py-5 text-xs font-mono font-black text-slate-600 tracking-tighter">
                           {new Date(inc.date).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -263,7 +263,7 @@ export const DashboardPrefectura = () => {
                           </p>
                         </td>
                         <td className="px-6 py-5">
-                          <span className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-[10px] font-black text-slate-600 uppercase">
+                          <span className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs font-black text-slate-600 uppercase shadow-sm">
                             {inc.group}
                           </span>
                         </td>
@@ -271,7 +271,7 @@ export const DashboardPrefectura = () => {
                           {inc.type}
                         </td>
                         <td className="px-6 py-5">
-                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                          <span className="bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-black px-3 py-1 rounded-lg uppercase tracking-widest shadow-sm">
                             Registrado
                           </span>
                         </td>
@@ -291,7 +291,7 @@ export const DashboardPrefectura = () => {
               <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest">
                 Alertas del Sistema
               </h3>
-              <span className="bg-red-50 text-red-600 border border-red-100 text-[9px] font-black px-2 py-0.5 rounded-full animate-pulse">
+              <span className="bg-red-50 text-red-600 border border-red-100 text-xs font-black px-3 py-1 rounded-full animate-pulse">
                 EN VIVO
               </span>
             </div>
@@ -347,13 +347,14 @@ const PrefStat = ({ label, value, desc, icon, color }: any) => {
         <span className="material-symbols-outlined text-2xl opacity-60 group-hover:scale-110 transition-transform">
           {icon}
         </span>
-        <span className="text-[10px] font-black uppercase tracking-widest opacity-40">
+        <span className="text-xs font-black uppercase tracking-widest text-slate-500">
           {label}
         </span>
       </div>
       <div>
         <p className="text-4xl font-black text-slate-800 mb-1">{value}</p>
-        <p className="text-[10px] font-bold uppercase tracking-tight opacity-60 italic">
+        <p className="text-xs font-black uppercase tracking-widest text-slate-500 mt-1 flex items-center gap-1.5">
+          <span className="size-1.5 bg-slate-400 rounded-full"></span>
           {desc}
         </p>
       </div>
@@ -375,7 +376,9 @@ const AlertItem = ({ title, desc, icon, type }: any) => {
         <p className="text-xs font-black uppercase tracking-tight leading-none mb-1">
           {title}
         </p>
-        <p className="text-[11px] font-bold opacity-70 leading-tight">{desc}</p>
+        <p className="text-xs font-black opacity-80 leading-tight mt-1">
+          {desc}
+        </p>
       </div>
     </div>
   );

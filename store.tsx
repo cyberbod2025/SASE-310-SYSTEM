@@ -270,15 +270,31 @@ export const AppProvider: React.FC<{
       "color: #ef4444; font-weight: bold;"
     );
 
+    // MÁSCARA DE SUPER ADMIN (CAJA NEGRA)
+    // Regla X.A: Super Admin no debe ser visible
+    let auditUserId = user?.id;
+    let auditUserEmail = user?.email;
+    let auditUserRole = currentUserRole as string;
+    let internalNote = null;
+
+    if (currentUserRole === UserRole.DEVELOPER) {
+      auditUserId = "SYSTEM";
+      auditUserRole = "SYSTEM_ADMIN";
+      auditUserEmail = "system@sase-310.mx";
+      internalNote = "Acción realizada por Super Admin (oculto)";
+    }
+
     // Persist to Supabase audit_log table
     try {
       const { error } = await supabase.from("auditoria").insert([
         {
-          usuario_id: user?.id,
-          email_usuario: user?.email,
-          rol_usuario: currentUserRole,
+          usuario_id: auditUserId,
+          email_usuario: auditUserEmail,
+          rol_usuario: auditUserRole,
           tipo_accion: actionType,
-          descripcion_accion: description,
+          descripcion_accion: internalNote
+            ? `${description} [INTERNAL: ${internalNote}]`
+            : description,
           tabla_objetivo: targetTable,
           id_registro_objetivo: targetRecordId,
           nombre_alumno_objetivo: studentName,
@@ -288,10 +304,7 @@ export const AppProvider: React.FC<{
       ]);
 
       if (error) {
-        console.warn(
-          "Error persisting audit log (table may not exist yet):",
-          error.message
-        );
+        console.warn("Error persisting audit log:", error.message);
       }
     } catch (err) {
       console.warn("Audit logging failed:", err);

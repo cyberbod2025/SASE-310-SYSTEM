@@ -105,11 +105,11 @@ export const StudentCard: React.FC<StudentCardProps> = ({
           </p>
 
           <div className="flex flex-wrap gap-2 mt-2">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 text-gray-300 border border-white/10 group-hover:border-teal-500/30 transition-colors">
+            <span className="text-xs font-bold px-2.5 py-1 rounded bg-white/5 text-gray-300 border border-white/10 group-hover:border-teal-500/30 transition-colors uppercase tracking-widest">
               {student.group}
             </span>
             {student.incidents.length > 0 && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20 flex items-center gap-1">
+              <span className="text-xs font-bold px-2.5 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 flex items-center gap-1.5 uppercase tracking-widest">
                 <span className="size-1.5 rounded-full bg-red-500 animate-pulse"></span>
                 {student.incidents.length} Incidencias
               </span>

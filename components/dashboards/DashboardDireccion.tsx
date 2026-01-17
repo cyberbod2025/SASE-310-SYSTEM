@@ -148,7 +148,7 @@ export const DashboardDireccion = () => {
                     <p className="text-sm font-bold text-slate-800">
                       {g.group}
                     </p>
-                    <p className="text-[10px] text-slate-400 uppercase font-black tracking-tighter">
+                    <p className="text-xs text-slate-500 uppercase font-black tracking-widest mt-0.5">
                       {g.tutor}
                     </p>
                   </div>
@@ -157,7 +157,7 @@ export const DashboardDireccion = () => {
                   <span className="block text-2xl font-black text-slate-800">
                     {g.count}
                   </span>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold">
+                  <span className="text-xs text-slate-500 uppercase font-black tracking-widest">
                     Eventos
                   </span>
                 </div>
@@ -195,7 +195,7 @@ export const DashboardDireccion = () => {
 
       {/* Admin Quick Modules */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-        <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
+        <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6">
           Gestión Administrativa
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -252,7 +252,7 @@ const KPIDrawer = ({ label, value, desc, icon, color }: any) => {
       <span className="material-symbols-outlined text-3xl mb-3 opacity-40">
         {icon}
       </span>
-      <p className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">
+      <p className="text-xs font-black uppercase tracking-widest mb-2 text-slate-500">
         {label}
       </p>
       <p className="text-5xl font-black tracking-tight mb-2 text-slate-800">
@@ -291,7 +291,7 @@ const TaskItem = ({ label, date, checked, onToggle }: any) => (
       >
         {label}
       </p>
-      <p className="text-[10px] text-slate-500 font-bold uppercase mt-0.5">
+      <p className="text-xs text-slate-500 font-black uppercase mt-1 tracking-widest">
         {date}
       </p>
     </div>

@@ -241,7 +241,7 @@ export const AssistantBanner: React.FC<{
           {/* Pending actions */}
           {pendingActions.length > 0 && (
             <div className="space-y-3">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                 Sugerencias de acción:
               </p>
               <div className="flex flex-wrap gap-2">

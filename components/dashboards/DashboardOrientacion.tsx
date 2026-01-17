@@ -1,11 +1,73 @@
-import React from "react";
-import toast from "react-hot-toast";
+import React, { useState, useEffect } from "react";
+
 import { useApp } from "../../store";
-import { CaseState, AppModule } from "../../types";
+import { CaseState, AppModule, Protocol } from "../../types";
 import { printContent } from "../PrintButtons";
+import { supabase } from "../../supabase/client";
+import { ProtocolDetailModal } from "../Protocols/ProtocolDetailModal";
+import { GenericActionModal } from "../GenericActionModal";
+import { useAuth } from "../AuthProvider";
 
 export const DashboardOrientacion = () => {
   const { students, setCurrentModule } = useApp();
+  const { user } = useAuth();
+  const [supportProtocol, setSupportProtocol] = useState<Protocol | null>(null);
+  const [showProtocol, setShowProtocol] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState<
+    "APPOINTMENT" | "INTERVIEW" | "CONTACT" | null
+  >(null);
+  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [targetStudent, setTargetStudent] = useState<string>("");
+
+  const handleSaveAppointment = async (data: any) => {
+    if (!user) return;
+    const { error } = await supabase.from("citas_padres" as any).insert({
+      creado_por: user.id,
+      alumno_id: data.student,
+      fecha_cita: data.date,
+      motivo: data.reason,
+      estado: "PENDIENTE",
+      observaciones: "Agendado por Orientación",
+    });
+    if (error) throw error;
+  };
+
+  const handleSaveInterview = async (data: any) => {
+    if (!user) return;
+    const { error } = await supabase.from("interventions_log" as any).insert({
+      user_id: user.id,
+      student_id: data.student,
+      reason: data.reason,
+      notes: data.notes,
+      result: data.result || "Pendiente",
+    });
+    if (error) throw error;
+  };
+
+  const handleSaveContact = async (data: any) => {
+    if (!user) return;
+    const { error } = await supabase.from("contacts_log" as any).insert({
+      user_id: user.id,
+      student_id: data.student,
+      method: data.method,
+      notes: data.notes,
+      outcome: data.outcome,
+    });
+    if (error) throw error;
+  };
+
+  useEffect(() => {
+    const fetchProtocol = async () => {
+      const { data } = await supabase
+        .from("protocolos" as any)
+        .select("*")
+        .ilike("titulo", "%Violencia Escolar%")
+        .single();
+      if (data) setSupportProtocol(data as any);
+    };
+    fetchProtocol();
+  }, []);
 
   // Logic
   const studentsInTrouble = students.filter(
@@ -24,17 +86,9 @@ export const DashboardOrientacion = () => {
   };
 
   const handlePrintReport = () => {
-    const reportData = `
-      <h1>Reporte Semanal - Orientación</h1>
-      <p><strong>Fecha:</strong> ${new Date().toLocaleDateString("es-MX")}</p>
-      <h2>Resumen</h2>
-      <ul>
-        <li><strong>Casos activos:</strong> ${studentsInTrouble.length}</li>
-        <li><strong>Patrones detectados:</strong> ${patternAlerts.length}</li>
-        <li><strong>Total estudiantes:</strong> ${students.length}</li>
-      </ul>
-    `;
-    printContent("Reporte Semanal - Orientación", reportData);
+    // Intentar imprimir directamente el reporte actual
+    window.print();
+    // toast.success("Enviando a impresora...");
   };
 
   return (
@@ -71,7 +125,7 @@ export const DashboardOrientacion = () => {
             className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 uppercase tracking-widest shadow-sm transition-all"
           >
             <span className="material-symbols-outlined text-[18px]">print</span>
-            Reporte Semanal
+            Imprimir Vista
           </button>
           <button
             onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
@@ -98,7 +152,7 @@ export const DashboardOrientacion = () => {
               </h3>
               <button
                 onClick={() => setCurrentModule(AppModule.REPORTES)}
-                className="text-[10px] font-bold text-amber-700 hover:underline uppercase tracking-widest"
+                className="text-xs font-black text-amber-700 hover:text-amber-800 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-lg transition-colors shadow-sm"
               >
                 Ver Análisis Predictivo
               </button>
@@ -127,21 +181,30 @@ export const DashboardOrientacion = () => {
                         <p className="text-sm font-black text-slate-800 uppercase italic">
                           {s.name}
                         </p>
-                        <span className="text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-500 rounded uppercase">
+                        <span className="text-xs font-black px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg uppercase shadow-sm">
                           {s.group}
                         </span>
                       </div>
-                      <p className="text-[10px] font-bold text-red-600 uppercase flex items-center gap-1 opacity-80">
-                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                      <p className="text-xs font-black text-red-700 uppercase flex items-center gap-2 mt-1">
+                        <span className="size-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>
                         Comportamiento Recurrente: {s.incidents.length}{" "}
                         Incidentes
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <button className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-[9px] font-black text-slate-600 uppercase hover:bg-slate-50">
+                      <button
+                        className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-700 uppercase hover:bg-slate-50 shadow-sm transition-all active:scale-95"
+                        onClick={() => setSelectedStudent(s)}
+                      >
                         Expediente
                       </button>
-                      <button className="px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-lg text-[9px] font-black text-amber-700 uppercase hover:bg-amber-100">
+                      <button
+                        className="px-3.5 py-2 bg-amber-600 border border-amber-500 rounded-xl text-xs font-black text-white uppercase hover:bg-amber-700 shadow-md shadow-amber-900/10 transition-all active:scale-95"
+                        onClick={() => {
+                          setTargetStudent(s.name);
+                          setModalOpen("CONTACT");
+                        }}
+                      >
                         Contactar
                       </button>
                     </div>
@@ -154,9 +217,9 @@ export const DashboardOrientacion = () => {
           {/* Estadísticas de Seguimiento */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center justify-between">
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 flex items-center justify-between">
                 Incidencias por Nivel Académico
-                <span className="material-symbols-outlined text-slate-300">
+                <span className="material-symbols-outlined text-slate-400">
                   bar_chart
                 </span>
               </h3>
@@ -183,9 +246,9 @@ export const DashboardOrientacion = () => {
             </div>
 
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center justify-between">
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6 flex items-center justify-between">
                 Reportes Recientes por Docente
-                <span className="material-symbols-outlined text-slate-300">
+                <span className="material-symbols-outlined text-slate-400">
                   group
                 </span>
               </h3>
@@ -211,13 +274,46 @@ export const DashboardOrientacion = () => {
         </div>
 
         <div className="space-y-8">
+          {/* Protocol Widget */}
+          {supportProtocol && (
+            <div className="bg-gradient-to-br from-red-600 to-rose-700 rounded-2xl p-6 shadow-lg text-white relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span className="material-symbols-outlined text-8xl">
+                  shield
+                </span>
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-2 py-1 bg-white/20 rounded text-[10px] font-bold uppercase tracking-widest">
+                    Material de Apoyo
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold leading-tight mb-2">
+                  {supportProtocol.titulo}
+                </h3>
+                <p className="text-red-100 text-xs mb-4 line-clamp-2">
+                  {supportProtocol.objetivo}
+                </p>
+                <button
+                  onClick={() => setShowProtocol(true)}
+                  className="w-full py-2.5 bg-white text-red-700 font-bold text-sm rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    menu_book
+                  </span>
+                  Consultar Protocolo
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Solicitudes Internas */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest">
                 Solicitudes Internas
               </h3>
-              <span className="bg-blue-50 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full">
+              <span className="bg-blue-100 text-blue-800 text-xs font-black px-2.5 py-1 rounded-full shadow-sm">
                 2 NUEVAS
               </span>
             </div>
@@ -227,7 +323,7 @@ export const DashboardOrientacion = () => {
                 <p className="text-xs font-black text-slate-800 uppercase mb-1">
                   Reporte Conductual
                 </p>
-                <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase">
+                <div className="flex justify-between items-center text-xs text-slate-500 font-bold uppercase tracking-tight">
                   <span>De: Prof. Ramírez</span>
                   <span>Carlos H. (2ºB)</span>
                 </div>
@@ -237,7 +333,7 @@ export const DashboardOrientacion = () => {
                 <p className="text-xs font-black text-slate-800 uppercase mb-1">
                   Canalización UDEII
                 </p>
-                <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase">
+                <div className="flex justify-between items-center text-xs text-slate-500 font-bold uppercase tracking-tight">
                   <span>De: Psic. Ana</span>
                   <span>Sofia G. (3ºA)</span>
                 </div>
@@ -245,9 +341,9 @@ export const DashboardOrientacion = () => {
 
               <button
                 onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
-                className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl text-[10px] font-black text-slate-400 uppercase hover:border-amber-500 hover:text-amber-500 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 border-2 border-dashed border-slate-200 rounded-2xl text-xs font-black text-slate-500 uppercase hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50/30 transition-all flex items-center justify-center gap-2 group"
               >
-                <span className="material-symbols-outlined text-[20px]">
+                <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">
                   add_circle
                 </span>
                 Nueva Solicitud de Reporte
@@ -267,8 +363,8 @@ export const DashboardOrientacion = () => {
 
             <div className="space-y-5 relative z-10">
               <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 group hover:border-amber-500 transition-all cursor-pointer">
-                <p className="text-[9px] font-black text-amber-700 uppercase mb-1.5 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-amber-600 rounded-full"></span>
+                <p className="text-xs font-black text-amber-800 uppercase mb-2 flex items-center gap-2">
+                  <span className="size-2 bg-amber-600 rounded-full shadow-[0_0_5px_rgba(217,119,6,0.5)]"></span>
                   PRÓXIMA SESIÓN
                 </p>
                 <p className="text-lg font-black text-slate-800 mb-1">
@@ -277,8 +373,8 @@ export const DashboardOrientacion = () => {
                 <p className="text-xs font-bold text-slate-400 uppercase italic mb-3">
                   {nextAppointment.student}
                 </p>
-                <div className="flex items-center gap-2 bg-white border border-slate-100 px-3 py-1.5 rounded-lg w-fit text-[11px] font-black text-slate-600">
-                  <span className="material-symbols-outlined text-[16px]">
+                <div className="flex items-center gap-2 bg-white border border-slate-100 px-3.5 py-2 rounded-xl w-fit text-xs font-black text-slate-700 shadow-sm">
+                  <span className="material-symbols-outlined text-lg text-amber-600">
                     schedule
                   </span>
                   {nextAppointment.time}
@@ -286,19 +382,25 @@ export const DashboardOrientacion = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <button className="p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-all flex flex-col items-center gap-2">
+                <button
+                  className="p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-all flex flex-col items-center gap-2"
+                  onClick={() => setModalOpen("APPOINTMENT")}
+                >
                   <span className="material-symbols-outlined text-slate-400">
                     calendar_add_on
                   </span>
-                  <span className="text-[9px] font-black text-slate-600 uppercase">
+                  <span className="text-xs font-black text-slate-700 uppercase tracking-widest">
                     Agendar Cita
                   </span>
                 </button>
-                <button className="p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-all flex flex-col items-center gap-2">
+                <button
+                  className="p-4 bg-slate-50 hover:bg-slate-100 rounded-2xl border border-slate-200 transition-all flex flex-col items-center gap-2"
+                  onClick={() => setModalOpen("INTERVIEW")}
+                >
                   <span className="material-symbols-outlined text-slate-400">
                     history_edu
                   </span>
-                  <span className="text-[9px] font-black text-slate-600 uppercase">
+                  <span className="text-xs font-black text-slate-700 uppercase tracking-widest">
                     Entrevista
                   </span>
                 </button>
@@ -307,13 +409,13 @@ export const DashboardOrientacion = () => {
               <div className="pt-4 border-t border-slate-100 grid grid-cols-2 gap-4">
                 <div className="text-center">
                   <p className="text-xl font-black text-slate-800">8</p>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
                     Citatorios
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-xl font-black text-emerald-600">92%</p>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
                     Efectividad
                   </p>
                 </div>
@@ -322,6 +424,156 @@ export const DashboardOrientacion = () => {
           </div>
         </div>
       </div>
+      {showProtocol && supportProtocol && (
+        <ProtocolDetailModal
+          protocol={supportProtocol}
+          onClose={() => setShowProtocol(false)}
+        />
+      )}
+      <GenericActionModal
+        isOpen={modalOpen === "APPOINTMENT"}
+        onClose={() => setModalOpen(null)}
+        title="Agendar Cita"
+        description="Sistema de Citas con Tutores"
+        fields={[
+          {
+            name: "student",
+            label: "Alumno / Tutor",
+            type: "text",
+            required: true,
+          },
+          {
+            name: "reason",
+            label: "Motivo",
+            type: "select",
+            options: [
+              "Seguimiento Conductual",
+              "Bajo Rendimiento",
+              "Situación Familiar",
+              "Otro",
+            ],
+            required: true,
+          },
+          { name: "date", label: "Fecha y Hora", type: "date", required: true },
+        ]}
+        onSubmit={handleSaveAppointment}
+      />
+      <GenericActionModal
+        isOpen={modalOpen === "INTERVIEW"}
+        onClose={() => setModalOpen(null)}
+        title="Entrevista con Alumno"
+        description="Registro de Intervención"
+        fields={[
+          { name: "student", label: "Alumno", type: "text", required: true },
+          { name: "reason", label: "Motivo", type: "text", required: true },
+          {
+            name: "notes",
+            label: "Notas / Acuerdos",
+            type: "textarea",
+            required: true,
+          },
+          {
+            name: "result",
+            label: "Resultado Inicial",
+            type: "select",
+            options: ["Acuerdo Firmado", "Canalización", "Pendiente"],
+            required: true,
+          },
+        ]}
+        onSubmit={handleSaveInterview}
+      />
+      <GenericActionModal
+        isOpen={modalOpen === "CONTACT"}
+        onClose={() => setModalOpen(null)}
+        title="Bitácora de Contacto"
+        description={`Contactando a familia de: ${targetStudent}`}
+        fields={[
+          { name: "student", label: "Alumno", type: "text", required: true },
+          {
+            name: "method",
+            label: "Medio de Contacto",
+            type: "select",
+            options: [
+              "Llamada Telefónica",
+              "WhatsApp",
+              "Correo Electrónico",
+              "Citatorio Físico",
+            ],
+            required: true,
+          },
+          {
+            name: "notes",
+            label: "Resumen de la Conversación",
+            type: "textarea",
+            required: true,
+          },
+          {
+            name: "outcome",
+            label: "Resultado",
+            type: "select",
+            options: [
+              "Contactado / Confirmado",
+              "Sin Respuesta / Buzón",
+              "Número Equivocado",
+              "Recado Dejado",
+            ],
+            required: true,
+          },
+        ]}
+        onSubmit={handleSaveContact}
+      />
+
+      {selectedStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-slate-50 w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden relative">
+            <button
+              onClick={() => setSelectedStudent(null)}
+              className="absolute top-4 right-4 p-2 bg-white/50 hover:bg-white rounded-full text-slate-500 transition-all z-10"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            <div className="relative h-32 bg-gradient-to-r from-amber-600 to-orange-700">
+              <div className="absolute -bottom-10 left-8 size-24 rounded-full border-4 border-slate-50 overflow-hidden bg-white shadow-lg">
+                <img
+                  src={selectedStudent.avatar}
+                  alt={selectedStudent.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+            <div className="pt-12 px-8 pb-8">
+              <h2 className="text-2xl font-black text-slate-800 uppercase italic">
+                {selectedStudent.name}
+              </h2>
+              <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-1">
+                {selectedStudent.matricula}
+              </p>
+
+              <div className="mt-6 space-y-4">
+                <div className="p-4 bg-red-50 border border-red-100 rounded-xl">
+                  <h4 className="text-xs font-black text-red-700 uppercase tracking-widest mb-2">
+                    Incidencias Recientes
+                  </h4>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {selectedStudent.incidents &&
+                      selectedStudent.incidents.map((inc: any) => (
+                        <div
+                          key={inc.id}
+                          className="text-xs bg-white p-2 rounded border border-red-100"
+                        >
+                          <span className="font-bold block">{inc.type}</span>
+                          <span className="text-slate-500">
+                            {inc.description}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -338,7 +590,7 @@ const Bar = ({ height, color, label, value }: any) => (
         </div>
       </div>
     </div>
-    <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter whitespace-nowrap">
+    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-2 whitespace-nowrap">
       {label}
     </span>
   </div>
@@ -350,7 +602,7 @@ const TeacherStat = ({ name, count, color }: any) => (
   >
     <span className="text-xs font-bold text-slate-600 uppercase">{name}</span>
     <span
-      className={`text-[10px] font-black px-2 py-0.5 rounded-lg border border-transparent group-hover:border-amber-200 ${color}`}
+      className={`text-xs font-black px-3 py-1 rounded-lg border border-transparent group-hover:border-amber-200 shadow-sm ${color}`}
     >
       {count} CAPS
     </span>

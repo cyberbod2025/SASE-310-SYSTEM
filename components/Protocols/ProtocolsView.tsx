@@ -51,6 +51,7 @@ export const ProtocolsView: React.FC = () => {
     convivencia: protocols.filter((p) => p.tipo === "convivencia").length,
     salud: protocols.filter((p) => p.tipo === "salud").length,
     pc: protocols.filter((p) => p.tipo === "proteccion_civil").length,
+    apoyo: protocols.filter((p) => p.tipo === "apoyo").length,
   };
 
   return (
@@ -117,6 +118,17 @@ export const ProtocolsView: React.FC = () => {
           >
             <span className="size-2 rounded-full bg-blue-500" />
             Protección Civil ({stats.pc})
+          </button>
+          <button
+            onClick={() => setFilterType("apoyo")}
+            className={`px-4 py-2 rounded-md text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+              filterType === "apoyo"
+                ? "bg-purple-600 text-white shadow-md"
+                : "text-gray-400 hover:text-purple-400 hover:bg-white/5"
+            }`}
+          >
+            <span className="size-2 rounded-full bg-purple-600" />
+            Apoyo ({stats.apoyo})
           </button>
         </div>
 

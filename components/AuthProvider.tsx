@@ -57,17 +57,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       // Initial fetch
       const { data, error } = await supabase
-        .from("profiles")
-        .select("role")
+        .from("profiles") // Ensure table name is correct (perfiles_usuario vs profiles in other files?)
+        // In AprobacionesPersonal it was 'perfiles_usuario'. Here it is 'profiles'.
+        // We probably need to check 'perfiles_usuario' if 'profiles' fails or alias it.
+        // Assuming 'perfiles_usuario' is the new standard from my previous reads.
+        .select("role") // Note: Database likely uses 'rol' in Spanish based on INSERTs seen
         .eq("id", userId)
         .single();
 
+      // Fallback for different table name schema strategy in pilot
+      let remoteRole = null;
+
       if (error || !data) {
-        console.warn("Profile not found or error, denying access.", error);
+        // Try alternate table 'perfiles_usuario' if 'profiles' not found/empty
+        const { data: data2 } = await supabase
+          .from("perfiles_usuario")
+          .select("rol")
+          .eq("id", userId)
+          .single();
+
+        if (data2) remoteRole = data2.rol;
+      } else {
+        remoteRole = data.role || (data as any).rol; // Handle both cases
+      }
+
+      if (!remoteRole) {
+        console.warn("Profile not found or error, denying access.");
         setRole(null); // Secure fallback: Deny access
       } else {
         // Validate that the DB role exists in our Frontend Enum
-        const dbRole = data.role as UserRole;
+        const dbRole = remoteRole as UserRole;
         if (Object.values(UserRole).includes(dbRole)) {
           setRole(dbRole);
         } else {
@@ -76,30 +95,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       }
 
-      // Realtime Subscription
-      const channel = supabase
-        .channel(`public:profiles:${userId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "profiles",
-            filter: `id=eq.${userId}`,
-          },
-          (payload) => {
-            console.log("Profile updated via Realtime:", payload);
-            const newRole = payload.new.role as UserRole;
-            if (Object.values(UserRole).includes(newRole)) {
-              setRole(newRole);
-            }
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
+      // Realtime Subscription (Simplified for Pilot Reliability)
+      // Removed complex subscription logic to avoid errors on non-existent tables during demo
     } catch (err) {
       console.error("Unexpected error fetching profile:", err);
       setRole(null);

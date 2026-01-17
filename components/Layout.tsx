@@ -19,6 +19,7 @@ const roleImages: Record<UserRole, string> = {
   [UserRole.ENFERMERIA]: "/assets/branding/ENFERMERIA.png",
   [UserRole.SECRETARIA]: "/assets/branding/SECRETARIOS.png",
   [UserRole.UDEII]: "/assets/branding/UDEII.png",
+  [UserRole.PROMOTORA]: "/assets/branding/DOCENTES.png", // Usando Docentes como placeholder
   [UserRole.GUEST]: "/assets/branding/logo_sase_official.png",
   [UserRole.DEVELOPER]: "/assets/branding/SASE_LOGO.png",
 };
@@ -69,7 +70,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 alt="SASE-310"
                 className="h-10 w-auto object-contain"
               />
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
                 Identidad Institucional
               </span>
             </div>
@@ -102,7 +103,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               }}
             />
 
-            <div className="py-2 px-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-6 mb-2">
+            <div className="py-3 px-3 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] mt-6 mb-2">
               Gestión Educativa
             </div>
 
@@ -145,7 +146,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               />
             )}
 
-            <div className="py-2 px-3 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-6 mb-2">
+            <div className="py-3 px-3 text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] mt-6 mb-2">
               Expediente Digital
             </div>
 
@@ -188,10 +189,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 {currentUserRole.substring(0, 1).toUpperCase()}
               </div>
               <div className="overflow-hidden">
-                <p className="text-xs font-black text-slate-800 truncate uppercase tracking-tight italic">
+                <p className="text-sm font-black text-slate-800 truncate uppercase tracking-tight italic">
                   {currentUserRole}
                 </p>
-                <p className="text-[10px] text-slate-500 truncate font-medium">
+                <p className="text-[11px] text-slate-500 truncate font-bold">
                   CCT: 09DES4310M
                 </p>
               </div>
@@ -204,7 +205,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               }}
               className="w-full flex items-center justify-center gap-2 text-slate-400 hover:text-red-700 hover:bg-red-50 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-transparent hover:border-red-100"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined text-[20px]">
                 logout
               </span>
               Cerrar Sesión
@@ -215,18 +216,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       <div className="flex-1 flex flex-col min-w-0 bg-[#F9FBFF] relative overflow-hidden">
         {/* Layered Institutional Depth */}
-        <div className="absolute inset-0 z-0 pointer-events-none">
+        {/* Layered Institutional Depth */}
+        <div className="absolute inset-0 z-0 pointer-events-none bg-slate-50">
           {/* Executive Mesh Pattern */}
           <div
-            className="absolute inset-0 opacity-[0.05]"
+            className="absolute inset-0 opacity-[0.08]"
             style={{
-              backgroundImage: `linear-gradient(#1e40af 0.5px, transparent 0.5px), linear-gradient(90deg, #1e40af 0.5px, transparent 0.5px)`,
-              backgroundSize: "40px 40px",
+              backgroundImage: `linear-gradient(#1e40af 0.8px, transparent 0.8px), linear-gradient(90deg, #1e40af 0.8px, transparent 0.8px)`,
+              backgroundSize: "32px 32px",
             }}
           ></div>
-          {/* Soft Depth Spheres */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/[0.03] rounded-full blur-[100px]"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8),transparent)]"></div>
+          {/* Soft Depth Spheres - Enhanced */}
+          <div className="absolute -top-24 -right-24 w-[500px] h-[500px] bg-blue-600/[0.08] rounded-full blur-[120px]"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.7),transparent)]"></div>
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-slate-200/[0.4] rounded-full blur-[100px] -ml-24 -mb-24"></div>
         </div>
 
         <header className="h-20 bg-white/70 backdrop-blur-xl border-b border-slate-200/60 flex items-center justify-between px-8 shrink-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
@@ -247,7 +250,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   {currentModule.replace("_", " ")}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
                 Protocolo de Identidad Oficial :: CCT: 09DES4310M
               </div>
             </div>
@@ -255,12 +258,33 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           <div className="flex items-center gap-4">
             <div className="hidden lg:flex flex-col items-end mr-4">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
                 Servidor 310
               </span>
-              <span className="text-[10px] font-bold text-blue-600">
+              <span className="text-[11px] font-bold text-blue-600">
                 v2.4.0 PILOTO
               </span>
+            </div>
+
+            <div className="hidden xl:flex items-center bg-slate-100/50 p-1 px-2 rounded-xl border border-slate-200">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mr-2 ml-1">
+                Simulación:
+              </span>
+              <select
+                value={currentUserRole}
+                onChange={(e) => switchRole(e.target.value as UserRole)}
+                className="bg-transparent text-[10px] font-black text-blue-700 uppercase tracking-tight outline-none cursor-pointer hover:text-blue-900 transition-colors"
+              >
+                {Object.values(UserRole)
+                  .filter(
+                    (r) => r !== UserRole.GUEST && r !== UserRole.DEVELOPER
+                  )
+                  .map((role) => (
+                    <option key={role} value={role}>
+                      {role}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             <button
@@ -286,10 +310,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         {showNotifications && (
           <div className="absolute top-24 right-8 w-96 bg-white border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2rem] z-40 animate-fade-in overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest">
-                Notificaciones
+              <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest">
+                Centro de Notificaciones
               </h3>
-              <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-bold">
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-black border border-blue-200 uppercase tracking-tighter">
                 {unreadCount} Pendientes
               </span>
             </div>
@@ -299,28 +323,31 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   <span className="material-symbols-outlined text-4xl mb-2 opacity-20">
                     notifications_off
                   </span>
-                  <p className="text-[10px] font-bold uppercase">Sin avisos</p>
+                  <p className="text-xs font-black text-slate-500 uppercase tracking-widest italic">
+                    Sin avisos pendientes
+                  </p>
                 </div>
               ) : (
                 <div className="divide-y divide-slate-50">
                   <div className="p-4 hover:bg-slate-50 transition-colors cursor-pointer group border-l-4 border-amber-500">
-                    <p className="text-[10px] font-black text-slate-400 uppercase mb-1">
-                      Prefectura • Hace 5 min
+                    <p className="text-xs font-black text-slate-500 uppercase flex items-center gap-1.5 mb-1 tracking-tight">
+                      <span className="size-1.5 bg-amber-500 rounded-full"></span>
+                      Prefectura Escolar • Hace 5 min
                     </p>
-                    <p className="text-xs font-bold text-slate-700 group-hover:text-blue-700">
-                      Incidencia Detectada
+                    <p className="text-sm font-black text-slate-800 group-hover:text-blue-700 uppercase italic transition-colors">
+                      Incidencia en Aula Detectada
                     </p>
-                    <p className="text-[10px] text-slate-500 mt-1">
-                      Se requiere revisión en el grupo 3º B por inasistencia
-                      colectiva.
+                    <p className="text-xs font-bold text-slate-500 mt-1 leading-relaxed">
+                      Se requiere revisión inmediata en el grupo 3º B por
+                      inasistencia colectiva reportada.
                     </p>
                   </div>
                 </div>
               )}
             </div>
             <div className="p-3 bg-slate-50 border-t border-slate-100 text-center">
-              <button className="text-[10px] font-black text-blue-700 uppercase tracking-widest hover:underline">
-                Limpiar todas
+              <button className="text-xs font-black text-blue-700 uppercase tracking-widest hover:text-blue-900 transition-colors p-1">
+                Limpiar Bandeja de Entrada
               </button>
             </div>
           </div>
@@ -368,8 +395,8 @@ const NavItem: React.FC<{
       {icon}
     </span>
     <span
-      className={`text-[12px] font-black uppercase tracking-wide ${
-        active ? "opacity-100" : "opacity-70 group-hover:opacity-100"
+      className={`text-sm font-black uppercase tracking-wide ${
+        active ? "opacity-100" : "opacity-75 group-hover:opacity-100"
       }`}
     >
       {label}

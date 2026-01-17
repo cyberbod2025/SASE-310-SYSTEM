@@ -63,8 +63,8 @@ export const BitacoraAuditoria: React.FC = () => {
             <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase italic">
               Bitácora <span className="text-blue-700">Institucional</span>
             </h1>
-            <p className="text-emerald-600 font-bold text-xs uppercase tracking-widest mt-1 flex items-center gap-2">
-              <span className="size-2 bg-emerald-500 rounded-full animate-pulse"></span>
+            <p className="text-emerald-700 font-black text-xs uppercase tracking-widest mt-1.5 flex items-center gap-2">
+              <span className="size-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
               Seguridad y Auditoría del Sistema
             </p>
           </div>
@@ -133,7 +133,7 @@ export const BitacoraAuditoria: React.FC = () => {
               </span>
               Historial de Actividad del Plantel
             </h3>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+            <p className="text-xs text-slate-500 font-black uppercase tracking-widest mt-1.5">
               Registro inalterable de protocolos digitales
             </p>
           </div>
@@ -150,19 +150,19 @@ export const BitacoraAuditoria: React.FC = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-slate-50/50">
-                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
                   Fecha y Hora
                 </th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
                   Personal Responsable
                 </th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
                   Operación
                 </th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
                   Detalle de Acción
                 </th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
                   Afectado / Alumno
                 </th>
               </tr>
@@ -200,13 +200,13 @@ export const BitacoraAuditoria: React.FC = () => {
                     className="hover:bg-slate-50 transition-colors group"
                   >
                     <td className="px-8 py-5">
-                      <span className="text-[11px] font-bold text-slate-500 block">
+                      <span className="text-xs font-black text-slate-600 block">
                         {new Date(entry.creado_en).toLocaleDateString("es-MX", {
                           day: "2-digit",
                           month: "short",
                         })}
                       </span>
-                      <span className="text-[10px] font-medium text-slate-400 block mt-0.5">
+                      <span className="text-xs font-bold text-slate-400 block mt-0.5">
                         {new Date(entry.creado_en).toLocaleTimeString("es-MX", {
                           hour: "2-digit",
                           minute: "2-digit",
@@ -219,10 +219,10 @@ export const BitacoraAuditoria: React.FC = () => {
                           {(entry.rol_usuario || "S").charAt(0)}
                         </div>
                         <div>
-                          <p className="text-xs font-black text-slate-700 truncate max-w-[150px]">
+                          <p className="text-xs font-black text-slate-800 truncate max-w-[150px]">
                             {entry.email_usuario || "SISTEMA"}
                           </p>
-                          <p className="text-[9px] font-bold text-blue-600 uppercase tracking-tighter">
+                          <p className="text-[10px] font-black text-blue-700 uppercase tracking-tight mt-0.5">
                             {entry.rol_usuario || "PROCESO AUTO"}
                           </p>
                         </div>
@@ -286,7 +286,7 @@ const StatCard: React.FC<{
         <span className="material-symbols-outlined text-2xl">{icon}</span>
       </div>
       <div>
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
           {label}
         </p>
         <p className="text-2xl font-black text-slate-800 tracking-tight">
@@ -307,7 +307,7 @@ const ActionBadge: React.FC<{ type: string }> = ({ type }) => {
 
   return (
     <span
-      className={`px-3 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest ${
+      className={`px-3 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest ${
         styles[type] || "bg-slate-50 text-slate-500"
       }`}
     >

@@ -249,7 +249,7 @@ export const Inscripciones: React.FC = () => {
           <h1 className="text-3xl font-black text-slate-800 tracking-tight">
             Registro de Inscripción
           </h1>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+          <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
             Control Escolar • Ciclo 2024-2025
           </p>
         </div>
@@ -321,13 +321,13 @@ export const Inscripciones: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleVerifyCurp}
-                  className={`px-4 rounded-xl text-[10px] font-black uppercase ${
+                  className={`px-4 rounded-xl text-xs font-black uppercase ${
                     formData.verifiedCurp
                       ? "bg-green-600 text-white"
-                      : "bg-slate-100 text-slate-500"
+                      : "bg-slate-100 text-slate-600 shadow-sm"
                   }`}
                 >
-                  {formData.verifiedCurp ? "OK" : "Verificar"}
+                  {formData.verifiedCurp ? "Válido" : "Verificar"}
                 </button>
               </div>
             </FormField>
@@ -409,7 +409,7 @@ export const Inscripciones: React.FC = () => {
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleFileChange(e, setFileStudent)}
-                className="text-[10px] file:bg-white file:border file:border-slate-200 file:rounded-xl file:px-4 file:py-2 file:mr-4 file:font-black file:uppercase file:text-slate-600"
+                className="text-xs file:bg-white file:border file:border-slate-200 file:rounded-xl file:px-4 file:py-2.5 file:mr-4 file:font-black file:uppercase file:text-slate-600 file:shadow-sm"
               />
             </FormField>
           </div>
@@ -417,8 +417,8 @@ export const Inscripciones: React.FC = () => {
 
         <Section title="02. Datos Familiares" icon="family_restroom">
           <div className="mb-8 space-y-4">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-              Residencia:
+            <label className="text-xs font-black text-slate-600 uppercase tracking-widest">
+              Residencia del Alumno:
             </label>
             <div className="flex flex-wrap gap-3">
               {["ambos", "mama", "papa", "tutor"].map((v) => (
@@ -426,13 +426,13 @@ export const Inscripciones: React.FC = () => {
                   key={v}
                   type="button"
                   onClick={() => setFormData({ ...formData, viveCon: v })}
-                  className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                  className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all shadow-sm ${
                     formData.viveCon === v
                       ? "bg-slate-800 text-white border-slate-800"
-                      : "bg-white text-slate-500 border-slate-200"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"
                   }`}
                 >
-                  {v}
+                  {v.toUpperCase()}
                 </button>
               ))}
             </div>
@@ -488,7 +488,7 @@ export const Inscripciones: React.FC = () => {
                   onClick={verifyCode}
                   className="w-full py-4 bg-cyan-700 text-white rounded-2xl font-black text-[10px] uppercase"
                 >
-                  Confirmar Código
+                  Confirmar Identidad
                 </button>
                 <button
                   type="button"
@@ -600,7 +600,7 @@ const Section = ({ title, icon, children }: any) => (
 
 const FormField = ({ label, required, children }: any) => (
   <div className="space-y-2">
-    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
+    <label className="text-xs font-black text-slate-600 uppercase tracking-[0.2em] ml-1">
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     {children}
@@ -653,13 +653,13 @@ const ParentCard = ({
               type="button"
               onClick={onVerify}
               disabled={verified}
-              className={`px-3 rounded-xl text-[10px] font-black uppercase ${
+              className={`px-3 rounded-xl text-xs font-black uppercase ${
                 verified
                   ? "bg-green-600 text-white"
-                  : "bg-slate-100 text-slate-500"
+                  : "bg-slate-100 text-slate-600 shadow-sm"
               }`}
             >
-              {verified ? "OK" : "SMS"}
+              {verified ? "OK" : "VERIFICAR"}
             </button>
           )}
         </div>

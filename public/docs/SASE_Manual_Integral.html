@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SASE-310 | Manual Integral de Fase Piloto</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Playfair+Display:ital,wght@0,700;1,700&display=swap");
+
+      :root {
+        --primary: #1e3a8a; /* Azul Medianoche */
+        --secondary: #0891b2; /* Cian Tecnológico */
+        --accent: #f59e0b; /* Ámbar */
+        --text-dark: #0f172a;
+        --text-gray: #334155;
+        --bg-light: #f8fafc;
+        --white: #ffffff;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      /* Navegación Lateral (Solo para pantalla) */
+      @media screen {
+        nav {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 250px;
+          height: 100vh;
+          background: white;
+          padding: 40px 20px;
+          box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+          box-sizing: border-box;
+          z-index: 100;
+        }
+        main {
+          margin-left: 250px;
+          padding: 40px;
+        }
+        nav h2 {
+          font-size: 24px;
+          font-weight: 900;
+          color: var(--primary);
+          margin-top: 0;
+        }
+        nav ul {
+          list-style: none;
+          padding: 0;
+        }
+        nav li {
+          margin-bottom: 15px;
+        }
+        nav a {
+          text-decoration: none;
+          color: var(--text-gray);
+          font-weight: 600;
+          font-size: 14px;
+          transition: color 0.2s;
+        }
+        nav a:hover {
+          color: var(--secondary);
+        }
+      }
+
+      @media print {
+        nav {
+          display: none;
+        }
+        main {
+          margin: 0;
+          padding: 0;
+        }
+        .page-break {
+          page-break-before: always;
+        }
+      }
+
+      /* Contenedor de Documento Estilo Impreso */
+      .document-page {
+        max-width: 21cm;
+        margin: 0 auto 60px;
+        background: var(--white);
+        padding: 3cm 2.5cm;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Marca de Agua */
+      .watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-30deg);
+        font-size: 8rem;
+        font-weight: 900;
+        color: rgba(30, 58, 138, 0.03);
+        z-index: 0;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      .content {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Elementos Comunes */
+      h1 {
+        font-size: 36px;
+        font-weight: 900;
+        color: var(--primary);
+        letter-spacing: -1px;
+        margin-bottom: 10px;
+        line-height: 1.1;
+      }
+      h1 span {
+        color: var(--secondary);
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+      }
+
+      h2 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--primary);
+        margin-top: 40px;
+        margin-bottom: 20px;
+        border-bottom: 3px solid var(--secondary);
+        padding-bottom: 10px;
+        display: inline-block;
+      }
+
+      h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-top: 30px;
+        margin-bottom: 15px;
+      }
+
+      p {
+        margin-bottom: 20px;
+        text-align: justify;
+        color: var(--text-gray);
+      }
+
+      /* Banner de Autor */
+      .author-banner {
+        background: #f1f5f9;
+        padding: 30px;
+        border-radius: 12px;
+        border-left: 6px solid var(--secondary);
+        margin: 30px 0;
+      }
+      .quote {
+        font-family: "Playfair Display", serif;
+        font-style: italic;
+        font-size: 18px;
+        color: var(--primary);
+        margin: 0;
+      }
+      .author-sign {
+        margin-top: 15px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-gray);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* Grid de Pasos */
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+      }
+      .step-card {
+        background: var(--primary);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        position: relative;
+      }
+      .step-num {
+        font-size: 40px;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.2);
+        position: absolute;
+        top: 10px;
+        right: 20px;
+      }
+      .step-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: block;
+        color: var(--secondary);
+      }
+
+      /* FAQ Estilo */
+      .faq-item {
+        margin-bottom: 25px;
+        border-left: 3px solid #e2e8f0;
+        padding-left: 20px;
+      }
+      .question {
+        font-weight: 700;
+        color: var(--primary);
+        display: block;
+        margin-bottom: 5px;
+      }
+      .answer {
+        font-size: 14px;
+        color: var(--text-gray);
+        margin: 0;
+      }
+
+      .badge-pilot {
+        display: inline-block;
+        background: var(--accent);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+      }
+
+      footer {
+        margin-top: 60px;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 20px;
+        font-size: 10px;
+        text-align: center;
+        color: #94a3b8;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h2>SASE 310</h2>
+      <ul>
+        <li><a href="#identidad">1. Identidad y Visión</a></li>
+        <li><a href="#implementacion">2. Manual de Implementación</a></li>
+        <li><a href="#faq">3. Preguntas Frecuentes</a></li>
+        <li><a href="#invitacion">4. Carta del Autor</a></li>
+      </ul>
+      <div
+        style="
+          position: absolute;
+          bottom: 40px;
+          font-size: 10px;
+          color: #94a3b8;
+        "
+      >
+        Documento Unificado v1.0<br />
+        Fase Piloto 2024-2025
+      </div>
+    </nav>
+
+    <main>
+      <!-- SECCIÓN 1: IDENTIDAD -->
+      <div id="identidad" class="document-page">
+        <div class="watermark">SASE-310</div>
+        <div class="content">
+          <header>
+            <div
+              style="
+                font-size: 10px;
+                font-weight: 700;
+                color: var(--secondary);
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                margin-bottom: 10px;
+              "
+            >
+              Secundaria Diurna No. 310 "Presidentes de México"
+            </div>
+            <h1>SASE <span>Manual Integral</span></h1>
+            <div class="badge-pilot">Documento Unificado de Fase Piloto</div>
+          </header>
+
+          <div class="author-banner">
+            <p class="quote">
+              "SASE no es un software genérico; es una respuesta directa a los
+              desafíos que enfrentamos día con día en nuestras aulas. Es
+              tecnología con corazón de Iztapalapa."
+            </p>
+            <div class="author-sign">
+              — Prof. Hugo Sánchez Reséndiz, Creador de SASE
+            </div>
+          </div>
+
+          <h2>¿Qué es SASE?</h2>
+          <p>
+            El
+            <strong
+              >Sistema de Acompañamiento y Seguimiento Escolar
+              (SASE-310)</strong
+            >
+            es la infraestructura digital de vanguardia diseñada específicamente
+            para nuestra institución. Su objetivo es unificar la comunicación,
+            el registro de incidencias y el seguimiento pedagógico en una sola
+            plataforma robusta, profesional y de fácil acceso.
+          </p>
+          <p>
+            A diferencia de otras plataformas, SASE ha sido construido
+            <strong>desde adentro</strong>. No es una solución importada; es una
+            herramienta artesanal, programada con el conocimiento real de lo que
+            ocurre en los pasillos, las oficinas de orientación y los salones de
+            clase.
+          </p>
+
+          <h3>Principios Fundamentales</h3>
+          <ul style="list-style: none; padding: 0">
+            <li style="margin-bottom: 15px; display: flex; gap: 10px">
+              <span style="color: var(--secondary); font-weight: 900">01.</span>
+              <span
+                ><strong>Protección Institucional:</strong> Su fin es documentar
+                procesos para blindar legalmente al docente y a la
+                institución.</span
+              >
+            </li>
+            <li style="margin-bottom: 15px; display: flex; gap: 10px">
+              <span style="color: var(--secondary); font-weight: 900">02.</span>
+              <span
+                ><strong>Eficiencia Administrativa:</strong> Reduce la carga
+                burocrática automatizando reportes y pases de lista.</span
+              >
+            </li>
+            <li style="margin-bottom: 15px; display: flex; gap: 10px">
+              <span style="color: var(--secondary); font-weight: 900">03.</span>
+              <span
+                ><strong>Atención Oportuna:</strong> Detecta patrones de riesgo
+                en alumnos antes de que se conviertan en problemas graves.</span
+              >
+            </li>
+          </ul>
+
+          <footer>
+            Secretaría de Educación Pública | CCT 09DES4310M | SASE © 2024-2025
+          </footer>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: IMPLEMENTACIÓN -->
+      <div id="implementacion" class="document-page page-break">
+        <div class="watermark">GUÍA</div>
+        <div class="content">
+          <header>
+            <h1>Guía de <span>Implementación</span></h1>
+            <p
+              style="
+                text-transform: uppercase;
+                font-size: 11px;
+                font-weight: 700;
+                color: #94a3b8;
+                letter-spacing: 2px;
+              "
+            >
+              Protocolo de Activación Inmediata
+            </p>
+          </header>
+
+          <p>
+            Esta guía técnica establece los pasos para que todo el personal se
+            integre al ecosistema digital SASE de manera inmediata, segura y
+            eficiente.
+          </p>
+
+          <div class="steps-grid">
+            <div class="step-card">
+              <div class="step-num">1</div>
+              <span class="step-title">ACCESO</span>
+              <p style="color: rgba(255, 255, 255, 0.8); font-size: 13px">
+                Ingrese a la plataforma mediante la URL institucional
+                proporcionada en la red interna de la escuela.
+              </p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">2</div>
+              <span class="step-title">LOGIN</span>
+              <p style="color: rgba(255, 255, 255, 0.8); font-size: 13px">
+                Inicie sesión con sus credenciales personales. En fase piloto,
+                usaremos credenciales simplificadas pre-asignadas.
+              </p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">3</div>
+              <span class="step-title">EXPLORACIÓN</span>
+              <p style="color: rgba(255, 255, 255, 0.8); font-size: 13px">
+                Revise su Tablero de Control. Los docentes verán sus grupos;
+                administrativos verán sus herramientas específicas.
+              </p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">4</div>
+              <span class="step-title">REGISTRO</span>
+              <p style="color: rgba(255, 255, 255, 0.8); font-size: 13px">
+                Pruebe crear una incidencia real para activar el motor de
+                "Detección de Patrones" y ver las alertas.
+              </p>
+            </div>
+            <div class="step-card" style="background: var(--secondary)">
+              <div class="step-num">5</div>
+              <span class="step-title">FEEDBACK</span>
+              <p style="color: rgba(255, 255, 255, 0.9); font-size: 13px">
+                Use el botón flotante del Asistente para reportar errores o
+                sugerir mejoras. ¡Su opinión construye el sistema!
+              </p>
+            </div>
+          </div>
+
+          <h2>Roles y Permisos</h2>
+          <div
+            style="
+              background: white;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 20px;
+              font-size: 13px;
+            "
+          >
+            <table style="width: 100%; border-collapse: collapse">
+              <tr style="border-bottom: 2px solid #f1f5f9; text-align: left">
+                <th style="padding: 10px; color: var(--primary)">Rol</th>
+                <th style="padding: 10px; color: var(--primary)">
+                  Alcance de Visión
+                </th>
+              </tr>
+              <tr>
+                <td style="padding: 10px; font-weight: 700">Docente</td>
+                <td style="padding: 10px">
+                  Solo ve la información de sus grupos asignados y sus propios
+                  registros.
+                </td>
+              </tr>
+              <tr style="background: #f8fafc">
+                <td style="padding: 10px; font-weight: 700">Prefectura</td>
+                <td style="padding: 10px">
+                  Vista global de asistencia y disciplina diaria en pasillos y
+                  aulas.
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 10px; font-weight: 700">Orientación</td>
+                <td style="padding: 10px">
+                  Seguimiento detallado de casos (incidencias académicas y
+                  conductuales).
+                </td>
+              </tr>
+              <tr style="background: #f8fafc">
+                <td style="padding: 10px; font-weight: 700">Dirección</td>
+                <td style="padding: 10px">
+                  Visión estratégica completa, estadísticas globales y auditoría
+                  de seguridad.
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <footer>Manual de Operación SASE v4.0.0</footer>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 3: FAQ -->
+      <div id="faq" class="document-page page-break">
+        <div class="watermark">FAQ</div>
+        <div class="content">
+          <header>
+            <h1>Preguntas <span>Frecuentes</span></h1>
+            <p
+              style="
+                text-transform: uppercase;
+                font-size: 11px;
+                font-weight: 700;
+                color: #94a3b8;
+                letter-spacing: 2px;
+              "
+            >
+              Resolución de dudas clave
+            </p>
+          </header>
+
+          <div class="faq-item">
+            <span class="question"
+              >¿SASE se usa para vigilar o evaluar a los docentes?</span
+            >
+            <p class="answer">
+              <strong>En absoluto.</strong> SASE es una plataforma de apoyo, no
+              de fiscalización. Su enfoque es la atención al alumno y la
+              protección legal del plantel, asegurando que la labor del docente
+              esté debidamente respaldada por procesos documentados.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <span class="question"
+              >¿Quién puede ver la información que registro?</span
+            >
+            <p class="answer">
+              La seguridad es jerárquica. La información es sensible y está
+              compartimentada. Un docente no ve lo de otro docente. Solo el
+              personal que legalmente requiere ver el dato (como Orientación
+              para dar seguimiento) tiene acceso.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <span class="question">¿Cuál es el costo del sistema?</span>
+            <p class="answer">
+              Actualmente operamos en fase de
+              <strong>Optimización Educativa</strong>. Si bien existe un
+              potencial comercial futuro, hoy el enfoque es 100% académico y de
+              servicio a nuestra comunidad. No hay costos para el personal en
+              esta fase.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <span class="question">¿Qué pasa si falla el internet?</span>
+            <p class="answer">
+              El sistema es ligero y robusto. Si hay una falla total, los
+              protocolos de papel actúan como respaldo temporal. La información
+              se sincroniza digitalmente en cuanto se restablece el servicio,
+              manteniendo la continuidad histórica sin pérdida de datos.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <span class="question">¿Qué es la "Fase Piloto"?</span>
+            <p class="answer">
+              Significa que el sistema es un organismo vivo. Se ajusta
+              semanalmente según SUS sugerencias. Si un botón incomoda o falta
+              una función, el equipo de desarrollo (liderado por el Prof. Hugo)
+              lo corrige. El sistema se adapta a la escuela, no al revés.
+            </p>
+          </div>
+
+          <footer>Sistema de Auditoría y Seguridad Educativa</footer>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 4: CARTA -->
+      <div id="invitacion" class="document-page page-break">
+        <div class="watermark">ÚNETE</div>
+        <div class="content">
+          <header>
+            <h1>Invitación <span>Personal</span></h1>
+          </header>
+
+          <div
+            style="
+              background: white;
+              border: 15px solid var(--primary);
+              padding: 40px;
+              box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <h3
+              style="
+                color: var(--secondary);
+                text-transform: uppercase;
+                margin-top: 0;
+              "
+            >
+              Compañero Docente:
+            </h3>
+            <p>
+              Te invito a ser parte de la transformación digital de la
+              Secundaria 310.
+            </p>
+            <p>
+              Este sistema no nació en una oficina de software lejana; nació en
+              el pizarrón de matemáticas, entre las ecuaciones y la realidad que
+              compartimos todos los días. Lo diseñé pensando en nosotros, en
+              recuperar nuestro tiempo frente al grupo y dejar atrás el peso de
+              la burocracia repetitiva.
+            </p>
+            <p>
+              Más que una aplicación, SASE es nuestra herramienta de defensa,
+              orden y acompañamiento pedagógico. Es la prueba de que, con
+              ingenio y voluntad, podemos tener una escuela de clase mundial
+              aquí en Iztapalapa.
+            </p>
+            <p style="font-weight: 700">
+              Tu participación en esta fase piloto es vital. Tus críticas,
+              reportes y uso diario son lo que pulirá esta herramienta hasta la
+              perfección.
+            </p>
+            <br />
+            <div style="text-align: right">
+              <span
+                style="
+                  display: block;
+                  font-weight: 900;
+                  color: var(--primary);
+                  font-size: 18px;
+                "
+                >Prof. Hugo Sánchez Reséndiz</span
+              >
+              <span
+                style="
+                  display: block;
+                  font-size: 12px;
+                  text-transform: uppercase;
+                  color: #94a3b8;
+                  font-weight: 700;
+                "
+                >Profesor de Matemáticas & Desarrollador Principal</span
+              >
+            </div>
+          </div>
+
+          <div style="margin-top: 50px; text-align: center">
+            <button
+              onclick="window.print()"
+              style="
+                background: var(--primary);
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                font-size: 14px;
+                font-weight: 700;
+                border-radius: 8px;
+                cursor: pointer;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+              "
+            >
+              Imprimir Manual Completo
+            </button>
+          </div>
+
+          <footer>SASE 310 | Transformación Digital Educativa</footer>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

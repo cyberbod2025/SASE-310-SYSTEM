@@ -49,6 +49,11 @@ const DashboardUDEII = React.lazy(() =>
     default: module.DashboardUDEII,
   }))
 );
+const DashboardPromotora = React.lazy(() =>
+  import("./components/dashboards/DashboardPromotora").then((module) => ({
+    default: module.DashboardPromotora,
+  }))
+);
 const DashboardDeveloper = React.lazy(() =>
   import("./components/dashboards/DashboardDeveloper").then((module) => ({
     default: module.DashboardDeveloper,
@@ -175,6 +180,8 @@ const MainContent = () => {
             return <DashboardSecretaria />;
           case UserRole.UDEII:
             return <DashboardUDEII />;
+          case UserRole.PROMOTORA:
+            return <DashboardPromotora />;
           case UserRole.DEVELOPER:
             return <DashboardDeveloper />;
           default:
@@ -186,14 +193,13 @@ const MainContent = () => {
 };
 
 const App: React.FC = () => {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false); // Moved into Login for seamless match
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { session, loading } = useAuth();
-  const { setCurrentModule } = useApp();
 
-  // Handle direct links (e.g., ?registro=true or ?modulo=reportes)
+  // Handle direct links (e.g., ?registro=true)
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("registro") === "true") {

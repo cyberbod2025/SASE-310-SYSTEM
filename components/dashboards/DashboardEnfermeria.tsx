@@ -1,10 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
-import { IncidentType, AppModule } from "../../types";
+import { IncidentType, AppModule, Protocol } from "../../types";
+import { supabase } from "../../supabase/client";
+import { ProtocolDetailModal } from "../Protocols/ProtocolDetailModal";
 
 export const DashboardEnfermeria = () => {
   const { students, setQuickRegisterOpen, setCurrentModule } = useApp();
+  const [supportProtocol, setSupportProtocol] = useState<Protocol | null>(null);
+  const [showProtocol, setShowProtocol] = useState(false);
+
+  useEffect(() => {
+    const fetchProtocol = async () => {
+      const { data } = await supabase
+        .from("protocolos" as any)
+        .select("*")
+        .ilike("titulo", "%Primeros Auxilios%")
+        .single();
+      if (data) setSupportProtocol(data as any);
+    };
+    fetchProtocol();
+  }, []);
   const todayStr = new Date().toISOString().split("T")[0];
 
   const healthIncidents = students
@@ -70,7 +86,7 @@ export const DashboardEnfermeria = () => {
               month: "long",
             })}
           </p>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+          <p className="text-xs text-slate-500 font-black uppercase tracking-widest mt-1">
             Calendario Escolar
           </p>
         </div>
@@ -141,7 +157,7 @@ export const DashboardEnfermeria = () => {
             <br />
             Consulta
           </h3>
-          <p className="text-blue-100/70 text-[10px] font-bold uppercase tracking-widest mt-2">
+          <p className="text-blue-100 text-xs font-black uppercase tracking-widest mt-2 bg-blue-500/30 px-2 py-1 rounded inline-block">
             Registrar Síntomas
           </p>
         </button>
@@ -161,7 +177,7 @@ export const DashboardEnfermeria = () => {
             </div>
             <button
               onClick={() => setCurrentModule(AppModule.REPORTES)}
-              className="text-[10px] font-bold text-blue-600 hover:underline uppercase tracking-widest"
+              className="text-xs font-bold text-blue-600 hover:underline uppercase tracking-widest"
             >
               Ver Todo
             </button>
@@ -170,12 +186,16 @@ export const DashboardEnfermeria = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black border-b border-slate-100">
-                  <th className="px-6 py-4">Horario</th>
-                  <th className="px-6 py-4">Nombre del Alumno</th>
-                  <th className="px-6 py-4">Grado/Grupo</th>
-                  <th className="px-6 py-4">Motivo</th>
-                  <th className="px-6 py-4 text-right">Acción</th>
+                <tr className="bg-slate-50 text-slate-600 text-xs uppercase font-black border-b border-slate-200">
+                  <th className="px-6 py-4 tracking-widest">Horario</th>
+                  <th className="px-6 py-4 tracking-widest">
+                    Nombre del Alumno
+                  </th>
+                  <th className="px-6 py-4 tracking-widest">Grado/Grupo</th>
+                  <th className="px-6 py-4 tracking-widest">Motivo</th>
+                  <th className="px-6 py-4 text-right tracking-widest">
+                    Acción
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -193,7 +213,7 @@ export const DashboardEnfermeria = () => {
                       key={visit.id}
                       className="hover:bg-slate-50/50 transition-colors group"
                     >
-                      <td className="px-6 py-5 text-slate-500 font-bold text-xs font-mono">
+                      <td className="px-6 py-5 text-slate-600 font-black text-xs font-mono tracking-tighter">
                         {new Date(visit.date).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
@@ -210,12 +230,12 @@ export const DashboardEnfermeria = () => {
                         </span>
                       </td>
                       <td className="px-6 py-5">
-                        <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter">
+                        <p className="text-xs font-black text-slate-600 uppercase tracking-widest">
                           {visit.type}
                         </p>
                       </td>
                       <td className="px-6 py-5 text-right">
-                        <button className="text-blue-600 hover:text-blue-800 font-bold text-[10px] uppercase">
+                        <button className="text-blue-600 hover:text-blue-800 font-black text-xs uppercase">
                           Detalles
                         </button>
                       </td>
@@ -249,6 +269,39 @@ export const DashboardEnfermeria = () => {
             </div>
           </div>
 
+          {/* Protocol Widget */}
+          {supportProtocol && (
+            <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl p-6 shadow-lg text-white relative overflow-hidden group mb-6">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span className="material-symbols-outlined text-8xl">
+                  medical_services
+                </span>
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="px-2 py-1 bg-white/20 rounded text-[10px] font-bold uppercase tracking-widest">
+                    Material de Apoyo
+                  </span>
+                </div>
+                <h3 className="text-xl font-bold leading-tight mb-2">
+                  {supportProtocol.titulo}
+                </h3>
+                <p className="text-purple-100 text-xs mb-4 line-clamp-2">
+                  {supportProtocol.objetivo}
+                </p>
+                <button
+                  onClick={() => setShowProtocol(true)}
+                  className="w-full py-2.5 bg-white text-purple-700 font-bold text-sm rounded-lg hover:bg-purple-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    menu_book
+                  </span>
+                  Consultar Protocolo
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Inventory */}
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
@@ -281,6 +334,12 @@ export const DashboardEnfermeria = () => {
           </div>
         </div>
       </div>
+      {showProtocol && supportProtocol && (
+        <ProtocolDetailModal
+          protocol={supportProtocol}
+          onClose={() => setShowProtocol(false)}
+        />
+      )}
     </div>
   );
 };
@@ -299,13 +358,14 @@ const HealthStat = ({ label, value, desc, icon, color }: any) => {
         <span className="material-symbols-outlined text-2xl opacity-60 group-hover:scale-110 transition-transform">
           {icon}
         </span>
-        <span className="text-[10px] font-black uppercase tracking-widest opacity-40">
+        <span className="text-xs font-black uppercase tracking-widest text-slate-500">
           {label}
         </span>
       </div>
       <div>
         <p className="text-4xl font-black text-slate-800 mb-1">{value}</p>
-        <p className="text-[10px] font-bold uppercase tracking-tight opacity-60 italic">
+        <p className="text-xs font-black uppercase tracking-widest text-slate-500 mt-1 flex items-center gap-1.5">
+          <span className="size-1.5 bg-slate-400 rounded-full"></span>
           {desc}
         </p>
       </div>
@@ -350,9 +410,9 @@ const InventoryList = () => {
                   -
                 </button>
                 <span
-                  className={`text-[10px] font-bold w-14 text-center ${
-                    isLow ? "text-red-600" : "text-slate-800"
-                  }`}
+                  className={`text-xs font-black w-20 text-center ${
+                    isLow ? "text-red-700 bg-red-50" : "text-slate-800 bg-white"
+                  } p-1 rounded border border-slate-100 shadow-sm`}
                 >
                   {item.quantity} / {item.max}
                 </span>

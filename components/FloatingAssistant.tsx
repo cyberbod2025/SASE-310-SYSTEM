@@ -130,7 +130,9 @@ export const FloatingAssistant: React.FC = () => {
             <h3 className="font-bold text-white text-sm">
               Asistente Virtual SASE
             </h3>
-            <p className="text-xs text-blue-200">¿En qué puedo ayudarte hoy?</p>
+            <p className="text-xs text-blue-200 font-bold uppercase tracking-widest mt-0.5">
+              ¿En qué puedo ayudarte hoy?
+            </p>
           </div>
           <button
             onClick={() => setIsOpen(false)}
@@ -142,7 +144,7 @@ export const FloatingAssistant: React.FC = () => {
 
         {/* Quick Actions Grid */}
         <div className="mb-4">
-          <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+          <h4 className="text-xs font-black text-gray-400 uppercase tracking-wider mb-2">
             Acciones Rápidas ({currentUserRole})
           </h4>
           <div className="grid grid-cols-2 gap-2">

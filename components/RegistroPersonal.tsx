@@ -116,7 +116,6 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
       const { data, error } = await supabase
         .from("solicitudes_alta_personal")
         .insert({
-          matricula_sase: matriculaTemp,
           rol_solicitado: formData.rolesSeleccionados,
           turno: formData.turno,
           nombres: formData.nombres.toUpperCase(),
@@ -136,7 +135,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           acepta_auditoria: formData.checkAuditoria,
           estado: "PENDIENTE",
           metadata: {
-            password_provided: true,
+            folio_solicitud: matriculaTemp, // Guardar la referencia temporal en metadata
             timestamp: new Date().toISOString(),
           },
         })
@@ -154,12 +153,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
       // Registrar en auditoría (sin auth aún)
       await supabase.from("auditoria").insert({
-        matricula_sase: matriculaTemp,
-        accion: "Solicitud de alta de personal enviada",
-        categoria: "REGISTRO",
-        entidad: "solicitudes_alta_personal",
-        entidad_id: data.id,
-        metadata: { folio, roles: formData.rolesSeleccionados },
+        email_usuario: formData.correoInstitucional,
+        tipo_accion: "CREACION",
+        descripcion_accion: `Solicitud de alta de personal enviada: ${folio}`,
+        tabla_objetivo: "solicitudes_alta_personal",
+        id_registro_objetivo: data.id,
+        nuevos_valores: { folio, roles: formData.rolesSeleccionados },
       });
     } catch (error: any) {
       console.error("Error al enviar solicitud:", error);
@@ -262,7 +261,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
             />
             <div className="flex items-center justify-center gap-4 mb-2">
               <div className="h-[1px] w-12 bg-orange-500/30"></div>
-              <p className="text-orange-400 text-[10px] uppercase tracking-[0.5em] font-black">
+              <p className="text-orange-400 text-xs uppercase tracking-[0.5em] font-black">
                 PROTOCOLOS INSTITUCIONALES 2026
               </p>
               <div className="h-[1px] w-12 bg-orange-500/30"></div>
@@ -378,7 +377,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
               {/* Turno */}
               <div className="md:col-span-1">
-                <label className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-3 block">
+                <label className="text-xs font-black text-orange-400 uppercase tracking-widest mb-3 block">
                   TURNO ASIGNADO
                 </label>
                 <div className="h-14 bg-orange-900/10 border border-orange-500/50 rounded-xl flex items-center px-5 text-orange-300 font-black tracking-widest uppercase">
@@ -520,7 +519,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
               <span className="material-symbols-outlined text-orange-500 text-xl flex-shrink-0">
                 lock
               </span>
-              <p className="text-xs text-orange-200/80 leading-relaxed">
+              <p className="text-sm text-orange-200/90 leading-relaxed font-bold italic">
                 Los datos personales se resguardan conforme a la LFPDPPP. En
                 pantallas operativas se muestra <strong>matrícula SASE</strong>;
                 nombres solo con permisos de Dirección.
@@ -542,7 +541,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   <h2 className="text-xl font-bold text-orange-400">
                     3. Información Académica
                   </h2>
-                  <p className="text-gray-500 text-xs">
+                  <p className="text-gray-400 text-xs font-black uppercase tracking-widest">
                     Asignaciones y cobertura
                   </p>
                 </div>
@@ -691,7 +690,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-purple-500 focus:outline-none"
                 placeholder="Ej. Todos los grados, 1º y 2º, Casos específicos..."
               />
-              <p className="text-xs text-purple-400/60 mt-2">
+              <p className="text-xs text-purple-400 font-black uppercase mt-2 tracking-widest">
                 * Acceso a datos sensibles sujeto a autorización
               </p>
             </div>
@@ -724,7 +723,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 <h2 className="text-xl font-bold text-red-400">
                   4. Seguridad y Responsabilidad
                 </h2>
-                <p className="text-gray-500 text-xs">
+                <p className="text-gray-400 text-xs font-black uppercase tracking-widest">
                   Compromisos institucionales
                 </p>
               </div>

@@ -8,6 +8,7 @@ export enum UserRole {
   ENFERMERIA = "enfermeria",
   SECRETARIA = "secretaria",
   UDEII = "udeii",
+  PROMOTORA = "promotora", // Promotora de Lectura
   GUEST = "guest",
   DEVELOPER = "developer", // God Mode
 }
@@ -22,6 +23,7 @@ export const RoleLabels: Record<UserRole, string> = {
   [UserRole.ENFERMERIA]: "Enfermería",
   [UserRole.SECRETARIA]: "Secretaría",
   [UserRole.UDEII]: "UDEII",
+  [UserRole.PROMOTORA]: "Promotora de Lectura",
   [UserRole.GUEST]: "Invitado",
   [UserRole.DEVELOPER]: "Desarrollador (Acceso Total)",
 };
@@ -105,7 +107,11 @@ export interface Student {
   justificantes: Justificante[];
 }
 
-export type ProtocolType = "convivencia" | "salud" | "proteccion_civil";
+export type ProtocolType =
+  | "convivencia"
+  | "salud"
+  | "proteccion_civil"
+  | "apoyo";
 
 export interface Protocol {
   id: string;
