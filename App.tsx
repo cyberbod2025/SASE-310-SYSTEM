@@ -12,117 +12,119 @@ import { IntroPlayer } from "./components/IntroPlayer";
 const DashboardDocente = React.lazy(() =>
   import("./components/dashboards/DashboardDocente").then((module) => ({
     default: module.DashboardDocente,
-  }))
+  })),
 );
 const DashboardPrefectura = React.lazy(() =>
   import("./components/dashboards/DashboardPrefectura").then((module) => ({
     default: module.DashboardPrefectura,
-  }))
+  })),
 );
 const DashboardEnfermeria = React.lazy(() =>
   import("./components/dashboards/DashboardEnfermeria").then((module) => ({
     default: module.DashboardEnfermeria,
-  }))
+  })),
 );
 const DashboardOrientacion = React.lazy(() =>
   import("./components/dashboards/DashboardOrientacion").then((module) => ({
     default: module.DashboardOrientacion,
-  }))
+  })),
 );
 const DashboardTrabajoSocial = React.lazy(() =>
   import("./components/dashboards/DashboardTrabajoSocial").then((module) => ({
     default: module.DashboardTrabajoSocial,
-  }))
+  })),
 );
 const DashboardSecretaria = React.lazy(() =>
   import("./components/dashboards/DashboardSecretaria").then((module) => ({
     default: module.DashboardSecretaria,
-  }))
+  })),
 );
 const DashboardDireccion = React.lazy(() =>
   import("./components/dashboards/DashboardDireccion").then((module) => ({
     default: module.DashboardDireccion,
-  }))
+  })),
 );
 const DashboardUDEII = React.lazy(() =>
   import("./components/dashboards/DashboardUDEII").then((module) => ({
     default: module.DashboardUDEII,
-  }))
+  })),
 );
 const DashboardPromotora = React.lazy(() =>
   import("./components/dashboards/DashboardPromotora").then((module) => ({
     default: module.DashboardPromotora,
-  }))
+  })),
 );
 const DashboardDeveloper = React.lazy(() =>
   import("./components/dashboards/DashboardDeveloper").then((module) => ({
     default: module.DashboardDeveloper,
-  }))
+  })),
 );
 
 // Modules (Lazy Loaded)
 const Agenda = React.lazy(() =>
-  import("./components/Agenda").then((module) => ({ default: module.Agenda }))
+  import("./components/Agenda").then((module) => ({ default: module.Agenda })),
 );
 const Reportes = React.lazy(() =>
   import("./components/Reportes").then((module) => ({
     default: module.Reportes,
-  }))
+  })),
 );
 const BitacoraAuditoria = React.lazy(() =>
   import("./components/BitacoraAuditoria").then((module) => ({
     default: module.BitacoraAuditoria,
-  }))
+  })),
 );
 const PanelSolicitudes = React.lazy(() =>
   import("./components/PanelSolicitudes").then((module) => ({
     default: module.PanelSolicitudes,
-  }))
+  })),
 );
 const SolicitudReportesDocentes = React.lazy(() =>
   import("./components/SolicitudReportesDocentes").then((module) => ({
     default: module.SolicitudReportesDocentes,
-  }))
+  })),
 );
 const Inscripciones = React.lazy(() =>
   import("./components/Inscripciones").then((module) => ({
     default: module.Inscripciones,
-  }))
+  })),
 );
 const Archivo = React.lazy(() =>
-  import("./components/Archivo").then((module) => ({ default: module.Archivo }))
+  import("./components/Archivo").then((module) => ({
+    default: module.Archivo,
+  })),
 );
 const ProtocolsView = React.lazy(() =>
   import("./components/Protocols/ProtocolsView").then((module) => ({
     default: module.ProtocolsView,
-  }))
+  })),
 );
 const PlaneacionNEM = React.lazy(() =>
   import("./components/PlaneacionNEM").then((module) => ({
     default: module.PlaneacionNEM,
-  }))
+  })),
 );
 const NotFound = React.lazy(() =>
   import("./components/NotFound").then((module) => ({
     default: module.NotFound,
-  }))
+  })),
 );
 const OrbNavigation = React.lazy(() =>
   import("./components/OrbNavigation").then((module) => ({
     default: module.OrbNavigation,
-  }))
+  })),
 );
 
 const RegistroPersonal = React.lazy(() =>
   import("./components/RegistroPersonal").then((module) => ({
     default: module.RegistroPersonal,
-  }))
+  })),
 );
 
 const AprobacionesPersonal = React.lazy(() =>
   import("./components/AprobacionesPersonal").then((module) => ({
     default: module.AprobacionesPersonal,
-  }))
+  })),
 );
 
 // Loading Component
@@ -261,9 +263,12 @@ const App: React.FC = () => {
   if (!session && !isDemoMode) {
     if (isRegistering) {
       return (
-        <React.Suspense fallback={<LoadingSpinner />}>
-          <RegistroPersonal onBack={() => setIsRegistering(false)} />
-        </React.Suspense>
+        <>
+          <Toaster position="top-center" reverseOrder={false} />
+          <React.Suspense fallback={<LoadingSpinner />}>
+            <RegistroPersonal onBack={() => setIsRegistering(false)} />
+          </React.Suspense>
+        </>
       );
     }
     return (

@@ -5,7 +5,7 @@ import { combinarPermisos } from "../utils/permisos";
 
 interface Solicitud {
   id: string;
-  creado_en: string; // Updated from created_at
+  created_at: string;
   matricula_sase?: string; // Made optional as it might be missing in initial request
   rol_solicitado: string[];
   turno: string;
@@ -42,7 +42,7 @@ export const AprobacionesPersonal: React.FC = () => {
       const { data, error } = await supabase
         .from("solicitudes_alta_personal")
         .select("*")
-        .order("creado_en", { ascending: false }); // Updated column name
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setSolicitudes((data as unknown as Solicitud[]) || []);
@@ -82,7 +82,7 @@ export const AprobacionesPersonal: React.FC = () => {
       } catch (edgeErr: any) {
         console.warn(
           "Edge Function Failed, trying Admin Client (Dev Mode)...",
-          edgeErr
+          edgeErr,
         );
 
         // INTENTO 2: Crear usuario Real via Client (Solo funciona con Service Role local/dev)
@@ -102,7 +102,7 @@ export const AprobacionesPersonal: React.FC = () => {
         } catch (authErr: any) {
           console.warn(
             "Auth Admin Create Failed (Expected on Client):",
-            authErr.message
+            authErr.message,
           );
           toast("Modo Simulación: Aprobando sin crear Auth User real.", {
             icon: "🔧",
@@ -158,17 +158,17 @@ export const AprobacionesPersonal: React.FC = () => {
       if (updateError) throw updateError;
 
       // 5. Registrar en auditoría
-      await supabase.from("auditoria").insert({
-        tipo_accion: "APROBACION_PERSONAL",
-        descripcion_accion: `Aprobada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Matrícula SASE asignada: ${solicitud.matricula_sase}`,
-        tabla_objetivo: "solicitudes_alta_personal",
-        id_registro_objetivo: solicitud.id,
-        nombre_alumno_objetivo: `${solicitud.nombres} ${solicitud.apellido_paterno}`,
-        nuevos_valores: { userIdAsignado: userId },
+      await supabase.from("audit_log").insert({
+        action_type: "APROBACION_PERSONAL",
+        action_description: `Aprobada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Matrícula SASE asignada: ${solicitud.matricula_sase}`,
+        target_table: "solicitudes_alta_personal",
+        target_record_id: solicitud.id,
+        target_student_name: `${solicitud.nombres} ${solicitud.apellido_paterno}`,
+        new_values: { userIdAsignado: userId },
       });
 
       toast.success(
-        `✅ Solicitud aprobada (Simulada). Matrícula SASE: ${solicitud.matricula_sase}`
+        `✅ Solicitud aprobada (Simulada). Matrícula SASE: ${solicitud.matricula_sase}`,
       );
       cargarSolicitudes();
       setSolicitudSeleccionada(null);
@@ -204,11 +204,11 @@ export const AprobacionesPersonal: React.FC = () => {
       if (error) throw error;
 
       // Registrar en auditoría
-      await supabase.from("auditoria").insert({
-        tipo_accion: "RECHAZO_PERSONAL",
-        descripcion_accion: `Rechazada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Motivo: ${motivoRechazo}`,
-        tabla_objetivo: "solicitudes_alta_personal",
-        id_registro_objetivo: solicitud.id,
+      await supabase.from("audit_log").insert({
+        action_type: "RECHAZO_PERSONAL",
+        action_description: `Rechazada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Motivo: ${motivoRechazo}`,
+        target_table: "solicitudes_alta_personal",
+        target_record_id: solicitud.id,
       });
 
       toast.success("❌ Solicitud rechazada");

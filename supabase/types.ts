@@ -100,7 +100,7 @@ export type Database = {
             columns: ["alumno_id"];
             referencedRelation: "alumnos";
             referencedColumns: ["id"];
-          }
+          },
         ];
       };
       justificantes: {
@@ -143,7 +143,7 @@ export type Database = {
             columns: ["alumno_id"];
             referencedRelation: "alumnos";
             referencedColumns: ["id"];
-          }
+          },
         ];
       };
       salud: {
@@ -174,41 +174,51 @@ export type Database = {
             columns: ["alumno_id"];
             referencedRelation: "alumnos";
             referencedColumns: ["id"];
-          }
+          },
         ];
       };
-      auditoria: {
+      audit_log: {
         Row: {
           id: string;
-          usuario_id: string | null;
-          email_usuario: string | null;
-          rol_usuario: string | null;
-          tipo_accion: string;
-          descripcion_accion: string | null;
-          tabla_objetivo: string | null;
-          id_registro_objetivo: string | null;
-          nombre_alumno_objetivo: string | null;
-          valores_anteriores: Json | null;
-          nuevos_valores: Json | null;
-          creado_en: string;
+          user_id: string | null;
+          user_email: string | null;
+          user_role: string | null;
+          action_type: string;
+          action_description: string | null;
+          target_table: string | null;
+          target_record_id: string | null;
+          target_student_name: string | null;
+          old_values: Json | null;
+          new_values: Json | null;
+          created_at: string;
         };
         Insert: {
           id?: string;
-          usuario_id?: string | null;
-          email_usuario?: string | null;
-          rol_usuario?: string | null;
-          tipo_accion: string;
-          descripcion_accion?: string | null;
-          tabla_objetivo?: string | null;
-          id_registro_objetivo?: string | null;
-          nombre_alumno_objetivo?: string | null;
-          valores_anteriores?: Json | null;
-          nuevos_valores?: Json | null;
-          creado_en?: string;
+          user_id?: string | null;
+          user_email?: string | null;
+          user_role?: string | null;
+          action_type: string;
+          action_description?: string | null;
+          target_table?: string | null;
+          target_record_id?: string | null;
+          target_student_name?: string | null;
+          old_values?: Json | null;
+          new_values?: Json | null;
+          created_at?: string;
         };
         Update: {
           id?: string;
-          // ... usually audit logs are append-only
+          user_id?: string | null;
+          user_email?: string | null;
+          user_role?: string | null;
+          action_type?: string;
+          action_description?: string | null;
+          target_table?: string | null;
+          target_record_id?: string | null;
+          target_student_name?: string | null;
+          old_values?: Json | null;
+          new_values?: Json | null;
+          created_at?: string;
         };
         Relationships: [];
       };
@@ -255,13 +265,13 @@ export type Database = {
             columns: ["id"];
             referencedRelation: "users";
             referencedColumns: ["id"];
-          }
+          },
         ];
       };
       solicitudes_alta_personal: {
         Row: {
           id: string;
-          creado_en: string;
+          created_at: string;
           rol_solicitado: string[];
           turno: string;
           nombres: string;
@@ -287,7 +297,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
-          creado_en?: string;
+          created_at?: string;
           rol_solicitado: string[];
           turno: string;
           nombres: string;
@@ -313,7 +323,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          creado_en?: string;
+          created_at?: string;
           rol_solicitado?: string[];
           turno?: string;
           nombres?: string;

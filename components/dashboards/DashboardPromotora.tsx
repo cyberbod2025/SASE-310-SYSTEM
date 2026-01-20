@@ -93,7 +93,7 @@ export const DashboardPromotora = () => {
                 Activo
               </span>
             </div>
-          ))
+          )),
         )}
       </div>
 
@@ -263,7 +263,20 @@ export const DashboardPromotora = () => {
             name: "group",
             label: "Grupo",
             type: "select",
-            options: ["1º A", "1º B", "2º A", "2º B", "3º A", "3º B"],
+            options: [
+              "1º A",
+              "1º B",
+              "1º C",
+              "1º D",
+              "2º A",
+              "2º B",
+              "2º C",
+              "2º D",
+              "3º A",
+              "3º B",
+              "3º C",
+              "3º D",
+            ],
             required: true,
           },
           {

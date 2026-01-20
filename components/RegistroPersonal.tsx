@@ -6,12 +6,21 @@ interface RegistroPersonalProps {
   onBack: () => void;
 }
 
-// Textos legales
+// Textos legales (conservados)
 const AVISO_PRIVACIDAD = `SASE-310 recaba datos personales del personal escolar con fines de identificación, control de acceso, asignación de funciones y respaldo institucional. El acceso a datos sensibles está restringido por rol y auditado. Puedes ejercer derechos de rectificación u oposición mediante la Dirección del plantel.`;
-
 const COMPROMISO_ETICO = `Me comprometo a usar SASE-310 únicamente con fines institucionales y educativos; a resguardar la confidencialidad; a no compartir credenciales; y a evitar la difusión indebida de información. Reconozco que el uso inadecuado puede derivar en medidas administrativas conforme a la normativa aplicable.`;
-
 const TEXTO_AUDITORIA = `Todas las acciones relevantes (consulta, registro, edición, desbloqueo de identidad) quedan registradas con fecha, hora y usuario para fines de seguridad y trazabilidad.`;
+
+const AVAILABLE_ROLES = [
+  { id: "docente", label: "Docente" },
+  { id: "prefectura", label: "Prefectura" },
+  { id: "orientacion", label: "Orientación" },
+  { id: "trabajo_social", label: "Trabajo Social" },
+  { id: "tutor", label: "Tutor Grupo" },
+  { id: "subdireccion", label: "Subdirección" },
+  { id: "direccion", label: "Dirección" },
+  { id: "udeii", label: "UDEII" },
+];
 
 export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   onBack,
@@ -23,27 +32,20 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
   // Estado del formulario
   const [formData, setFormData] = useState({
-    // Bloque 1: Identidad
     rolesSeleccionados: [] as string[],
     turno: "vespertino",
-
-    // Bloque 2: Datos sensibles
     nombres: "",
     apellidoPaterno: "",
     apellidoMaterno: "",
     curp: "",
     correoInstitucional: "",
     telefono: "",
-
-    // Bloque 3: Info académica (dinámico)
     materias: [] as string[],
     grupos: [] as string[],
     esTutor: false,
     grupoTutor: "",
     areaCobertura: "",
     observaciones: "",
-
-    // Bloque 4: Seguridad
     checkPrivacidad: false,
     checkEtica: false,
     checkAuditoria: false,
@@ -51,12 +53,28 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
     confirmPassword: "",
   });
 
-  const handleRolToggle = (rol: string) => {
+  // CURP Validation
+  const validateCURP = (curp: string) => {
+    const regex =
+      /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/;
+    return regex.test(curp);
+  };
+
+  const handleAddRole = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const rol = e.target.value;
+    if (rol && !formData.rolesSeleccionados.includes(rol)) {
+      setFormData((prev) => ({
+        ...prev,
+        rolesSeleccionados: [...prev.rolesSeleccionados, rol],
+      }));
+    }
+    e.target.value = ""; // Reset select
+  };
+
+  const handleRemoveRole = (rol: string) => {
     setFormData((prev) => ({
       ...prev,
-      rolesSeleccionados: prev.rolesSeleccionados.includes(rol)
-        ? prev.rolesSeleccionados.filter((r) => r !== rol)
-        : [...prev.rolesSeleccionados, rol],
+      rolesSeleccionados: prev.rolesSeleccionados.filter((r) => r !== rol),
     }));
   };
 
@@ -75,7 +93,6 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validaciones
     if (formData.rolesSeleccionados.length === 0) {
       toast.error("Selecciona al menos un rol");
       return;
@@ -105,14 +122,17 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
       return;
     }
 
+    if (!validateCURP(formData.curp)) {
+      toast.error("El CURP no tiene un formato válido");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Generar matrícula temporal (se confirmará al aprobar)
       const randomNum = Math.floor(Math.random() * 1000);
       const matriculaTemp = `TEMP-${randomNum}`;
 
-      // Insertar solicitud en la base de datos
       const { data, error } = await supabase
         .from("solicitudes_alta_personal")
         .insert({
@@ -135,7 +155,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           acepta_auditoria: formData.checkAuditoria,
           estado: "PENDIENTE",
           metadata: {
-            folio_solicitud: matriculaTemp, // Guardar la referencia temporal en metadata
+            folio_solicitud: matriculaTemp,
             timestamp: new Date().toISOString(),
           },
         })
@@ -144,21 +164,17 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
       if (error) throw error;
 
-      // Generar folio de seguimiento
-      const folio = `REQ-${new Date().getFullYear()}-${String(
-        randomNum
-      ).padStart(4, "0")}`;
+      const folio = `REQ-${new Date().getFullYear()}-${String(randomNum).padStart(4, "0")}`;
       setFolioSolicitud(folio);
       setSuccess(true);
 
-      // Registrar en auditoría (sin auth aún)
-      await supabase.from("auditoria").insert({
-        email_usuario: formData.correoInstitucional,
-        tipo_accion: "CREACION",
-        descripcion_accion: `Solicitud de alta de personal enviada: ${folio}`,
-        tabla_objetivo: "solicitudes_alta_personal",
-        id_registro_objetivo: data.id,
-        nuevos_valores: { folio, roles: formData.rolesSeleccionados },
+      await supabase.from("audit_log").insert({
+        user_email: formData.correoInstitucional,
+        action_type: "CREACION",
+        action_description: `Solicitud de alta de personal enviada: ${folio}`,
+        target_table: "solicitudes_alta_personal",
+        target_record_id: data.id,
+        new_values: { folio, roles: formData.rolesSeleccionados },
       });
     } catch (error: any) {
       console.error("Error al enviar solicitud:", error);
@@ -168,51 +184,42 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
     }
   };
 
-  // Pantalla de éxito
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a1128] via-[#0f172a] to-[#020510] flex items-center justify-center p-4">
-        <div className="w-full max-w-2xl bg-[#0f172a]/95 backdrop-blur-xl border border-emerald-500/30 rounded-2xl p-10 shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#050505]">
+        <div className="w-full max-w-lg bg-[#0f172a] border border-emerald-500/30 rounded-3xl p-10 shadow-2xl relative z-10">
           <div className="text-center">
-            <div className="bg-emerald-500/10 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 ring-2 ring-emerald-500/30">
-              <span className="material-symbols-outlined text-6xl text-emerald-400">
-                verified
+            <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 ring-1 ring-emerald-500/40">
+              <span className="material-symbols-outlined text-4xl text-emerald-400">
+                check_circle
               </span>
             </div>
-
-            <h2 className="text-3xl font-bold text-white mb-2">
-              Solicitud Enviada
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Solicitud Recibida
             </h2>
-            <p className="text-emerald-400 font-mono text-lg mb-6">
-              Folio: {folioSolicitud}
+            <p className="text-emerald-400 font-mono text-lg mb-8 tracking-wider">
+              {folioSolicitud}
             </p>
 
-            <div className="bg-black/30 p-6 rounded-xl border border-white/5 mb-6 text-left">
-              <h3 className="text-yellow-400 font-bold mb-3 flex items-center gap-2">
-                <span className="material-symbols-outlined">schedule</span>
-                Estado Actual: PENDIENTE DE VALIDACIÓN
-              </h3>
-              <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                Tu solicitud será revisada por la{" "}
-                <strong>Dirección o Subdirección del Plantel</strong>. El
-                proceso incluye:
+            <div className="space-y-4 text-left border-l-2 border-emerald-500/20 pl-4 mb-8">
+              <p className="text-slate-400 text-sm">
+                Tu solicitud pasará al proceso de validación administrativa.
               </p>
-              <ol className="text-gray-400 text-sm space-y-2 ml-6 list-decimal">
-                <li>Validación de identidad (CURP + Correo institucional)</li>
-                <li>Asignación de Matrícula SASE oficial (ej. EMP-310-XXX)</li>
-                <li>Configuración de alcances y permisos</li>
-                <li>Activación de cuenta</li>
-              </ol>
-              <p className="text-orange-300 text-xs mt-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm">email</span>
-                Recibirás notificación en:{" "}
-                <strong>{formData.correoInstitucional}</strong>
-              </p>
+              <div className="text-xs text-slate-500 bg-white/5 p-3 rounded-lg">
+                <strong className="text-slate-300 block mb-1">
+                  Próximos pasos:
+                </strong>
+                1. Validación de identidad por Dirección.
+                <br />
+                2. Asignación de credenciales oficiales.
+                <br />
+                3. Notificación a tu correo institucional.
+              </div>
             </div>
 
             <button
               onClick={onBack}
-              className="w-full py-3 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors font-medium"
+              className="w-full py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors text-sm font-medium border border-white/5"
             >
               Volver al Inicio
             </button>
@@ -222,192 +229,104 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
     );
   }
 
-  // Formulario principal
   return (
-    <div className="min-h-screen w-full relative font-sans text-slate-100 bg-black overflow-x-hidden">
-      {/* 1. Nebula Background with Dynamic Pan */}
-      <div
-        className="fixed inset-0 z-0 bg-cover bg-center md:bg-right scale-110 animate-backgroundDrift pointer-events-none"
-        style={{
-          backgroundImage: 'url("/assets/branding/login_background_final.png")',
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/80"></div>
-        {/* Mask over the "LONGU" area in the top left */}
-        <div className="absolute top-0 left-0 w-64 h-24 bg-black/60 blur-3xl z-10"></div>
-      </div>
+    <div className="min-h-screen w-full relative font-sans text-slate-200 bg-[#050505]">
+      {/* SOLID DARK BACKGROUND for absolute contrast safety */}
+      <div className="fixed inset-0 z-0 bg-[#050505]"></div>
 
-      <style>{`
-        @keyframes backgroundDrift {
-          0% { transform: scale(1.1) translate(0, 0); }
-          50% { transform: scale(1.15) translate(-15px, -8px); }
-          100% { transform: scale(1.1) translate(0, 0); }
-        }
-        .animate-backgroundDrift {
-          animation: backgroundDrift 40s ease-in-out infinite;
-        }
-      `}</style>
-
-      <div className="relative z-10 max-w-5xl mx-auto py-12 px-4">
-        {/* HEADER - Futuristic Terminal Style */}
-        <div className="bg-black/60 backdrop-blur-xl border border-orange-500/30 rounded-2xl p-8 mb-8 text-center relative overflow-hidden shadow-[0_0_50px_rgba(146,64,14,0.3)] group">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-orange-400 to-transparent"></div>
-
-          <div className="relative z-10">
-            <img
-              src="/assets/branding/SASE.png"
-              alt="Logo SASE"
-              className="h-20 mx-auto mb-4 drop-shadow-[0_0_20px_rgba(245,158,11,0.6)] animate-pulse"
-            />
-            <div className="flex items-center justify-center gap-4 mb-2">
-              <div className="h-[1px] w-12 bg-orange-500/30"></div>
-              <p className="text-orange-400 text-xs uppercase tracking-[0.5em] font-black">
-                PROTOCOLOS INSTITUCIONALES 2026
-              </p>
-              <div className="h-[1px] w-12 bg-orange-500/30"></div>
-            </div>
-            <h1
-              className="text-4xl font-black text-white mb-2 tracking-tight"
-              style={{ textShadow: "0 0 15px rgba(255,255,255,0.2)" }}
-            >
-              ALTA DE PERSONAL{" "}
-              <span className="text-orange-500 underline decoration-orange-500/30">
-                SASE-310
-              </span>
-            </h1>
-            <div className="flex items-center justify-center gap-3 text-orange-300/40 text-[10px] font-bold tracking-widest uppercase mt-4">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
-              CCT 09DES4310M · TRANSMISIÓN CIFRADA · ACCESO AUDITADO
-            </div>
-          </div>
+      <div className="relative z-10 max-w-2xl mx-auto py-12 px-6 pb-24">
+        {/* Simple Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
+            Alta de Personal
+          </h1>
+          <p className="text-slate-500 text-xs uppercase tracking-widest font-medium">
+            SASE-310 • Gestión Institucional
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* BLOQUE 1: IDENTIDAD INSTITUCIONAL */}
-          <div className="bg-black/40 backdrop-blur-xl border border-orange-500/20 rounded-2xl p-8 shadow-2xl relative group hover:border-orange-500/40 transition-colors">
-            {/* Corner Accents */}
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-orange-500/50 rounded-tl-xl"></div>
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-orange-500/50 rounded-br-xl"></div>
-
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center border border-orange-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-                <span className="material-symbols-outlined text-orange-400 text-2xl">
-                  verified_user
-                </span>
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-white tracking-wider">
-                  01. IDENTIDAD INSTITUCIONAL
-                </h2>
-                <div className="h-0.5 w-16 bg-orange-600 rounded-full mt-1"></div>
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* 1. SELECCIÓN DE ROL */}
+          <section className="bg-[#0f121a] border border-white/5 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs ring-1 ring-blue-500/40">
+                1
+              </span>
+              <h3 className="text-base font-bold text-white">
+                Función Institucional
+              </h3>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Matrícula auto */}
-              <div className="md:col-span-2">
-                <label className="text-xs text-gray-400 mb-2 block flex items-center gap-2">
-                  Matrícula SASE (generada automáticamente)
-                  <span
-                    className="material-symbols-outlined text-xs text-orange-400"
-                    title="Identificador interno visible en el sistema"
-                  >
-                    info
-                  </span>
-                </label>
-                <div className="h-12 bg-white/5 border border-white/10 rounded-lg flex items-center px-4 text-gray-400 font-mono text-sm">
-                  EMP-310-XXX (se asignará al aprobar)
-                </div>
-              </div>
-
-              {/* Roles (multi-select visual) */}
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-300 mb-3 block">
-                  Rol(es) Solicitado(s) *
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {[
-                    { id: "docente", label: "DOCENTE", icon: "school" },
-                    {
-                      id: "prefectura",
-                      label: "PREFECTURA",
-                      icon: "verified_user",
-                    },
-                    { id: "tutor", label: "TUTOR", icon: "groups" },
-                    {
-                      id: "orientacion",
-                      label: "ORIENTACIÓN",
-                      icon: "psychology",
-                    },
-                    {
-                      id: "trabajo_social",
-                      label: "TRABAJO SOCIAL",
-                      icon: "volunteer_activism",
-                    },
-                    {
-                      id: "subdireccion",
-                      label: "SUBDIRECCIÓN",
-                      icon: "manage_accounts",
-                    },
-                    {
-                      id: "direccion",
-                      label: "DIRECCIÓN",
-                      icon: "admin_panel_settings",
-                    },
-                    { id: "udeii", label: "UDEII", icon: "psychology_alt" },
-                  ].map((rol) => (
-                    <button
-                      key={rol.id}
-                      type="button"
-                      onClick={() => handleRolToggle(rol.id)}
-                      className={`p-4 rounded-xl border-2 transition-all flex items-center gap-3 text-[11px] font-black tracking-tighter ${
-                        formData.rolesSeleccionados.includes(rol.id)
-                          ? "bg-orange-600 border-orange-400 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-[1.02]"
-                          : "bg-black/50 border-white/5 text-slate-400 hover:border-orange-500/30 hover:bg-black/80"
-                      }`}
+            <div className="space-y-3">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+                Seleccionar Función(es)
+              </label>
+              <div className="relative">
+                <select
+                  onChange={handleAddRole}
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white appearance-none focus:border-blue-500/50 outline-none transition-colors text-sm cursor-pointer"
+                >
+                  <option value="">+ Agregar rol a la solicitud...</option>
+                  {AVAILABLE_ROLES.map((role) => (
+                    <option
+                      key={role.id}
+                      value={role.id}
+                      disabled={formData.rolesSeleccionados.includes(role.id)}
                     >
-                      <span className="material-symbols-outlined">
-                        {rol.icon}
-                      </span>
-                      <span>{rol.label}</span>
-                    </button>
+                      {role.label}
+                    </option>
                   ))}
-                </div>
-              </div>
-
-              {/* Turno */}
-              <div className="md:col-span-1">
-                <label className="text-xs font-black text-orange-400 uppercase tracking-widest mb-3 block">
-                  TURNO ASIGNADO
-                </label>
-                <div className="h-14 bg-orange-900/10 border border-orange-500/50 rounded-xl flex items-center px-5 text-orange-300 font-black tracking-widest uppercase">
-                  VESPERTINO
-                </div>
-                <input type="hidden" name="turno" value="vespertino" />
-              </div>
-            </div>
-          </div>
-
-          {/* BLOQUE 2: DATOS PERSONALES (SENSIBLES) */}
-          <div className="bg-black/40 backdrop-blur-xl border border-orange-500/20 rounded-2xl p-8 shadow-2xl relative">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30">
-                <span className="material-symbols-outlined text-emerald-400 text-2xl">
-                  fingerprint
+                </select>
+                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none text-sm">
+                  expand_more
                 </span>
               </div>
-              <div>
-                <h2 className="text-2xl font-black text-white tracking-wider">
-                  02. DATOS DEL PERSONAL
-                </h2>
-                <div className="h-0.5 w-16 bg-emerald-600 rounded-full mt-1"></div>
+
+              {/* Selected Roles Tags */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.rolesSeleccionados.length === 0 && (
+                  <p className="text-xs text-slate-600 italic">
+                    No has seleccionado ningún rol.
+                  </p>
+                )}
+                {formData.rolesSeleccionados.map((rolId) => {
+                  const rolLabel =
+                    AVAILABLE_ROLES.find((r) => r.id === rolId)?.label || rolId;
+                  return (
+                    <div
+                      key={rolId}
+                      className="flex items-center gap-2 bg-blue-900/30 border border-blue-500/30 rounded-full px-3 py-1 text-blue-200 text-xs font-medium animate-fadeIn"
+                    >
+                      <span>{rolLabel}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveRole(rolId)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">
+                          close
+                        </span>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
+          </section>
 
-            <div className="grid md:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="text-xs text-gray-300 mb-1 block">
-                  Nombre(s) *
+          {/* 2. DATOS GENERALES */}
+          <section className="bg-[#0f121a] border border-white/5 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 font-bold text-xs ring-1 ring-orange-500/40">
+                2
+              </span>
+              <h3 className="text-base font-bold text-white">Identificación</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Nombre(s)
                 </label>
                 <input
                   type="text"
@@ -416,12 +335,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   onChange={(e) =>
                     setFormData({ ...formData, nombres: e.target.value })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500/50 outline-none transition-colors text-sm"
                 />
               </div>
-              <div>
-                <label className="text-xs text-gray-300 mb-1 block">
-                  Apellido Paterno *
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Apellido Paterno
                 </label>
                 <input
                   type="text"
@@ -433,12 +352,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       apellidoPaterno: e.target.value,
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500/50 outline-none transition-colors text-sm"
                 />
               </div>
-              <div>
-                <label className="text-xs text-gray-300 mb-1 block">
-                  Apellido Materno *
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Apellido Materno
                 </label>
                 <input
                   type="text"
@@ -450,15 +369,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       apellidoMaterno: e.target.value,
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500/50 outline-none transition-colors text-sm"
                 />
               </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="text-xs text-gray-300 mb-1 block">
-                  CURP (18 caracteres) *
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  CURP
                 </label>
                 <input
                   type="text"
@@ -471,15 +387,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       curp: e.target.value.toUpperCase(),
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none uppercase font-mono"
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500/50 outline-none transition-colors text-sm font-mono uppercase"
                 />
               </div>
-              <div>
-                <label className="text-xs text-gray-300 mb-1 block">
-                  Correo Institucional *
-                  <span className="text-orange-500 ml-2">
-                    (@aefcm.gob.mx preferente)
-                  </span>
+              <div className="space-y-1 md:col-span-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Correo Institucional
                 </label>
                 <input
                   type="email"
@@ -491,249 +404,26 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       correoInstitucional: e.target.value,
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none"
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-orange-500/50 outline-none transition-colors text-sm"
+                  placeholder="usuario@aefcm.gob.mx"
                 />
               </div>
             </div>
+          </section>
 
-            <div className="mb-4">
-              <label className="text-xs text-gray-300 mb-1 block">
-                Teléfono Móvil (10 dígitos)
-              </label>
-              <input
-                type="tel"
-                pattern="[0-9]{10}"
-                maxLength={10}
-                value={formData.telefono}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "");
-                  setFormData({ ...formData, telefono: val });
-                }}
-                className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-orange-500 focus:outline-none font-mono tracking-wider"
-                placeholder="5512345678"
-              />
-            </div>
-
-            {/* Banner de privacidad */}
-            <div className="bg-orange-900/10 border border-orange-500/20 rounded-lg p-4 flex items-start gap-3">
-              <span className="material-symbols-outlined text-orange-500 text-xl flex-shrink-0">
-                lock
+          {/* 3. SEGURIDAD */}
+          <section className="bg-[#0f121a] border border-white/5 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-400 font-bold text-xs ring-1 ring-red-500/40">
+                3
               </span>
-              <p className="text-sm text-orange-200/90 leading-relaxed font-bold italic">
-                Los datos personales se resguardan conforme a la LFPDPPP. En
-                pantallas operativas se muestra <strong>matrícula SASE</strong>;
-                nombres solo con permisos de Dirección.
-              </p>
-            </div>
-          </div>
-
-          {/* BLOQUE 3: INFORMACIÓN ACADÉMICA (Dinámico por rol) */}
-          {(formData.rolesSeleccionados.includes("docente") ||
-            formData.rolesSeleccionados.includes("promotoria_lectura")) && (
-            <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-orange-500/20 rounded-2xl p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center border border-orange-500/30">
-                  <span className="material-symbols-outlined text-orange-400">
-                    school
-                  </span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-orange-400">
-                    3. Información Académica
-                  </h2>
-                  <p className="text-gray-400 text-xs font-black uppercase tracking-widest">
-                    Asignaciones y cobertura
-                  </p>
-                </div>
-              </div>
-
-              {/* Materias */}
-              <div className="mb-4">
-                <label className="text-sm text-gray-300 mb-3 block">
-                  Materias que imparte
-                </label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {[
-                    "Matemáticas",
-                    "Español",
-                    "Inglés",
-                    "Ciencias I (Bio.)",
-                    "Ciencias II (Fís.)",
-                    "Ciencias III (Quím.)",
-                    "Historia",
-                    "Geografía",
-                    "Form. Cívica",
-                    "Artes",
-                    "Tecnología",
-                    "Ed. Física",
-                  ].map((materia) => (
-                    <button
-                      key={materia}
-                      type="button"
-                      onClick={() => handleArrayToggle("materias", materia)}
-                      className={`px-3 py-2 rounded-lg border text-xs transition-all ${
-                        formData.materias.includes(materia)
-                          ? "bg-orange-500/20 border-orange-500 text-orange-300"
-                          : "bg-black/20 border-white/10 text-gray-400 hover:border-white/30"
-                      }`}
-                    >
-                      {materia}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Grupos */}
-              <div className="mb-4">
-                <label className="text-sm text-gray-300 mb-3 block">
-                  Grupos que atiende
-                </label>
-                <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                  {[
-                    "1A",
-                    "1B",
-                    "1C",
-                    "1D",
-                    "2A",
-                    "2B",
-                    "2C",
-                    "2D",
-                    "3A",
-                    "3B",
-                    "3C",
-                    "3D",
-                  ].map((grupo) => (
-                    <button
-                      key={grupo}
-                      type="button"
-                      onClick={() => handleArrayToggle("grupos", grupo)}
-                      className={`px-3 py-2 rounded-lg border text-xs font-mono transition-all ${
-                        formData.grupos.includes(grupo)
-                          ? "bg-orange-500/20 border-orange-500 text-orange-300"
-                          : "bg-black/20 border-white/10 text-gray-400 hover:border-white/30"
-                      }`}
-                    >
-                      {grupo}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* ¿Es tutor? */}
-              <div className="bg-orange-900/10 border border-orange-500/10 rounded-lg p-4">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.esTutor}
-                    onChange={(e) =>
-                      setFormData({ ...formData, esTutor: e.target.checked })
-                    }
-                    className="w-5 h-5 rounded border-gray-600 bg-gray-800 text-orange-500"
-                  />
-                  <span className="text-sm font-medium text-orange-300">
-                    ¿Es Tutor de Grupo?
-                  </span>
-                </label>
-
-                {formData.esTutor && (
-                  <div className="mt-4 ml-8 animate-fadeIn">
-                    <label className="text-xs text-gray-400 mb-2 block">
-                      Grupo de tutoría:
-                    </label>
-                    <select
-                      value={formData.grupoTutor}
-                      onChange={(e) =>
-                        setFormData({ ...formData, grupoTutor: e.target.value })
-                      }
-                      className="w-full h-11 bg-black/50 border border-orange-400/30 rounded-lg px-3 text-white focus:border-orange-400 focus:outline-none"
-                    >
-                      <option value="">Seleccione...</option>
-                      {[
-                        "1A",
-                        "1B",
-                        "1C",
-                        "1D",
-                        "2A",
-                        "2B",
-                        "2C",
-                        "2D",
-                        "3A",
-                        "3B",
-                        "3C",
-                        "3D",
-                      ].map((g) => (
-                        <option key={g} value={g}>
-                          {g}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Para otros roles especializados */}
-          {(formData.rolesSeleccionados.includes("orientacion") ||
-            formData.rolesSeleccionados.includes("trabajo_social") ||
-            formData.rolesSeleccionados.includes("enfermeria")) && (
-            <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8">
-              <label className="text-sm text-gray-300 mb-2 block">
-                Área de cobertura
-              </label>
-              <input
-                type="text"
-                value={formData.areaCobertura}
-                onChange={(e) =>
-                  setFormData({ ...formData, areaCobertura: e.target.value })
-                }
-                className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-purple-500 focus:outline-none"
-                placeholder="Ej. Todos los grados, 1º y 2º, Casos específicos..."
-              />
-              <p className="text-xs text-purple-400 font-black uppercase mt-2 tracking-widest">
-                * Acceso a datos sensibles sujeto a autorización
-              </p>
-            </div>
-          )}
-
-          {/* Observaciones generales */}
-          <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-gray-500/20 rounded-2xl p-6">
-            <label className="text-sm text-gray-300 mb-2 block">
-              Observaciones (opcional)
-            </label>
-            <textarea
-              value={formData.observaciones}
-              onChange={(e) =>
-                setFormData({ ...formData, observaciones: e.target.value })
-              }
-              className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-gray-400 focus:outline-none resize-none h-20 text-sm"
-              placeholder="Alguna nota adicional para la Dirección..."
-            />
-          </div>
-
-          {/* BLOQUE 4: SEGURIDAD Y RESPONSABILIDAD */}
-          <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center border border-red-500/30">
-                <span className="material-symbols-outlined text-red-400">
-                  security
-                </span>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-red-400">
-                  4. Seguridad y Responsabilidad
-                </h2>
-                <p className="text-gray-400 text-xs font-black uppercase tracking-widest">
-                  Compromisos institucionales
-                </p>
-              </div>
+              <h3 className="text-base font-bold text-white">Acceso</h3>
             </div>
 
-            {/* Contraseña */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="text-xs text-gray-300 mb-1 block">
-                  Contraseña de acceso *
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Contraseña
                 </label>
                 <input
                   type="password"
@@ -742,13 +432,13 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-red-500 focus:outline-none"
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-red-500/50 outline-none transition-colors text-sm"
                   placeholder="Mínimo 6 caracteres"
                 />
               </div>
-              <div>
-                <label className="text-xs text-gray-300 mb-1 block">
-                  Confirmar contraseña *
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Confirmar
                 </label>
                 <input
                   type="password"
@@ -760,14 +450,16 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       confirmPassword: e.target.value,
                     })
                   }
-                  className="w-full h-11 bg-black/40 border border-white/10 rounded-lg px-3 text-white focus:border-red-500 focus:outline-none"
-                  placeholder="Repite tu contraseña"
+                  className="w-full bg-black/30 border border-white/10 rounded-lg p-3 text-white focus:border-red-500/50 outline-none transition-colors text-sm"
                 />
               </div>
             </div>
 
-            {/* Checkboxes legales */}
-            <div className="space-y-4 mb-4">
+            <div className="bg-black/20 rounded-xl p-4 space-y-3 border border-white/5">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                Compromisos
+              </p>
+
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
@@ -779,14 +471,16 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       checkPrivacidad: e.target.checked,
                     })
                   }
-                  className="mt-1 w-5 h-5 rounded border-gray-600 bg-gray-800 text-red-500"
+                  className="mt-0.5 w-4 h-4 rounded border-gray-600 bg-black/40 text-blue-500"
                 />
-                <span className="text-sm text-gray-300 leading-tight">
-                  ☑ Acepto el <strong>Aviso de Privacidad</strong> para el
-                  tratamiento de mis datos personales.
-                </span>
+                <div className="text-xs text-slate-400">
+                  Acepto el{" "}
+                  <span className="font-bold text-slate-300">
+                    Aviso de Privacidad
+                  </span>
+                  .
+                </div>
               </label>
-
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
@@ -795,14 +489,16 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   onChange={(e) =>
                     setFormData({ ...formData, checkEtica: e.target.checked })
                   }
-                  className="mt-1 w-5 h-5 rounded border-gray-600 bg-gray-800 text-red-500"
+                  className="mt-0.5 w-4 h-4 rounded border-gray-600 bg-black/40 text-blue-500"
                 />
-                <span className="text-sm text-gray-300 leading-tight">
-                  ☑ Acepto el <strong>Compromiso Ético</strong> de uso
-                  institucional y confidencialidad.
-                </span>
+                <div className="text-xs text-slate-400">
+                  Acepto el{" "}
+                  <span className="font-bold text-slate-300">
+                    Compromiso Ético
+                  </span>
+                  .
+                </div>
               </label>
-
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
@@ -814,103 +510,103 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       checkAuditoria: e.target.checked,
                     })
                   }
-                  className="mt-1 w-5 h-5 rounded border-gray-600 bg-gray-800 text-red-500"
+                  className="mt-0.5 w-4 h-4 rounded border-gray-600 bg-black/40 text-blue-500"
                 />
-                <span className="text-sm text-gray-300 leading-tight">
-                  ☑ Entiendo que mis acciones quedan{" "}
-                  <strong>registradas y auditadas</strong> permanentemente.
-                </span>
+                <div className="text-xs text-slate-400">
+                  Acepto la{" "}
+                  <span className="font-bold text-slate-300">
+                    Auditoría de Acciones
+                  </span>
+                  .
+                </div>
               </label>
+
+              <button
+                type="button"
+                onClick={() => setShowTerms(true)}
+                className="text-[10px] text-blue-400/70 hover:text-blue-400 underline mt-1 block"
+              >
+                Ver términos legales completos
+              </button>
             </div>
+          </section>
 
-            <button
-              type="button"
-              onClick={() => setShowTerms(true)}
-              className="text-xs text-orange-400 hover:text-orange-300 underline"
-            >
-              Ver términos completos
-            </button>
-          </div>
-
-          {/* BLOQUE 5: ENVÍO */}
-          <div className="bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 rounded-2xl p-8">
+          {/* ACTIONS */}
+          <div className="pt-2 flex flex-col gap-3 pb-8">
             <button
               type="submit"
               disabled={loading}
-              className="w-full group bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-5 rounded-xl shadow-2xl shadow-purple-900/50 transition-all transform active:scale-[0.99] disabled:opacity-50 flex flex-col items-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/20 active:scale-[0.98] transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-3 disabled:opacity-50"
             >
               {loading ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Enviando solicitud cifrada...</span>
-                </div>
-              ) : (
                 <>
-                  <span className="text-lg flex items-center gap-2">
-                    <span className="material-symbols-outlined">
-                      rocket_launch
-                    </span>
-                    Enviar Solicitud para Validación Institucional
-                  </span>
-                  <span className="text-xs opacity-70 group-hover:opacity-100">
-                    SASE protege a la comunidad escolar y respalda el trabajo
-                    docente
-                  </span>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Procesando...</span>
                 </>
+              ) : (
+                "Enviar Solicitud"
               )}
             </button>
-
             <button
               type="button"
               onClick={onBack}
-              className="w-full mt-4 text-gray-500 hover:text-gray-300 text-sm transition-colors"
+              className="text-slate-600 text-xs font-bold hover:text-slate-400 transition-colors uppercase tracking-widest"
             >
-              Cancelar y volver
+              Cancelar
             </button>
           </div>
         </form>
 
-        {/* Modal de términos */}
+        {/* Legal Modal */}
         {showTerms && (
-          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#0f172a] border border-white/20 rounded-2xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto">
-              <h3 className="text-2xl font-bold text-white mb-6">
-                Términos y Condiciones
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+            onClick={() => setShowTerms(false)}
+          >
+            <div
+              className="bg-[#0f121a] border border-white/10 rounded-2xl p-8 max-w-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-bold text-white mb-6">
+                Marco Legal Institucional
               </h3>
-
-              <div className="space-y-6 text-sm text-gray-300">
+              <div className="space-y-6 text-sm text-slate-400 leading-relaxed max-h-[60vh] overflow-y-auto pr-2">
                 <div>
-                  <h4 className="font-bold text-orange-400 mb-2">
-                    Aviso de Privacidad
-                  </h4>
-                  <p className="leading-relaxed">{AVISO_PRIVACIDAD}</p>
+                  <strong className="text-slate-200 block mb-1">
+                    Privacidad
+                  </strong>
+                  {AVISO_PRIVACIDAD}
                 </div>
-
                 <div>
-                  <h4 className="font-bold text-orange-400 mb-2">
-                    Compromiso Ético
-                  </h4>
-                  <p className="leading-relaxed">{COMPROMISO_ETICO}</p>
+                  <strong className="text-slate-200 block mb-1">Ética</strong>
+                  {COMPROMISO_ETICO}
                 </div>
-
                 <div>
-                  <h4 className="font-bold text-red-400 mb-2">
-                    Auditoría y Trazabilidad
-                  </h4>
-                  <p className="leading-relaxed">{TEXTO_AUDITORIA}</p>
+                  <strong className="text-slate-200 block mb-1">
+                    Auditoría
+                  </strong>
+                  {TEXTO_AUDITORIA}
                 </div>
               </div>
-
               <button
                 onClick={() => setShowTerms(false)}
-                className="mt-6 w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+                className="w-full mt-6 py-3 bg-white/5 hover:bg-white/10 rounded-lg text-white font-medium transition-colors text-sm"
               >
-                Cerrar
+                Entendido
               </button>
             </div>
           </div>
         )}
       </div>
+      <style>{`
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 };
