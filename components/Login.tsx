@@ -109,7 +109,7 @@ export const Login: React.FC<LoginProps> = ({
   }, [showForm]);
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[url('/assets/branding/login_background_final.png')] bg-cover bg-center bg-no-repeat overflow-hidden">
+    <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[url('/assets/branding/login_background_final.png')] bg-cover bg-center bg-no-repeat overflow-y-auto py-10">
       {/* 1. SEAMLESS VIDEO BACKGROUND (Intro -> Frozen Frame) */}
       {!videoEnded ? (
         <video
@@ -187,7 +187,7 @@ export const Login: React.FC<LoginProps> = ({
 
           <div className="flex flex-col items-center">
             {/* Logo */}
-            <div className="w-96 h-52 mb-4 flex items-center justify-center">
+            <div className="w-[28rem] h-64 mb-6 flex items-center justify-center">
               <img
                 src="/assets/branding/SASE_LOGO_PILOTO.png"
                 alt="SASE Institucional"

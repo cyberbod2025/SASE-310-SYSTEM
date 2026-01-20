@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SASE-310 | Manual Integral de Usuario</title>
+    <title>SASE-310 | Manual de Uso Institucional</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
@@ -17,11 +17,12 @@
         --primary: #1e3a8a;
         --secondary: #3b82f6;
         --accent: #f59e0b;
+        --success: #10b981;
         --dark: #0f172a;
         --darker: #020617;
         --text: #e2e8f0;
         --text-muted: #94a3b8;
-        --glass: rgba(15, 23, 42, 0.7);
+        --glass: rgba(15, 23, 42, 0.85);
       }
 
       * {
@@ -29,7 +30,6 @@
         padding: 0;
         box-sizing: border-box;
       }
-
       html {
         scroll-behavior: smooth;
       }
@@ -42,219 +42,64 @@
         overflow-x: hidden;
       }
 
-      /* HEADER FIJO */
-      header {
+      /* SCROLL PROGRESS */
+      .scroll-progress {
         position: fixed;
         top: 0;
         left: 0;
-        right: 0;
-        height: 70px;
-        background: var(--glass);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 5%;
-        z-index: 1000;
+        height: 3px;
+        background: linear-gradient(90deg, var(--secondary), var(--accent));
+        z-index: 9999;
+        transition: width 0.1s;
       }
 
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .logo-icon {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--secondary), var(--primary));
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 900;
-        font-size: 18px;
-        color: white;
-      }
-
-      .logo-text {
-        font-weight: 800;
-        font-size: 20px;
-        letter-spacing: -0.5px;
-      }
-
-      .header-badge {
-        background: var(--accent);
-        color: var(--dark);
-        font-size: 10px;
-        font-weight: 800;
-        padding: 6px 14px;
-        border-radius: 50px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-
-      /* HERO SECTION */
-      .hero {
+      /* SECTIONS */
+      section {
         min-height: 100vh;
+        padding: 80px 20px;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        text-align: center;
-        padding: 100px 20px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 800px;
-        height: 800px;
-        background: radial-gradient(
-          circle,
-          rgba(59, 130, 246, 0.15) 0%,
-          transparent 70%
-        );
-        pointer-events: none;
-      }
-
-      .hero h1 {
-        font-size: clamp(2.5rem, 8vw, 5rem);
-        font-weight: 900;
-        line-height: 1.1;
-        margin-bottom: 20px;
-        background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .hero p {
-        font-size: 1.2rem;
-        color: var(--text-muted);
-        max-width: 600px;
-        margin-bottom: 50px;
-      }
-
-      .role-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 12px;
-      }
-
-      .role-btn {
-        background: var(--glass);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--text);
-        padding: 14px 28px;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        text-decoration: none;
-      }
-
-      .role-btn:hover {
-        background: var(--secondary);
-        border-color: var(--secondary);
-        transform: translateY(-3px);
-        box-shadow: 0 20px 40px -15px rgba(59, 130, 246, 0.4);
-      }
-
-      .scroll-indicator {
-        position: absolute;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-muted);
-        font-size: 12px;
-        animation: bounce 2s infinite;
-      }
-
-      @keyframes bounce {
-        0%,
-        100% {
-          transform: translateX(-50%) translateY(0);
-        }
-        50% {
-          transform: translateX(-50%) translateY(10px);
-        }
-      }
-
-      /* SECTIONS WITH SCROLL ANIMATION */
-      .section {
-        min-height: 100vh;
-        padding: 120px 5%;
-        display: flex;
-        align-items: center;
         position: relative;
       }
 
-      .section-content {
-        max-width: 1200px;
-        margin: 0 auto;
+      .container {
+        max-width: 900px;
         width: 100%;
+        margin: 0 auto;
       }
 
-      /* SCROLL REVEAL ANIMATIONS */
-      .reveal {
+      /* ANIMATIONS */
+      .fade-up {
         opacity: 0;
-        transform: translateY(80px);
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(60px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
       }
-
-      .reveal.active {
+      .fade-up.visible {
         opacity: 1;
         transform: translateY(0);
       }
 
-      .reveal-left {
+      .fade-left {
         opacity: 0;
-        transform: translateX(-80px);
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(-60px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
       }
-
-      .reveal-left.active {
+      .fade-left.visible {
         opacity: 1;
         transform: translateX(0);
       }
 
-      .reveal-right {
+      .fade-right {
         opacity: 0;
-        transform: translateX(80px);
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(60px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
       }
-
-      .reveal-right.active {
+      .fade-right.visible {
         opacity: 1;
         transform: translateX(0);
       }
 
-      .reveal-scale {
-        opacity: 0;
-        transform: scale(0.8);
-        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      .reveal-scale.active {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      /* Delayed animations for staggered effect */
       .delay-1 {
         transition-delay: 0.1s;
       }
@@ -268,850 +113,827 @@
         transition-delay: 0.4s;
       }
 
-      /* ROLE SECTIONS */
-      .role-section {
-        background: var(--glass);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 24px;
-        padding: 60px;
-        backdrop-filter: blur(20px);
+      /* ===================== HERO ===================== */
+      #hero {
+        background: linear-gradient(180deg, var(--darker) 0%, #0a1628 100%);
+        text-align: center;
+        min-height: 100vh;
       }
 
-      .role-header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 40px;
+      .hero-logo {
+        width: 200px;
+        height: auto;
+        margin-bottom: 30px;
+        filter: drop-shadow(0 0 40px rgba(59, 130, 246, 0.3));
       }
 
-      .role-icon {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 36px;
-      }
-
-      .role-icon.docente {
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      }
-      .role-icon.tutor {
-        background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      }
-      .role-icon.orientacion {
-        background: linear-gradient(135deg, #10b981, #059669);
-      }
-      .role-icon.promotora {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-      }
-      .role-icon.subdireccion {
-        background: linear-gradient(135deg, #ec4899, #db2777);
-      }
-      .role-icon.direccion {
-        background: linear-gradient(135deg, #f43f5e, #e11d48);
-      }
-
-      .role-title {
-        font-size: 2rem;
+      .hero-title {
+        font-size: clamp(1.8rem, 5vw, 3rem);
         font-weight: 800;
-        margin-bottom: 5px;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
-      .role-subtitle {
+      .hero-subtitle {
+        font-size: 1rem;
         color: var(--text-muted);
-        font-size: 14px;
+        margin-bottom: 10px;
       }
 
-      .role-intro {
-        font-size: 1.1rem;
-        color: var(--text-muted);
-        border-left: 3px solid var(--accent);
-        padding-left: 20px;
+      .hero-author {
+        font-size: 0.9rem;
+        color: var(--accent);
+        font-weight: 600;
+        margin-bottom: 50px;
+      }
+
+      .btn-start {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--secondary);
+        color: white;
+        padding: 16px 32px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .btn-start:hover {
+        background: #2563eb;
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.4);
+      }
+
+      /* ===================== QUE ES SASE ===================== */
+      #que-es {
+        background: #0a1628;
+      }
+
+      .section-title {
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        font-weight: 800;
         margin-bottom: 40px;
-        font-style: italic;
+        text-align: center;
       }
 
-      /* GRID LAYOUT FOR PERMISSIONS */
-      .permissions-grid {
+      .que-es-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: 1fr 1fr;
         gap: 30px;
       }
 
-      .permission-card {
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 16px;
-        padding: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+      @media (max-width: 600px) {
+        .que-es-grid {
+          grid-template-columns: 1fr;
+        }
       }
 
-      .permission-card h4 {
+      .que-es-card {
+        background: var(--glass);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 30px;
+        backdrop-filter: blur(10px);
+      }
+
+      .que-es-card h3 {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
+        font-size: 1.1rem;
         margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
 
-      .permission-card.can-see h4 {
-        color: var(--secondary);
+      .que-es-card.es h3 {
+        color: var(--success);
       }
-      .permission-card.can-do h4 {
-        color: #10b981;
-      }
-      .permission-card.cannot h4 {
+      .que-es-card.no h3 {
         color: #f43f5e;
       }
 
-      .permission-card ul {
+      .que-es-card ul {
         list-style: none;
       }
 
-      .permission-card li {
+      .que-es-card li {
         padding: 10px 0;
         padding-left: 25px;
         position: relative;
-        font-size: 14px;
         color: var(--text-muted);
+        font-size: 0.95rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.03);
       }
 
-      .permission-card li:last-child {
-        border-bottom: none;
-      }
-
-      .permission-card.can-see li::before {
-        content: "👁";
+      .que-es-card.es li::before {
+        content: "✓";
         position: absolute;
         left: 0;
+        color: var(--success);
       }
-      .permission-card.can-do li::before {
-        content: "⚡";
-        position: absolute;
-        left: 0;
-      }
-      .permission-card.cannot li::before {
+      .que-es-card.no li::before {
         content: "✕";
         position: absolute;
         left: 0;
         color: #f43f5e;
       }
 
-      /* FOOTER */
-      footer {
-        background: var(--dark);
-        padding: 60px 5%;
-        text-align: center;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      /* ===================== SELECTOR ROL ===================== */
+      #selector-rol {
+        background: linear-gradient(180deg, #0a1628 0%, var(--darker) 100%);
       }
 
-      .footer-author {
-        font-weight: 700;
-        font-size: 18px;
+      .rol-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .rol-btn {
+        background: var(--glass);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        padding: 20px;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+      }
+
+      .rol-btn:hover {
+        border-color: var(--secondary);
+        background: rgba(59, 130, 246, 0.1);
+        transform: translateY(-3px);
+      }
+
+      .rol-btn.active {
+        border-color: var(--secondary);
+        background: var(--secondary);
+        color: white;
+      }
+
+      .rol-btn .icon {
+        display: block;
+        font-size: 2rem;
         margin-bottom: 10px;
       }
 
-      .footer-info {
+      /* ===================== CONTENIDO ROL ===================== */
+      #contenido-rol {
+        background: var(--darker);
+        display: none;
+      }
+
+      #contenido-rol.visible {
+        display: flex;
+      }
+
+      .rol-header {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .rol-header h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+      }
+
+      .rol-intro {
+        font-size: 1.1rem;
         color: var(--text-muted);
-        font-size: 14px;
+        max-width: 700px;
+        margin: 0 auto;
+        font-style: italic;
+        border-left: 3px solid var(--accent);
+        padding-left: 20px;
+        text-align: left;
+      }
+
+      .permisos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 40px;
+      }
+
+      .permiso-card {
+        background: var(--glass);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 25px;
+      }
+
+      .permiso-card h4 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .permiso-card.ves h4 {
+        color: var(--secondary);
+      }
+      .permiso-card.haces h4 {
+        color: var(--success);
+      }
+      .permiso-card.no h4 {
+        color: #f43f5e;
+      }
+      .permiso-card.tips h4 {
+        color: var(--accent);
+      }
+
+      .permiso-card ul {
+        list-style: none;
+      }
+
+      .permiso-card li {
+        padding: 8px 0;
+        padding-left: 22px;
+        position: relative;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+      }
+
+      .permiso-card.ves li::before {
+        content: "👁";
+        position: absolute;
+        left: 0;
+        font-size: 0.8rem;
+      }
+      .permiso-card.haces li::before {
+        content: "⚡";
+        position: absolute;
+        left: 0;
+        font-size: 0.8rem;
+      }
+      .permiso-card.no li::before {
+        content: "✕";
+        position: absolute;
+        left: 0;
+        color: #f43f5e;
+      }
+      .permiso-card.tips li::before {
+        content: "💡";
+        position: absolute;
+        left: 0;
+        font-size: 0.8rem;
+      }
+
+      /* ===================== DETRÁS DE SASE ===================== */
+      #detras {
+        background: linear-gradient(180deg, var(--darker) 0%, #0a1628 100%);
+      }
+
+      .bio-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+      }
+
+      @media (max-width: 700px) {
+        .bio-section {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .bio-card {
+        background: var(--glass);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 35px;
+      }
+
+      .bio-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        color: var(--accent);
+      }
+
+      .bio-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
         line-height: 1.8;
       }
 
-      /* PROGRESS BAR */
-      .progress-bar {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        height: 3px;
-        background: linear-gradient(90deg, var(--secondary), var(--accent));
-        z-index: 999;
-        transition: width 0.1s;
+      /* ===================== CIERRE ===================== */
+      #cierre {
+        background: #0a1628;
+        text-align: center;
       }
 
-      /* NAV DOTS */
-      .nav-dots {
-        position: fixed;
-        right: 30px;
-        top: 50%;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        z-index: 100;
-      }
-
-      .nav-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        cursor: pointer;
-        transition: all 0.3s;
-        position: relative;
-      }
-
-      .nav-dot:hover,
-      .nav-dot.active {
-        background: var(--secondary);
-        transform: scale(1.3);
-      }
-
-      .nav-dot::after {
-        content: attr(data-label);
-        position: absolute;
-        right: 25px;
-        top: 50%;
-        transform: translateY(-50%);
-        white-space: nowrap;
-        font-size: 12px;
-        font-weight: 600;
+      .cierre-text {
+        font-size: 1.2rem;
         color: var(--text-muted);
-        opacity: 0;
-        transition: opacity 0.3s;
-        pointer-events: none;
-      }
-
-      .nav-dot:hover::after {
-        opacity: 1;
-      }
-
-      @media (max-width: 768px) {
-        .role-section {
-          padding: 30px;
-        }
-        .role-icon {
-          width: 60px;
-          height: 60px;
-          font-size: 28px;
-        }
-        .role-title {
-          font-size: 1.5rem;
-        }
-        .nav-dots {
-          display: none;
-        }
-        .header-badge {
-          display: none;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- HEADER -->
-    <header>
-      <div class="logo">
-        <div class="logo-icon">S</div>
-        <span class="logo-text">SASE-310</span>
-      </div>
-      <div class="header-badge">Manual de Usuario</div>
-    </header>
-
-    <!-- PROGRESS BAR -->
-    <div class="progress-bar" id="progressBar"></div>
-
-    <!-- NAV DOTS -->
-    <div class="nav-dots">
-      <div
-        class="nav-dot active"
-        data-label="Inicio"
-        onclick="scrollToSection('hero')"
-      ></div>
-      <div
-        class="nav-dot"
-        data-label="Docente"
-        onclick="scrollToSection('docente')"
-      ></div>
-      <div
-        class="nav-dot"
-        data-label="Tutor"
-        onclick="scrollToSection('tutor')"
-      ></div>
-      <div
-        class="nav-dot"
-        data-label="Orientación"
-        onclick="scrollToSection('orientacion')"
-      ></div>
-      <div
-        class="nav-dot"
-        data-label="Promotora"
-        onclick="scrollToSection('promotora')"
-      ></div>
-      <div
-        class="nav-dot"
-        data-label="Subdirección"
-        onclick="scrollToSection('subdireccion')"
-      ></div>
-      <div
-        class="nav-dot"
-        data-label="Dirección"
-        onclick="scrollToSection('direccion')"
-      ></div>
-    </div>
-
-    <!-- HERO -->
-    <section class="hero" id="hero">
-      <h1 class="reveal">Manual de<br />Usuario SASE</h1>
-      <p class="reveal delay-1">
-        Guía interactiva de operación según tu rol institucional. Descubre
-        exactamente qué puedes ver, hacer y qué no te corresponde.
-      </p>
-
-      <div class="role-buttons reveal delay-2">
-        <a href="#docente" class="role-btn">Soy Docente</a>
-        <a href="#tutor" class="role-btn">Soy Tutor</a>
-        <a href="#orientacion" class="role-btn">Orientación</a>
-        <a href="#promotora" class="role-btn">Promotora</a>
-        <a href="#subdireccion" class="role-btn">Subdirección</a>
-        <a href="#direccion" class="role-btn">Dirección</a>
-      </div>
-
-      <div class="scroll-indicator">
-        <span class="material-symbols-outlined">expand_more</span>
-        Desliza para explorar
-      </div>
-    </section>
-
-    <!-- DOCENTE -->
-    <section class="section" id="docente">
-      <div class="section-content">
-        <div class="role-section reveal">
-          <div class="role-header reveal-left">
-            <div class="role-icon docente">
-              <span class="material-symbols-outlined">school</span>
-            </div>
-            <div>
-              <h2 class="role-title">Perfil DOCENTE</h2>
-              <p class="role-subtitle">Docente frente a grupo</p>
-            </div>
-          </div>
-
-          <p class="role-intro reveal delay-1">
-            "Como Docente, SASE es tu herramienta de defensa y registro rápido.
-            Tu prioridad es documentar ágilmente lo que ocurre en tu hora
-            lectiva para proteger tu práctica y al alumno."
-          </p>
-
-          <div class="permissions-grid">
-            <div class="permission-card can-see reveal delay-1">
-              <h4>
-                <span class="material-symbols-outlined">visibility</span> Lo que
-                puedes ver
-              </h4>
-              <ul>
-                <li>Listas de asistencia de tus grupos asignados</li>
-                <li>Historial de incidencias generadas por ti</li>
-                <li>Alertas básicas de salud o seguridad (iconos en lista)</li>
-              </ul>
-            </div>
-
-            <div class="permission-card can-do reveal delay-2">
-              <h4>
-                <span class="material-symbols-outlined">bolt</span> Tus Acciones
-              </h4>
-              <ul>
-                <li>
-                  <strong>Registrar Incidencias:</strong> Conducta, tareas,
-                  riesgos
-                </li>
-                <li>
-                  <strong>Solicitar Citatorios:</strong> Pedir cita formal con
-                  tutores
-                </li>
-                <li>
-                  <strong>Pasar Lista:</strong> Registro digital de asistencia
-                </li>
-              </ul>
-            </div>
-
-            <div class="permission-card cannot reveal delay-3">
-              <h4>
-                <span class="material-symbols-outlined">block</span> No te
-                corresponde
-              </h4>
-              <ul>
-                <li>Ver reportes privados de otros docentes</li>
-                <li>Contactar directamente a padres desde la app</li>
-                <li>Borrar antecedentes disciplinarios</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TUTOR -->
-    <section class="section" id="tutor">
-      <div class="section-content">
-        <div class="role-section reveal">
-          <div class="role-header reveal-right">
-            <div class="role-icon tutor">
-              <span class="material-symbols-outlined">groups</span>
-            </div>
-            <div>
-              <h2 class="role-title">Perfil TUTOR</h2>
-              <p class="role-subtitle">Tutor de Grupo</p>
-            </div>
-          </div>
-
-          <p class="role-intro reveal delay-1">
-            "Como Tutor, eres el enlace principal. SASE te ofrece una visión
-            panorámica de 360° sobre el comportamiento de tu grupo en todas las
-            asignaturas."
-          </p>
-
-          <div class="permissions-grid">
-            <div class="permission-card can-see reveal delay-1">
-              <h4>
-                <span class="material-symbols-outlined">visibility</span> Lo que
-                puedes ver
-              </h4>
-              <ul>
-                <li>Reportes de todas las materias de tu grupo</li>
-                <li>Gráficas de incidencias acumuladas</li>
-                <li>Justificantes médicos ingresados</li>
-              </ul>
-            </div>
-
-            <div class="permission-card can-do reveal delay-2">
-              <h4>
-                <span class="material-symbols-outlined">bolt</span> Tus Acciones
-              </h4>
-              <ul>
-                <li><strong>Monitoreo Semanal:</strong> Revisar tendencias</li>
-                <li>
-                  <strong>Vincular Casos:</strong> Detectar patrones sistémicos
-                </li>
-                <li>
-                  <strong>Informe a Padres:</strong> Usar data para juntas
-                </li>
-              </ul>
-            </div>
-
-            <div class="permission-card cannot reveal delay-3">
-              <h4>
-                <span class="material-symbols-outlined">block</span> No te
-                corresponde
-              </h4>
-              <ul>
-                <li>Editar o borrar reportes de otros colegas</li>
-                <li>Sancionar directamente; tu rol es acompañamiento</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ORIENTACION -->
-    <section class="section" id="orientacion">
-      <div class="section-content">
-        <div class="role-section reveal">
-          <div class="role-header reveal-left">
-            <div class="role-icon orientacion">
-              <span class="material-symbols-outlined">psychology</span>
-            </div>
-            <div>
-              <h2 class="role-title">Perfil ORIENTACIÓN</h2>
-              <p class="role-subtitle">Orientación / Trabajo Social</p>
-            </div>
-          </div>
-
-          <p class="role-intro reveal delay-1">
-            "Como Orientadora, SASE es tu expediente clínico-pedagógico. Tu
-            labor es dar seguimiento formal a lo que los docentes reportan y
-            gestionar la comunicación oficial con las familias."
-          </p>
-
-          <div class="permissions-grid">
-            <div class="permission-card can-see reveal delay-1">
-              <h4>
-                <span class="material-symbols-outlined">visibility</span> Lo que
-                puedes ver
-              </h4>
-              <ul>
-                <li>Expediente completo de cada alumno</li>
-                <li>Semaforización de riesgo (alumnos en rojo)</li>
-                <li>Estadísticas por grado y grupo</li>
-              </ul>
-            </div>
-
-            <div class="permission-card can-do reveal delay-2">
-              <h4>
-                <span class="material-symbols-outlined">bolt</span> Tus Acciones
-              </h4>
-              <ul>
-                <li>
-                  <strong>Gestión de Citatorios:</strong> Programar y cerrar
-                  citas
-                </li>
-                <li>
-                  <strong>Bitácora de Acuerdos:</strong> Registrar compromisos
-                </li>
-                <li>
-                  <strong>Validar Justificantes:</strong> Ingresar al sistema
-                </li>
-              </ul>
-            </div>
-
-            <div class="permission-card cannot reveal delay-3">
-              <h4>
-                <span class="material-symbols-outlined">block</span> No te
-                corresponde
-              </h4>
-              <ul>
-                <li>Capturar tareas o calificaciones académicas</li>
-                <li>Modificar la estructura de base de datos</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROMOTORA -->
-    <section class="section" id="promotora">
-      <div class="section-content">
-        <div class="role-section reveal">
-          <div class="role-header reveal-right">
-            <div class="role-icon promotora">
-              <span class="material-symbols-outlined">support_agent</span>
-            </div>
-            <div>
-              <h2 class="role-title">Perfil PROMOTORA</h2>
-              <p class="role-subtitle">Promotora TIC / Apoyo Administrativo</p>
-            </div>
-          </div>
-
-          <p class="role-intro reveal delay-1">
-            "Como Promotora, eres el soporte operativo. Aseguras que la
-            información fluya, ayudas en captura masiva y mantienes el orden en
-            los registros de acceso."
-          </p>
-
-          <div class="permissions-grid">
-            <div class="permission-card can-see reveal delay-1">
-              <h4>
-                <span class="material-symbols-outlined">visibility</span> Lo que
-                puedes ver
-              </h4>
-              <ul>
-                <li>Listados generales de alumnos</li>
-                <li>Registros de puntualidad (Retardos)</li>
-                <li>Estado del sistema (online/offline)</li>
-              </ul>
-            </div>
-
-            <div class="permission-card can-do reveal delay-2">
-              <h4>
-                <span class="material-symbols-outlined">bolt</span> Tus Acciones
-              </h4>
-              <ul>
-                <li>
-                  <strong>Filtro de Entrada:</strong> Registro de retardos
-                </li>
-                <li>
-                  <strong>Impresión:</strong> Generar "Sábanas de Incidencias"
-                </li>
-                <li>
-                  <strong>Soporte Nivel 1:</strong> Ayudar con dudas básicas
-                </li>
-              </ul>
-            </div>
-
-            <div class="permission-card cannot reveal delay-3">
-              <h4>
-                <span class="material-symbols-outlined">block</span> No te
-                corresponde
-              </h4>
-              <ul>
-                <li>Leer detalles sensibles de casos</li>
-                <li>Tomar decisiones disciplinarias</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SUBDIRECCION -->
-    <section class="section" id="subdireccion">
-      <div class="section-content">
-        <div class="role-section reveal">
-          <div class="role-header reveal-left">
-            <div class="role-icon subdireccion">
-              <span class="material-symbols-outlined"
-                >admin_panel_settings</span
-              >
-            </div>
-            <div>
-              <h2 class="role-title">Perfil SUBDIRECCIÓN</h2>
-              <p class="role-subtitle">Subdirección Académica</p>
-            </div>
-          </div>
-
-          <p class="role-intro reveal delay-1">
-            "Como Subdirección, tu enfoque es la calidad educativa y el
-            cumplimiento normativo. SASE te permite supervisar que el servicio
-            educativo se esté brindando correctamente."
-          </p>
-
-          <div class="permissions-grid">
-            <div class="permission-card can-see reveal delay-1">
-              <h4>
-                <span class="material-symbols-outlined">visibility</span> Lo que
-                puedes ver
-              </h4>
-              <ul>
-                <li>Métricas de desempeño docente</li>
-                <li>Cumplimiento de programas</li>
-                <li>Panorama académico general</li>
-              </ul>
-            </div>
-
-            <div class="permission-card can-do reveal delay-2">
-              <h4>
-                <span class="material-symbols-outlined">bolt</span> Tus Acciones
-              </h4>
-              <ul>
-                <li>
-                  <strong>Supervisión:</strong> Revisar aleatoriamente bitácoras
-                </li>
-                <li>
-                  <strong>Intervención Grave:</strong> Atender casos escalados
-                </li>
-                <li>
-                  <strong>Estrategia CTE:</strong> Proponer temas con data
-                </li>
-              </ul>
-            </div>
-
-            <div class="permission-card cannot reveal delay-3">
-              <h4>
-                <span class="material-symbols-outlined">block</span> No te
-                corresponde
-              </h4>
-              <ul>
-                <li>Hacer la captura operativa diaria (delegar)</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DIRECCION -->
-    <section class="section" id="direccion">
-      <div class="section-content">
-        <div class="role-section reveal">
-          <div class="role-header reveal-right">
-            <div class="role-icon direccion">
-              <span class="material-symbols-outlined">verified_user</span>
-            </div>
-            <div>
-              <h2 class="role-title">Perfil DIRECCIÓN</h2>
-              <p class="role-subtitle">Dirección del Plantel</p>
-            </div>
-          </div>
-
-          <p class="role-intro reveal delay-1">
-            "Como Dirección, tienes la llave maestra. Tu visión es estratégica,
-            legal y de auditoría final. SASE es tu tablero de control para la
-            rendición de cuentas."
-          </p>
-
-          <div class="permissions-grid">
-            <div class="permission-card can-see reveal delay-1">
-              <h4>
-                <span class="material-symbols-outlined">visibility</span> Lo que
-                puedes ver
-              </h4>
-              <ul>
-                <li>
-                  <strong>TODO:</strong> Acceso irrestricto a cualquier registro
-                </li>
-                <li>Auditoría de uso (quién, cuándo, qué cambió)</li>
-              </ul>
-            </div>
-
-            <div class="permission-card can-do reveal delay-2">
-              <h4>
-                <span class="material-symbols-outlined">bolt</span> Tus Acciones
-              </h4>
-              <ul>
-                <li>
-                  <strong>Autorización Final:</strong> Desbloquear períodos
-                  cerrados
-                </li>
-                <li>
-                  <strong>Configuración:</strong> Ciclos escolares y plantilla
-                </li>
-                <li>
-                  <strong>Resguardo Legal:</strong> Exportar para auditorías SEP
-                </li>
-              </ul>
-            </div>
-
-            <div class="permission-card cannot reveal delay-3">
-              <h4>
-                <span class="material-symbols-outlined">block</span> No te
-                corresponde
-              </h4>
-              <ul>
-                <li>Micro-gestión de conflictos cotidianos</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer>
-      <div class="footer-bio reveal">
-        <div class="bio-avatar">HS</div>
-        <div class="bio-content">
-          <p class="footer-author">Prof. Hugo Sánchez Reséndiz</p>
-          <p class="bio-text">
-            <!-- ESPACIO PARA BIOGRAFÍA - Editar aquí -->
-            Profesor de Matemáticas con más de 15 años de experiencia en
-            educación secundaria pública. Apasionado por la innovación educativa
-            y el desarrollo de herramientas tecnológicas que faciliten el
-            trabajo docente y mejoren el acompañamiento estudiantil. Creador y
-            desarrollador principal de SASE-310.
-          </p>
-        </div>
-      </div>
-      <p class="footer-info">
-        Desarrollo Tecnológico & Estrategia Educativa<br />
-        Escuela Secundaria Diurna No. 310 "Presidentes de México"<br />
-        Ciudad de México · 2026
-      </p>
-    </footer>
-
-    <style>
-      .footer-bio {
-        display: flex;
-        align-items: flex-start;
-        gap: 25px;
+        margin-bottom: 40px;
         max-width: 600px;
-        margin: 0 auto 40px;
-        text-align: left;
-        padding: 30px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
       }
-      .bio-avatar {
-        min-width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, var(--secondary), var(--primary));
+
+      .firma {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 40px;
+        margin-top: 40px;
+      }
+
+      .firma-nombre {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .firma-titulo {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .firma-ciclo {
+        color: var(--accent);
+        font-size: 0.85rem;
+        margin-top: 15px;
+        font-weight: 600;
+      }
+
+      /* SCROLL TO TOP */
+      .scroll-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: var(--secondary);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        font-size: 24px;
         color: white;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.3s;
+        z-index: 100;
+        border: none;
       }
-      .bio-content {
-        flex: 1;
+
+      .scroll-top.visible {
+        opacity: 1;
       }
-      .bio-text {
-        color: var(--text-muted);
-        font-size: 14px;
-        line-height: 1.7;
-        margin-top: 10px;
+
+      .scroll-top:hover {
+        background: #2563eb;
+        transform: translateY(-3px);
       }
     </style>
+  </head>
+  <body>
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- ==================== HERO ==================== -->
+    <section id="hero">
+      <div class="container">
+        <img
+          src="/assets/branding/SASE_LOGO_PILOTO.png"
+          alt="SASE-310"
+          class="hero-logo fade-up"
+        />
+        <h1 class="hero-title fade-up delay-1">
+          Sistema de Acompañamiento y<br />Seguimiento Escolar
+        </h1>
+        <p class="hero-subtitle fade-up delay-2">Manual de uso institucional</p>
+        <p class="hero-author fade-up delay-2">Ciclo Escolar 2025–2026</p>
+        <p
+          class="hero-author fade-up delay-3"
+          style="color: var(--text-muted); margin-top: -10px"
+        >
+          Profr. Hugo Sánchez Reséndiz
+        </p>
+        <a href="#que-es" class="btn-start fade-up delay-4">
+          Comenzar recorrido
+          <span class="material-symbols-outlined">arrow_downward</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== ¿QUÉ ES SASE? ==================== -->
+    <section id="que-es">
+      <div class="container">
+        <h2 class="section-title fade-up">¿Qué es SASE?</h2>
+        <div class="que-es-grid">
+          <div class="que-es-card es fade-left">
+            <h3>
+              <span class="material-symbols-outlined">check_circle</span> SASE
+              es
+            </h3>
+            <ul>
+              <li>Un sistema de registro y seguimiento escolar</li>
+              <li>Respaldo documental para docentes</li>
+              <li>Herramienta de comunicación institucional</li>
+              <li>Apoyo a la toma de decisiones pedagógicas</li>
+              <li>Protección legal para el plantel</li>
+            </ul>
+          </div>
+          <div class="que-es-card no fade-right">
+            <h3>
+              <span class="material-symbols-outlined">cancel</span> SASE no es
+            </h3>
+            <ul>
+              <li>Un sistema de vigilancia docente</li>
+              <li>Una plataforma de calificaciones</li>
+              <li>Red social ni chat</li>
+              <li>Herramienta punitiva</li>
+              <li>Sustituto del trato humano</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SELECTOR DE ROL ==================== -->
+    <section id="selector-rol">
+      <div class="container">
+        <h2 class="section-title fade-up">Selecciona tu rol</h2>
+        <p
+          class="fade-up delay-1"
+          style="
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: -30px;
+            margin-bottom: 20px;
+          "
+        >
+          El contenido del manual se adaptará a tu función institucional.
+        </p>
+        <div class="rol-buttons fade-up delay-2">
+          <button class="rol-btn" data-rol="docente">
+            <span class="icon">👨‍🏫</span>
+            Docente
+          </button>
+          <button class="rol-btn" data-rol="tutor">
+            <span class="icon">👥</span>
+            Tutor
+          </button>
+          <button class="rol-btn" data-rol="orientacion">
+            <span class="icon">🧠</span>
+            Orientación
+          </button>
+          <button class="rol-btn" data-rol="promotora">
+            <span class="icon">📚</span>
+            Promotora de Lectura
+          </button>
+          <button class="rol-btn" data-rol="subdireccion">
+            <span class="icon">📋</span>
+            Subdirección
+          </button>
+          <button class="rol-btn" data-rol="direccion">
+            <span class="icon">🏛️</span>
+            Dirección
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CONTENIDO POR ROL ==================== -->
+    <section id="contenido-rol">
+      <div class="container">
+        <div class="rol-header fade-up">
+          <h2 id="rol-titulo">Perfil</h2>
+          <p class="rol-intro" id="rol-intro"></p>
+        </div>
+        <div class="permisos-grid" id="permisos-grid"></div>
+      </div>
+    </section>
+
+    <!-- ==================== DETRÁS DE SASE ==================== -->
+    <section id="detras">
+      <div class="container">
+        <h2 class="section-title fade-up">Detrás de SASE</h2>
+        <div class="bio-section">
+          <div class="bio-card fade-left">
+            <h3>Sobre el autor</h3>
+            <p>
+              <strong>Profr. Hugo Sánchez Reséndiz</strong><br /><br />
+              Docente de educación secundaria. SASE-310 surge a partir de la
+              experiencia cotidiana en el aula y los procesos escolares, con la
+              intención de ordenar, documentar y respaldar el trabajo docente
+              mediante herramientas digitales claras y accesibles.
+            </p>
+          </div>
+          <div class="bio-card fade-right">
+            <h3>Escuela Secundaria No. 310</h3>
+            <p>
+              Participa como escuela piloto en la implementación de SASE-310,
+              apostando por la innovación responsable, la mejora de procesos y
+              el uso de tecnología con sentido pedagógico.<br /><br />
+              <em>"Presidentes de México"</em><br />
+              Ciudad de México
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CIERRE ==================== -->
+    <section id="cierre">
+      <div class="container">
+        <h2 class="section-title fade-up">Gracias por ser parte</h2>
+        <p class="cierre-text fade-up delay-1">
+          Tu participación en SASE contribuye a una cultura de mejora continua,
+          documentación responsable y acompañamiento genuino a nuestra comunidad
+          escolar.
+        </p>
+        <div class="firma fade-up delay-2">
+          <p class="firma-nombre">Profr. Hugo Sánchez Reséndiz</p>
+          <p class="firma-titulo">Creador del sistema SASE-310</p>
+          <p class="firma-ciclo">Ciclo Escolar 2025–2026</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCROLL TO TOP -->
+    <button
+      class="scroll-top"
+      id="scrollTop"
+      onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+    >
+      <span class="material-symbols-outlined">arrow_upward</span>
+    </button>
 
     <script>
-      // SCROLL REVEAL ANIMATION (Both directions)
-      const reveals = document.querySelectorAll(
-        ".reveal, .reveal-left, .reveal-right, .reveal-scale",
-      );
+      // ============ DATOS POR ROL ============
+      const rolesData = {
+        docente: {
+          titulo: "👨‍🏫 Perfil DOCENTE",
+          intro:
+            "Como Docente frente a grupo, SASE es tu herramienta de registro y respaldo. Tu prioridad es documentar de manera ágil lo que ocurre en tu hora lectiva para proteger tu práctica y acompañar al alumno.",
+          ves: [
+            "Listas de asistencia de tus grupos asignados",
+            "Historial de incidencias que tú has registrado",
+            "Alertas básicas de salud o seguridad de tus alumnos",
+          ],
+          haces: [
+            "Registrar incidencias (conducta, tareas, situaciones de riesgo)",
+            "Solicitar citatorios a padres de familia",
+            "Pasar lista digital de asistencia",
+          ],
+          no: [
+            "Ver reportes privados de otros docentes",
+            "Contactar directamente a padres desde la app",
+            "Borrar antecedentes disciplinarios",
+          ],
+          tips: [
+            "Registra al momento, no dejes para después",
+            "Sé objetivo y breve en tus descripciones",
+            "Usa el sistema como respaldo, no como castigo",
+          ],
+        },
+        tutor: {
+          titulo: "👥 Perfil TUTOR",
+          intro:
+            "Como Tutor de Grupo, eres el enlace principal entre docentes, alumnos y familias. SASE te ofrece una visión panorámica de 360° sobre el comportamiento de tu grupo en todas las asignaturas.",
+          ves: [
+            "Reportes de todas las materias de tu grupo",
+            "Gráficas de incidencias acumuladas por alumno",
+            "Justificantes médicos ingresados al sistema",
+          ],
+          haces: [
+            "Monitorear tendencias semanales del grupo",
+            "Detectar patrones (¿falla en todo o solo en una materia?)",
+            "Usar la información para juntas con padres",
+          ],
+          no: [
+            "Editar o borrar reportes de otros colegas",
+            "Sancionar directamente (tu rol es acompañamiento)",
+          ],
+          tips: [
+            "Revisa el panel de tu grupo antes de cada junta",
+            "Identifica alumnos en riesgo tempranamente",
+            "Comunícate con Orientación ante casos complejos",
+          ],
+        },
+        orientacion: {
+          titulo: "🧠 Perfil ORIENTACIÓN",
+          intro:
+            "Como Orientadora o Trabajadora Social, SASE es tu expediente pedagógico integral. Tu labor es dar seguimiento formal a lo que los docentes reportan y gestionar la comunicación oficial con las familias.",
+          ves: [
+            "Expediente completo de cada alumno",
+            "Semaforización de riesgo (alumnos en rojo)",
+            "Estadísticas por grado y grupo",
+          ],
+          haces: [
+            "Gestionar citatorios (programar, realizar, cerrar)",
+            "Registrar acuerdos y compromisos con familias",
+            "Validar e ingresar justificantes médicos",
+          ],
+          no: [
+            "Capturar tareas o calificaciones académicas",
+            "Modificar estructura de base de datos",
+          ],
+          tips: [
+            "Documenta cada acuerdo con firma digital",
+            "Prioriza casos en semáforo rojo",
+            "Mantén comunicación cercana con tutores",
+          ],
+        },
+        promotora: {
+          titulo: "📚 Promotora de Lectura",
+          intro:
+            "Como Promotora de Lectura, tu función en SASE es impulsar, registrar y dar seguimiento a estrategias de fomento a la lectura y la escritura dentro de la comunidad escolar.",
+          ves: [
+            "Proyectos y estrategias de fomento lector",
+            "Grupos y actividades vinculadas a lectura",
+            "Evidencias relacionadas con prácticas lectoras",
+          ],
+          haces: [
+            "Registrar proyectos y estrategias de lectura",
+            "Documentar talleres, círculos de lectura y actividades",
+            "Subir evidencias de actividades de fomento lector",
+            "Vincular acciones lectoras con grupos y eventos",
+            "Dar seguimiento a avances de proyectos lectores",
+          ],
+          no: [
+            "Registrar incidencias conductuales o disciplinarias",
+            "Gestionar sanciones",
+            "Administrar usuarios o roles",
+            "Cerrar casos institucionales",
+          ],
+          tips: [
+            "Documenta con enfoque pedagógico",
+            "Prioriza calidad de experiencia sobre cantidad",
+            "Vincula lectura con proyectos escolares",
+            "Usa lenguaje claro y formativo en registros",
+          ],
+        },
+        subdireccion: {
+          titulo: "📋 Perfil SUBDIRECCIÓN",
+          intro:
+            "Como Subdirección Académica, tu enfoque es la calidad educativa y el cumplimiento normativo. SASE te permite supervisar que el servicio educativo se brinde correctamente.",
+          ves: [
+            "Métricas de desempeño por grupo",
+            "Cumplimiento de programas y actividades",
+            "Panorama académico general del plantel",
+          ],
+          haces: [
+            "Supervisar aleatoriamente bitácoras y registros",
+            "Atender casos que escalan de Orientación",
+            "Proponer temas en CTE basados en datos",
+          ],
+          no: ["Hacer captura operativa diaria (delegar)"],
+          tips: [
+            "Usa los reportes para decisiones estratégicas",
+            "Identifica áreas de oportunidad por grupo",
+            "Apoya a docentes con casos difíciles",
+          ],
+        },
+        direccion: {
+          titulo: "🏛️ Perfil DIRECCIÓN",
+          intro:
+            "Como Dirección del Plantel, tienes la llave maestra. Tu visión es estratégica, legal y de auditoría final. SASE es tu tablero de control para la rendición de cuentas.",
+          ves: [
+            "Acceso irrestricto a cualquier registro",
+            "Auditoría de uso (quién, cuándo, qué cambió)",
+            "Estadísticas globales del plantel",
+          ],
+          haces: [
+            "Autorizar desbloqueos de períodos cerrados",
+            "Configurar ciclos escolares y plantilla",
+            "Exportar datos para auditorías de la SEP",
+          ],
+          no: ["Micro-gestión de conflictos cotidianos (canalizar)"],
+          tips: [
+            "Revisa el panel ejecutivo semanalmente",
+            "Usa la auditoría para transparencia",
+            "Respalda el trabajo de tu equipo con datos",
+          ],
+        },
+      };
 
-      function revealOnScroll() {
-        reveals.forEach((el) => {
-          const windowHeight = window.innerHeight;
-          const elementTop = el.getBoundingClientRect().top;
-          const elementBottom = el.getBoundingClientRect().bottom;
-          const revealPoint = 150;
+      // ============ FUNCIONES ============
+      function renderRolContent(rolKey) {
+        const rol = rolesData[rolKey];
+        if (!rol) return;
 
-          // Element is in viewport
-          if (
-            elementTop < windowHeight - revealPoint &&
-            elementBottom > revealPoint
-          ) {
-            el.classList.add("active");
-          } else {
-            // Remove class when out of viewport (both directions)
-            el.classList.remove("active");
-          }
-        });
+        document.getElementById("rol-titulo").textContent = rol.titulo;
+        document.getElementById("rol-intro").textContent = rol.intro;
+
+        const grid = document.getElementById("permisos-grid");
+        grid.innerHTML = "";
+
+        // Qué ves
+        if (rol.ves && rol.ves.length) {
+          grid.innerHTML += `
+          <div class="permiso-card ves fade-up">
+            <h4><span class="material-symbols-outlined">visibility</span> Qué ves</h4>
+            <ul>${rol.ves.map((item) => `<li>${item}</li>`).join("")}</ul>
+          </div>
+        `;
+        }
+
+        // Qué haces
+        if (rol.haces && rol.haces.length) {
+          grid.innerHTML += `
+          <div class="permiso-card haces fade-up delay-1">
+            <h4><span class="material-symbols-outlined">bolt</span> Qué puedes hacer</h4>
+            <ul>${rol.haces.map((item) => `<li>${item}</li>`).join("")}</ul>
+          </div>
+        `;
+        }
+
+        // Qué NO
+        if (rol.no && rol.no.length) {
+          grid.innerHTML += `
+          <div class="permiso-card no fade-up delay-2">
+            <h4><span class="material-symbols-outlined">block</span> Qué NO te corresponde</h4>
+            <ul>${rol.no.map((item) => `<li>${item}</li>`).join("")}</ul>
+          </div>
+        `;
+        }
+
+        // Buenas prácticas
+        if (rol.tips && rol.tips.length) {
+          grid.innerHTML += `
+          <div class="permiso-card tips fade-up delay-3">
+            <h4><span class="material-symbols-outlined">lightbulb</span> Buenas prácticas</h4>
+            <ul>${rol.tips.map((item) => `<li>${item}</li>`).join("")}</ul>
+          </div>
+        `;
+        }
+
+        // Show section
+        document.getElementById("contenido-rol").classList.add("visible");
+
+        // Scroll to content
+        setTimeout(() => {
+          document
+            .getElementById("contenido-rol")
+            .scrollIntoView({ behavior: "smooth" });
+          // Trigger animations
+          setTimeout(() => {
+            document
+              .querySelectorAll("#contenido-rol .fade-up")
+              .forEach((el) => el.classList.add("visible"));
+          }, 300);
+        }, 100);
       }
 
-      // PROGRESS BAR
-      function updateProgressBar() {
+      // ============ EVENT LISTENERS ============
+      document.querySelectorAll(".rol-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          // Remove active from all
+          document
+            .querySelectorAll(".rol-btn")
+            .forEach((b) => b.classList.remove("active"));
+          // Add active to clicked
+          btn.classList.add("active");
+          // Render content
+          renderRolContent(btn.dataset.rol);
+        });
+      });
+
+      // ============ SCROLL ANIMATIONS ============
+      function handleScrollAnimations() {
+        const elements = document.querySelectorAll(
+          ".fade-up, .fade-left, .fade-right",
+        );
+        elements.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          if (rect.top < windowHeight - 100 && rect.bottom > 100) {
+            el.classList.add("visible");
+          }
+        });
+
+        // Progress bar
         const scrollTop = window.scrollY;
         const docHeight =
           document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        document.getElementById("progressBar").style.width =
-          scrollPercent + "%";
+        const progress = (scrollTop / docHeight) * 100;
+        document.getElementById("scrollProgress").style.width = progress + "%";
+
+        // Scroll to top button
+        if (scrollTop > 500) {
+          document.getElementById("scrollTop").classList.add("visible");
+        } else {
+          document.getElementById("scrollTop").classList.remove("visible");
+        }
       }
 
-      // NAV DOTS HIGHLIGHT
-      const sections = document.querySelectorAll("section");
-      const navDots = document.querySelectorAll(".nav-dot");
-
-      function updateNavDots() {
-        let current = "";
-        sections.forEach((section) => {
-          const sectionTop = section.offsetTop;
-          const sectionHeight = section.clientHeight;
-          if (scrollY >= sectionTop - sectionHeight / 3) {
-            current = section.getAttribute("id");
-          }
-        });
-
-        navDots.forEach((dot, index) => {
-          dot.classList.remove("active");
-          const sectionIds = [
-            "hero",
-            "docente",
-            "tutor",
-            "orientacion",
-            "promotora",
-            "subdireccion",
-            "direccion",
-          ];
-          if (sectionIds[index] === current) {
-            dot.classList.add("active");
-          }
-        });
-      }
-
-      // Scroll to section
-      function scrollToSection(id) {
-        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
-      }
-
-      // Event listeners
-      window.addEventListener("scroll", () => {
-        revealOnScroll();
-        updateProgressBar();
-        updateNavDots();
-      });
-
-      // Initial call
-      revealOnScroll();
-      updateProgressBar();
+      window.addEventListener("scroll", handleScrollAnimations);
+      window.addEventListener("load", handleScrollAnimations);
     </script>
   </body>
 </html>
