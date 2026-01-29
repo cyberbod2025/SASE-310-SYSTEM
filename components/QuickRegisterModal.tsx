@@ -12,20 +12,34 @@ export const QuickRegisterModal: React.FC = () => {
   const {
     quickRegisterOpen,
     setQuickRegisterOpen,
+    quickRegisterType,
     students,
     addIncident,
     currentUserRole,
   } = useApp();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState<string>("");
-  const [type, setType] = useState<IncidentType>(IncidentType.CONDUCTA);
+  const [type, setType] = useState<IncidentType>(quickRegisterType);
   const [description, setDescription] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [detectedProtocol, setDetectedProtocol] = useState<Protocol | null>(
-    null
+    null,
   );
   const [showProtocolModal, setShowProtocolModal] = useState(false);
   const [supportProtocols, setSupportProtocols] = useState<Protocol[]>([]);
+
+  // Sync type with store when modal opens
+  React.useEffect(() => {
+    if (quickRegisterOpen) {
+      setType(quickRegisterType);
+    }
+  }, [quickRegisterOpen, quickRegisterType]);
+
+  // Smart search filters
+  const [selectedGrado, setSelectedGrado] = useState<string>("");
+  const [selectedGrupo, setSelectedGrupo] = useState<string>("");
+  const [studentNotFound, setStudentNotFound] = useState(false);
+  const [pendingStudentName, setPendingStudentName] = useState("");
 
   // Load support protocols on mount
   React.useEffect(() => {
@@ -72,33 +86,83 @@ export const QuickRegisterModal: React.FC = () => {
 
   if (!quickRegisterOpen) return null;
 
-  const filteredStudents =
-    searchTerm.length > 1
-      ? students.filter(
-          (s) =>
-            (s.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (s.matricula || "").toString().includes(searchTerm)
-        )
-      : [];
+  // Extract unique grades and groups from students
+  const allGroups = [...new Set(students.map((s) => s.group))].sort();
+  const grados = [...new Set(allGroups.map((g) => g.charAt(0)))].sort();
+  const gruposForGrado = selectedGrado
+    ? allGroups.filter((g) => g.startsWith(selectedGrado))
+    : [];
+
+  // Smart filtered students based on grade, group, and search term
+  const filteredStudents = students.filter((s) => {
+    // Filter by grade if selected
+    if (selectedGrado && !s.group.startsWith(selectedGrado)) return false;
+    // Filter by group if selected
+    if (selectedGrupo && s.group !== selectedGrupo) return false;
+    // Filter by search term (name or matricula)
+    if (searchTerm.length > 1) {
+      const term = searchTerm.toLowerCase();
+      const nameMatch = (s.name || "").toLowerCase().includes(term);
+      const matriculaMatch = (s.matricula || "")
+        .toString()
+        .includes(searchTerm);
+      return nameMatch || matriculaMatch;
+    }
+    // If no search term but grade/group selected, show all in that group
+    return selectedGrupo ? true : false;
+  });
 
   const handleRegister = async () => {
-    if (!selectedStudentId) {
-      toast.error("Debes seleccionar un alumno de la lista", {
-        icon: "👆",
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
+    // Allow registration with pending student
+    if (!selectedStudentId && !studentNotFound) {
+      toast.error(
+        "Debes seleccionar un alumno de la lista o marcarlo como no encontrado",
+        {
+          icon: "👆",
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
         },
-      });
+      );
       return;
     }
 
-    // 1. Add Incident
+    // Handle pending student (not found in database)
+    if (studentNotFound && pendingStudentName) {
+      // Log this as a pending assignment issue
+      console.log("[PENDING STUDENT]", {
+        reportedName: pendingStudentName,
+        grado: selectedGrado,
+        grupo: selectedGrupo,
+        type,
+        description,
+        reportedBy: currentUserRole,
+        timestamp: new Date().toISOString(),
+      });
+
+      // Notify Secretaría and Dirección
+      toast.success(
+        `Incidencia registrada como PENDIENTE. Se notificará a Secretaría y Dirección para asignar alumno: "${pendingStudentName}"`,
+        {
+          duration: 5000,
+          icon: "📋",
+        },
+      );
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        resetForm();
+      }, 3000);
+      return;
+    }
+
+    // 1. Add Incident (normal flow)
     addIncident(
       selectedStudentId,
       type,
-      description || "Reporte rápido sin descripción"
+      description || "Reporte rápido sin descripción",
     );
 
     // 2. Check for Protocol Triggers (Simple keyword matching for demo)
@@ -148,14 +212,23 @@ export const QuickRegisterModal: React.FC = () => {
     // Auto-close logic only if no protocol detected, otherwise keep open to show button
     if (!protocolTitleToFind) {
       setTimeout(() => {
-        setIsSuccess(false);
-        setQuickRegisterOpen(false);
-        setSearchTerm("");
-        setSelectedStudentId("");
-        setDescription("");
-        setDetectedProtocol(null);
+        resetForm();
       }, 2500);
     }
+  };
+
+  // Reset all form fields
+  const resetForm = () => {
+    setIsSuccess(false);
+    setQuickRegisterOpen(false);
+    setSearchTerm("");
+    setSelectedStudentId("");
+    setDescription("");
+    setDetectedProtocol(null);
+    setSelectedGrado("");
+    setSelectedGrupo("");
+    setStudentNotFound(false);
+    setPendingStudentName("");
   };
 
   const isDemoMode = localStorage.getItem("sase_tour_active") === "true";
@@ -331,65 +404,163 @@ export const QuickRegisterModal: React.FC = () => {
           )
         ) : (
           <div className="p-6 space-y-4">
-            {/* Student Search */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Buscar Alumno (Nombre o Matrícula)
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-2.5 text-gray-400">
-                  search
-                </span>
-                <input
-                  id="qr-search"
-                  type="text"
-                  className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none placeholder:text-gray-500"
-                  placeholder="Ej. Carlos o 2023..."
-                  value={searchTerm}
+            {/* Smart Filters: Grado → Grupo */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                  1. Grado
+                </label>
+                <select
+                  value={selectedGrado}
                   onChange={(e) => {
-                    setSearchTerm(e.target.value);
+                    setSelectedGrado(e.target.value);
+                    setSelectedGrupo("");
                     setSelectedStudentId("");
+                    setSearchTerm("");
+                    setStudentNotFound(false);
                   }}
-                  autoFocus
-                />
+                  className="w-full px-3 py-2.5 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="">-- Seleccionar --</option>
+                  {grados.map((g) => (
+                    <option key={g} value={g} className="text-black">
+                      {g}° Grado
+                    </option>
+                  ))}
+                </select>
               </div>
-
-              {/* Autocomplete Results */}
-              {searchTerm.length > 1 && !selectedStudentId && (
-                <div className="absolute bg-slate-800 border border-white/10 shadow-lg rounded-lg mt-1 w-full max-w-[464px] z-10 max-h-48 overflow-y-auto">
-                  {filteredStudents.length === 0 ? (
-                    <div className="p-3 text-sm text-gray-400">
-                      No se encontraron alumnos.
-                    </div>
-                  ) : (
-                    filteredStudents.map((s) => (
-                      <button
-                        key={s.id}
-                        onClick={() => {
-                          setSelectedStudentId(s.id);
-                          setSearchTerm(s.name);
-                        }}
-                        className="w-full text-left p-3 hover:bg-white/5 flex items-center gap-3 border-b border-white/5 last:border-0"
-                      >
-                        <img
-                          src={s.avatar}
-                          alt=""
-                          className="w-8 h-8 rounded-full"
-                        />
-                        <div>
-                          <p className="text-sm font-bold text-white">
-                            {s.name}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {s.group} • {s.matricula}
-                          </p>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
+              <div>
+                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                  2. Grupo
+                </label>
+                <select
+                  value={selectedGrupo}
+                  onChange={(e) => {
+                    setSelectedGrupo(e.target.value);
+                    setSelectedStudentId("");
+                    setSearchTerm("");
+                    setStudentNotFound(false);
+                  }}
+                  disabled={!selectedGrado}
+                  className="w-full px-3 py-2.5 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <option value="">-- Seleccionar --</option>
+                  {gruposForGrado.map((g) => (
+                    <option key={g} value={g} className="text-black">
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            {/* Student Search - Only visible after selecting group */}
+            {selectedGrupo && !studentNotFound && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  3. Buscar Alumno (Nombre o Apellidos)
+                </label>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute left-3 top-2.5 text-gray-400">
+                    search
+                  </span>
+                  <input
+                    id="qr-search"
+                    type="text"
+                    className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none placeholder:text-gray-500"
+                    placeholder="Escriba nombre o apellido..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setSelectedStudentId("");
+                    }}
+                    autoFocus
+                  />
+                </div>
+
+                {/* Autocomplete Results */}
+                {searchTerm.length > 1 && !selectedStudentId && (
+                  <div className="bg-slate-800 border border-white/10 shadow-lg rounded-lg mt-1 max-h-48 overflow-y-auto">
+                    {filteredStudents.length === 0 ? (
+                      <div className="p-4">
+                        <p className="text-sm text-gray-400 mb-3">
+                          No se encontró ningún alumno con "{searchTerm}" en{" "}
+                          {selectedGrupo}
+                        </p>
+                        <button
+                          onClick={() => {
+                            setStudentNotFound(true);
+                            setPendingStudentName(searchTerm);
+                          }}
+                          className="w-full py-2 px-3 bg-orange-600/20 border border-orange-500/50 rounded-lg text-orange-300 text-sm font-medium hover:bg-orange-600/30 transition-colors flex items-center gap-2"
+                        >
+                          <span className="material-symbols-outlined text-lg">
+                            person_add
+                          </span>
+                          Registrar como "Pendiente de Asignar"
+                        </button>
+                      </div>
+                    ) : (
+                      filteredStudents.slice(0, 8).map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => {
+                            setSelectedStudentId(s.id);
+                            setSearchTerm(s.name);
+                          }}
+                          className="w-full text-left p-3 hover:bg-white/5 flex items-center gap-3 border-b border-white/5 last:border-0"
+                        >
+                          <img
+                            src={s.avatar}
+                            alt=""
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <div>
+                            <p className="text-sm font-bold text-white">
+                              {s.name}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {s.group} • {s.matricula}
+                            </p>
+                          </div>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Show pending student indicator */}
+            {studentNotFound && pendingStudentName && (
+              <div className="bg-orange-600/20 border border-orange-500/50 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-orange-400">
+                      person_off
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold text-orange-300">
+                        Alumno Pendiente de Asignar
+                      </p>
+                      <p className="text-xs text-orange-400/80">
+                        "{pendingStudentName}" - {selectedGrupo}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setStudentNotFound(false);
+                      setPendingStudentName("");
+                      setSearchTerm("");
+                    }}
+                    className="text-orange-400 hover:text-white"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Incident Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

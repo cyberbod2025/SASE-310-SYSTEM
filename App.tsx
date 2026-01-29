@@ -7,6 +7,7 @@ import { UserRole, AppModule } from "./types";
 import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Login } from "./components/Login";
+import { LandingPage } from "./components/LandingPage";
 import { IntroPlayer } from "./components/IntroPlayer";
 // Dashboards (Lazy Loaded)
 const DashboardDocente = React.lazy(() =>

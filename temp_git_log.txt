@@ -1,0 +1,10 @@
+0088991 updates: Refactor login/register flows, dashboard adjustments, and user constraint migrations
+67b6ef2 Compliance: Fix RLS permissive policy and resolve login scroll UI glitch
+c3f1a5f CI: Fix false positive in security checklist by excluding entire supabase dir from admin check
+a985286 Compliance: Fixed hardcoded credentials in saseUtils.ts and integrated dual validation protocol (Phase 1)
+adf8f11 feat(registration): implement secure RPC for user registration and improve manual styles
+746d3a4 fix(types): update auditoria table definition to match schema
+fdc66c3 fix(registration): restore missing variable declaration
+9998dfd chore(update): integrate manual, improve login UX and registration visibility
+d327b5c feat: implement base application layout and add integral manual documentation.
+517eada feat: Introduce the core application layout component and integral manual documentation.

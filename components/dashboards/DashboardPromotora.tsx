@@ -68,7 +68,10 @@ export const DashboardPromotora = () => {
             </span>
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+            <h1
+              id="promotora-header"
+              className="text-2xl font-bold text-slate-800 tracking-tight"
+            >
               Promoción de Lectura
             </h1>
             <p className="text-xs font-bold text-pink-600 uppercase tracking-wider mt-1">
@@ -79,7 +82,10 @@ export const DashboardPromotora = () => {
       </div>
 
       {/* Quick Stats / Groups Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div
+        id="promotora-groups"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
         {[1, 2, 3].map((grade) =>
           ["A", "B", "C", "D"].map((group) => (
             <div
@@ -98,7 +104,10 @@ export const DashboardPromotora = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-slate-100 rounded-xl w-fit">
+      <div
+        id="promotora-tabs"
+        className="flex gap-1 p-1 bg-slate-100 rounded-xl w-fit"
+      >
         {[
           { id: "AVANCES", label: "Actividades", icon: "trending_up" },
           { id: "EVENTOS", label: "Eventos", icon: "event" },
@@ -197,21 +206,13 @@ export const DashboardPromotora = () => {
                 Agendar Cita
               </button>
             </div>
-            <div className="p-4 border border-slate-200 rounded-xl flex items-center gap-4 bg-slate-50 hover:bg-white transition-colors cursor-pointer">
-              <div className="size-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
-                MF
-              </div>
-              <div>
-                <p className="font-bold text-slate-700">
-                  María Fernández (Mamá de Luis 1ºB)
-                </p>
-                <p className="text-xs text-slate-500">
-                  Tema: Dificultades de comprensión lectora
-                </p>
-              </div>
-              <span className="ml-auto text-xs font-bold bg-white border border-slate-200 px-3 py-1 rounded-full">
-                Mañana, 09:00 AM
+            <div className="p-8 border border-slate-200 border-dashed rounded-xl flex flex-col items-center justify-center bg-slate-50 text-slate-400">
+              <span className="material-symbols-outlined text-4xl mb-2">
+                event_busy
               </span>
+              <p className="text-xs font-black uppercase tracking-widest">
+                Sin citas programadas
+              </p>
             </div>
           </div>
         )}

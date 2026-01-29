@@ -22,7 +22,8 @@
         --darker: #020617;
         --text: #e2e8f0;
         --text-muted: #94a3b8;
-        --glass: rgba(15, 23, 42, 0.85);
+        --glass: rgba(15, 23, 42, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
       }
 
       * {
@@ -53,27 +54,55 @@
         transition: width 0.1s;
       }
 
-      /* SECTIONS */
+      /* SECTIONS WITH BACKDROPS */
       section {
         min-height: 100vh;
-        padding: 80px 20px;
+        padding: 100px 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
+        overflow: hidden;
+      }
+
+      .section-backdrop {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background-size: cover;
+        background-position: center;
+        filter: brightness(0.3) saturate(0.8);
+        transition: transform 1.5s ease-out;
+      }
+
+      section:hover .section-backdrop {
+        transform: scale(1.05);
+      }
+
+      .section-overlay {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at center,
+          transparent,
+          var(--darker)
+        );
+        z-index: 1;
       }
 
       .container {
-        max-width: 900px;
+        max-width: 1000px;
         width: 100%;
         margin: 0 auto;
+        position: relative;
+        z-index: 2;
       }
 
       /* ANIMATIONS */
       .fade-up {
         opacity: 0;
-        transform: translateY(60px);
-        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateY(40px);
+        transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .fade-up.visible {
         opacity: 1;
@@ -82,8 +111,8 @@
 
       .fade-left {
         opacity: 0;
-        transform: translateX(-60px);
-        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateX(-40px);
+        transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .fade-left.visible {
         opacity: 1;
@@ -92,8 +121,8 @@
 
       .fade-right {
         opacity: 0;
-        transform: translateX(60px);
-        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateX(40px);
+        transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .fade-right.visible {
         opacity: 1;
@@ -113,34 +142,110 @@
         transition-delay: 0.4s;
       }
 
-      /* ===================== HERO ===================== */
+      /* FLOATING MENU */
+      .floating-menu {
+        position: fixed;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 1000;
+        padding: 15px;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 50px;
+      }
+
+      .menu-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--text-muted);
+        border-radius: 50%;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+      }
+      .menu-dot:hover,
+      .menu-dot.active {
+        background: var(--secondary);
+        box-shadow: 0 0 15px var(--secondary);
+        transform: scale(1.3);
+      }
+
+      .menu-dot::after {
+        content: attr(data-title);
+        position: absolute;
+        right: 25px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--glass);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s;
+      }
+      .menu-dot:hover::after {
+        opacity: 1;
+        right: 35px;
+      }
+
       #hero {
-        background: linear-gradient(180deg, var(--darker) 0%, #0a1628 100%);
         text-align: center;
         min-height: 100vh;
       }
 
-      .hero-logo {
-        width: 200px;
-        height: auto;
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 20px;
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--secondary);
+        border-radius: 50px;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
         margin-bottom: 30px;
-        filter: drop-shadow(0 0 40px rgba(59, 130, 246, 0.3));
+        border: 1px solid rgba(59, 130, 246, 0.3);
+      }
+
+      .hero-logo {
+        width: 280px;
+        height: auto;
+        margin-bottom: 40px;
+        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
+        transition: transform 0.5s ease;
+      }
+      .hero-logo:hover {
+        transform: scale(1.05);
       }
 
       .hero-title {
-        font-size: clamp(1.8rem, 5vw, 3rem);
-        font-weight: 800;
-        margin-bottom: 15px;
-        background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+        font-size: clamp(2rem, 6vw, 4.5rem);
+        line-height: 1.1;
+        font-weight: 900;
+        margin-bottom: 25px;
+        background: linear-gradient(135deg, #fff 0%, #3b82f6 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        letter-spacing: -0.02em;
       }
 
       .hero-subtitle {
-        font-size: 1rem;
+        font-size: 1.2rem;
         color: var(--text-muted);
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+        font-weight: 500;
       }
 
       .hero-author {
@@ -177,11 +282,16 @@
         background: #0a1628;
       }
 
+      /* SECTION TITLES */
       .section-title {
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
-        font-weight: 800;
-        margin-bottom: 40px;
+        font-size: clamp(1.8rem, 5vw, 3.5rem);
+        font-weight: 900;
+        margin-bottom: 50px;
         text-align: center;
+        letter-spacing: -0.03em;
+        background: linear-gradient(to right, #fff, var(--text-muted));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
 
       .que-es-grid {
@@ -198,10 +308,15 @@
 
       .que-es-card {
         background: var(--glass);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        padding: 30px;
-        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 30px;
+        padding: 45px;
+        backdrop-filter: blur(20px);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .que-es-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        border-color: rgba(255, 255, 255, 0.2);
       }
 
       .que-es-card h3 {
@@ -503,36 +618,120 @@
     <!-- SCROLL PROGRESS -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
+    <!-- RETURN BUTTON -->
+    <a
+      href="/"
+      style="
+        position: fixed;
+        top: 30px;
+        left: 40px;
+        z-index: 10000;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        color: white;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        border: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+      "
+      class="nav-btn fade-up"
+    >
+      <span class="material-symbols-outlined" style="font-size: 18px"
+        >arrow_back</span
+      >
+      Volver al Sistema
+    </a>
+
+    <!-- FLOATING NAV -->
+    <div class="floating-menu fade-right">
+      <div
+        class="menu-dot active"
+        data-title="Bienvenida"
+        onclick="scrollToId('hero')"
+      ></div>
+      <div
+        class="menu-dot"
+        data-title="Propósito"
+        onclick="scrollToId('que-es')"
+      ></div>
+      <div
+        class="menu-dot"
+        data-title="Roles"
+        onclick="scrollToId('selector-rol')"
+      ></div>
+      <div
+        class="menu-dot"
+        data-title="Nosotros"
+        onclick="scrollToId('detras')"
+      ></div>
+      <div
+        class="menu-dot"
+        data-title="Ciclo 25-26"
+        onclick="scrollToId('cierre')"
+      ></div>
+    </div>
+
     <!-- ==================== HERO ==================== -->
     <section id="hero">
+      <div
+        class="section-backdrop"
+        id="hero-backdrop"
+        style="
+          background-image: url(&quot;../../.gemini/antigravity/brain/1222524f-60a4-434e-aecc-5a1fd3f1e3c3/sase_manual_hero_bg_1769675278725.png&quot;);
+        "
+      ></div>
+      <div class="section-overlay"></div>
       <div class="container">
+        <div class="hero-badge fade-up">Plataforma Certificada</div>
         <img
-          src="/assets/branding/SASE_LOGO_PILOTO.png"
+          src="/assets/branding/SASE.png"
           alt="SASE-310"
           class="hero-logo fade-up"
         />
         <h1 class="hero-title fade-up delay-1">
-          Sistema de Acompañamiento y<br />Seguimiento Escolar
+          Acompañamiento Escolar<br />Inteligente
         </h1>
-        <p class="hero-subtitle fade-up delay-2">Manual de uso institucional</p>
-        <p class="hero-author fade-up delay-2">Ciclo Escolar 2025–2026</p>
-        <p
-          class="hero-author fade-up delay-3"
-          style="color: var(--text-muted); margin-top: -10px"
-        >
-          Profr. Hugo Sánchez Reséndiz
+        <p class="hero-subtitle fade-up delay-2">
+          Documentación Institucional Dinámica
         </p>
-        <a href="#que-es" class="btn-start fade-up delay-4">
-          Comenzar recorrido
-          <span class="material-symbols-outlined">arrow_downward</span>
+        <p class="hero-author fade-up delay-2">SASE-310 | MÉXICO</p>
+        <div
+          class="firma-ciclo fade-up delay-3"
+          style="font-size: 14px; margin-top: 40px; letter-spacing: 4px"
+        >
+          EST 310
+        </div>
+        <a
+          href="#que-es"
+          class="btn-start fade-up delay-4"
+          style="margin-top: 60px"
+        >
+          Explorar Manual
+          <span class="material-symbols-outlined">expand_more</span>
         </a>
       </div>
     </section>
 
     <!-- ==================== ¿QUÉ ES SASE? ==================== -->
     <section id="que-es">
+      <div
+        class="section-backdrop"
+        style="
+          background-image: url(&quot;../../.gemini/antigravity/brain/1222524f-60a4-434e-aecc-5a1fd3f1e3c3/sase_manual_section_bg_1_1769675313418.png&quot;);
+          opacity: 0.4;
+        "
+      ></div>
+      <div class="section-overlay"></div>
       <div class="container">
-        <h2 class="section-title fade-up">¿Qué es SASE?</h2>
+        <h2 class="section-title fade-up">Propósito del Sistema</h2>
         <div class="que-es-grid">
           <div class="que-es-card es fade-left">
             <h3>
@@ -565,8 +764,16 @@
 
     <!-- ==================== SELECTOR DE ROL ==================== -->
     <section id="selector-rol">
+      <div
+        class="section-backdrop"
+        style="
+          background-image: url(&quot;../../.gemini/antigravity/brain/1222524f-60a4-434e-aecc-5a1fd3f1e3c3/sase_manual_section_bg_2_1769675418657.png&quot;);
+          filter: brightness(0.2);
+        "
+      ></div>
+      <div class="section-overlay"></div>
       <div class="container">
-        <h2 class="section-title fade-up">Selecciona tu rol</h2>
+        <h2 class="section-title fade-up">Experiencia por Función</h2>
         <p
           class="fade-up delay-1"
           style="
@@ -674,6 +881,10 @@
     </button>
 
     <script>
+      function scrollToId(id) {
+        document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+      }
+
       // ============ DATOS POR ROL ============
       const rolesData = {
         docente: {

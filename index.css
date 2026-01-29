@@ -3,58 +3,257 @@
 @tailwind utilities;
 
 :root {
-  --sase-blue: #1e3a8a;
-  --sase-blue-dark: #172554;
-  --sase-cyan: #0891b2;
-  --sase-slate: #f8fafc;
-  --sase-text: #1e293b;
-  --sase-border: #e2e8f0;
+  /* SASE 2026 Color Tokens */
+  --sase-dark: #0f1225;
+  --sase-card: #1a1f3c;
+  --sase-purple: #7c3aed;
+  --sase-cyan: #06b6d4;
+  --sase-amber: #f59e0b;
+  --sase-text: #f8fafc;
+  --sase-text-muted: #64748b;
 }
 
 body {
-  @apply bg-[#020510] text-slate-100 font-sans;
+  background-color: var(--sase-dark);
+  color: var(--sase-text);
+  font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Institutional Design System */
+/* ===================================
+   SASE 2026 Design System Components
+   (Solo elementos globales, no dashboards)
+   =================================== */
+
 @layer components {
-  .inst-input {
-    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 transition-all 
-           placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-600;
+  /* === BUTTONS === */
+  .btn-primary {
+    @apply px-6 py-3 text-white font-bold rounded-xl shadow-lg transition-all duration-200
+           hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+    background: linear-gradient(to right, #7c3aed, #6366f1);
+    box-shadow: 0 4px 20px -4px rgba(124, 58, 237, 0.3);
   }
 
-  .inst-card {
-    @apply bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-md transition-shadow duration-300;
+  .btn-primary:hover {
+    box-shadow: 0 8px 30px -6px rgba(124, 58, 237, 0.4);
   }
 
-  .inst-heading {
-    @apply text-slate-800 font-black tracking-tight uppercase;
+  .btn-secondary {
+    @apply px-6 py-3 border text-white font-medium rounded-xl transition-all duration-200;
+    background-color: #1a1f3c;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-secondary:hover {
+    background-color: #242b4d;
+    border-color: rgba(124, 58, 237, 0.5);
+  }
+
+  .btn-accent {
+    @apply px-6 py-3 text-white font-bold rounded-xl transition-all duration-200;
+    background: linear-gradient(to right, #06b6d4, #14b8a6);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+  }
+
+  .btn-warning {
+    @apply px-6 py-3 text-black font-bold rounded-xl transition-all duration-200;
+    background: linear-gradient(to right, #f59e0b, #f97316);
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 bg-transparent font-medium rounded-lg transition-all duration-200;
+    color: #94a3b8;
+  }
+
+  .btn-ghost:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+  }
+
+  .btn-icon {
+    @apply w-10 h-10 flex items-center justify-center border rounded-lg transition-all;
+    background-color: #1a1f3c;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+  }
+
+  .btn-icon:hover {
+    color: white;
+    border-color: rgba(124, 58, 237, 0.5);
+  }
+
+  /* === INPUTS === */
+  .input-sase {
+    @apply w-full border rounded-xl px-4 py-3 text-white transition-all duration-200;
+    background-color: rgba(26, 31, 60, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .input-sase::placeholder {
+    color: #64748b;
+  }
+
+  .input-sase:focus {
+    @apply outline-none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  }
+
+  .input-search {
+    @apply w-full border rounded-full px-5 py-2.5 pl-11 text-white text-sm transition-all duration-200;
+    background-color: #1a1f3c;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .input-search::placeholder {
+    color: #64748b;
+  }
+
+  .input-search:focus {
+    @apply outline-none;
+    border-color: #06b6d4;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+  }
+
+  /* === CARDS === */
+  .card-sase {
+    @apply border rounded-2xl p-6 shadow-lg transition-all duration-300;
+    background-color: #1a1f3c;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .card-sase:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .card-glass {
+    @apply backdrop-blur-xl border rounded-2xl p-6 shadow-xl;
+    background-color: rgba(26, 31, 60, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* === BADGES === */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
+  }
+
+  .badge-purple {
+    @apply badge;
+    background-color: rgba(124, 58, 237, 0.2);
+    color: #a78bfa;
+    border: 1px solid rgba(124, 58, 237, 0.3);
+  }
+
+  .badge-cyan {
+    @apply badge;
+    background-color: rgba(6, 182, 212, 0.2);
+    color: #06b6d4;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+  }
+
+  .badge-amber {
+    @apply badge;
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .badge-success {
+    @apply badge;
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .badge-danger {
+    @apply badge;
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  /* === TAGS (for lists) === */
+  .tag {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium;
+    background-color: #1a1f3c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+  }
+
+  .tag-active {
+    background-color: rgba(124, 58, 237, 0.2);
+    border-color: rgba(124, 58, 237, 0.4);
+    color: #a78bfa;
+  }
+
+  /* === NAVIGATION === */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 cursor-pointer;
+    color: #94a3b8;
+  }
+
+  .nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+  }
+
+  .nav-item-active {
+    background-color: rgba(124, 58, 237, 0.2);
+    color: white;
+    border-left: 4px solid #7c3aed;
+  }
+
+  /* === TABLE ROWS === */
+  .table-row-sase {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s;
+  }
+
+  .table-row-sase:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  /* === PROGRESS BARS === */
+  .progress-bar {
+    @apply h-2 rounded-full overflow-hidden;
+    background-color: #1a1f3c;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-500;
+    background: linear-gradient(to right, #7c3aed, #06b6d4);
   }
 }
 
-/* Discreet Institutional Scrollbar */
+/* === SCROLLBAR (Dark theme) === */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  transition: background-color 0.2s;
 }
 
-/* Animations */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* === ANIMATIONS === */
 .animate-fade-in {
-  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -76,9 +275,34 @@ body {
   }
 }
 
-/* Deprecated / Legacy Support (to be removed once fully migrated) */
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.6);
+  }
+}
+
+/* === LEGACY SUPPORT === */
 .glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(26, 31, 60, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Light mode overrides for institutional sections */
+.light-section {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.light-section .card-sase {
+  background-color: white;
+  border-color: #e2e8f0;
+  color: #1e293b;
 }

@@ -1,0 +1,8 @@
+19c777f security: Eliminar supabase.auth.admin de código cliente
+255f267 security: Validación y fix de solicitudes_alta_personal
+1659312 feat: Manual SASE mejorado con fondo parallax y tutorial de registro
+9b031ff feat: Manual SASE actualizado con perfiles correctos y tutorial de reportes
+878921c fix: ruta relativa del logo en Manual para apertura directa
+a8fdd44 feat: Implement core UI components for login, registration, and the Promotora dashboard, add public branding assets and a manual, while removing various pilot-phase SQL scripts and documentation.
+645aa12 feat: Manual de Usuario interactivo con scroll animations + CI/CD security audit
+54b1bbe feat: Implement new UI, AI features, and pilot program infrastructure, while removing old utility scripts and test files.

@@ -1,0 +1,10 @@
+54b1bbe feat: Implement new UI, AI features, and pilot program infrastructure, while removing old utility scripts and test files.
+03a3e9f feat: [SASE-310] Rediseño Estrictamente Institucional y Seguridad v2.4.0
+e923cab feat: redesign registration form with futuristic space aesthetic and glassmorphism
+d130f4a fix: improve login visibility and align form with video background frame
+23a9e73 feat: seamless transition from intro video to login by using final frame as background
+dc8a854 feat: redesign login with futuristic robot and neon frame to match intro theme
+d02a44d fix: add muted and controls to intro video to satisfy browser autoplay policy
+475d6dd fix: import useEffect in IntroPlayer to fix ReferenceError
+4a0f5c8 feat: finalize intro video integration, remove bubbles and standby screen, and redesign login with dark premium aesthetic
+aee7e11 Add JULES_TASKS for QA and testing

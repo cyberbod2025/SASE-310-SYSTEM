@@ -30,18 +30,18 @@ export const DashboardEnfermeria = () => {
         studentId: s.id,
         studentName: s.name,
         group: s.group,
-      }))
+      })),
     )
     .filter((i) => i.type === IncidentType.SALUD);
 
   const visitsToday = healthIncidents.filter((i) =>
-    i.date.startsWith(todayStr)
+    i.date.startsWith(todayStr),
   ).length;
 
   const pendingMeds = 5;
 
   const activeAlertsCount = students.filter(
-    (s) => s.medicalAlerts && s.medicalAlerts.length > 0
+    (s) => s.medicalAlerts && s.medicalAlerts.length > 0,
   ).length;
 
   const recentVisits = [...healthIncidents]
@@ -55,14 +55,17 @@ export const DashboardEnfermeria = () => {
         <div className="flex items-center gap-5">
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1 h-full bg-red-600"></div>
-            <img
-              src="/assets/branding/ENFERMERIA.png"
-              alt="Enfermería"
-              className="w-14 h-14 object-contain"
-            />
+            <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center text-red-600">
+              <span className="material-symbols-outlined text-3xl">
+                medical_services
+              </span>
+            </div>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <h1
+              id="enfermeria-header"
+              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+            >
               Salud y Enfermería
             </h1>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest">
@@ -93,7 +96,10 @@ export const DashboardEnfermeria = () => {
       </div>
 
       {/* Urgent Notice */}
-      <div className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-2xl transform transition-all hover:scale-[1.01]">
+      <div
+        id="enfermeria-alerts"
+        className="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-2xl transform transition-all hover:scale-[1.01]"
+      >
         <div className="flex items-center gap-4">
           <div className="bg-red-100 p-2.5 rounded-xl">
             <span className="material-symbols-outlined text-red-600">
@@ -122,7 +128,10 @@ export const DashboardEnfermeria = () => {
       </div>
 
       {/* KPI Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div
+        id="enfermeria-inventory"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      >
         <HealthStat
           label="Consultas Hoy"
           value={visitsToday}
@@ -386,8 +395,8 @@ const InventoryList = () => {
       items.map((item) =>
         item.id === id
           ? { ...item, quantity: Math.max(0, item.quantity + delta) }
-          : item
-      )
+          : item,
+      ),
     );
   };
 

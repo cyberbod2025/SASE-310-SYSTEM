@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { CaseState, AppModule, Student } from "../../types";
 import { Inscripciones } from "../Inscripciones";
 import { Archivo } from "../Archivo";
+import { CICLO_ESCOLAR } from "../../config/sase.config";
+import { useAuth } from "../AuthProvider";
 
 export const DashboardSecretaria = () => {
   const {
@@ -14,42 +16,26 @@ export const DashboardSecretaria = () => {
     currentModule,
     updateStudentAudit,
   } = useApp();
+  const { user } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  /* -- GROUP MANAGEMENT LOGIC -- */
-  const [currentUser, setCurrentUser] = useState<string>("dulce");
-
-  const SECRETARY_USERS: Record<
-    string,
-    { label: string; name: string; role: string }
-  > = {
-    dulce: { label: "Dulce (1º Grado)", name: "Dulce", role: "Secretaria 1º" },
-    jorge: { label: "Jorge (2º Grado)", name: "Jorge", role: "Secretario 2º" },
-    edgar: {
-      label: "Edgar (3º Grado)",
-      name: "Edgar",
-      role: "Secretario 3º",
-    },
-    gabriela: {
-      label: "Gabriela (Coord)",
-      name: "Gabriela",
-      role: "Coordinación",
-    },
-  };
+  const activeUserName =
+    user?.user_metadata?.full_name ||
+    user?.email?.split("@")[0] ||
+    "Secretaria/o";
+  const activeUserRole = "Control Escolar";
 
   if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
   if (currentModule === AppModule.ARCHIVO) return <Archivo />;
-
-  const activeUser = SECRETARY_USERS[currentUser];
 
   const handleEdit = (id: string) => {
     const student = students.find((s) => s.id === id);
     setEditingId(id);
     logAccess(
-      `Consultar Expediente (Usuario: ${activeUser.name})`,
+      `Consultar Expediente (Usuario: ${activeUserName})`,
       id,
-      student?.name
+      student?.name,
     );
   };
 
@@ -58,16 +44,16 @@ export const DashboardSecretaria = () => {
 
     await logAudit(
       "ACTUALIZACION",
-      `Expediente modificado por ${activeUser.name} (${activeUser.role})`,
+      `Expediente modificado por ${activeUserName} (${activeUserRole})`,
       "alumnos",
       studentId,
       student?.name,
       null,
-      { modifiedBy: activeUser.name, modifiedAt: new Date().toISOString() }
+      { modifiedBy: activeUserName, modifiedAt: new Date().toISOString() },
     );
 
-    updateStudentAudit(studentId, activeUser.name);
-    toast.success(`[AUDITORÍA] Cambios guardados por: ${activeUser.name}`);
+    updateStudentAudit(studentId, activeUserName);
+    toast.success(`[AUDITORÍA] Cambios guardados por: ${activeUserName}`);
     setEditingId(null);
   };
 
@@ -103,14 +89,15 @@ export const DashboardSecretaria = () => {
         <div className="flex items-center gap-5">
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1 h-full bg-cyan-500"></div>
-            <img
-              src="/assets/branding/SECRETARIOS.png"
-              alt="Secretaría"
-              className="w-14 h-14 object-contain"
-            />
+            <div className="w-14 h-14 bg-cyan-100 rounded-xl flex items-center justify-center text-cyan-600">
+              <span className="material-symbols-outlined text-3xl">desk</span>
+            </div>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <h1
+              id="secretaria-header"
+              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+            >
               Secretaría Escolar
             </h1>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
@@ -129,20 +116,12 @@ export const DashboardSecretaria = () => {
             <span className="text-xs font-black text-slate-500 uppercase tracking-widest">
               Sesión de Auditoría
             </span>
-            <select
-              className="text-xs font-black text-slate-800 bg-transparent outline-none cursor-pointer uppercase hover:text-cyan-600 transition-colors"
-              value={currentUser}
-              onChange={(e) => setCurrentUser(e.target.value)}
-            >
-              {Object.entries(SECRETARY_USERS).map(([key, val]) => (
-                <option key={key} value={key}>
-                  {val.label}
-                </option>
-              ))}
-            </select>
+            <span className="text-xs font-black text-slate-800 uppercase">
+              {activeUserName}
+            </span>
           </div>
           <div className="size-10 rounded-lg bg-cyan-50 border border-cyan-100 text-cyan-700 flex items-center justify-center font-black text-sm uppercase">
-            {activeUser.name.substring(0, 2)}
+            {activeUserName.substring(0, 2)}
           </div>
         </div>
       </div>
@@ -212,7 +191,7 @@ export const DashboardSecretaria = () => {
                 Total de Matrícula
               </h3>
               <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">
-                Ciclo Escolar Vigente 2024-2025
+                {CICLO_ESCOLAR.label}
               </p>
             </div>
           </div>
@@ -228,7 +207,10 @@ export const DashboardSecretaria = () => {
       </div>
 
       {/* Student List */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+      <div
+        id="secretaria-list"
+        className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[500px]"
+      >
         <div className="px-6 py-5 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/50">
           <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
             <span className="material-symbols-outlined text-cyan-600">
@@ -237,7 +219,7 @@ export const DashboardSecretaria = () => {
             Directorio Estudiantil Institucional
           </h3>
 
-          <div className="relative w-full md:w-96">
+          <div id="secretaria-search" className="relative w-full md:w-96">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined">
               search
             </span>
@@ -322,8 +304,8 @@ export const DashboardSecretaria = () => {
                           student.caseState === CaseState.CERRADO
                             ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                             : student.caseState === CaseState.OBSERVADO
-                            ? "bg-blue-50 text-blue-700 border-blue-100"
-                            : "bg-red-50 text-red-700 border-red-100"
+                              ? "bg-blue-50 text-blue-700 border-blue-100"
+                              : "bg-red-50 text-red-700 border-red-100"
                         }`}
                       >
                         <span
@@ -331,8 +313,8 @@ export const DashboardSecretaria = () => {
                             student.caseState === CaseState.CERRADO
                               ? "bg-emerald-500"
                               : student.caseState === CaseState.OBSERVADO
-                              ? "bg-blue-500"
-                              : "bg-red-500"
+                                ? "bg-blue-500"
+                                : "bg-red-500"
                           }`}
                         ></span>
                         {student.caseState}

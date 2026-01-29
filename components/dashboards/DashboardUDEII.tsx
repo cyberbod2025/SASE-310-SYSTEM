@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
+import { GenericActionModal } from "../GenericActionModal";
 
 export const DashboardUDEII = () => {
   const { students } = useApp();
   const studentsWithBAP = students.filter((s) => s.bapInfo?.hasBAP);
+
+  // Modal state for adding adjustments
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
+  const [selectedStudentName, setSelectedStudentName] = useState<string>("");
+
+  const handleOpenModal = (studentId: string, studentName: string) => {
+    setSelectedStudentId(studentId);
+    setSelectedStudentName(studentName);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveAdjustment = async (data: any) => {
+    // In a real implementation, this would persist to Supabase
+    console.log("New adjustment:", data, "for student:", selectedStudentId);
+    toast.success("Ajuste añadido al protocolo institucional.");
+    setIsModalOpen(false);
+    setSelectedStudentId(null);
+  };
 
   return (
     <div className="flex-1 w-full space-y-8 animate-fade-in relative z-10 transition-all">
@@ -13,14 +35,17 @@ export const DashboardUDEII = () => {
         <div className="flex items-center gap-5">
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
-            <img
-              src="/assets/branding/UDEII.png"
-              alt="UDEII"
-              className="w-14 h-14 object-contain"
-            />
+            <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+              <span className="material-symbols-outlined text-3xl">
+                diversity_2
+              </span>
+            </div>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <h1
+              id="udeii-header"
+              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+            >
               Educación Inclusiva (UDEII)
             </h1>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
@@ -41,7 +66,13 @@ export const DashboardUDEII = () => {
             <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
             Alumnos en Seguimiento de Inclusión
           </h3>
-          <button className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-md transition-all flex items-center gap-2">
+          <button
+            id="udeii-new"
+            onClick={() =>
+              toast.success("Módulo de Registro de Inclusión iniciado (Demo)")
+            }
+            className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-md transition-all flex items-center gap-2"
+          >
             <span className="material-symbols-outlined text-[18px]">add</span>
             Nuevo Expediente
           </button>
@@ -59,7 +90,10 @@ export const DashboardUDEII = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          <div
+            id="udeii-list"
+            className="grid grid-cols-1 xl:grid-cols-2 gap-8"
+          >
             {studentsWithBAP.map((s) => (
               <div
                 key={s.id}
@@ -132,13 +166,7 @@ export const DashboardUDEII = () => {
                       ))}
                       <button
                         className="w-full flex items-center justify-center p-3 rounded-xl border-2 border-dashed border-slate-100 text-xs font-black text-slate-500 hover:text-purple-600 hover:border-purple-200 hover:bg-purple-50 transition-all uppercase gap-2"
-                        onClick={() => {
-                          const newAdj = prompt("Nuevo ajuste razonable:");
-                          if (newAdj)
-                            toast.success(
-                              "Ajuste añadido al protocolo institucional."
-                            );
-                        }}
+                        onClick={() => handleOpenModal(s.id, s.name)}
                       >
                         <span className="material-symbols-outlined text-[18px]">
                           add_circle
@@ -150,7 +178,12 @@ export const DashboardUDEII = () => {
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end relative z-10">
-                  <button className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-purple-700 uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      toast.success("Abriendo Bitácora de Seguimiento UDEII...")
+                    }
+                    className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-purple-700 uppercase tracking-widest shadow-sm transition-all flex items-center gap-2"
+                  >
                     Consultar Bitácora de Inclusión
                     <span className="material-symbols-outlined text-[18px]">
                       arrow_right_alt
@@ -162,6 +195,47 @@ export const DashboardUDEII = () => {
           </div>
         )}
       </div>
+
+      {/* Modal Institucional para Ajustes Razonables */}
+      <GenericActionModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedStudentId(null);
+        }}
+        title="Nuevo Ajuste Razonable"
+        description={`Expediente de Inclusión: ${selectedStudentName}`}
+        fields={[
+          {
+            name: "adjustment",
+            label: "Descripción del Ajuste",
+            type: "textarea",
+            required: true,
+          },
+          {
+            name: "category",
+            label: "Categoría",
+            type: "select",
+            options: [
+              "Metodológico",
+              "Evaluación",
+              "Acceso y Movilidad",
+              "Comunicación",
+              "Tiempo Adicional",
+              "Material Especializado",
+            ],
+            required: true,
+          },
+          {
+            name: "notes",
+            label: "Notas Adicionales (Opcional)",
+            type: "text",
+            required: false,
+          },
+        ]}
+        onSubmit={handleSaveAdjustment}
+        submitLabel="Registrar Ajuste"
+      />
     </div>
   );
 };

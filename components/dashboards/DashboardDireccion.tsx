@@ -1,299 +1,493 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
+import toast from "react-hot-toast";
 import { useApp } from "../../store";
-import { CaseState, AppModule } from "../../types";
+import { CaseState, AppModule, UserRole } from "../../types";
 import { printContent } from "../PrintButtons";
 
 export const DashboardDireccion = () => {
-  const { students, setCurrentModule } = useApp();
-  const [stats, setStats] = useState({
-    totalIncidents: 0,
-    riskCases: 0,
-    attendanceRate: 92,
+  const { students, notifications, setCurrentModule } = useApp();
+  const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
+
+  // --- IDENTITY & UTILS ---
+  const todayDisplay = new Date().toLocaleDateString("es-MX", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
   });
 
-  const [groupRisk, setGroupRisk] = useState<
-    { group: string; count: number; tutor: string }[]
-  >([]);
+  // --- DATA PROCESSING ---
+  // 1. Critical Alerts (Semaphore)
+  const criticalCases = useMemo(
+    () =>
+      students.filter(
+        (s) =>
+          s.caseState === CaseState.PATRON_DETECTADO ||
+          s.caseState === CaseState.INTERVENCION,
+      ),
+    [students],
+  );
 
-  useEffect(() => {
-    const risk = students.filter(
-      (s) =>
-        s.caseState === CaseState.PATRON_DETECTADO ||
-        s.caseState === CaseState.INTERVENCION
-    ).length;
+  const highRiskCount = criticalCases.length;
+  const semaphoreStatus =
+    highRiskCount === 0 ? "green" : highRiskCount < 3 ? "yellow" : "red";
 
-    const incidents = students.reduce((acc, s) => acc + s.incidents.length, 0);
-
-    setStats((prev) => ({
-      ...prev,
-      totalIncidents: incidents,
-      riskCases: risk,
-    }));
-
-    const groups: Record<string, number> = {};
-    students.forEach((s) => {
-      if (s.incidents.length > 0) {
-        groups[s.group] = (groups[s.group] || 0) + s.incidents.length;
-      }
+  // 2. Requests (Solicitudes) - Derived from Notifications for now, split by 'urgency' (mocked logic)
+  const [urgentRequests, scheduledRequests] = useMemo(() => {
+    const urgent: any[] = [];
+    const scheduled: any[] = [];
+    notifications.forEach((n) => {
+      if (n.type === "error" || n.type === "warning") urgent.push(n);
+      else scheduled.push(n);
     });
+    return [urgent, scheduled];
+  }, [notifications]);
 
-    const sortedGroups = Object.entries(groups)
-      .map(([group, count]) => ({ group, count, tutor: "Tutor Asignado" }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 3);
+  // --- MOCK CALENDAR EVENTS ---
+  const calendarEvents = [
+    {
+      id: 1,
+      title: "Consejo Técnico Escolar",
+      time: "09:00 AM",
+      type: "institutional",
+    },
+    {
+      id: 2,
+      title: "Revisión 2º Grado (Prefectura)",
+      time: "11:30 AM",
+      type: "operational",
+    },
+    { id: 3, title: "Cierre de Actas", time: "14:00 PM", type: "admin" },
+  ];
 
-    setGroupRisk(sortedGroups);
-  }, [students]);
+  // --- ACTIONS ---
+  const handleSendCircular = () => {
+    toast.success("Circular enviada a todo el personal (Simulación)");
+  };
 
-  const [checklist, setChecklist] = useState({
-    actas: false,
-    insumos: false,
-  });
-
-  const toggleCheck = (key: keyof typeof checklist) => {
-    setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
+  const handleCloseCase = () => {
+    toast.success("Caso cerrado y archivado con evidencia.");
+    setSelectedAlertId(null);
   };
 
   return (
-    <div className="flex-1 w-full space-y-8 animate-fade-in">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
-        <div className="flex items-center gap-5">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-1 h-full bg-blue-600"></div>
-            <img
-              src="/assets/branding/DIRECION.png"
-              alt="Dirección"
-              className="w-14 h-14 object-contain"
-            />
+    <div className="flex-1 w-full space-y-6 animate-fade-in pb-12">
+      {/* HEADER: Institutional Identity */}
+      <header
+        id="dashboard-header"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-red-200 pb-4"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-red-900 rounded-xl flex items-center justify-center shadow-lg shadow-red-900/20 text-white relative overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent)]"></div>
+            <span className="material-symbols-outlined text-3xl">
+              account_balance
+            </span>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-              Dirección de Plantel
+            <h1 className="text-3xl font-black text-slate-800 tracking-tight">
+              Dirección
             </h1>
-            <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest">
-              <span className="flex items-center gap-1.5 text-blue-700">
-                <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                Estado Operativo: Activo
-              </span>
-              <span className="text-slate-300">|</span>
-              <span className="text-slate-500">Resumen de Gestión Escolar</span>
-            </div>
+            <p className="text-xs font-bold text-red-800 uppercase tracking-widest flex items-center gap-2">
+              <span
+                className={`w-2 h-2 rounded-full animate-pulse ${semaphoreStatus === "red" ? "bg-red-600" : semaphoreStatus === "yellow" ? "bg-amber-500" : "bg-emerald-500"}`}
+              ></span>
+              Gestión Estratégica • {todayDisplay}
+            </p>
           </div>
         </div>
 
-        <button
-          onClick={() =>
-            printContent(
-              "Resumen Ejecutivo",
-              `<h1>Resumen de Gestión</h1><p>Fecha: ${new Date().toLocaleDateString()}</p>`
-            )
-          }
-          className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold text-sm shadow-sm transition-all"
-        >
-          <span className="material-symbols-outlined text-[20px]">
-            description
-          </span>
-          EXPORTAR INFORME OFICIAL
-        </button>
+        <div className="flex gap-3">
+          <button
+            id="export-btn"
+            onClick={() =>
+              printContent("Informe Ejecutivo", "<h1>Informe de Dirección</h1>")
+            }
+            className="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold uppercase hover:bg-slate-50 text-slate-600 shadow-sm flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-sm">print</span>{" "}
+            Informe
+          </button>
+          <button
+            onClick={handleSendCircular}
+            className="px-4 py-2 bg-red-900 text-white rounded-lg text-xs font-bold uppercase hover:bg-red-800 shadow-lg shadow-red-900/20 flex items-center gap-2"
+          >
+            <span className="material-symbols-outlined text-sm">add_alert</span>{" "}
+            Nuevo Aviso
+          </button>
+        </div>
+      </header>
+
+      {/* KPI GRID: TOP STATS FROM IMAGE (Director View) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <KPICard
+          id="kpi-risk"
+          icon="crisis_alert"
+          value={criticalCases.length.toString()}
+          label="Casos Críticos"
+          color="bg-red-900"
+          trend="Semáforo Rojo"
+        />
+        <KPICard
+          id="kpi-assist"
+          icon="rocket_launch"
+          value="98%"
+          label="Eficiencia"
+          color="bg-slate-800"
+        />
+        <KPICard
+          icon="badge"
+          value="42"
+          label="Personal Activo"
+          color="bg-blue-900"
+        />
+        <KPICard
+          icon="query_stats"
+          value="SASE"
+          label="Estado Sistema"
+          color="bg-emerald-800"
+        />
       </div>
 
-      {/* Main KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <KPIDrawer
-          label="Asistencia Global"
-          value={`${stats.attendanceRate}%`}
-          desc="+1.2% este periodo"
-          icon="groups"
-          color="blue"
-        />
-        <KPIDrawer
-          label="Casos en Riesgo"
-          value={stats.riskCases}
-          desc="Requieren atención"
-          icon="warning"
-          color="red"
-        />
-        <KPIDrawer
-          label="Incidencias Registradas"
-          value={stats.totalIncidents}
-          desc="Acumulado mensual"
-          icon="history_edu"
-          color="amber"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Risk Breakdown */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-            <span className="material-symbols-outlined text-blue-600">
-              assessment
-            </span>
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex-1">
-              Focos de Atención por Grupo
-            </h3>
-          </div>
-          <div className="space-y-3">
-            {groupRisk.map((g, idx) => (
-              <div
-                key={g.group}
-                className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl"
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* CENTRAL ZONE (2/3) */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* 1. CRITICAL ALERTS BANNER */}
+          <section
+            className={`rounded-2xl border-l-4 shadow-sm p-6 flex items-start gap-4 relative overflow-hidden ${
+              semaphoreStatus === "red"
+                ? "bg-red-50 border-red-600"
+                : semaphoreStatus === "yellow"
+                  ? "bg-amber-50 border-amber-500"
+                  : "bg-emerald-50 border-emerald-500"
+            }`}
+          >
+            <div
+              className={`p-3 rounded-full ${semaphoreStatus === "red" ? "bg-red-100 text-red-700" : semaphoreStatus === "yellow" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}`}
+            >
+              <span className="material-symbols-outlined text-2xl">
+                {semaphoreStatus === "red"
+                  ? "gpp_bad"
+                  : semaphoreStatus === "yellow"
+                    ? "warning"
+                    : "verified"}
+              </span>
+            </div>
+            <div className="flex-1 relative z-10">
+              <h3
+                className={`text-lg font-black uppercase tracking-tight ${semaphoreStatus === "red" ? "text-red-800" : "text-slate-800"}`}
               >
-                <div className="flex items-center gap-4">
-                  <div className="size-12 bg-white rounded-lg border border-slate-200 flex items-center justify-center font-bold text-slate-800 shadow-sm">
-                    {g.group}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800">
-                      {g.group}
-                    </p>
-                    <p className="text-xs text-slate-500 uppercase font-black tracking-widest mt-0.5">
-                      {g.tutor}
-                    </p>
-                  </div>
+                {semaphoreStatus === "red"
+                  ? "Atención Prioritaria Requerida"
+                  : semaphoreStatus === "yellow"
+                    ? "Riesgos Detectados"
+                    : "Operación Nominal"}
+              </h3>
+              <p className="text-sm font-medium text-slate-600 mt-1">
+                {criticalCases.length} casos críticos requieren decisión
+                directiva hoy.
+              </p>
+              {criticalCases.length > 0 && (
+                <div
+                  id="panel-risk-groups"
+                  className="flex gap-2 mt-4 overflow-x-auto"
+                >
+                  {criticalCases.map((s) => (
+                    <div
+                      key={s.id}
+                      onClick={() => setSelectedAlertId(s.id)}
+                      className="flex-shrink-0 bg-white border border-slate-200 px-3 py-2 rounded-lg cursor-pointer hover:border-red-300 transition-colors shadow-sm"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                        <span className="text-xs font-bold text-slate-700 uppercase">
+                          {s.name.split(" ")[0]}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="text-right">
-                  <span className="block text-2xl font-black text-slate-800">
-                    {g.count}
-                  </span>
-                  <span className="text-xs text-slate-500 uppercase font-black tracking-widest">
-                    Eventos
-                  </span>
+              )}
+            </div>
+          </section>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* 2. REQUESTS (Solicitudes) */}
+            <section className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
+              <div className="p-5 border-b border-slate-100 flex justify-between items-center">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm">
+                    inbox
+                  </span>{" "}
+                  Solicitudes
+                </h3>
+                <span className="bg-slate-100 text-slate-600 text-[10px] font-black px-2 py-0.5 rounded-full">
+                  {notifications.length}
+                </span>
+              </div>
+              <div className="flex-1 p-2 space-y-2">
+                {urgentRequests.length > 0 && (
+                  <div className="mb-2">
+                    <p className="text-[10px] uppercase font-bold text-red-400 pl-2 mb-1">
+                      Urgente (Hoy)
+                    </p>
+                    {urgentRequests.map((n) => (
+                      <div
+                        key={n.id}
+                        className="p-3 bg-red-50/50 border-l-2 border-red-500 rounded-r-lg hover:bg-red-50 transition-colors"
+                      >
+                        <p className="text-xs font-bold text-red-900">
+                          {n.title}
+                        </p>
+                        <p className="text-[10px] text-red-700/80">
+                          {n.message}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-slate-400 pl-2 mb-1">
+                    Agendado / Revisión
+                  </p>
+                  {scheduledRequests.length === 0 ? (
+                    <p className="text-xs text-slate-300 italic p-4 text-center">
+                      Bandeja al día
+                    </p>
+                  ) : (
+                    scheduledRequests.map((n) => (
+                      <div
+                        key={n.id}
+                        className="p-3 bg-slate-50 border border-slate-100 rounded-lg hover:bg-white hover:shadow-sm transition-all"
+                      >
+                        <p className="text-xs font-bold text-slate-700">
+                          {n.title}
+                        </p>
+                        <p className="text-[10px] text-slate-500">
+                          {n.message}
+                        </p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
-            ))}
+            </section>
+
+            {/* 3. INSTITUTIONAL COMMUNICATION */}
+            <section className="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col h-full">
+              <div className="p-5 border-b border-slate-100">
+                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm">
+                    campaign
+                  </span>{" "}
+                  Comunicación Oficial
+                </h3>
+              </div>
+              <div className="p-5 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={handleSendCircular}
+                    className="p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors flex flex-col items-center gap-2 text-center group"
+                  >
+                    <span className="material-symbols-outlined text-slate-400 group-hover:text-blue-600 transition-colors">
+                      forward_to_inbox
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-600 uppercase">
+                      Circular General
+                    </span>
+                  </button>
+                  <button className="p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors flex flex-col items-center gap-2 text-center group">
+                    <span className="material-symbols-outlined text-slate-400 group-hover:text-amber-600 transition-colors">
+                      event_note
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-600 uppercase">
+                      Recordatorio CTE
+                    </span>
+                  </button>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100">
+                  <p className="text-[10px] uppercase font-bold text-slate-400 mb-2">
+                    Solicitar Acción a Rol:
+                  </p>
+                  <div className="flex gap-2 text-[10px] font-bold text-slate-500">
+                    <button className="px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200">
+                      Prefectura
+                    </button>
+                    <button className="px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200">
+                      Trabajo Social
+                    </button>
+                    <button className="px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200">
+                      Docentes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Admin Shortcuts/Audit */}
+          <div className="p-4 bg-slate-800 rounded-2xl text-white/80 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-white mb-1">
+                Auditoría y Supervisión
+              </p>
+              <p className="text-[10px] opacity-60">
+                Última sincronización: {new Date().toLocaleTimeString()}
+              </p>
+            </div>
+            <button
+              onClick={() => setCurrentModule(AppModule.APROBACIONES_PERSONAL)}
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold uppercase backdrop-blur-sm transition-colors border border-white/10"
+            >
+              Aprobaciones de Personal
+            </button>
           </div>
         </div>
 
-        {/* Strategic Tasks */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-            <span className="material-symbols-outlined text-amber-600">
-              rule
-            </span>
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex-1">
-              Pendientes de Dirección
-            </h3>
-          </div>
-          <div className="space-y-4">
-            <TaskItem
-              label="Firmar actas de consejo técnico"
-              date="Vence: Viernes 12"
-              checked={checklist.actas}
-              onToggle={() => toggleCheck("actas")}
-            />
-            <TaskItem
-              label="Autorizar compra de insumos (Enfermería)"
-              date="Expediente #4492"
-              checked={checklist.insumos}
-              onToggle={() => toggleCheck("insumos")}
-            />
-          </div>
-        </div>
-      </div>
+        {/* RIGHT PANEL: AGENDA & DECISION */}
+        <div className="space-y-6">
+          {/* AGENDA / CALENDAR */}
+          <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest">
+                Agenda del Día
+              </h3>
+              <span className="material-symbols-outlined text-slate-300">
+                calendar_month
+              </span>
+            </div>
+            <div className="space-y-4 relative">
+              {/* Time Line Line */}
+              <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-slate-100"></div>
 
-      {/* Admin Quick Modules */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-        <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-6">
-          Gestión Administrativa
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button
-            onClick={() => setCurrentModule(AppModule.APROBACIONES_PERSONAL)}
-            className="flex items-center gap-5 p-6 bg-slate-50 border border-slate-200 rounded-2xl hover:bg-blue-50 hover:border-blue-200 transition-all text-left group"
+              {calendarEvents.map((ev) => (
+                <div
+                  key={ev.id}
+                  className="relative flex items-start gap-4 z-10"
+                >
+                  <div className="w-10 text-[10px] font-black text-slate-400 text-right pt-1">
+                    {ev.time.split(" ")[0]}
+                  </div>
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full mt-1.5 border-2 border-white shadow-sm ${ev.type === "institutional" ? "bg-red-500" : ev.type === "admin" ? "bg-blue-500" : "bg-amber-500"}`}
+                  ></div>
+                  <div className="flex-1 pb-4 border-b border-slate-50 last:border-0 last:pb-0">
+                    <p className="text-xs font-bold text-slate-700">
+                      {ev.title}
+                    </p>
+                    <p className="text-[10px] text-slate-400 capitalize">
+                      {ev.type}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* DECISION PANEL (Context Sensitive) */}
+          <section
+            className={`bg-white border border-slate-200 rounded-2xl p-6 shadow-sm transition-all ${selectedAlertId ? "ring-4 ring-red-500/10 border-red-200" : ""}`}
           >
-            <div className="size-14 bg-white rounded-xl flex items-center justify-center border border-slate-200 shadow-sm group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-3xl text-blue-600">
-                how_to_reg
-              </span>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold text-slate-800">
-                Aprobaciones de Personal
-              </h4>
-              <p className="text-xs text-slate-500">
-                Validar solicitudes de registro institucional
-              </p>
-            </div>
-          </button>
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
+              {selectedAlertId ? "Panel de Decisión" : "Seleccione una alerta"}
+            </h3>
 
-          <div className="flex items-center gap-5 p-6 bg-slate-50/50 border border-slate-100 rounded-2xl opacity-60">
-            <div className="size-14 bg-white rounded-xl flex items-center justify-center border border-slate-100">
-              <span className="material-symbols-outlined text-3xl text-slate-300">
-                more_horiz
-              </span>
-            </div>
-            <div>
-              <h4 className="text-lg font-bold text-slate-400">
-                Próximos Módulos
-              </h4>
-              <p className="text-xs text-slate-400">
-                En desarrollo institucional
-              </p>
-            </div>
-          </div>
+            {selectedAlertId ? (
+              <div className="animate-fade-in space-y-4">
+                <div className="p-3 bg-red-50 border border-red-100 rounded-xl">
+                  <p className="text-[10px] font-black text-red-400 uppercase mb-1">
+                    Caso Seleccionado
+                  </p>
+                  <p className="text-sm font-bold text-red-900">
+                    {students.find((s) => s.id === selectedAlertId)?.name}
+                  </p>
+                  <p className="text-xs text-red-700 mt-1">
+                    Patrón de conducta reincidente (Nivel 3).
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">
+                    Acciones Directivas
+                  </p>
+                  <button
+                    onClick={() =>
+                      toast.success("Protocolo de Citatorio Urgente activado.")
+                    }
+                    className="w-full py-3 bg-slate-800 text-white rounded-lg text-xs font-bold uppercase hover:bg-slate-900 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      gavel
+                    </span>
+                    Citar Tutores (Urgente)
+                  </button>
+                  <button
+                    onClick={handleCloseCase}
+                    className="w-full py-3 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold uppercase hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-sm">
+                      check_circle
+                    </span>
+                    Cerrar con Evidencia
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 opacity-40">
+                <span className="material-symbols-outlined text-5xl text-slate-300">
+                  policy
+                </span>
+                <p className="text-xs font-bold text-slate-400 mt-3">
+                  Sin caso seleccionado
+                </p>
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </div>
   );
 };
 
-const KPIDrawer = ({ label, value, desc, icon, color }: any) => {
-  const colors: any = {
-    blue: "text-blue-700 bg-blue-50 border-blue-100",
-    red: "text-red-700 bg-red-50 border-red-100",
-    amber: "text-amber-700 bg-amber-50 border-amber-100",
-  };
-  return (
-    <div
-      className={`p-6 rounded-2xl border-2 ${colors[color]} shadow-sm relative overflow-hidden flex flex-col items-center text-center`}
-    >
-      <span className="material-symbols-outlined text-3xl mb-3 opacity-40">
-        {icon}
-      </span>
-      <p className="text-xs font-black uppercase tracking-widest mb-2 text-slate-500">
-        {label}
-      </p>
-      <p className="text-5xl font-black tracking-tight mb-2 text-slate-800">
-        {value}
-      </p>
-      <p className="text-xs font-bold opacity-60">{desc}</p>
-    </div>
-  );
-};
-
-const TaskItem = ({ label, date, checked, onToggle }: any) => (
+const KPICard = ({
+  id,
+  icon,
+  value,
+  label,
+  color,
+  trend,
+}: {
+  id?: string;
+  icon: string;
+  value: string;
+  label: string;
+  color: string;
+  trend?: string;
+}) => (
   <div
-    className={`p-4 border rounded-xl flex items-start gap-4 transition-all ${
-      checked ? "bg-slate-50 border-slate-100" : "bg-white border-slate-200"
-    }`}
+    id={id}
+    className={`${color} rounded-2xl p-4 text-white shadow-lg relative overflow-hidden group hover:scale-[1.02] transition-all`}
   >
-    <button
-      onClick={onToggle}
-      className={`size-6 rounded border-2 flex items-center justify-center transition-all ${
-        checked
-          ? "bg-blue-600 border-blue-600 text-white"
-          : "bg-white border-slate-300"
-      }`}
-    >
-      {checked && (
-        <span className="material-symbols-outlined text-xs font-bold">
-          check
+    <div className="absolute top-2 right-4 opacity-20 group-hover:opacity-40 transition-opacity">
+      <span className="material-symbols-outlined text-5xl">{icon}</span>
+    </div>
+    <div className="relative z-10 flex flex-col justify-between h-full">
+      <div className="flex items-center gap-2 mb-1">
+        <span className="material-symbols-outlined text-lg">{icon}</span>
+        <span className="text-[10px] font-black uppercase tracking-widest opacity-80">
+          {label}
         </span>
-      )}
-    </button>
-    <div className={checked ? "opacity-40" : ""}>
-      <p
-        className={`text-sm font-bold text-slate-800 ${
-          checked ? "line-through" : ""
-        }`}
-      >
-        {label}
-      </p>
-      <p className="text-xs text-slate-500 font-black uppercase mt-1 tracking-widest">
-        {date}
-      </p>
+      </div>
+      <div className="flex items-baseline gap-2">
+        <h3 className="text-3xl font-black tracking-tighter">{value}</h3>
+        {trend && (
+          <span className="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded">
+            {trend}
+          </span>
+        )}
+      </div>
     </div>
   </div>
 );
+
+export default DashboardDireccion;

@@ -72,18 +72,14 @@ export const DashboardOrientacion = () => {
   // Logic
   const studentsInTrouble = students.filter(
     (s) =>
-      s.caseState !== CaseState.CERRADO && s.caseState !== CaseState.OBSERVADO
+      s.caseState !== CaseState.CERRADO && s.caseState !== CaseState.OBSERVADO,
   );
 
   const patternAlerts = students.filter(
-    (s) => s.caseState === CaseState.PATRON_DETECTADO
+    (s) => s.caseState === CaseState.PATRON_DETECTADO,
   );
 
-  const nextAppointment = {
-    family: "Familia Hernández",
-    student: "Carlos H. (2°B)",
-    time: "Hoy, 10:00 AM",
-  };
+  const nextAppointment = null; // Removed hardcoded Carlos H. placeholder
 
   const handlePrintReport = () => {
     // Intentar imprimir directamente el reporte actual
@@ -98,14 +94,17 @@ export const DashboardOrientacion = () => {
         <div className="flex items-center gap-5">
           <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1 h-full bg-amber-500"></div>
-            <img
-              src="/assets/branding/ORIENTACION.png"
-              alt="Orientación"
-              className="w-14 h-14 object-contain"
-            />
+            <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
+              <span className="material-symbols-outlined text-3xl">
+                psychology
+              </span>
+            </div>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <h1
+              id="orientacion-title"
+              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+            >
               Orientación Educativa
             </h1>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
@@ -331,11 +330,11 @@ export const DashboardOrientacion = () => {
 
               <div className="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-500 hover:bg-slate-100 transition-colors cursor-pointer">
                 <p className="text-xs font-black text-slate-800 uppercase mb-1">
-                  Canalización UDEII
+                  Nueva Canalización
                 </p>
                 <div className="flex justify-between items-center text-xs text-slate-500 font-bold uppercase tracking-tight">
-                  <span>De: Psic. Ana</span>
-                  <span>Sofia G. (3ºA)</span>
+                  <span>Pendiente de Atención</span>
+                  <span>Sin Alumno Asignado</span>
                 </div>
               </div>
 
@@ -361,25 +360,36 @@ export const DashboardOrientacion = () => {
               Agenda de Seguimiento
             </h3>
 
-            <div className="space-y-5 relative z-10">
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 group hover:border-amber-500 transition-all cursor-pointer">
-                <p className="text-xs font-black text-amber-800 uppercase mb-2 flex items-center gap-2">
-                  <span className="size-2 bg-amber-600 rounded-full shadow-[0_0_5px_rgba(217,119,6,0.5)]"></span>
-                  PRÓXIMA SESIÓN
-                </p>
-                <p className="text-lg font-black text-slate-800 mb-1">
-                  {nextAppointment.family}
-                </p>
-                <p className="text-xs font-bold text-slate-400 uppercase italic mb-3">
-                  {nextAppointment.student}
-                </p>
-                <div className="flex items-center gap-2 bg-white border border-slate-100 px-3.5 py-2 rounded-xl w-fit text-xs font-black text-slate-700 shadow-sm">
-                  <span className="material-symbols-outlined text-lg text-amber-600">
-                    schedule
-                  </span>
-                  {nextAppointment.time}
+            <div id="citation-manager" className="space-y-5 relative z-10">
+              {nextAppointment ? (
+                <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 group hover:border-amber-500 transition-all cursor-pointer">
+                  <p className="text-xs font-black text-amber-800 uppercase mb-2 flex items-center gap-2">
+                    <span className="size-2 bg-amber-600 rounded-full shadow-[0_0_5px_rgba(217,119,6,0.5)]"></span>
+                    PRÓXIMA SESIÓN
+                  </p>
+                  <p className="text-lg font-black text-slate-800 mb-1">
+                    {nextAppointment.family}
+                  </p>
+                  <p className="text-xs font-bold text-slate-400 uppercase italic mb-3">
+                    {nextAppointment.student}
+                  </p>
+                  <div className="flex items-center gap-2 bg-white border border-slate-100 px-3.5 py-2 rounded-xl w-fit text-xs font-black text-slate-700 shadow-sm">
+                    <span className="material-symbols-outlined text-lg text-amber-600">
+                      schedule
+                    </span>
+                    {nextAppointment.time}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-slate-50/50 border border-slate-200 border-dashed rounded-2xl p-8 text-center">
+                  <span className="material-symbols-outlined text-slate-300 text-4xl mb-2">
+                    event_busy
+                  </span>
+                  <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                    Sin citas programadas
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <button

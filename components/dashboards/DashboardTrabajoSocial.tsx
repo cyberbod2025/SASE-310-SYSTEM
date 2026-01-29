@@ -140,7 +140,7 @@ export const DashboardTrabajoSocial = () => {
         ...j,
         studentName: s.name,
         group: s.group,
-      }))
+      })),
     )
     .sort((a, b) => b.issuedAt.localeCompare(a.issuedAt));
 
@@ -149,16 +149,19 @@ export const DashboardTrabajoSocial = () => {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
         <div className="flex items-center gap-5">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden hidden md:block">
             <div className="absolute top-0 right-0 w-1 h-full bg-orange-600"></div>
-            <img
-              src="/assets/branding/T.SOCIAL.png"
-              alt="Trabajo Social"
-              className="w-14 h-14 object-contain"
-            />
+            <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+              <span className="material-symbols-outlined text-3xl">
+                diversity_3
+              </span>
+            </div>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <h1
+              id="ts-header"
+              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+            >
               Trabajo Social
             </h1>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest">
@@ -176,12 +179,15 @@ export const DashboardTrabajoSocial = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1">
+        <div id="ts-form-justificante" className="lg:col-span-1">
           <JustificanteGenerator />
         </div>
 
         <div className="lg:col-span-2">
-          <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col h-full">
+          <div
+            id="ts-history"
+            className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col h-full"
+          >
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
                 <span className="material-symbols-outlined text-orange-600 text-[20px]">
@@ -243,8 +249,8 @@ export const DashboardTrabajoSocial = () => {
                               j.reason === "Médico"
                                 ? "bg-blue-50 text-blue-700 border-blue-100"
                                 : j.reason === "Legal"
-                                ? "bg-red-50 text-red-700 border-red-100"
-                                : "bg-orange-50 text-orange-700 border-orange-100"
+                                  ? "bg-red-50 text-red-700 border-red-100"
+                                  : "bg-orange-50 text-orange-700 border-orange-100"
                             }`}
                           >
                             {j.reason}

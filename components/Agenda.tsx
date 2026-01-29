@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../store";
 import toast from "react-hot-toast";
+import { CICLO_ESCOLAR } from "../config/sase.config";
 
 interface CalendarEvent {
   id: string;
@@ -15,7 +16,7 @@ const MOCK_EVENTS: CalendarEvent[] = [
   {
     id: "1",
     title: "Consejo Técnico Escolar",
-    date: "2024-01-26",
+    date: "2026-01-26",
     time: "08:00",
     type: "reunion",
     description: "Análisis participativo de resultados.",
@@ -23,14 +24,14 @@ const MOCK_EVENTS: CalendarEvent[] = [
   {
     id: "2",
     title: "Entrega de Evaluaciones",
-    date: "2024-01-30",
+    date: "2026-01-30",
     type: "entrega",
     description: "Periodo trimestral actual.",
   },
   {
     id: "3",
     title: "Ceremonia Cívica",
-    date: "2024-01-22",
+    date: "2026-01-28",
     time: "07:30",
     type: "evento",
     description: "Homenaje a la bandera.",
@@ -38,7 +39,7 @@ const MOCK_EVENTS: CalendarEvent[] = [
   {
     id: "4",
     title: "Examen Recuperación",
-    date: "2024-01-25",
+    date: "2026-01-29",
     time: "10:30",
     type: "evaluacion",
     description: "Módulo Matemáticas.",
@@ -49,7 +50,7 @@ export const Agenda: React.FC = () => {
   const { currentUserRole } = useApp();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [events, setEvents] = useState<CalendarEvent[]>(MOCK_EVENTS);
   const [showModal, setShowModal] = useState(false);
@@ -121,7 +122,9 @@ export const Agenda: React.FC = () => {
             <div className="flex items-center gap-3 mt-1 text-[11px] font-black uppercase tracking-widest text-slate-500">
               <span>Planificación Estratégica</span>
               <span className="text-slate-200">|</span>
-              <span className="text-blue-600">Ciclo 2024-2025</span>
+              <span className="text-blue-600">
+                Ciclo {CICLO_ESCOLAR.labelCorto}
+              </span>
             </div>
           </div>
         </div>
@@ -139,7 +142,7 @@ export const Agenda: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Calendar Card */}
-        <div className="lg:col-span-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden flex flex-col">
+        <div className="lg:col-span-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-sm flex flex-col">
           <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <div className="flex items-center gap-4">
               <button
@@ -147,8 +150,8 @@ export const Agenda: React.FC = () => {
                   setCurrentMonth(
                     new Date(
                       currentMonth.getFullYear(),
-                      currentMonth.getMonth() - 1
-                    )
+                      currentMonth.getMonth() - 1,
+                    ),
                   )
                 }
                 className="size-10 rounded-full hover:bg-white text-slate-400 hover:text-blue-700 transition-all border border-transparent hover:border-slate-200 flex items-center justify-center"
@@ -163,8 +166,8 @@ export const Agenda: React.FC = () => {
                   setCurrentMonth(
                     new Date(
                       currentMonth.getFullYear(),
-                      currentMonth.getMonth() + 1
-                    )
+                      currentMonth.getMonth() + 1,
+                    ),
                   )
                 }
                 className="size-10 rounded-full hover:bg-white text-slate-400 hover:text-blue-700 transition-all border border-transparent hover:border-slate-200 flex items-center justify-center"
@@ -208,13 +211,13 @@ export const Agenda: React.FC = () => {
                     day && setSelectedDate(day.toISOString().split("T")[0])
                   }
                   className={`aspect-square rounded-2xl flex flex-col items-center justify-center text-sm transition-all relative ${getDayStyle(
-                    day
+                    day,
                   )}`}
                 >
                   {day?.getDate()}
                   {day &&
                     events.some(
-                      (e) => e.date === day.toISOString().split("T")[0]
+                      (e) => e.date === day.toISOString().split("T")[0],
                     ) && (
                       <span className="absolute bottom-2 size-1 bg-current opacity-30 rounded-full"></span>
                     )}
@@ -254,8 +257,8 @@ export const Agenda: React.FC = () => {
                           event.type === "reunion"
                             ? "bg-blue-100 text-blue-700"
                             : event.type === "evaluacion"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-slate-100 text-slate-600"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-slate-100 text-slate-600"
                         }`}
                       >
                         {event.type}

@@ -40,15 +40,17 @@ interface AppContextType {
   addIncident: (
     studentId: string,
     type: IncidentType,
-    description: string
+    description: string,
   ) => void;
   addJustificante: (
     studentId: string,
-    data: Omit<Justificante, "id" | "issuedAt" | "folio">
+    data: Omit<Justificante, "id" | "issuedAt" | "folio">,
   ) => void;
   importStudents: (newStudents: Student[]) => void;
   quickRegisterOpen: boolean;
   setQuickRegisterOpen: (open: boolean) => void;
+  quickRegisterType: IncidentType;
+  openQuickRegister: (type?: IncidentType) => void;
   assistantMessage: string | null;
   isTutorMode: boolean;
   toggleTutorMode: () => void;
@@ -60,7 +62,7 @@ interface AppContextType {
     targetRecordId: string,
     studentName?: string,
     oldValues?: any,
-    newValues?: any
+    newValues?: any,
   ) => Promise<void>;
   currentModule: AppModule;
   setCurrentModule: (module: AppModule) => void;
@@ -203,6 +205,9 @@ export const AppProvider: React.FC<{
   }, [role]);
   const [students, setStudents] = useState<Student[]>([]);
   const [quickRegisterOpen, setQuickRegisterOpen] = useState(false);
+  const [quickRegisterType, setQuickRegisterType] = useState<IncidentType>(
+    IncidentType.CONDUCTA,
+  );
   const [assistantMessage, setAssistantMessage] = useState<string | null>(null);
 
   const [isTutorMode, setIsTutorMode] = useState(false);
@@ -246,8 +251,13 @@ export const AppProvider: React.FC<{
 
   const markNotificationRead = (id: string) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
+  };
+
+  const openQuickRegister = (type?: IncidentType) => {
+    if (type) setQuickRegisterType(type);
+    setQuickRegisterOpen(true);
   };
 
   const toggleTutorMode = () => {
@@ -262,12 +272,12 @@ export const AppProvider: React.FC<{
     targetRecordId: string,
     studentName?: string,
     oldValues?: any,
-    newValues?: any
+    newValues?: any,
   ) => {
     // Log to console for debugging
     console.log(
       `%c[AUDIT] ${actionType}: ${description} | Table: ${targetTable} | Record: ${targetRecordId}`,
-      "color: #ef4444; font-weight: bold;"
+      "color: #ef4444; font-weight: bold;",
     );
 
     // MÁSCARA DE SUPER ADMIN (CAJA NEGRA)
@@ -286,20 +296,20 @@ export const AppProvider: React.FC<{
 
     // Persist to Supabase audit_log table
     try {
-      const { error } = await supabase.from("auditoria").insert([
+      const { error } = await supabase.from("audit_log").insert([
         {
-          usuario_id: auditUserId,
-          email_usuario: auditUserEmail,
-          rol_usuario: auditUserRole,
-          tipo_accion: actionType,
-          descripcion_accion: internalNote
+          user_id: auditUserId,
+          user_email: auditUserEmail,
+          user_role: auditUserRole,
+          action_type: actionType,
+          action_description: internalNote
             ? `${description} [INTERNAL: ${internalNote}]`
             : description,
-          tabla_objetivo: targetTable,
-          id_registro_objetivo: targetRecordId,
-          nombre_alumno_objetivo: studentName,
-          valores_anteriores: oldValues ? JSON.stringify(oldValues) : null,
-          nuevos_valores: newValues ? JSON.stringify(newValues) : null,
+          target_table: targetTable,
+          target_record_id: targetRecordId,
+          target_student_name: studentName,
+          old_values: oldValues || null,
+          new_values: newValues || null,
         },
       ]);
 
@@ -315,12 +325,12 @@ export const AppProvider: React.FC<{
   const logAccess = (
     action: string,
     studentId: string,
-    studentName?: string
+    studentName?: string,
   ) => {
     // Log local immediately
     console.log(
       `%c[ACCESS LOG] Role: ${currentUserRole} | Action: ${action} | StudentID: ${studentId} | Time: ${new Date().toISOString()}`,
-      "color: #3b82f6; font-weight: bold;"
+      "color: #3b82f6; font-weight: bold;",
     );
 
     // Persist to audit_log as CONSULTA action
@@ -403,7 +413,7 @@ export const AppProvider: React.FC<{
   const addIncident = async (
     studentId: string,
     type: IncidentType,
-    description: string
+    description: string,
   ) => {
     // Optimistic Update
     const tempId = Math.random().toString(36).substr(2, 9);
@@ -433,7 +443,7 @@ export const AppProvider: React.FC<{
           newState = CaseState.PATRON_DETECTADO;
         }
         return { ...s, incidents: newIncidents, caseState: newState };
-      })
+      }),
     );
 
     // Dispatch Notifications based on Escalation Engine
@@ -454,8 +464,8 @@ export const AppProvider: React.FC<{
           priority === "CRITICAL"
             ? "error"
             : priority === "HIGH"
-            ? "warning"
-            : "info",
+              ? "warning"
+              : "info",
         actionModule: AppModule.REPORTES,
         targetRole: role, // We will filter by this in Layout/Sidebar later if needed, or just push to global for now
       }));
@@ -469,7 +479,7 @@ export const AppProvider: React.FC<{
           `Protocolo Activado: ${message}`,
           "incidencias",
           tempId,
-          students.find((s) => s.id === studentId)?.name
+          students.find((s) => s.id === studentId)?.name,
         );
       }
     }
@@ -498,7 +508,7 @@ export const AppProvider: React.FC<{
 
   const addJustificante = async (
     studentId: string,
-    data: Omit<Justificante, "id" | "issuedAt" | "folio">
+    data: Omit<Justificante, "id" | "issuedAt" | "folio">,
   ) => {
     // Optimistic Update
     const tempId = Math.random().toString(36).substr(2, 9);
@@ -514,12 +524,12 @@ export const AppProvider: React.FC<{
       prev.map((s) => {
         if (s.id !== studentId) return s;
         return { ...s, justificantes: [newJustLocal, ...s.justificantes] };
-      })
+      }),
     );
 
     // Persist
     try {
-      const { error } = await (supabase.from("justificantes") as any).insert([
+      const { error } = await supabase.from("justificantes").insert([
         {
           alumno_id: studentId,
           folio: folio,
@@ -528,7 +538,7 @@ export const AppProvider: React.FC<{
           motivo: data.reason,
           descripcion: data.description,
           emitido_por: user?.id,
-        } as any,
+        },
       ]);
       if (error) console.error("Error saving justificante:", error);
     } catch (err) {
@@ -544,17 +554,18 @@ export const AppProvider: React.FC<{
       prev.map((s) =>
         s.id === studentId
           ? { ...s, lastModifiedBy: modifiedBy, lastModifiedAt: timestamp }
-          : s
-      )
+          : s,
+      ),
     );
 
     // 2. Persist to Supabase
     try {
-      const { error } = await (supabase.from("alumnos") as any)
+      const { error } = await supabase
+        .from("alumnos")
         .update({
           modificado_por: modifiedBy,
           modificado_en: timestamp,
-        } as any)
+        })
         .eq("id", studentId);
 
       if (error) {
@@ -579,15 +590,19 @@ export const AppProvider: React.FC<{
   useEffect(() => {
     // Generate institutional message based on Role + Data State
     let msg = "";
+    const userName =
+      user?.user_metadata?.full_name ||
+      user?.email?.split("@")[0] ||
+      currentUserRole;
     const greeting = "Buenas tardes";
-    const contextPrefix = `${greeting}. (Turno Vespertino | CCT 09DES4310M).`;
+    const contextPrefix = `${greeting}, ${userName}. (Turno Vespertino | CCT 09DES4310M).`;
 
     switch (currentUserRole) {
       case UserRole.DOCENTE:
         const highRisk = students.filter(
           (s) =>
             s.caseState === CaseState.PATRON_DETECTADO ||
-            s.caseState === CaseState.INTERVENCION
+            s.caseState === CaseState.INTERVENCION,
         ).length;
         msg =
           highRisk > 0
@@ -603,7 +618,7 @@ export const AppProvider: React.FC<{
         break;
       case UserRole.ORIENTACION:
         const pendingCases = students.filter(
-          (s) => s.caseState === CaseState.PATRON_DETECTADO
+          (s) => s.caseState === CaseState.PATRON_DETECTADO,
         ).length;
         msg =
           pendingCases > 0
@@ -619,7 +634,7 @@ export const AppProvider: React.FC<{
       case UserRole.DIRECTIVO:
         const totalIncidents = students.reduce(
           (acc, s) => acc + s.incidents.length,
-          0
+          0,
         );
         msg = `${contextPrefix} Resumen ejecutivo: ${totalIncidents} incidencias este mes. Asistencia global: 92%.`;
         break;
@@ -648,6 +663,8 @@ export const AppProvider: React.FC<{
         importStudents,
         quickRegisterOpen,
         setQuickRegisterOpen,
+        quickRegisterType,
+        openQuickRegister,
         assistantMessage,
         isTutorMode,
         toggleTutorMode,

@@ -23,19 +23,66 @@ interface Solicitud {
   observaciones: string | null;
   estado: "PENDIENTE" | "APROBADA" | "RECHAZADA" | "OBSERVACIONES";
   observaciones_validacion: string | null;
+  metadata?: {
+    cct?: string;
+    folio_solicitud?: string;
+  };
 }
 
 export const AprobacionesPersonal: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(true);
-  const [procesando, setProcesando] = useState<string | null>(null);
+  const [assignmentData, setAssignmentData] = useState({
+    grupos: [] as string[],
+    materias: [] as string[],
+    es_tutor: false,
+    grupo_tutor: "",
+    matricula_sase: "",
+  });
+
   const [solicitudSeleccionada, setSolicitudSeleccionada] =
     useState<Solicitud | null>(null);
   const [motivoRechazo, setMotivoRechazo] = useState("");
+  const [procesando, setProcesando] = useState<string | null>(null);
 
   useEffect(() => {
     cargarSolicitudes();
   }, []);
+
+  const generarMatricula = (rol: string) => {
+    const year = new Date().getFullYear().toString().slice(-2);
+    const rolePrefix =
+      {
+        docente: "DOC",
+        prefectura: "PRE",
+        orientacion: "ORI",
+        trabajo_social: "SOC",
+        enfermeria: "MED",
+        udeii: "UDE",
+        secretaria: "SEC",
+        directivo: "DIR",
+      }[rol] || "PER";
+
+    // Using simple random suffix for now, can be replaced with
+    // sequence from DB if exact incremental order is required
+    const randomSuffix = Math.floor(100 + Math.random() * 900);
+    return `SASE-${year}-${rolePrefix}-${randomSuffix}`;
+  };
+
+  useEffect(() => {
+    if (solicitudSeleccionada) {
+      const rolPrincipal = solicitudSeleccionada.rol_solicitado[0];
+      setAssignmentData({
+        grupos: solicitudSeleccionada.grupos || [],
+        materias: solicitudSeleccionada.materias || [],
+        es_tutor: solicitudSeleccionada.es_tutor || false,
+        grupo_tutor: solicitudSeleccionada.grupo_tutor || "",
+        matricula_sase:
+          solicitudSeleccionada.matricula_sase ||
+          generarMatricula(rolPrincipal),
+      });
+    }
+  }, [solicitudSeleccionada]);
 
   const cargarSolicitudes = async () => {
     try {
@@ -55,6 +102,11 @@ export const AprobacionesPersonal: React.FC = () => {
   };
 
   const aprobarSolicitud = async (solicitud: Solicitud) => {
+    if (!assignmentData.matricula_sase) {
+      toast.error("Debe asignar una Matrícula SASE");
+      return;
+    }
+
     setProcesando(solicitud.id);
 
     try {
@@ -107,33 +159,34 @@ export const AprobacionesPersonal: React.FC = () => {
           toast("Modo Simulación: Aprobando sin crear Auth User real.", {
             icon: "🔧",
           });
-          // Generar ID ficticio para simulación
           userId = `sim-${Date.now()}`;
         }
       }
 
-      // 2. Calcular permisos combinados
-      const permisosCombinados = combinarPermisos(solicitud.rol_solicitado);
+      // 2. Calcular permisos combinados (Asumimos el rol principal como base)
+      const rolesFinales = [...solicitud.rol_solicitado];
+      if (assignmentData.es_tutor && !rolesFinales.includes("docente_tutor")) {
+        rolesFinales.push("docente_tutor");
+      }
+      const permisosCombinados = combinarPermisos(rolesFinales);
 
-      // 3. Crear perfil en perfiles_usuario (Si userId es real o simulado)
-      // Nota: Si es simulado, esto fallará si la FK a auth.users es estricta.
-      // Así que lo envolvemos también.
+      // 3. Crear perfil en perfiles_usuario
       try {
         const { error: perfilError } = await supabase
           .from("perfiles_usuario")
           .insert({
             id: userId,
-            matricula_sase: solicitud.matricula_sase,
-            rol: solicitud.rol_solicitado[0],
+            matricula_sase: assignmentData.matricula_sase,
+            rol: rolesFinales[0],
             nombre_completo: `${solicitud.nombres} ${solicitud.apellido_paterno} ${solicitud.apellido_materno}`,
             curp: solicitud.curp,
             email: solicitud.correo_institucional,
             telefono: solicitud.telefono,
-            materias: solicitud.materias,
-            grupos: solicitud.grupos,
+            materias: assignmentData.materias,
+            grupos: assignmentData.grupos,
             turno: solicitud.turno,
-            es_tutor: solicitud.es_tutor,
-            grupo_tutor: solicitud.grupo_tutor,
+            es_tutor: assignmentData.es_tutor,
+            grupo_tutor: assignmentData.grupo_tutor,
             alcances: permisosCombinados,
             estado_cuenta: "activo",
           });
@@ -141,7 +194,6 @@ export const AprobacionesPersonal: React.FC = () => {
         if (perfilError) throw perfilError;
       } catch (perfilErr) {
         console.warn("Perfil creation failed (DB constraint):", perfilErr);
-        // Continuamos para actualizar el estado de la solicitud
       }
 
       // 4. Actualizar solicitud -> APROBADA
@@ -152,6 +204,10 @@ export const AprobacionesPersonal: React.FC = () => {
           estado: "APROBADA",
           aprobado_por: userData?.user?.id || "admin-simulado",
           aprobado_en: new Date().toISOString(),
+          matricula_sase: assignmentData.matricula_sase,
+          es_tutor: assignmentData.es_tutor,
+          grupo_tutor: assignmentData.grupo_tutor,
+          grupos: assignmentData.grupos,
         })
         .eq("id", solicitud.id);
 
@@ -160,15 +216,15 @@ export const AprobacionesPersonal: React.FC = () => {
       // 5. Registrar en auditoría
       await supabase.from("audit_log").insert({
         action_type: "APROBACION_PERSONAL",
-        action_description: `Aprobada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Matrícula SASE asignada: ${solicitud.matricula_sase}`,
+        action_description: `Aprobada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Matrícula SASE asignada: ${assignmentData.matricula_sase}`,
         target_table: "solicitudes_alta_personal",
         target_record_id: solicitud.id,
         target_student_name: `${solicitud.nombres} ${solicitud.apellido_paterno}`,
-        new_values: { userIdAsignado: userId },
+        new_values: { userIdAsignado: userId, asignacion: assignmentData },
       });
 
       toast.success(
-        `✅ Solicitud aprobada (Simulada). Matrícula SASE: ${solicitud.matricula_sase}`,
+        `✅ Personal activado con éxito. Matrícula: ${assignmentData.matricula_sase}`,
       );
       cargarSolicitudes();
       setSolicitudSeleccionada(null);
@@ -203,7 +259,6 @@ export const AprobacionesPersonal: React.FC = () => {
 
       if (error) throw error;
 
-      // Registrar en auditoría
       await supabase.from("audit_log").insert({
         action_type: "RECHAZO_PERSONAL",
         action_description: `Rechazada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Motivo: ${motivoRechazo}`,
@@ -240,156 +295,100 @@ export const AprobacionesPersonal: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600/10 to-indigo-600/10 border border-purple-500/20 rounded-2xl p-6">
+      <div className="bg-[#1e2d45]/20 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/30">
-            <span className="material-symbols-outlined text-3xl text-purple-400">
-              how_to_reg
+          <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center border border-blue-500/30">
+            <span className="material-symbols-outlined text-4xl text-blue-400">
+              verified_user
             </span>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white">
-              Aprobaciones de Personal
+            <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+              Control de <span className="text-blue-500">Altas</span>
             </h2>
-            <p className="text-gray-400 text-sm">
-              Validar y activar solicitudes de alta institucional
+            <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">
+              Gestión Estratégica de Personal • SASE-310
             </p>
           </div>
         </div>
       </div>
 
-      {/* Estadísticas */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
-          <p className="text-yellow-400 text-xs uppercase tracking-wide mb-1">
-            Pendientes
-          </p>
-          <p className="text-3xl font-bold text-white">{pendientes.length}</p>
-        </div>
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
-          <p className="text-emerald-400 text-xs uppercase tracking-wide mb-1">
-            Aprobadas
-          </p>
-          <p className="text-3xl font-bold text-white">{aprobadas.length}</p>
-        </div>
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-          <p className="text-red-400 text-xs uppercase tracking-wide mb-1">
-            Rechazadas
-          </p>
-          <p className="text-3xl font-bold text-white">{rechazadas.length}</p>
-        </div>
+      <div className="grid grid-cols-3 gap-6">
+        <StatCard
+          label="Pendientes"
+          value={pendientes.length}
+          color="text-amber-500"
+          bg="bg-amber-500/5"
+        />
+        <StatCard
+          label="Aprobadas"
+          value={aprobadas.length}
+          color="text-emerald-500"
+          bg="bg-emerald-500/5"
+        />
+        <StatCard
+          label="Rechazadas"
+          value={rechazadas.length}
+          color="text-red-500"
+          bg="bg-red-500/5"
+        />
       </div>
 
-      {/* Solicitudes Pendientes */}
-      <div>
-        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-yellow-400">
-            pending_actions
-          </span>
-          Solicitudes Pendientes
+      <div className="space-y-4">
+        <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.4em] px-2 flex items-center gap-4">
+          Lista de Espera
+          <div className="flex-1 h-px bg-white/5"></div>
         </h3>
 
         {pendientes.length === 0 ? (
-          <div className="bg-black/20 border border-white/10 rounded-xl p-8 text-center">
-            <span className="material-symbols-outlined text-5xl text-gray-600 mb-2">
-              check_circle
+          <div className="bg-white/5 border border-white/5 rounded-3xl p-12 text-center">
+            <span className="material-symbols-outlined text-6xl text-white/10 mb-4">
+              emoji_events
             </span>
-            <p className="text-gray-400">No hay solicitudes pendientes</p>
+            <p className="text-white/40 font-bold uppercase tracking-widest">
+              Sin solicitudes pendientes
+            </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {pendientes.map((solicitud) => (
               <div
                 key={solicitud.id}
-                className="bg-[#0f172a]/95 border border-yellow-500/20 rounded-xl p-6 hover:border-yellow-500/40 transition-all"
+                className="group bg-[#1e2d45]/40 backdrop-blur-md border border-white/10 rounded-3xl p-6 hover:border-blue-500/50 transition-all cursor-pointer"
+                onClick={() => setSolicitudSeleccionada(solicitud)}
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="material-symbols-outlined text-yellow-400">
-                        person
-                      </span>
-                      <h4 className="text-lg font-bold text-white">
-                        {solicitud.nombres} {solicitud.apellido_paterno}{" "}
-                        {solicitud.apellido_materno}
-                      </h4>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div>
-                        <p className="text-gray-500">CURP</p>
-                        <p className="text-gray-300 font-mono">
-                          {solicitud.curp}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Matrícula SASE</p>
-                        <p className="text-emerald-400 font-mono font-bold">
-                          {solicitud.matricula_sase}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Correo</p>
-                        <p className="text-gray-300">
-                          {solicitud.correo_institucional}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">Teléfono</p>
-                        <p className="text-gray-300">
-                          {solicitud.telefono || "No proporcionado"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => setSolicitudSeleccionada(solicitud)}
-                    className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-300 text-sm transition-all"
-                  >
-                    Ver detalles
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {solicitud.rol_solicitado.map((rol) => (
-                    <span
-                      key={rol}
-                      className="px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-purple-300 text-xs font-medium"
-                    >
-                      {rol}
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/30 group-hover:bg-blue-600/20 group-hover:text-blue-400 transition-colors">
+                    <span className="material-symbols-outlined">
+                      person_pin
                     </span>
-                  ))}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-black text-white uppercase tracking-tight">
+                      {solicitud.nombres} {solicitud.apellido_paterno}
+                    </h4>
+                    <p className="text-[10px] font-bold text-white/40 tracking-widest uppercase">
+                      {solicitud.rol_solicitado.join(" + ")} • {solicitud.turno}
+                    </p>
+                  </div>
+                  <span className="material-symbols-outlined text-white/20">
+                    arrow_forward_ios
+                  </span>
                 </div>
 
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => aprobarSolicitud(solicitud)}
-                    disabled={procesando === solicitud.id}
-                    className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    {procesando === solicitud.id ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Procesando...
-                      </>
-                    ) : (
-                      <>
-                        <span className="material-symbols-outlined">
-                          check_circle
-                        </span>
-                        Aprobar y Activar
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setSolicitudSeleccionada(solicitud)}
-                    disabled={procesando === solicitud.id}
-                    className="flex-1 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                  >
-                    <span className="material-symbols-outlined">cancel</span>
-                    Rechazar
-                  </button>
+                <div className="grid grid-cols-2 gap-2 text-[9px] font-black uppercase tracking-widest">
+                  <div className="bg-white/5 p-2 rounded-lg text-white/40">
+                    CURP:{" "}
+                    <span className="text-white/70">
+                      {solicitud.curp.slice(0, 10)}...
+                    </span>
+                  </div>
+                  <div className="bg-white/5 p-2 rounded-lg text-white/40">
+                    Enviado:{" "}
+                    <span className="text-white/70">
+                      {new Date(solicitud.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -397,145 +396,212 @@ export const AprobacionesPersonal: React.FC = () => {
         )}
       </div>
 
-      {/* Modal de Detalles/Rechazo */}
       {solicitudSeleccionada && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0f172a] border border-white/20 rounded-2xl p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="text-2xl font-bold text-white">
-                Detalles de Solicitud
-              </h3>
-              <button
-                onClick={() => {
-                  setSolicitudSeleccionada(null);
-                  setMotivoRechazo("");
-                }}
-                className="text-gray-400 hover:text-white"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              {/* Información Personal */}
-              <div>
-                <h4 className="text-amber-400 font-bold mb-3 flex items-center gap-2">
-                  <span className="material-symbols-outlined">badge</span>
-                  Identidad Institucional
-                </h4>
-                <div className="bg-black/30 rounded-lg p-4 space-y-2 text-sm">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <p className="text-gray-500">Matrícula SASE</p>
-                      <p className="text-emerald-400 font-mono font-bold">
-                        {solicitudSeleccionada.matricula_sase}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">Turno</p>
-                      <p className="text-white capitalize">
-                        {solicitudSeleccionada.turno}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Roles Solicitados</p>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {solicitudSeleccionada.rol_solicitado.map((rol) => (
-                        <span
-                          key={rol}
-                          className="px-2 py-1 bg-purple-500/20 border border-purple-500/30 rounded text-purple-300 text-xs"
-                        >
-                          {rol}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Datos Académicos */}
-              {(solicitudSeleccionada.materias ||
-                solicitudSeleccionada.grupos) && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center p-6">
+          <div className="bg-[#0a1930] border border-white/10 rounded-[2.5rem] w-full max-w-4xl shadow-2xl relative overflow-hidden animate-fade-in-up">
+            <div className="p-8 md:p-10 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
                 <div>
-                  <h4 className="text-blue-400 font-bold mb-3 flex items-center gap-2">
-                    <span className="material-symbols-outlined">school</span>
-                    Información Académica
-                  </h4>
-                  <div className="bg-black/30 rounded-lg p-4 space-y-2 text-sm">
-                    {solicitudSeleccionada.materias && (
-                      <div>
-                        <p className="text-gray-500">Materias</p>
-                        <p className="text-white">
-                          {solicitudSeleccionada.materias.join(", ")}
-                        </p>
-                      </div>
-                    )}
-                    {solicitudSeleccionada.grupos && (
-                      <div>
-                        <p className="text-gray-500">Grupos</p>
-                        <p className="text-white">
-                          {solicitudSeleccionada.grupos.join(", ")}
-                        </p>
-                      </div>
-                    )}
-                    {solicitudSeleccionada.es_tutor && (
-                      <div>
-                        <p className="text-gray-500">Tutoría</p>
-                        <p className="text-white">
-                          Tutor de grupo {solicitudSeleccionada.grupo_tutor}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Observaciones */}
-              {solicitudSeleccionada.observaciones && (
-                <div>
-                  <h4 className="text-gray-400 font-bold mb-2">
-                    Observaciones del Solicitante
-                  </h4>
-                  <p className="text-gray-300 text-sm bg-black/30 rounded-lg p-4">
-                    {solicitudSeleccionada.observaciones}
+                  <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">
+                    Validación de{" "}
+                    <span className="text-blue-500">Expediente</span>
+                  </h3>
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">
+                    Acceso Nivel Direccion
                   </p>
                 </div>
-              )}
-
-              {/* Sección de Rechazo */}
-              <div className="border-t border-white/10 pt-6">
-                <h4 className="text-red-400 font-bold mb-3">
-                  Motivo de Rechazo (opcional)
-                </h4>
-                <textarea
-                  value={motivoRechazo}
-                  onChange={(e) => setMotivoRechazo(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white resize-none h-24 focus:border-red-500 focus:outline-none"
-                  placeholder="Explica el motivo del rechazo..."
-                />
+                <button
+                  onClick={() => setSolicitudSeleccionada(null)}
+                  className="size-10 bg-white/5 rounded-full flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
               </div>
 
-              {/* Acciones */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => aprobarSolicitud(solicitudSeleccionada)}
-                  disabled={!!procesando}
-                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  <span className="material-symbols-outlined">
-                    check_circle
-                  </span>
-                  Aprobar y Activar Cuenta
-                </button>
-                <button
-                  onClick={() => rechazarSolicitud(solicitudSeleccionada)}
-                  disabled={!!procesando}
-                  className="flex-1 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                >
-                  <span className="material-symbols-outlined">cancel</span>
-                  Rechazar Solicitud
-                </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {/* Info Solicitante */}
+                <div className="space-y-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">
+                      Identidad Civil
+                    </label>
+                    <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
+                      <p className="text-white font-black uppercase tracking-tight text-lg mb-1">
+                        {solicitudSeleccionada.nombres}{" "}
+                        {solicitudSeleccionada.apellido_paterno}{" "}
+                        {solicitudSeleccionada.apellido_materno}
+                      </p>
+                      <div className="flex flex-wrap gap-4 mt-2">
+                        <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                          CURP: {solicitudSeleccionada.curp}
+                        </p>
+                        {solicitudSeleccionada.metadata?.cct && (
+                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
+                            CCT: {solicitudSeleccionada.metadata.cct}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">
+                      Contacto Institucional
+                    </label>
+                    <div className="bg-white/5 rounded-2xl p-5 border border-white/5 space-y-3">
+                      <div className="flex items-center gap-3">
+                        <span className="material-symbols-outlined text-white/20 text-sm">
+                          mail
+                        </span>
+                        <span className="text-xs text-white/60 font-bold">
+                          {solicitudSeleccionada.correo_institucional}
+                        </span>
+                      </div>
+                      {solicitudSeleccionada.telefono && (
+                        <div className="flex items-center gap-3">
+                          <span className="material-symbols-outlined text-white/20 text-sm">
+                            phone
+                          </span>
+                          <span className="text-xs text-white/60 font-bold">
+                            {solicitudSeleccionada.telefono}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[11px] font-black text-red-500 uppercase tracking-[0.4em] flex items-center gap-4">
+                      Rechazar
+                      <div className="flex-1 h-px bg-red-500/10"></div>
+                    </label>
+                    <textarea
+                      value={motivoRechazo}
+                      onChange={(e) => setMotivoRechazo(e.target.value)}
+                      className="w-full bg-red-500/5 border border-red-500/20 rounded-2xl p-4 text-white text-xs placeholder:text-red-900/40 focus:ring-2 focus:ring-red-500/50 outline-none transition-all h-24"
+                      placeholder="Especificar motivo si se rechaza..."
+                    />
+                    <button
+                      onClick={() => rechazarSolicitud(solicitudSeleccionada)}
+                      className="w-full py-4 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white font-black text-[10px] uppercase tracking-widest rounded-xl border border-red-600/30 transition-all"
+                    >
+                      Ejecutar Rechazo
+                    </button>
+                  </div>
+                </div>
+
+                {/* Asignación Director */}
+                <div className="bg-[#1e2d45]/40 rounded-[2rem] p-8 border border-white/5 shadow-inner">
+                  <h4 className="text-[11px] font-black text-blue-500 uppercase tracking-[0.4em] mb-8 flex items-center gap-4">
+                    Configuración de Rol
+                    <div className="flex-1 h-px bg-blue-500/20"></div>
+                  </h4>
+
+                  <div className="space-y-6">
+                    <div className="group">
+                      <label className="block text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 ml-2">
+                        Matrícula SASE (Generada Automáticamente)
+                      </label>
+                      <div className="w-full bg-blue-600/10 border border-blue-500/30 rounded-2xl px-5 py-4 text-blue-400 font-black tracking-[0.3em] shadow-inner flex items-center justify-between">
+                        <span>{assignmentData.matricula_sase}</span>
+                        <span className="material-symbols-outlined text-xs opacity-50">
+                          lock
+                        </span>
+                      </div>
+                      <p className="mt-2 text-[8px] font-bold text-white/20 uppercase tracking-widest ml-2">
+                        Identificador inamovible para expediente auditado
+                      </p>
+                    </div>
+
+                    <div className="group">
+                      <label className="block text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 ml-2">
+                        Grupos Asignados (ej: 1A, 2B)
+                      </label>
+                      <input
+                        type="text"
+                        value={assignmentData.grupos.join(", ")}
+                        onChange={(e) =>
+                          setAssignmentData({
+                            ...assignmentData,
+                            grupos: e.target.value
+                              .split(",")
+                              .map((g) => g.trim().toUpperCase()),
+                          })
+                        }
+                        placeholder="SEPARAR CON COMAS"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold outline-none focus:border-blue-500 transition-all"
+                      />
+                    </div>
+
+                    <div className="flex border-t border-white/5 pt-6 mt-6">
+                      <div className="flex-1">
+                        <label className="block text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">
+                          Asignar Tutoría
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setAssignmentData({
+                              ...assignmentData,
+                              es_tutor: !assignmentData.es_tutor,
+                            })
+                          }
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${assignmentData.es_tutor ? "bg-emerald-600/20 border-emerald-500 text-emerald-400" : "bg-white/5 border-white/5 text-white/40"}`}
+                        >
+                          <span className="material-symbols-outlined text-sm">
+                            {assignmentData.es_tutor
+                              ? "check_circle"
+                              : "circle"}
+                          </span>
+                          <span className="text-[10px] font-black uppercase">
+                            Es Tutor
+                          </span>
+                        </button>
+                      </div>
+                      {assignmentData.es_tutor && (
+                        <div className="flex-1">
+                          <label className="block text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-2">
+                            Grupo Tutoreado
+                          </label>
+                          <input
+                            type="text"
+                            value={assignmentData.grupo_tutor}
+                            onChange={(e) =>
+                              setAssignmentData({
+                                ...assignmentData,
+                                grupo_tutor: e.target.value.toUpperCase(),
+                              })
+                            }
+                            placeholder="EJ: 1-D"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-black outline-none focus:border-emerald-500 transition-all"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-8">
+                      <button
+                        disabled={procesando === solicitudSeleccionada.id}
+                        onClick={() => aprobarSolicitud(solicitudSeleccionada)}
+                        className="w-full h-16 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-900/40 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                      >
+                        {procesando === solicitudSeleccionada.id ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Procesando...
+                          </>
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined">
+                              how_to_reg
+                            </span>
+                            Activar Personal
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -544,3 +610,24 @@ export const AprobacionesPersonal: React.FC = () => {
     </div>
   );
 };
+
+const StatCard = ({
+  label,
+  value,
+  color,
+  bg,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  bg: string;
+}) => (
+  <div
+    className={`${bg} border border-white/5 rounded-3xl p-6 transition-all hover:scale-105`}
+  >
+    <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-1">
+      {label}
+    </p>
+    <p className={`text-4xl font-black italic ${color}`}>{value}</p>
+  </div>
+);

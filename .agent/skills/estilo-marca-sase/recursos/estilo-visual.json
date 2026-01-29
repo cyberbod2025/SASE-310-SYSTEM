@@ -1,0 +1,51 @@
+{
+  "marca": "SASE",
+  "estilo_base": "Dark Premium Glassmorphism",
+  "objetivo": "Transmitir alto valor, modernidad y potencia tecnológica.",
+  "paleta": {
+    "fondo_main": "#020617",
+    "fondo_secundario": "#0B1220",
+    "superficie_glass": "rgba(255, 255, 255, 0.03)",
+    "borde_glass": "rgba(255, 255, 255, 0.1)",
+    "acento_primario": "#FF9605",
+    "acento_secundario": "#3B82F6",
+    "glows": ["#FF9605", "#3B82F6", "#8B5CF6"],
+    "texto": {
+      "principal": "#FFFFFF",
+      "secundario": "#94A3B8",
+      "terciario": "#475569"
+    }
+  },
+  "efectos": {
+    "glass": "backdrop-filter: blur(12px); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);",
+    "glow_card": "box-shadow: 0 0 40px -10px rgba(0,0,0,0.5);",
+    "glow_text": "text-shadow: 0 0 20px rgba(255,255,255,0.1);"
+  },
+  "tipografia": {
+    "titulares": "Inter",
+    "cuerpo": "Inter",
+    "pesos": {
+      "light": 300,
+      "normal": 400,
+      "medium": 500,
+      "bold": 700
+    }
+  },
+  "formas": {
+    "radio_tarjeta": "24px",
+    "radio_boton": "16px",
+    "radio_input": "16px"
+  },
+  "componentes": {
+    "boton_principal": "Gradiente sutil, glow al hover, texto bold",
+    "cards": "Estilo cristal, border sutil, sombra profunda",
+    "inputs": "Fondo oscuro translúcido, borde brillante al focus"
+  },
+  "prohibiciones": [
+    "Diseño plano aburrido",
+    "Sombras duras",
+    "Fondos blancos puros (salvo papel específico)",
+    "Estética 'Windows 95' o gubernamental vieja",
+    "Colores saturados sin propósito"
+  ]
+}

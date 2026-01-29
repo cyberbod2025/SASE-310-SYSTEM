@@ -43,14 +43,56 @@ export const TutorialController: React.FC = () => {
     ];
 
     const stepsByRole: Record<string, any[]> = {
+      [UserRole.DIRECTIVO]: [
+        ...commonSteps,
+        {
+          element: "#dashboard-header",
+          popover: {
+            title: "Centro de Mando",
+            description:
+              "Visualice el estado general de la institución y el semáforo de riesgo.",
+            side: "bottom",
+            align: "start",
+          },
+        },
+        {
+          element: "#kpi-risk",
+          popover: {
+            title: "Casos Críticos",
+            description:
+              "Monitoreo en tiempo real de los alumnos que requieren intervención inmediata.",
+            side: "bottom",
+            align: "start",
+          },
+        },
+        {
+          element: "#panel-risk-groups",
+          popover: {
+            title: "Detalle de Riesgo",
+            description:
+              "Gestione los casos específicos y tome decisiones directivas.",
+            side: "top",
+            align: "center",
+          },
+        },
+        {
+          element: "#export-btn",
+          popover: {
+            title: "Informes Ejecutivos",
+            description:
+              "Genere informes detallados para supervisión o juntas de consejo.",
+            side: "left",
+            align: "start",
+          },
+        },
+      ],
       [UserRole.DOCENTE]: [
         ...commonSteps,
         {
           element: "#docente-dashboard-title",
           popover: {
-            title: "Panel Docente",
-            description:
-              "Bienvenido a tu centro de control. Aquí verás el estado general de tus grupos.",
+            title: "Control de Aula",
+            description: "Gestione sus grupos y materias desde un solo lugar.",
             side: "bottom",
             align: "start",
           },
@@ -58,102 +100,19 @@ export const TutorialController: React.FC = () => {
         {
           element: "#docente-tabs",
           popover: {
-            title: "Herramientas de Clase",
+            title: "Módulos de Grupo",
             description:
-              "Cambia entre el Panel Principal, Pase de Lista y Captura de Calificaciones.",
-            side: "top",
+              "Acceda al Pase de Lista, Calificaciones y Panel General.",
+            side: "bottom",
             align: "start",
           },
         },
         {
           element: "#risk-semaphore",
           popover: {
-            title: "Semáforo de Riesgo",
+            title: "Semáforo de Alumnos",
             description:
-              "Visualiza rápidamente cuántos alumnos requieren atención prioritaria.",
-            side: "right",
-            align: "start",
-          },
-        },
-      ],
-      [UserRole.ORIENTACION]: [
-        ...commonSteps,
-        {
-          element: "#orientacion-title",
-          popover: {
-            title: "Módulo de Orientación",
-            description: "Gestión de seguimiento conductual y emocional.",
-            side: "bottom",
-            align: "start",
-          },
-        },
-        {
-          element: "#citation-manager",
-          popover: {
-            title: "Gestión de Citatorios",
-            description: "Programa y administra citas con padres de familia.",
-            side: "left",
-            align: "start",
-          },
-        },
-      ],
-      [UserRole.ENFERMERIA]: [
-        ...commonSteps,
-        {
-          element: "#enfermeria-header",
-          popover: {
-            title: "Enfermería Escolar",
-            description: "Panel de control para salud y primeros auxilios.",
-            side: "bottom",
-            align: "start",
-          },
-        },
-        {
-          element: "#enfermeria-alerts",
-          popover: {
-            title: "Alertas Médicas",
-            description:
-              "Monitorea estudiantes con condiciones críticas en tiempo real.",
-            side: "bottom",
-            align: "start",
-          },
-        },
-        {
-          element: "#enfermeria-inventory",
-          popover: {
-            title: "Control de Inventario",
-            description: "Gestiona medicamentos y material de curación.",
-            side: "left",
-            align: "center",
-          },
-        },
-      ],
-      [UserRole.SECRETARIA]: [
-        ...commonSteps,
-        {
-          element: "#secretaria-header",
-          popover: {
-            title: "Control Escolar",
-            description: "Gestión administrativa y documental.",
-            side: "bottom",
-            align: "start",
-          },
-        },
-        {
-          element: "#secretaria-search",
-          popover: {
-            title: "Búsqueda Avanzada",
-            description: "Localiza expedientes por nombre, matrícula o grupo.",
-            side: "bottom",
-            align: "center",
-          },
-        },
-        {
-          element: "#secretaria-list",
-          popover: {
-            title: "Directorio Estudiantil",
-            description:
-              "Consulta, edita y genera documentación (Boletas/Kardex) desde aquí.",
+              "Identifique rápidamente a los estudiantes que necesitan apoyo académico o conductual.",
             side: "top",
             align: "center",
           },
@@ -164,8 +123,8 @@ export const TutorialController: React.FC = () => {
         {
           element: "#pref-header",
           popover: {
-            title: "Control de Prefectura",
-            description: "Gestión de disciplina y reportes diarios.",
+            title: "Operativo de Prefectura",
+            description: "Controle la disciplina y asistencia en tiempo real.",
             side: "bottom",
             align: "start",
           },
@@ -173,20 +132,43 @@ export const TutorialController: React.FC = () => {
         {
           element: "#pref-kpi-grid",
           popover: {
-            title: "Indicadores Clave",
-            description: "Monitoreo en tiempo real de asistencia y retardos.",
+            title: "Estadísticas del Turno",
+            description: "Visualice retardos, faltas y reportes del día.",
             side: "bottom",
-            align: "start",
+            align: "center",
           },
         },
         {
           element: "#pref-quick-register",
           popover: {
-            title: "Registro Express",
+            title: "Registro Ágil",
             description:
-              "Captura rápida de incidencias (uniforme, retardos) por matrícula.",
-            side: "right",
+              "Registre incidencias con un solo clic o usando el escáner de matrícula.",
+            side: "top",
             align: "center",
+          },
+        },
+      ],
+      [UserRole.ORIENTACION]: [
+        ...commonSteps,
+        {
+          element: "#orientacion-title",
+          popover: {
+            title: "Acompañamiento",
+            description:
+              "Gestione el bienestar emocional y académico de los alumnos.",
+            side: "bottom",
+            align: "start",
+          },
+        },
+        {
+          element: "#citation-manager",
+          popover: {
+            title: "Agenda de Citatorios",
+            description:
+              "Administre las citas con padres de familia y el seguimiento de casos.",
+            side: "left",
+            align: "start",
           },
         },
       ],
@@ -195,32 +177,159 @@ export const TutorialController: React.FC = () => {
         {
           element: "#ts-header",
           popover: {
-            title: "Trabajo Social",
-            description: "Gestión de intervención social y justificantes.",
+            title: "Gestión Social",
+            description:
+              "Control de justificantes y vinculación con la comunidad escolar.",
             side: "bottom",
             align: "start",
           },
         },
         {
-          element: "#ts-generator",
+          element: "#ts-form-justificante",
           popover: {
-            title: "Generador de Justificantes",
-            description:
-              "Emite documentos oficiales con opción de dictado por voz.",
+            title: "Emisor de Justificantes",
+            description: "Genere y timbre justificantes oficiales rápidamente.",
             side: "right",
             align: "start",
           },
         },
+        {
+          element: "#ts-history",
+          popover: {
+            title: "Archivo Histórico",
+            description:
+              "Consulte todos los justificantes emitidos por la institución.",
+            side: "left",
+            align: "start",
+          },
+        },
       ],
-      [UserRole.DIRECTIVO]: [
+      [UserRole.PROMOTORA]: [
         ...commonSteps,
         {
-          element: "body", // No hay IDs específicos aun, step global
+          element: "#promotora-header",
           popover: {
-            title: "Vista Directiva",
+            title: "Fomento a la Lectura",
             description:
-              "Acceso privilegiado a todos los KPIs de la institución.",
-            side: "mid-center",
+              "Gestione las actividades y avances de los grupos asignados.",
+            side: "bottom",
+            align: "start",
+          },
+        },
+        {
+          element: "#promotora-groups",
+          popover: {
+            title: "Grupos Asignados",
+            description:
+              "Visualice el estado de cada grupo bajo su supervisión.",
+            side: "bottom",
+            align: "center",
+          },
+        },
+        {
+          element: "#promotora-tabs",
+          popover: {
+            title: "Registro de Avances",
+            description:
+              "Documente actividades, eventos y evidencias fotográficas.",
+            side: "top",
+            align: "center",
+          },
+        },
+      ],
+      [UserRole.SECRETARIA]: [
+        ...commonSteps,
+        {
+          element: "#secretaria-header",
+          popover: {
+            title: "Control Escolar",
+            description:
+              "Gestión administrativa de la matrícula y expedientes.",
+            side: "bottom",
+            align: "start",
+          },
+        },
+        {
+          element: "#secretaria-search",
+          popover: {
+            title: "Búsqueda Global",
+            description:
+              "Encuentre cualquier expediente por nombre o matrícula instantáneamente.",
+            side: "bottom",
+            align: "center",
+          },
+        },
+        {
+          element: "#secretaria-list",
+          popover: {
+            title: "Directorio Estudiantil",
+            description: "Acceso total a la base de datos institucional.",
+            side: "top",
+            align: "center",
+          },
+        },
+      ],
+      [UserRole.UDEII]: [
+        ...commonSteps,
+        {
+          element: "#udeii-header",
+          popover: {
+            title: "Inclusión Educativa",
+            description:
+              "Acompañamiento a alumnos con Barreras para el Aprendizaje (BAP).",
+            side: "bottom",
+            align: "start",
+          },
+        },
+        {
+          element: "#udeii-new",
+          popover: {
+            title: "Nuevos Expedientes",
+            description: "Inicie el seguimiento especializado para un alumno.",
+            side: "left",
+            align: "start",
+          },
+        },
+        {
+          element: "#udeii-list",
+          popover: {
+            title: "Padrón de Inclusión",
+            description:
+              "Gestione los ajustes razonables y bitácoras de seguimiento.",
+            side: "top",
+            align: "center",
+          },
+        },
+      ],
+      [UserRole.ENFERMERIA]: [
+        ...commonSteps,
+        {
+          element: "#enfermeria-header",
+          popover: {
+            title: "Servicio Médico",
+            description:
+              "Control de salud, alergias y atención de primeros auxilios.",
+            side: "bottom",
+            align: "start",
+          },
+        },
+        {
+          element: "#enfermeria-alerts",
+          popover: {
+            title: "Alertas Médicas",
+            description:
+              "Monitoreo constante de alumnos con condiciones de salud críticas.",
+            side: "bottom",
+            align: "center",
+          },
+        },
+        {
+          element: "#enfermeria-inventory",
+          popover: {
+            title: "Estadísticas de Salud",
+            description:
+              "Seguimiento a consultas diarias y administración de medicamentos.",
+            side: "top",
             align: "center",
           },
         },
@@ -234,68 +343,67 @@ export const TutorialController: React.FC = () => {
     const steps = stepsByRole[currentUserRole];
 
     if (steps && !hasSeenTutorial) {
-      // Mensaje de bienvenida SASE-IA
-      setTimeout(() => {
-        toast.custom(
-          (t) => (
-            <div
-              className={`${
-                t.visible ? "animate-enter" : "animate-leave"
-              } max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-            >
-              <div className="flex-1 w-0 p-4">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 pt-0.5">
-                    <img
-                      className="h-10 w-10 rounded-full object-cover"
-                      src="/assets/branding/AI_AVATAR_SASE.jpg"
-                      alt="IA SASE"
-                    />
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      Hola, soy SASE IA
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      Bienvenido al sistema. Permíteme guiarte en un breve
-                      recorrido por tus nuevas herramientas.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex border-l border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={() => toast.dismiss(t.id)}
-                  className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  Omitir
-                </button>
-              </div>
-            </div>
-          ),
-          { duration: 5000 }
-        );
-      }, 500);
-
       const driverObj = driver({
         showProgress: true,
         steps: steps,
         nextBtnText: "Siguiente",
         prevBtnText: "Atrás",
-        doneBtnText: "Entendido",
+        doneBtnText: "¡Empezar a trabajar!",
         onDestroyed: () => {
           // Marcar como visto al finalizar o cerrar
           localStorage.setItem(tutorialKey, "true");
-          toast.success(
-            "¡Tutorial completado! Recuerda que siempre estoy aquí para ayudarte."
+
+          // Bienvenida FINAL de la IA (User request: IA welcome after tutorial)
+          toast.custom(
+            (t) => (
+              <div
+                className={`${
+                  t.visible ? "animate-enter" : "animate-leave"
+                } max-w-md w-full bg-[#0a1930] shadow-2xl rounded-2xl pointer-events-auto flex border border-white/10 backdrop-blur-xl`}
+              >
+                <div className="flex-1 w-0 p-5">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 pt-0.5">
+                      <div className="relative size-12 shrink-0 flex items-center justify-center">
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 animate-[spin_3s_linear_infinite] blur-sm opacity-50"></div>
+                        <div className="absolute inset-0.5 rounded-full bg-black/90 flex items-center justify-center">
+                          <img
+                            className="h-8 w-8 object-contain"
+                            src="/assets/branding/IA-SASE.png"
+                            alt="IA SASE"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="ml-4 flex-1">
+                      <p className="text-sm font-black text-white uppercase tracking-tighter italic">
+                        PROTOCOLOS INICIADOS
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-blue-200/70 leading-relaxed uppercase tracking-widest">
+                        ¡Excelente! Ahora tienes el control total. Soy tu
+                        asistente virtual y estaré presente en cada módulo para
+                        apoyarte.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex border-l border-white/5">
+                  <button
+                    onClick={() => toast.dismiss(t.id)}
+                    className="w-full border border-transparent rounded-none rounded-r-2xl p-4 flex items-center justify-center text-xs font-black text-blue-400 hover:text-white uppercase tracking-widest transition-colors"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            ),
+            { duration: 6000 },
           );
         },
       });
 
-      // Delay para asegurar que el DOM esté listo y el toast aparezca primero
-      setTimeout(() => {
-        driverObj.drive();
-      }, 2500); // Dar tiempito para leer el mensaje de la IA
+      // Iniciar el tour inmediatamente si el DOM está listo
+      setTimeout(() => driverObj.drive(), 1000);
     }
   }, [currentUserRole]);
 

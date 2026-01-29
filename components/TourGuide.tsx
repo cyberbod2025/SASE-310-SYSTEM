@@ -6,8 +6,14 @@ import { UserRole } from "../types";
 // Tour Principal
 export const startProductTour = (
   userName: string = "Usuario",
-  role: UserRole = UserRole.DOCENTE
+  role: UserRole = UserRole.DOCENTE,
 ) => {
+  // Prevenir que se inicien múltiples tours al mismo tiempo
+  if (document.querySelector(".driver-popover")) {
+    console.warn("Tour ya está en ejecución");
+    return;
+  }
+
   // Marcamos que el tour está activo para que el modal lo detecte
   localStorage.setItem("sase_tour_active", "true");
 
@@ -102,7 +108,7 @@ export const startProductTour = (
             side: "left",
             align: "center",
           },
-        }
+        },
       );
       break;
 
@@ -157,7 +163,7 @@ export const startProductTour = (
             side: "left",
             align: "center",
           },
-        }
+        },
       );
       break;
 
@@ -182,7 +188,7 @@ export const startProductTour = (
             side: "right",
             align: "center",
           },
-        }
+        },
       );
       break;
 
@@ -216,19 +222,16 @@ export const startProductTour = (
     showProgress: true,
     animate: true,
     allowClose: true,
+    stagePadding: 4,
     doneBtnText: "¡Empezar a trabajar!",
     nextBtnText: "Siguiente ➡",
     prevBtnText: "⬅ Atrás",
     progressText: "Paso {{current}} de {{total}}",
     steps: steps,
     onDestroyStarted: () => {
-      if (
-        !driverObj.hasNextStep() ||
-        confirm("¿Seguro que quieres terminar el tour?")
-      ) {
-        localStorage.removeItem("sase_tour_active");
-        driverObj.destroy();
-      }
+      // Cleanup cleanup
+      localStorage.removeItem("sase_tour_active");
+      driverObj.destroy();
     },
   });
 
