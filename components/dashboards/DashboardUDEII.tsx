@@ -4,7 +4,7 @@ import { useApp } from "../../store";
 import { GenericActionModal } from "../GenericActionModal";
 
 export const DashboardUDEII = () => {
-  const { students } = useApp();
+  const { students, addIncident } = useApp();
   const studentsWithBAP = students.filter((s) => s.bapInfo?.hasBAP);
 
   // Modal state for adding adjustments
@@ -26,6 +26,25 @@ export const DashboardUDEII = () => {
     toast.success("Ajuste añadido al protocolo institucional.");
     setIsModalOpen(false);
     setSelectedStudentId(null);
+  };
+
+  const handleNotifyTeachers = async (studentId: string) => {
+    const student = students.find((s) => s.id === studentId);
+    if (!student || !student.bapInfo) return;
+
+    try {
+      await addIncident(
+        studentId,
+        "ACADEMICO" as any,
+        `💎 AJUSTES RAZONABLES (UDEII): El alumno cuenta con seguimiento de inclusión. Ajustes clave: ${student.bapInfo.accommodations.join(", ")}. Favor de aplicarlos en sus planeaciones.`,
+      );
+      toast.success(
+        "Estrategias de inclusión difundidas a docentes del grupo",
+        { icon: "🤝" },
+      );
+    } catch (err) {
+      toast.error("Error al difundir ajustes");
+    }
   };
 
   return (
@@ -177,14 +196,23 @@ export const DashboardUDEII = () => {
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end relative z-10">
+                <div className="mt-8 pt-6 border-t border-slate-100 flex flex-wrap justify-end gap-3 relative z-10">
+                  <button
+                    onClick={() => handleNotifyTeachers(s.id)}
+                    className="px-6 py-3 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl text-xs font-black text-purple-700 uppercase tracking-widest shadow-sm transition-all flex items-center gap-2 group"
+                  >
+                    <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">
+                      campaign
+                    </span>
+                    Difundir a Docentes
+                  </button>
                   <button
                     onClick={() =>
                       toast.success("Abriendo Bitácora de Seguimiento UDEII...")
                     }
-                    className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-purple-700 uppercase tracking-widest shadow-sm transition-all flex items-center gap-2"
+                    className="px-6 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-slate-700 uppercase tracking-widest shadow-sm transition-all flex items-center gap-2"
                   >
-                    Consultar Bitácora de Inclusión
+                    Consultar Bitácora
                     <span className="material-symbols-outlined text-[18px]">
                       arrow_right_alt
                     </span>

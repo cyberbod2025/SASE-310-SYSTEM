@@ -6,6 +6,7 @@ import { Inscripciones } from "../Inscripciones";
 import { Archivo } from "../Archivo";
 import { CICLO_ESCOLAR } from "../../config/sase.config";
 import { useAuth } from "../AuthProvider";
+import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
 
 export const DashboardSecretaria = () => {
   const {
@@ -18,6 +19,8 @@ export const DashboardSecretaria = () => {
   } = useApp();
   const { user } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showAdvancedPanel, setShowAdvancedPanel] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const activeUserName =
@@ -370,6 +373,23 @@ export const DashboardSecretaria = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
                         <button
+                          onClick={() => {
+                            setSelectedStudent(student);
+                            setShowAdvancedPanel(true);
+                          }}
+                          className={`p-2 rounded-lg transition-all border ${
+                            showAdvancedPanel &&
+                            selectedStudent?.id === student.id
+                              ? "bg-blue-50 text-blue-700 border-blue-200 shadow-inner"
+                              : "bg-white text-slate-400 hover:text-blue-600 border-slate-200 hover:border-blue-300"
+                          }`}
+                          title="Gestión Avanzada y IA"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            settings_suggest
+                          </span>
+                        </button>
+                        <button
                           onClick={() => handleEdit(student.id)}
                           className={`p-2 rounded-lg transition-all border ${
                             editingId === student.id
@@ -393,15 +413,6 @@ export const DashboardSecretaria = () => {
                             print
                           </span>
                         </button>
-                        <button
-                          onClick={() => toast.success("Exportando datos")}
-                          className="p-2 rounded-lg bg-white text-slate-400 hover:text-indigo-600 border border-slate-200 hover:border-indigo-300 transition-all"
-                          title="Exportar Registro"
-                        >
-                          <span className="material-symbols-outlined text-[20px]">
-                            file_download
-                          </span>
-                        </button>
                       </div>
                     </td>
                   </tr>
@@ -411,6 +422,12 @@ export const DashboardSecretaria = () => {
           )}
         </div>
       </div>
+      {showAdvancedPanel && selectedStudent && (
+        <StudentAdvancedPanel
+          student={selectedStudent}
+          onClose={() => setShowAdvancedPanel(false)}
+        />
+      )}
     </div>
   );
 };

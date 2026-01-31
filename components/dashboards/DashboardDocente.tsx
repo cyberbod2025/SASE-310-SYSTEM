@@ -579,9 +579,19 @@ const MetroStudentCard = ({ student, onClick }: any) => {
           {student.matricula}
         </span>
       </div>
-      {student.incidents.length > 0 && (
-        <div className="w-2 h-2 rounded-full bg-red-500"></div>
-      )}
+      <div className="flex gap-1 items-center">
+        {student.isDistancia && (
+          <span
+            className="text-[10px] font-black bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-sm uppercase tracking-tighter"
+            title="Modo a Distancia"
+          >
+            Distancia
+          </span>
+        )}
+        {student.incidents.length > 0 && (
+          <div className="w-2 h-2 rounded-full bg-red-500"></div>
+        )}
+      </div>
     </button>
   );
 };

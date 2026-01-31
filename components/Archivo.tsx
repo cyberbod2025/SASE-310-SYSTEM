@@ -12,7 +12,7 @@ export const Archivo: React.FC = () => {
   const filteredStudents = students.filter(
     (s) =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.matricula.includes(search)
+      s.matricula.includes(search),
   );
 
   useEffect(() => {
@@ -52,8 +52,12 @@ export const Archivo: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-text-main">Archivo Digital</h2>
-          <p className="text-text-secondary">Gestión Documental Centralizada</p>
+          <h2 className="text-2xl font-bold text-text-main">
+            Expediente Digital
+          </h2>
+          <p className="text-text-secondary">
+            Información y Documentación del Alumnado
+          </p>
         </div>
         <div className="flex bg-gray-100 p-1 rounded-lg">
           <button
@@ -64,7 +68,7 @@ export const Archivo: React.FC = () => {
                 : "text-text-secondary hover:bg-gray-200"
             }`}
           >
-            Expedientes
+            Expedientes del Alumnado
           </button>
           <button
             onClick={() => setActiveTab("files")}
@@ -74,7 +78,7 @@ export const Archivo: React.FC = () => {
                 : "text-text-secondary hover:bg-gray-200"
             }`}
           >
-            Repositorio (Nube)
+            Repositorio en la Nube
           </button>
         </div>
       </div>
@@ -140,8 +144,8 @@ export const Archivo: React.FC = () => {
                           s.caseState === "Cerrado"
                             ? "bg-green-100 text-green-800 border-green-200"
                             : s.caseState === "Observado"
-                            ? "bg-blue-100 text-blue-800 border-blue-200"
-                            : "bg-red-100 text-red-800 border-red-200"
+                              ? "bg-blue-100 text-blue-800 border-blue-200"
+                              : "bg-red-100 text-red-800 border-red-200"
                         }`}
                       >
                         {s.caseState}
@@ -151,7 +155,7 @@ export const Archivo: React.FC = () => {
                       <button
                         onClick={() =>
                           alert(
-                            `Funcionalidad en desarrollo: Detalles de ${s.name}`
+                            `Funcionalidad en desarrollo: Detalles de ${s.name}`,
                           )
                         }
                         className="text-blue-700 hover:text-blue-900 text-xs font-black uppercase tracking-widest underline decoration-2 underline-offset-4"

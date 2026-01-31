@@ -6,9 +6,44 @@ import { supabase } from "../../supabase/client";
 import { ProtocolDetailModal } from "../Protocols/ProtocolDetailModal";
 
 export const DashboardEnfermeria = () => {
-  const { students, setQuickRegisterOpen, setCurrentModule } = useApp();
+  const { students, setQuickRegisterOpen, setCurrentModule, addIncident } =
+    useApp();
   const [supportProtocol, setSupportProtocol] = useState<Protocol | null>(null);
   const [showProtocol, setShowProtocol] = useState(false);
+  const [notifying, setNotifying] = useState(false);
+
+  const handleNotifyTeachers = async () => {
+    const criticalStudents = students.filter(
+      (s) => s.medicalAlerts && s.medicalAlerts.length > 0,
+    );
+
+    if (criticalStudents.length === 0) {
+      toast.error("No hay alumnos con alertas médicas registradas");
+      return;
+    }
+
+    setNotifying(true);
+    try {
+      for (const s of criticalStudents) {
+        await addIncident(
+          s.id,
+          "SALUD" as any,
+          `🚑 AVISO MÉDICO: El alumno cuenta con historial de enfermedad crónica (${s.medicalAlerts.join(", ")}). Favor de observar protocolos de atención indicados en su expediente.`,
+        );
+      }
+      toast.success(
+        `Se notificó a docentes sobre ${criticalStudents.length} casos crónicos`,
+        {
+          duration: 5000,
+          icon: "📢",
+        },
+      );
+    } catch (err) {
+      toast.error("Error al difundir alertas");
+    } finally {
+      setNotifying(false);
+    }
+  };
 
   useEffect(() => {
     const fetchProtocol = async () => {
@@ -119,10 +154,24 @@ export const DashboardEnfermeria = () => {
             </p>
           </div>
           <button
+            onClick={handleNotifyTeachers}
+            disabled={notifying}
+            className="px-4 py-2 bg-red-600 text-white font-bold text-xs rounded-lg border border-red-500 shadow-sm hover:bg-red-700 transition-colors flex items-center gap-2"
+          >
+            {notifying ? (
+              <div className="size-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            ) : (
+              <span className="material-symbols-outlined text-sm">
+                campaign
+              </span>
+            )}
+            DIFUNDIR A DOCENTES
+          </button>
+          <button
             onClick={() => setCurrentModule(AppModule.REPORTES)}
             className="px-4 py-2 bg-white text-red-700 font-bold text-xs rounded-lg border border-red-200 shadow-sm hover:bg-red-50 transition-colors"
           >
-            REVISAR EXPEDIENTES
+            DETALLES
           </button>
         </div>
       </div>

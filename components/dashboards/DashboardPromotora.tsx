@@ -146,35 +146,13 @@ export const DashboardPromotora = () => {
                 + Nuevo Registro
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-4 border border-slate-100 rounded-xl bg-slate-50">
-                <h4 className="font-bold text-slate-700 mb-2">
-                  Proyecto: "Un Viaje en el Tiempo"
-                </h4>
-                <div className="w-full bg-slate-200 rounded-full h-2 mb-1">
-                  <div
-                    className="bg-pink-500 h-2 rounded-full"
-                    style={{ width: "65%" }}
-                  ></div>
-                </div>
-                <p className="text-xs text-slate-500 text-right">
-                  65% Completado
-                </p>
-              </div>
-              <div className="p-4 border border-slate-100 rounded-xl bg-slate-50">
-                <h4 className="font-bold text-slate-700 mb-2">
-                  Círculos de Lectura (1º Grado)
-                </h4>
-                <div className="w-full bg-slate-200 rounded-full h-2 mb-1">
-                  <div
-                    className="bg-blue-500 h-2 rounded-full"
-                    style={{ width: "40%" }}
-                  ></div>
-                </div>
-                <p className="text-xs text-slate-500 text-right">
-                  40% Completado
-                </p>
-              </div>
+            <div className="p-12 border border-slate-100 border-dashed rounded-xl flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+              <span className="material-symbols-outlined text-4xl mb-2 opacity-50">
+                library_books
+              </span>
+              <p className="text-[10px] font-black uppercase tracking-widest">
+                No hay proyectos de lectura activos
+              </p>
             </div>
           </div>
         )}

@@ -13,7 +13,6 @@ interface PendingAction {
 export const AssistantBanner: React.FC<{
   onOpenNotifications?: () => void;
 }> = ({ onOpenNotifications }) => {
-  const [isVisible, setIsVisible] = React.useState(true);
   const {
     assistantMessage,
     currentUserRole,
@@ -28,7 +27,7 @@ export const AssistantBanner: React.FC<{
 
     // Check for pattern alerts (orientation, direction)
     const patternAlerts = students.filter(
-      (s) => s.incidents.length >= 3
+      (s) => s.incidents.length >= 3,
     ).length;
     if (patternAlerts > 0) {
       actions.push({
@@ -90,32 +89,21 @@ export const AssistantBanner: React.FC<{
 
   // Determine urgency
   const hasUrgent = pendingActions.some((a) => a.priority === "urgent");
-  const hasWarning = pendingActions.some((a) => a.priority === "warning");
 
-  // Auto-hide logic
-  React.useEffect(() => {
-    // Don't auto-hide if there are urgent actions
-    if (hasUrgent) return;
-
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-    }, 8000); // 8 seconds
-
-    return () => clearTimeout(timer);
-  }, [hasUrgent, assistantMessage, pendingActions.length]);
-
-  if (!isVisible) return null;
   if (!assistantMessage && pendingActions.length === 0) return null;
 
   return (
     <div
-      className={`mx-6 mt-6 mb-0 p-5 rounded-2xl border backdrop-blur-md shadow-lg animate-fade-in transition-all duration-300 ${
+      className={`mb-8 p-6 rounded-2xl border backdrop-blur-md shadow-xl animate-fade-in transition-all duration-500 overflow-hidden relative group ${
         hasUrgent
-          ? "bg-red-900/40 border-red-500/30 shadow-red-900/20"
-          : "bg-black/30 border-white/10 shadow-blue-900/20"
+          ? "bg-red-500/10 border-red-500/30 ring-4 ring-red-500/5 shadow-red-900/10"
+          : "bg-white border-slate-200 shadow-slate-200/50"
       }`}
     >
-      <div className="flex items-start gap-4">
+      {/* Decorative Background Element */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110"></div>
+
+      <div className="flex items-start gap-5 relative z-10">
         {/* SASE Agent Avatar with Animated Reflections */}
         <div className="relative size-16 shrink-0 flex items-center justify-center">
           {/* Agent Avatar Image with Overlay Effects */}
@@ -217,21 +205,15 @@ export const AssistantBanner: React.FC<{
         `}</style>
 
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-bold uppercase tracking-widest mb-1 text-blue-300/80 flex justify-between items-center">
-            <span>Asistente IA SASE</span>
-            <button
-              onClick={() => setIsVisible(false)}
-              className="text-white/40 hover:text-white transition-colors"
-            >
-              <span className="material-symbols-outlined text-sm">close</span>
-            </button>
+          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 text-blue-600/80 flex justify-between items-center">
+            <span>Asistente IA SASE • Inteligencia Operativa</span>
           </h4>
 
           {/* Main message */}
           {assistantMessage && (
             <p
-              className={`text-sm font-medium mb-3 leading-relaxed ${
-                hasUrgent ? "text-red-200" : "text-gray-100"
+              className={`text-sm font-bold leading-relaxed mb-4 ${
+                hasUrgent ? "text-red-900" : "text-slate-700"
               }`}
             >
               {assistantMessage}
@@ -241,8 +223,8 @@ export const AssistantBanner: React.FC<{
           {/* Pending actions */}
           {pendingActions.length > 0 && (
             <div className="space-y-3">
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                Sugerencias de acción:
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Sugerencias para tu rol:
               </p>
               <div className="flex flex-wrap gap-2">
                 {pendingActions.map((action) => (
@@ -255,20 +237,20 @@ export const AssistantBanner: React.FC<{
                         setCurrentModule(action.module);
                       }
                     }}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border hover:scale-105 active:scale-95 ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all border hover:scale-[1.02] active:scale-[0.98] shadow-sm uppercase tracking-tight ${
                       action.priority === "urgent"
-                        ? "bg-red-500/20 border-red-500/50 text-red-200 hover:bg-red-500/30"
+                        ? "bg-red-600 border-red-500 text-white hover:bg-red-700 shadow-red-200"
                         : action.priority === "warning"
-                        ? "bg-yellow-500/20 border-yellow-500/50 text-yellow-200 hover:bg-yellow-500/30"
-                        : "bg-white/5 border-white/10 text-blue-200 hover:bg-white/10 hover:border-blue-400/30"
+                          ? "bg-amber-500 border-amber-400 text-white hover:bg-amber-600 shadow-amber-200"
+                          : "bg-white border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-700 shadow-slate-100"
                     }`}
                   >
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-symbols-outlined text-[18px]">
                       {action.priority === "urgent"
                         ? "priority_high"
                         : action.priority === "warning"
-                        ? "schedule"
-                        : "arrow_forward"}
+                          ? "schedule"
+                          : "bolt"}
                     </span>
                     {action.title}
                   </button>

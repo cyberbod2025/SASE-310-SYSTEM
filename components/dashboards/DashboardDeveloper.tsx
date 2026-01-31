@@ -20,12 +20,12 @@ interface FeedbackItem {
 interface AuditItem {
   id: number;
   created_at: string;
-  usuario_id: string;
-  email_usuario: string;
-  tipo_accion: string;
-  descripcion_accion: string;
-  tabla_objetivo: string;
-  rol_usuario: string;
+  user_id: string;
+  user_email: string;
+  action_type: string;
+  action_description: string;
+  target_table: string;
+  user_role: string;
 }
 
 export const DashboardDeveloper: React.FC = () => {
@@ -49,7 +49,7 @@ export const DashboardDeveloper: React.FC = () => {
     if (fbData) setFeedback(fbData as any);
 
     const { data: auditData } = await supabase
-      .from("auditoria")
+      .from("audit_log")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(50);
@@ -67,7 +67,7 @@ export const DashboardDeveloper: React.FC = () => {
         { event: "INSERT", schema: "public", table: "system_feedback" },
         (payload) => {
           setFeedback((prev) => [payload.new as FeedbackItem, ...prev]);
-        }
+        },
       )
       .subscribe();
 
@@ -97,7 +97,7 @@ export const DashboardDeveloper: React.FC = () => {
                 Administración Global
               </span>
               <span className="text-slate-300">|</span>
-              <span>Supervisión de Sistema (SASE-310)</span>
+              <span>Supervisión de Sistema (ESD 310)</span>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ export const DashboardDeveloper: React.FC = () => {
             onClick={async () => {
               if (
                 !confirm(
-                  "¿Desea sincronizar el ambiente con datos de demostración?"
+                  "¿Desea sincronizar el ambiente con datos de demostración?",
                 )
               )
                 return;
@@ -247,16 +247,16 @@ export const DashboardDeveloper: React.FC = () => {
                               item.type === "bug"
                                 ? "bg-red-50 text-red-700 border-red-100"
                                 : item.type === "ux"
-                                ? "bg-purple-50 text-purple-700 border-purple-100"
-                                : "bg-blue-50 text-blue-700 border-blue-100"
+                                  ? "bg-purple-50 text-purple-700 border-purple-100"
+                                  : "bg-blue-50 text-blue-700 border-blue-100"
                             }`}
                           >
                             <span className="material-symbols-outlined text-[14px]">
                               {item.type === "bug"
                                 ? "bug_report"
                                 : item.type === "ux"
-                                ? "palette"
-                                : "lightbulb"}
+                                  ? "palette"
+                                  : "lightbulb"}
                             </span>
                             {item.type}
                           </span>
@@ -325,25 +325,25 @@ export const DashboardDeveloper: React.FC = () => {
                       <td className="px-6 py-4">
                         <span
                           className={`font-black uppercase italic ${
-                            log.tipo_accion === "ELIMINACION"
+                            log.action_type === "ELIMINACION"
                               ? "text-red-700"
-                              : log.tipo_accion === "CREACION"
-                              ? "text-emerald-700"
-                              : "text-blue-700"
+                              : log.action_type === "CREACION"
+                                ? "text-emerald-700"
+                                : "text-blue-700"
                           }`}
                         >
-                          {log.tipo_accion}
+                          {log.action_type}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-slate-600 italic">
-                        {log.descripcion_accion}
+                        {log.action_description}
                       </td>
                       <td className="px-6 py-4 text-slate-500 lowercase">
-                        {log.email_usuario}
+                        {log.user_email}
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded border border-slate-100">
-                          {log.rol_usuario}
+                          {log.user_role}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right text-slate-400 font-mono text-[10px]">

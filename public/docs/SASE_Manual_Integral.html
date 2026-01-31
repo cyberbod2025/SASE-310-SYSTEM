@@ -292,6 +292,7 @@
         background: linear-gradient(to right, #fff, var(--text-muted));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       .que-es-grid {
@@ -612,9 +613,75 @@
         background: #2563eb;
         transform: translateY(-3px);
       }
+
+      /* SASE INSTITUTIONAL BACKGROUND SYSTEM */
+      #sase-parallax-container {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        pointer-events: none;
+        overflow: hidden;
+        background: var(--darker);
+      }
+
+      #bgSpiral {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.25;
+      }
+
+      .sase-watermark {
+        position: absolute;
+        width: 400px;
+        height: 300px;
+        border: 2px solid rgba(255, 255, 255, 1);
+        opacity: 0.05;
+        border-radius: 20px;
+        pointer-events: none;
+      }
+
+      .sase-watermark::before {
+        content: "SASE DASHBOARD";
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 2px;
+      }
+
+      .sase-watermark::after {
+        content: "";
+        position: absolute;
+        top: 50px;
+        left: 20px;
+        right: 20px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.2);
+      }
     </style>
   </head>
   <body>
+    <!-- SASE INSTITUTIONAL BACKGROUND -->
+    <div id="sase-parallax-container">
+      <canvas id="bgSpiral"></canvas>
+      <div
+        class="sase-watermark"
+        style="top: 15%; left: 5%; transform: rotate(-15deg)"
+      ></div>
+      <div
+        class="sase-watermark"
+        style="top: 45%; right: -5%; transform: rotate(10deg)"
+      ></div>
+      <div
+        class="sase-watermark"
+        style="top: 75%; left: -10%; transform: rotate(-5deg)"
+      ></div>
+    </div>
+
     <!-- SCROLL PROGRESS -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -1145,6 +1212,73 @@
 
       window.addEventListener("scroll", handleScrollAnimations);
       window.addEventListener("load", handleScrollAnimations);
+
+      // ============ SASE INSTITUTIONAL BACKGROUND LOGIC ============
+      const canvas = document.getElementById("bgSpiral");
+      const ctx = canvas.getContext("2d");
+      let w, h;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+
+      function drawSpiral() {
+        ctx.clearRect(0, 0, w, h);
+        const scrollY = window.scrollY;
+        const speed = 0.5; // Parallax speed
+        const offset = (scrollY * speed) % 500; // Loop offset
+
+        // Spiral Config
+        const centerX = w / 2;
+        const amplitude = Math.min(w * 0.2, 300);
+        const frequency = 0.003;
+
+        // Draw multiple threads
+        const threads = [
+          { color: "rgba(59, 130, 246, 0.8)", width: 4, shift: 0 }, // Central Blue
+          { color: "rgba(255, 255, 255, 0.5)", width: 2, shift: 0 }, // Central White
+          { color: "rgba(147, 197, 253, 0.4)", width: 1, shift: Math.PI }, // Thin blue
+          {
+            color: "rgba(212, 175, 55, 0.15)",
+            width: 1.2,
+            shift: Math.PI * 0.5,
+          }, // Subtle Gold
+        ];
+
+        threads.forEach((thread) => {
+          ctx.beginPath();
+          ctx.strokeStyle = thread.color;
+          ctx.lineWidth = thread.width;
+          ctx.lineCap = "round";
+
+          for (let y = -500; y < h + 500; y += 5) {
+            const currentY = y - ((scrollY * 0.3) % 500);
+            const x =
+              centerX +
+              Math.sin(y * frequency + thread.shift + scrollY * 0.001) *
+                amplitude;
+            if (y === -500) ctx.moveTo(x, currentY);
+            else ctx.lineTo(x, currentY);
+          }
+          ctx.stroke();
+        });
+
+        // Parallax Watermarks
+        const watermarks = document.querySelectorAll(".sase-watermark");
+        watermarks.forEach((wm, i) => {
+          const depth = 0.1 + i * 0.05;
+          const yPos = i * 30 - ((scrollY * depth) % 100);
+          wm.style.transform = `translateY(${yPos}px) rotate(${i * 5 - 10}deg)`;
+        });
+
+        requestAnimationFrame(drawSpiral);
+      }
+
+      drawSpiral();
     </script>
   </body>
 </html>

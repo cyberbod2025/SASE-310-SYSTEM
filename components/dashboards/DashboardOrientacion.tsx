@@ -7,9 +7,12 @@ import { supabase } from "../../supabase/client";
 import { ProtocolDetailModal } from "../Protocols/ProtocolDetailModal";
 import { GenericActionModal } from "../GenericActionModal";
 import { useAuth } from "../AuthProvider";
+import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
+import { AIDocumentGenerator } from "../ai/AIDocumentGenerator";
+import toast from "react-hot-toast";
 
 export const DashboardOrientacion = () => {
-  const { students, setCurrentModule } = useApp();
+  const { students, setCurrentModule, addIncident } = useApp();
   const { user } = useAuth();
   const [supportProtocol, setSupportProtocol] = useState<Protocol | null>(null);
   const [showProtocol, setShowProtocol] = useState(false);
@@ -19,6 +22,7 @@ export const DashboardOrientacion = () => {
   >(null);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [targetStudent, setTargetStudent] = useState<string>("");
+  const [showAdvancedPanel, setShowAdvancedPanel] = useState(false);
 
   const handleSaveAppointment = async (data: any) => {
     if (!user) return;
@@ -55,6 +59,19 @@ export const DashboardOrientacion = () => {
       outcome: data.outcome,
     });
     if (error) throw error;
+  };
+
+  const handleNotifyAcademicRisk = async (studentId: string, info: string) => {
+    try {
+      await addIncident(
+        studentId,
+        "ACADEMICO" as any,
+        `⚠️ REPORTE ORIENTACIÓN: Se requiere seguimiento especial por ${info}. Favor de reportar incidencias adicionales vía SASE.`,
+      );
+      toast.success("Seguimiento solicitado a docentes", { icon: "📝" });
+    } catch (err) {
+      toast.error("Error al enviar reporte");
+    }
   };
 
   useEffect(() => {
@@ -192,19 +209,27 @@ export const DashboardOrientacion = () => {
                     </div>
                     <div className="flex gap-2">
                       <button
-                        className="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black text-slate-700 uppercase hover:bg-slate-50 shadow-sm transition-all active:scale-95"
-                        onClick={() => setSelectedStudent(s)}
+                        className="px-3.5 py-2 bg-blue-600 border border-blue-500 rounded-xl text-xs font-black text-white uppercase hover:bg-blue-700 shadow-md shadow-blue-900/10 transition-all active:scale-95 flex items-center gap-2"
+                        onClick={() => {
+                          setSelectedStudent(s);
+                          setShowAdvancedPanel(true);
+                        }}
                       >
-                        Expediente
+                        <span className="material-symbols-outlined text-[18px]">
+                          settings_suggest
+                        </span>
+                        Gestión
                       </button>
                       <button
                         className="px-3.5 py-2 bg-amber-600 border border-amber-500 rounded-xl text-xs font-black text-white uppercase hover:bg-amber-700 shadow-md shadow-amber-900/10 transition-all active:scale-95"
-                        onClick={() => {
-                          setTargetStudent(s.name);
-                          setModalOpen("CONTACT");
-                        }}
+                        onClick={() =>
+                          handleNotifyAcademicRisk(
+                            s.id,
+                            "conducta/riesgo detectado",
+                          )
+                        }
                       >
-                        Contactar
+                        Reportar a Docentes
                       </button>
                     </div>
                   </div>
@@ -253,18 +278,18 @@ export const DashboardOrientacion = () => {
               </h3>
               <div className="space-y-3">
                 <TeacherStat
-                  name="Prof. Ramírez"
-                  count={12}
-                  color="bg-amber-100 text-amber-700"
-                />
-                <TeacherStat
-                  name="Prof. Dávila"
-                  count={5}
+                  name="Academia 1º"
+                  count={0}
                   color="bg-slate-50 text-slate-500"
                 />
                 <TeacherStat
-                  name="Prof. Suarez"
-                  count={3}
+                  name="Academia 2º"
+                  count={0}
+                  color="bg-slate-50 text-slate-500"
+                />
+                <TeacherStat
+                  name="Academia 3º"
+                  count={0}
                   color="bg-slate-50 text-slate-500"
                 />
               </div>
@@ -318,24 +343,13 @@ export const DashboardOrientacion = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-slate-50 rounded-xl border-l-4 border-amber-500 hover:bg-slate-100 transition-colors cursor-pointer group">
-                <p className="text-xs font-black text-slate-800 uppercase mb-1">
-                  Reporte Conductual
+              <div className="p-8 border border-slate-100 border-dashed rounded-xl flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+                <span className="material-symbols-outlined text-4xl mb-2 opacity-50">
+                  inbox
+                </span>
+                <p className="text-[10px] font-black uppercase tracking-widest">
+                  Sin solicitudes pendientes
                 </p>
-                <div className="flex justify-between items-center text-xs text-slate-500 font-bold uppercase tracking-tight">
-                  <span>De: Prof. Ramírez</span>
-                  <span>Carlos H. (2ºB)</span>
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-xl border-l-4 border-blue-500 hover:bg-slate-100 transition-colors cursor-pointer">
-                <p className="text-xs font-black text-slate-800 uppercase mb-1">
-                  Nueva Canalización
-                </p>
-                <div className="flex justify-between items-center text-xs text-slate-500 font-bold uppercase tracking-tight">
-                  <span>Pendiente de Atención</span>
-                  <span>Sin Alumno Asignado</span>
-                </div>
               </div>
 
               <button
@@ -583,6 +597,12 @@ export const DashboardOrientacion = () => {
             </div>
           </div>
         </div>
+      )}
+      {showAdvancedPanel && selectedStudent && (
+        <StudentAdvancedPanel
+          student={selectedStudent}
+          onClose={() => setShowAdvancedPanel(false)}
+        />
       )}
     </div>
   );

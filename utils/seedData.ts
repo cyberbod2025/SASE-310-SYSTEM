@@ -16,30 +16,22 @@ export const seedDatabase = async () => {
     "1º B",
     "1º C",
     "1º D",
-    "1º E",
-    "1º F",
     "2º A",
     "2º B",
     "2º C",
     "2º D",
-    "2º E",
-    "2º F",
     "3º A",
     "3º B",
     "3º C",
     "3º D",
-    "3º E",
-    "3º F",
   ];
 
-  console.log("Procesando grupos...");
-  console.log("Procesando grupos...");
+  console.log("Procesando grupos oficiales (12)...");
   for (const nombre of grupos) {
     const { error } = await (supabase.from("grupos" as any) as any).insert([
       { nombre, ciclo_escolar: "2025-2026" },
     ]);
     if (error && error.code !== "23505") {
-      // Ignore uniqueness violation
       errors.push({ table: "grupos", error });
     }
   }

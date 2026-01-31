@@ -12,8 +12,11 @@ import {
   BAPInfo,
   calculateState,
   AppModule,
+  Calificacion,
+  DocumentoInstitucional,
 } from "./types";
 import { evaluateEscalation } from "./utils/saseUtils";
+import { getSaludo } from "./config/sase.config";
 
 export interface Notification {
   id: string;
@@ -69,6 +72,15 @@ interface AppContextType {
   notifications: Notification[];
   markNotificationRead: (id: string) => void;
   updateStudentAudit: (studentId: string, modifiedBy: string) => void;
+  // New: Advanced Management
+  updateGrades: (studentId: string, grades: Calificacion[]) => Promise<void>;
+  addInstitutionalDocument: (
+    doc: Omit<DocumentoInstitucional, "id" | "fecha">,
+  ) => Promise<void>;
+  toggleDistanceState: (
+    studentId: string,
+    isDistancia: boolean,
+  ) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -290,7 +302,7 @@ export const AppProvider: React.FC<{
     if (currentUserRole === UserRole.DEVELOPER) {
       auditUserId = "SYSTEM";
       auditUserRole = "SYSTEM_ADMIN";
-      auditUserEmail = "system@sase-310.mx";
+      auditUserEmail = "system@esd-310.mx";
       internalNote = "Acción realizada por Super Admin (oculto)";
     }
 
@@ -339,7 +351,10 @@ export const AppProvider: React.FC<{
 
   // -- 1. Fetch Data from Supabase --
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setStudents(INITIAL_STUDENTS);
+      return;
+    }
 
     const fetchStudents = async () => {
       try {
@@ -353,6 +368,12 @@ export const AppProvider: React.FC<{
           ),
           salud (
             padecimiento, documento_url
+          ),
+          calificaciones (
+            materia, trimestre1, trimestre2, trimestre3
+          ),
+          documentos_institucionales (
+            id, tipo, folio, fecha, titulo, contenido, narracion_ia, firmas, creado_por
           )
         `);
 
@@ -399,6 +420,22 @@ export const AppProvider: React.FC<{
               accommodations: [],
               lastUpdated: "",
             },
+            calificaciones: d.calificaciones || [],
+            documentos: (d.documentos_institucionales || []).map(
+              (doc: any) => ({
+                id: doc.id,
+                tipo: doc.tipo,
+                folio: doc.folio,
+                fecha: doc.fecha,
+                titulo: doc.titulo,
+                contenido: doc.contenido,
+                narracionIA: doc.narracion_ia,
+                firmas: doc.firmas || [],
+                studentId: d.id,
+                creado_por: doc.creado_por,
+              }),
+            ),
+            isDistancia: d.is_distancia || false,
           }));
           setStudents(mappedStudents);
         }
@@ -577,6 +614,113 @@ export const AppProvider: React.FC<{
     }
   };
 
+  const updateGrades = async (studentId: string, grades: Calificacion[]) => {
+    if (
+      currentUserRole !== UserRole.SECRETARIA &&
+      currentUserRole !== UserRole.DEVELOPER
+    ) {
+      throw new Error(
+        "Solo la Secretaría puede emitir o modificar calificaciones.",
+      );
+    }
+
+    setStudents((prev) =>
+      prev.map((s) =>
+        s.id === studentId ? { ...s, calificaciones: grades } : s,
+      ),
+    );
+
+    try {
+      const { error } = await supabase.from("calificaciones").upsert(
+        grades.map((g) => ({ ...g, alumno_id: studentId })),
+        { onConflict: "alumno_id,materia" },
+      );
+
+      if (error) throw error;
+
+      logAudit(
+        "ACTUALIZACION",
+        `Calificaciones actualizadas`,
+        "calificaciones",
+        studentId,
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const addInstitutionalDocument = async (
+    doc: Omit<DocumentoInstitucional, "id" | "fecha">,
+  ) => {
+    const tempId = Math.random().toString(36).substr(2, 9);
+    const newDoc: DocumentoInstitucional = {
+      ...doc,
+      id: tempId,
+      fecha: new Date().toISOString(),
+    };
+
+    setStudents((prev) =>
+      prev.map((s) =>
+        s.id === doc.studentId
+          ? { ...s, documentos: [newDoc, ...(s.documentos || [])] }
+          : s,
+      ),
+    );
+
+    try {
+      const { error } = await supabase
+        .from("documentos_institucionales")
+        .insert([
+          {
+            alumno_id: doc.studentId,
+            tipo: doc.tipo,
+            folio: doc.folio,
+            titulo: doc.titulo,
+            contenido: doc.contenido,
+            narracion_ia: doc.narracionIA,
+            firmas: doc.firmas,
+            creado_por: user?.id,
+          },
+        ]);
+      if (error) throw error;
+      logAudit(
+        "CREACION",
+        `Documento ${doc.tipo} generado: ${doc.folio}`,
+        "documentos_institucionales",
+        tempId,
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const toggleDistanceState = async (
+    studentId: string,
+    isDistancia: boolean,
+  ) => {
+    setStudents((prev) =>
+      prev.map((s) => (s.id === studentId ? { ...s, isDistancia } : s)),
+    );
+
+    try {
+      const { error } = await supabase
+        .from("alumnos")
+        .update({ is_distancia: isDistancia })
+        .eq("id", studentId);
+
+      if (error) throw error;
+
+      logAudit(
+        "ACTUALIZACION",
+        `Alumno puesto en modo ${isDistancia ? "A DISTANCIA" : "PRESENCIAL"}`,
+        "alumnos",
+        studentId,
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const importStudents = (newStudents: Student[]) => {
     // For manual import, just add to local state?
     // Usually Inscripciones component handles the DB insert now.
@@ -594,7 +738,7 @@ export const AppProvider: React.FC<{
       user?.user_metadata?.full_name ||
       user?.email?.split("@")[0] ||
       currentUserRole;
-    const greeting = "Buenas tardes";
+    const greeting = getSaludo();
     const contextPrefix = `${greeting}, ${userName}. (Turno Vespertino | CCT 09DES4310M).`;
 
     switch (currentUserRole) {
@@ -639,14 +783,13 @@ export const AppProvider: React.FC<{
         msg = `${contextPrefix} Resumen ejecutivo: ${totalIncidents} incidencias este mes. Asistencia global: 92%.`;
         break;
 
-      case UserRole.UDEII:
-        // UDEII Logic enabled
-        const bapStudents = students.filter((s) => s.bapInfo?.hasBAP).length;
-        msg = `${contextPrefix} ${bapStudents} alumnos con BAP activos. Actualizar ajustes razonables de 2º A.`;
+      case UserRole.DEVELOPER:
+        const totalSysStudents = students.length;
+        msg = `${contextPrefix} Nucleo SASE operando al 100%. ${totalSysStudents} registros sincronizados en 12 grupos. Todo el personal en linea.`;
         break;
 
       default:
-        msg = `${contextPrefix} Bienvenido al Sistema SASE-310.`;
+        msg = `${contextPrefix} Bienvenido al Sistema SASE-310. El sistema esta monitoreando los 12 grupos institucionales.`;
     }
 
     setAssistantMessage(msg);
@@ -676,6 +819,9 @@ export const AppProvider: React.FC<{
         notifications,
         markNotificationRead,
         updateStudentAudit,
+        updateGrades,
+        addInstitutionalDocument,
+        toggleDistanceState,
       }}
     >
       {children}

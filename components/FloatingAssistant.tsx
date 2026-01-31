@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useApp } from "../store";
 import { UserRole, AppModule } from "../types";
 import { VoiceInput } from "./VoiceInput";
+import toast from "react-hot-toast";
 
 export const FloatingAssistant: React.FC = () => {
   const { currentUserRole, setCurrentModule, setQuickRegisterOpen } = useApp();
@@ -43,50 +44,107 @@ export const FloatingAssistant: React.FC = () => {
             label: "Mi Agenda",
             action: () => setCurrentModule(AppModule.AGENDA),
           },
-          { icon: "group", label: "Mis Grupos", action: () => {} },
+          {
+            icon: "group",
+            label: "Mis Grupos",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
+          },
           {
             icon: "assignment_turned_in",
             label: "Evaluaciones",
-            action: () => {},
+            action: () => setCurrentModule(AppModule.REPORTES),
           },
         ];
       case UserRole.PREFECTURA:
         return [
-          { icon: "fact_check", label: "Pase de Lista", action: () => {} },
+          {
+            icon: "fact_check",
+            label: "Pase de Lista",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
+          },
           {
             icon: "warning",
             label: "Reporte Disciplina",
             action: () => setQuickRegisterOpen(true),
           },
-          { icon: "directions_run", label: "Rondines", action: () => {} },
+          {
+            icon: "directions_run",
+            label: "Rondines",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
+          },
         ];
       case UserRole.ENFERMERIA:
         return [
-          { icon: "medical_services", label: "Consulta", action: () => {} },
-          { icon: "medication", label: "Inventario", action: () => {} },
-          { icon: "history", label: "Historial Clínico", action: () => {} },
+          {
+            icon: "medical_services",
+            label: "Consulta",
+            action: () => setQuickRegisterOpen(true),
+          },
+          {
+            icon: "medication",
+            label: "Inventario",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
+          },
+          {
+            icon: "history",
+            label: "Historial Clínico",
+            action: () => setCurrentModule(AppModule.ARCHIVO),
+          },
         ];
       case UserRole.ORIENTACION:
         return [
-          { icon: "psychology", label: "Citar Padre", action: () => {} },
-          { icon: "edit_note", label: "Bitácora", action: () => {} },
-          { icon: "folder_shared", label: "Expedientes", action: () => {} },
+          {
+            icon: "psychology",
+            label: "Citar Padre",
+            action: () => setQuickRegisterOpen(true),
+          },
+          {
+            icon: "edit_note",
+            label: "Bitácora",
+            action: () => setCurrentModule(AppModule.REPORTES),
+          },
+          {
+            icon: "folder_shared",
+            label: "Expedientes",
+            action: () => setCurrentModule(AppModule.ARCHIVO),
+          },
         ];
       case UserRole.TRABAJO_SOCIAL:
         return [
           {
             icon: "family_restroom",
-            label: "Estudio Diario",
-            action: () => {},
+            label: "Seguimiento",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
           },
-          { icon: "description", label: "Justificante", action: () => {} },
+          {
+            icon: "description",
+            label: "Justificante",
+            action: () => setQuickRegisterOpen(true),
+          },
           { icon: "call", label: "Llamada Tutor", action: () => {} },
         ];
       case UserRole.DIRECTIVO:
         return [
-          { icon: "analytics", label: "Indicadores", action: () => {} },
-          { icon: "download", label: "Exportar Reporte", action: () => {} },
-          { icon: "campaign", label: "Emitir Aviso", action: () => {} },
+          {
+            icon: "analytics",
+            label: "Indicadores",
+            action: () => setCurrentModule(AppModule.REPORTES),
+          },
+          {
+            icon: "download",
+            label: "Exportar Reporte",
+            action: () => setCurrentModule(AppModule.REPORTES),
+          },
+          {
+            icon: "campaign",
+            label: "Emitir Aviso",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
+          },
+          {
+            icon: "admin_panel_settings",
+            label: "Aprobaciones",
+            action: () => setCurrentModule(AppModule.APROBACIONES_PERSONAL),
+          },
         ];
       default:
         return [];
@@ -94,14 +152,40 @@ export const FloatingAssistant: React.FC = () => {
   };
 
   const handleVoiceCommand = (text: string) => {
-    setChatInput(text);
-    // Here we would implement real NLP logic
-    setTimeout(() => {
-      alert(
-        `Comando de voz recibido: "${text}". (Funcionalidad IA en desarrollo)`
-      );
-      setChatInput("");
-    }, 1000);
+    processInput(text);
+  };
+
+  const processInput = (text: string) => {
+    const input = text.toLowerCase();
+    setChatInput("");
+
+    if (
+      input.includes("alumnos") ||
+      input.includes("lista") ||
+      input.includes("grupos")
+    ) {
+      setCurrentModule(AppModule.DASHBOARD);
+      toast.success("Abriendo sección de alumnos...");
+    } else if (
+      input.includes("reporte") ||
+      input.includes("estadistica") ||
+      input.includes("grafica")
+    ) {
+      setCurrentModule(AppModule.REPORTES);
+      toast.success("Generando reporte de sistema...");
+    } else if (input.includes("inscripcion") || input.includes("alta")) {
+      setCurrentModule(AppModule.INSCRIPCIONES);
+      toast.success("Módulo de inscripciones activado.");
+    } else if (input.includes("ayuda") || input.includes("manual")) {
+      window.open("/docs/SASE_Manual_Integral.html", "_blank");
+      toast("Abriendo manual de usuario", { icon: "📖" });
+    } else if (input.includes("aprob") || input.includes("validar")) {
+      setCurrentModule(AppModule.APROBACIONES_PERSONAL);
+      toast.success("Módulo de aprobaciones de personal.");
+    } else {
+      toast("Comando recibido. Analizando datos...", { icon: "🧠" });
+    }
+    setIsOpen(false);
   };
 
   return (
@@ -169,21 +253,37 @@ export const FloatingAssistant: React.FC = () => {
         </div>
 
         {/* Chat / Voice Input */}
-        <div className="relative">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (chatInput.trim()) processInput(chatInput);
+          }}
+          className="relative"
+        >
           <input
             type="text"
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
-            placeholder="Escribe o usa el micrófono..."
+            placeholder="Escribe comandos ej: 'Ir a grupos'..."
             className="w-full bg-black/50 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors placeholder:text-gray-500"
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            {chatInput.trim() && (
+              <button
+                type="submit"
+                className="text-blue-500 hover:text-blue-400 p-1"
+              >
+                <span className="material-symbols-outlined text-[20px]">
+                  send
+                </span>
+              </button>
+            )}
             <VoiceInput
               onTranscript={handleVoiceCommand}
               className="!bg-transparent !text-blue-400 hover:!text-blue-300"
             />
           </div>
-        </div>
+        </form>
       </div>
 
       {/* Floating Toggle Button */}

@@ -21,7 +21,7 @@ interface Solicitud {
   grupo_tutor: string | null;
   area_cobertura: string | null;
   observaciones: string | null;
-  estado: "PENDIENTE" | "APROBADA" | "RECHAZADA" | "OBSERVACIONES";
+  estado: "PENDIENTE" | "APROBADO" | "RECHAZADO" | "OBSERVACIONES";
   observaciones_validacion: string | null;
   metadata?: {
     cct?: string;
@@ -91,6 +91,7 @@ export const AprobacionesPersonal: React.FC = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
+      console.log("SASE Debug: Solicitudes recuperadas de DB:", data);
       if (error) throw error;
       setSolicitudes((data as unknown as Solicitud[]) || []);
     } catch (error: any) {
@@ -201,7 +202,7 @@ export const AprobacionesPersonal: React.FC = () => {
       const { error: updateError } = await supabase
         .from("solicitudes_alta_personal")
         .update({
-          estado: "APROBADA",
+          estado: "APROBADO",
           aprobado_por: userData?.user?.id || "admin-simulado",
           aprobado_en: new Date().toISOString(),
           matricula_sase: assignmentData.matricula_sase,
@@ -250,7 +251,7 @@ export const AprobacionesPersonal: React.FC = () => {
       const { error } = await supabase
         .from("solicitudes_alta_personal")
         .update({
-          estado: "RECHAZADA",
+          estado: "RECHAZADO",
           observaciones_validacion: motivoRechazo,
           aprobado_por: userData?.user?.id,
           aprobado_en: new Date().toISOString(),
@@ -290,8 +291,12 @@ export const AprobacionesPersonal: React.FC = () => {
   }
 
   const pendientes = solicitudes.filter((s) => s.estado === "PENDIENTE");
-  const aprobadas = solicitudes.filter((s) => s.estado === "APROBADA");
-  const rechazadas = solicitudes.filter((s) => s.estado === "RECHAZADA");
+  const aprobadas = solicitudes.filter(
+    (s) => s.estado === "APROBADO" || s.estado === ("APROBADA" as any),
+  );
+  const rechazadas = solicitudes.filter(
+    (s) => s.estado === "RECHAZADO" || s.estado === ("RECHAZADA" as any),
+  );
 
   return (
     <div className="space-y-6">
@@ -309,6 +314,20 @@ export const AprobacionesPersonal: React.FC = () => {
             <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">
               Gestión Estratégica de Personal • SASE-310
             </p>
+          </div>
+          <div className="ml-auto">
+            <button
+              onClick={() => cargarSolicitudes()}
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/60 hover:text-white transition-all text-xs font-bold uppercase tracking-widest"
+              disabled={loading}
+            >
+              <span
+                className={`material-symbols-outlined text-sm ${loading ? "animate-spin" : ""}`}
+              >
+                sync
+              </span>
+              {loading ? "Sincronizando..." : "Forzar Recarga"}
+            </button>
           </div>
         </div>
       </div>

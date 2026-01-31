@@ -23,7 +23,7 @@ const roleColors: Record<UserRole, string> = {
   [UserRole.UDEII]: "bg-indigo-600 border-none",
   [UserRole.PROMOTORA]: "bg-pink-600 border-none",
   [UserRole.GUEST]: "bg-slate-800 border-none",
-  [UserRole.DEVELOPER]: "bg-black border-none",
+  [UserRole.DEVELOPER]: "bg-slate-900 border-none border-r border-white/5",
 };
 
 const roleImages: Record<UserRole, string> = {
@@ -105,7 +105,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               />
             </div>
             <span className="text-[10px] font-black tracking-[0.4em] text-white/40 uppercase">
-              Prueba Piloto
+              Plataforma Institucional
             </span>
           </div>
 
@@ -221,6 +221,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             />
 
             {(currentUserRole === UserRole.DIRECTIVO ||
+              currentUserRole === UserRole.SECRETARIA ||
+              currentUserRole === UserRole.DEVELOPER) && (
+              <NavItem
+                icon="verified_user"
+                label="Aprobaciones"
+                active={currentModule === AppModule.APROBACIONES_PERSONAL}
+                onClick={() => {
+                  setCurrentModule(AppModule.APROBACIONES_PERSONAL);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+              />
+            )}
+
+            {(currentUserRole === UserRole.DIRECTIVO ||
               currentUserRole === UserRole.DEVELOPER) && (
               <NavItem
                 icon="policy"
@@ -237,22 +252,38 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           {/* Logout & Version - Clean Subdued Style */}
           <div className="p-6 border-t border-white/10 relative z-10 text-center">
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut();
-                window.location.reload();
-              }}
-              className="group flex flex-col items-center gap-1 mx-auto text-white/30 hover:text-white transition-all"
-            >
-              <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">
-                logout
-              </span>
-              <span className="text-[9px] font-black uppercase tracking-[0.3em]">
-                Cerrar sesión
-              </span>
-            </button>
-            <div className="mt-4 text-[8px] font-bold text-white/20 uppercase tracking-widest">
-              {VERSION.fase} • v{VERSION.numero}
+            <div className="space-y-4">
+              <a
+                href="/docs/SASE_Manual_Integral.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl transition-all group"
+              >
+                <span className="material-symbols-outlined text-[18px] text-white/70 group-hover:text-white">
+                  menu_book
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/70 group-hover:text-white">
+                  Manual de Usuario
+                </span>
+              </a>
+
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  window.location.reload();
+                }}
+                className="group flex items-center gap-3 px-4 py-2 w-full text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+              >
+                <span className="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">
+                  logout
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                  Cerrar sesión
+                </span>
+              </button>
+            </div>
+            <div className="mt-4 text-[8px] font-bold text-white/40 uppercase tracking-[0.4em]">
+              SISTEMA SASE • {VERSION.fase} {VERSION.numero}
             </div>
           </div>
         </div>
@@ -279,7 +310,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 Panel de Control
               </h2>
               <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                SASE 310 <span className="text-slate-300">/</span>{" "}
+                ESD 310 <span className="text-slate-300">/</span>{" "}
                 {currentUserRole}
               </div>
             </div>
@@ -336,15 +367,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         )}
 
         <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar relative">
-          <div className="relative z-10 max-w-7xl mx-auto">{children}</div>
+          <div className="relative z-10 max-w-7xl mx-auto">
+            <AssistantBanner />
+            {children}
+          </div>
         </main>
       </div>
 
       {/* Floating System Tools */}
       <FeedbackWidget />
-      <FloatingAssistant />
-      <TutorialController />
-      <QuickRegisterModal />
     </div>
   );
 };

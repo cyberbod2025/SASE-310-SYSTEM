@@ -35,10 +35,14 @@ export const CICLO_ESCOLAR = {
 // ============================
 export const INSTITUCION = {
   /** Nombre completo de la escuela */
-  nombre: "Escuela Secundaria Técnica Industrial No. 310",
+  nombre: 'Escuela Secundaria Diurna No. 310 "Presidentes de México"',
 
   /** Nombre corto */
-  nombreCorto: "EST 310",
+  nombreShort: "ESD 310",
+
+  /** Dirección física */
+  direccion:
+    "Calle Jaime Nunó S/N, Col. Presidentes de México, Alcaldía Iztapalapa, Ciudad de México",
 
   /** CCT (Clave de Centro de Trabajo) */
   cct: "09DES4310M",
@@ -72,7 +76,7 @@ export const BRANDING = {
 // ============================
 export const VERSION = {
   /** Versión actual */
-  numero: "1.0.0",
+  numero: "3.10.0",
 
   /** Fase de desarrollo */
   fase: "Piloto Institucional",

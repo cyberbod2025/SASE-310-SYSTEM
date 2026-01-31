@@ -57,17 +57,28 @@ interface EscalationResult {
 
 export const evaluateEscalation = (
   newIncident: Incident,
-  studentHistory: Incident[]
+  studentHistory: Incident[],
 ): EscalationResult => {
   const allIncidents = [...studentHistory, newIncident];
-  const count = allIncidents.filter((i) => i.type === newIncident.type).length; // Count varies by type logic? User said "3 incidencias" general or specific? Let's assume general for now or conductual.
+  const typeHistory = allIncidents.filter((i) => i.type === newIncident.type);
+  const count = typeHistory.length;
+  const description = newIncident.description.toLowerCase();
 
-  // Rule: Protocol or Health Risk -> CRITICAL -> Broadcast
+  // 1. PROTOCOLO DE CONVIVENCIA ESCOLAR (Conducta Grave)
+  const convivenciaKeywords = [
+    "pelea",
+    "discusión",
+    "bully",
+    "acoso",
+    "agresión",
+    "insulto",
+    "falta de respeto",
+    "amenaza",
+  ];
   if (
-    (newIncident.type === IncidentType.SALUD &&
-      (newIncident.description.toLowerCase().includes("urgente") ||
-        newIncident.description.toLowerCase().includes("ambulancia"))) ||
-    newIncident.description.toLowerCase().includes("protocolo")
+    newIncident.type === IncidentType.CONDUCTA &&
+    (convivenciaKeywords.some((k) => description.includes(k)) ||
+      description.includes("convivencia"))
   ) {
     return {
       notifyRoles: [
@@ -75,37 +86,101 @@ export const evaluateEscalation = (
         UserRole.TRABAJO_SOCIAL,
         UserRole.DIRECTIVO,
       ],
-      priority: "CRITICAL",
-      message: `🚨 PROTOCOLO ACTIVO: ${newIncident.description.slice(
-        0,
-        50
-      )}...`,
+      priority:
+        description.includes("pelea") || description.includes("agresión")
+          ? "CRITICAL"
+          : "HIGH",
+      message: `🚨 PROTOCOLO DE CONVIVENCIA: ${newIncident.description.slice(0, 60)}...`,
     };
   }
 
-  // Rule: 3 Strikes -> Tutor
-  // Check if this incident TRAIL triggers the 3rd strike
+  // 2. PROTOCOLO DE VIDEOVIGILANCIA (Evidencia Necesaria)
+  const videoKeywords = [
+    "cámara",
+    "videovigilancia",
+    "evidencia",
+    "robo",
+    "perdida",
+    "extravio",
+    "golpe",
+    "hechos",
+  ];
+  if (videoKeywords.some((k) => description.includes(k))) {
+    return {
+      notifyRoles: [UserRole.PREFECTURA, UserRole.DIRECTIVO],
+      priority: "MEDIUM",
+      message: `📹 PROTOCOLO VIDEOVIGILANCIA: Se requiere revisión de grabación por ${newIncident.type}.`,
+    };
+  }
+
+  // 3. ACTUACIÓN DOCENTE ANTE CONTINGENCIAS (Salud / Emergencias)
+  const contingenciaKeywords = [
+    "accidente",
+    "caída",
+    "emergencia",
+    "riesgo",
+    "sangre",
+    "desmayo",
+    "convulsión",
+    "fractura",
+  ];
+  if (
+    newIncident.type === IncidentType.SALUD ||
+    contingenciaKeywords.some((k) => description.includes(k))
+  ) {
+    const isMajor =
+      description.includes("ambulancia") ||
+      description.includes("grave") ||
+      description.includes("sangre");
+    return {
+      notifyRoles: [
+        UserRole.ENFERMERIA,
+        UserRole.ORIENTACION,
+        UserRole.DIRECTIVO,
+      ],
+      priority: isMajor ? "CRITICAL" : "HIGH",
+      message: `🚑 ACTUACIÓN DOCENTE (EMERGENCIA): ${newIncident.description.slice(0, 60)}...`,
+    };
+  }
+
+  // 4. PROTOCOLO DE APOYO (BAP / Académico Crítico)
+  if (
+    newIncident.type === IncidentType.ACADEMICO &&
+    description.includes("bap")
+  ) {
+    return {
+      notifyRoles: [UserRole.UDEII, UserRole.ORIENTACION],
+      priority: "MEDIUM",
+      message: `📘 PROTOCOLO DE APOYO UDEII: Alumno con BAP requiere ajuste razonable.`,
+    };
+  }
+
+  // 5. REGLA DE 3 STRIKES (Patrón Conductual)
   if (count === 3) {
     return {
-      notifyRoles: [UserRole.DOCENTE_TUTOR, UserRole.PREFECTURA],
+      notifyRoles: [
+        UserRole.DOCENTE_TUTOR,
+        UserRole.PREFECTURA,
+        UserRole.ORIENTACION,
+      ],
       priority: "HIGH",
-      message: `⚠️ Alerta de Patrón (3 Incidencias): Requiere intervención de Tutor.`,
+      message: `⚠️ Alerta de Patrón (3 Incidencias): Acumulación en ${newIncident.type}.`,
     };
   }
 
-  // Rule: Recidivism after Tutor (assumed > 3 implies tutor already notified? Maybe need state)
+  // 6. REINCIDENCIA CRÍTICA (>3)
   if (count > 3) {
     return {
-      notifyRoles: [UserRole.ORIENTACION, UserRole.DOCENTE_TUTOR], // Escalate to Orientacion
+      notifyRoles: [UserRole.ORIENTACION, UserRole.DIRECTIVO],
       priority: "HIGH",
-      message: `⚠️ Reincidencia Crítica: Se recomienda citatorio a padres.`,
+      message: `⚠️ Reincidencia Crítica: Se recomienda citatorio inmediato a padres.`,
     };
   }
 
   // Default: Just notify Prefectura/Tutor mildly
   return {
-    notifyRoles: [UserRole.PREFECTURA],
+    notifyRoles: [UserRole.PREFECTURA, UserRole.DOCENTE_TUTOR],
     priority: "LOW",
-    message: `Nueva incidencia registrada.`,
+    message: `Nueva incidencia registrada: ${newIncident.type}.`,
   };
 };

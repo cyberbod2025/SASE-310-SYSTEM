@@ -2,17 +2,32 @@ import React, { useState } from "react";
 import { useApp } from "../../store";
 import { PrintButtons } from "../PrintButtons";
 import { VoiceInput } from "../VoiceInput";
+import toast from "react-hot-toast";
 
 // -- COMPONENT: Justificante Generator (Trabajo Social) --
 const JustificanteGenerator = () => {
-  const { students, addJustificante } = useApp();
+  const { students, addJustificante, addIncident } = useApp();
   const [selectedStudent, setSelectedStudent] = useState<string>("");
+  const [isDistancia, setIsDistancia] = useState(false);
   const [dates, setDates] = useState({ start: "", end: "" });
   const [reason, setReason] = useState<"Médico" | "Social" | "Legal">("Médico");
   const [desc, setDesc] = useState("");
 
   const handleGenerate = () => {
     if (!selectedStudent || !dates.start) return;
+
+    // Si es a distancia, enviamos comunicación a docentes
+    if (isDistancia) {
+      addIncident(
+        selectedStudent,
+        "ACADEMICO" as any,
+        `⚠️ AVISO INSTITUCIONAL: Alumno trabajando A DISTANCIA del ${dates.start} al ${dates.end || dates.start}. Favor de prever actividades por Classroom/SASE.`,
+      );
+      toast.success("Aviso de Trabajo a Distancia enviado a Docentes", {
+        icon: "📧",
+      });
+    }
+
     addJustificante(selectedStudent, {
       startDate: dates.start,
       endDate: dates.end || dates.start,
@@ -97,6 +112,32 @@ const JustificanteGenerator = () => {
             <option value="Social">Motivo Familiar / Social</option>
             <option value="Legal">Trámite Legal u Oficial</option>
           </select>
+        </div>
+
+        <div
+          className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl mb-4 group cursor-pointer"
+          onClick={() => setIsDistancia(!isDistancia)}
+        >
+          <div
+            className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${isDistancia ? "bg-blue-600 border-blue-600" : "border-blue-300"}`}
+          >
+            {isDistancia && (
+              <span className="material-symbols-outlined text-white text-sm">
+                check
+              </span>
+            )}
+          </div>
+          <div className="flex-1">
+            <p className="text-xs font-black text-blue-800 uppercase tracking-widest">
+              Modalidad a Distancia
+            </p>
+            <p className="text-[10px] text-blue-600 font-bold uppercase transition-opacity">
+              Notificar a docentes automáticamente
+            </p>
+          </div>
+          <span className="material-symbols-outlined text-blue-400 group-hover:rotate-12 transition-transform">
+            cloud_sync
+          </span>
         </div>
 
         <div>

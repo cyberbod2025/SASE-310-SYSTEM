@@ -165,24 +165,66 @@ export const QuickRegisterModal: React.FC = () => {
       description || "Reporte rápido sin descripción",
     );
 
-    // 2. Check for Protocol Triggers (Simple keyword matching for demo)
+    // 2. Check for Protocol Triggers (Institutional Guidelines)
     const lowerDesc = description.toLowerCase();
     let protocolTitleToFind = "";
 
+    // PROTOCOLO DE CONVIVENCIA ESCOLAR
+    const convivenciaKeywords = [
+      "pelea",
+      "bullying",
+      "acoso",
+      "agresión",
+      "insulto",
+      "amenaza",
+      "violencia",
+      "discusión",
+    ];
     if (
-      lowerDesc.includes("convuls") ||
-      lowerDesc.includes("desmay") ||
-      type === IncidentType.SALUD
+      type === IncidentType.CONDUCTA &&
+      convivenciaKeywords.some((k) => lowerDesc.includes(k))
     ) {
-      protocolTitleToFind = "Crisis Convulsiva";
-    } else if (lowerDesc.includes("sismo") || lowerDesc.includes("temblor")) {
-      protocolTitleToFind = "Sismo";
-    } else if (
-      lowerDesc.includes("acoso") ||
-      lowerDesc.includes("bullying") ||
-      lowerDesc.includes("golpe")
+      protocolTitleToFind = "Protocolo de Convivencia Escolar";
+    }
+
+    // PROTOCOLO DE VIDEOVIGILANCIA
+    const videoKeywords = [
+      "cámara",
+      "grabación",
+      "robo",
+      "perdida",
+      "evidencia",
+      "videovigilancia",
+      "hechos",
+    ];
+    if (videoKeywords.some((k) => lowerDesc.includes(k))) {
+      protocolTitleToFind = "Protocolo de Videovigilancia Escolar";
+    }
+
+    // ACTUACIÓN DOCENTE ANTE CONTINGENCIAS
+    const contingenciaKeywords = [
+      "accidente",
+      "caída",
+      "emergencia",
+      "riesgo",
+      "sangre",
+      "desmayo",
+      "convulsión",
+      "fractura",
+      "primeros auxilios",
+    ];
+    if (
+      type === IncidentType.SALUD ||
+      contingenciaKeywords.some((k) => lowerDesc.includes(k))
     ) {
-      protocolTitleToFind = "Acoso Escolar (Bullying)"; // Matches DB title
+      protocolTitleToFind = "Protocolo de Actuación Docente ante Contingencias";
+    }
+
+    // Default Fallbacks for legacy/general keywords
+    if (!protocolTitleToFind) {
+      if (lowerDesc.includes("sismo") || lowerDesc.includes("temblor")) {
+        protocolTitleToFind = "Sismo";
+      }
     }
 
     if (protocolTitleToFind) {
@@ -407,10 +449,15 @@ export const QuickRegisterModal: React.FC = () => {
             {/* Smart Filters: Grado → Grupo */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                <label
+                  htmlFor="qr-grado"
+                  className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider"
+                >
                   1. Grado
                 </label>
                 <select
+                  id="qr-grado"
+                  name="grado"
                   value={selectedGrado}
                   onChange={(e) => {
                     setSelectedGrado(e.target.value);
@@ -430,10 +477,15 @@ export const QuickRegisterModal: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">
+                <label
+                  htmlFor="qr-grupo"
+                  className="block text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider"
+                >
                   2. Grupo
                 </label>
                 <select
+                  id="qr-grupo"
+                  name="grupo"
                   value={selectedGrupo}
                   onChange={(e) => {
                     setSelectedGrupo(e.target.value);
@@ -457,7 +509,10 @@ export const QuickRegisterModal: React.FC = () => {
             {/* Student Search - Only visible after selecting group */}
             {selectedGrupo && !studentNotFound && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label
+                  htmlFor="qr-search"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
                   3. Buscar Alumno (Nombre o Apellidos)
                 </label>
                 <div className="relative">
@@ -466,6 +521,7 @@ export const QuickRegisterModal: React.FC = () => {
                   </span>
                   <input
                     id="qr-search"
+                    name="student-search"
                     type="text"
                     className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none placeholder:text-gray-500"
                     placeholder="Escriba nombre o apellido..."
@@ -565,12 +621,16 @@ export const QuickRegisterModal: React.FC = () => {
             {/* Incident Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label
+                  htmlFor="qr-type"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
                   Tipo de Evento
                 </label>
                 <select
-                  value={type}
                   id="qr-type"
+                  name="incident-type"
+                  value={type}
                   onChange={(e) => setType(e.target.value as IncidentType)}
                   className="w-full px-3 py-2 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary outline-none"
                 >
@@ -624,7 +684,10 @@ export const QuickRegisterModal: React.FC = () => {
             {/* Description */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="block text-sm font-medium text-gray-300">
+                <label
+                  htmlFor="qr-desc"
+                  className="block text-sm font-medium text-gray-300"
+                >
                   Descripción Breve
                 </label>
                 <VoiceInput
@@ -634,6 +697,7 @@ export const QuickRegisterModal: React.FC = () => {
               </div>
               <textarea
                 id="qr-desc"
+                name="description"
                 className="w-full px-3 py-2 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary outline-none h-24 resize-none placeholder:text-gray-500"
                 placeholder="Describa el hecho de forma objetiva..."
                 value={description}

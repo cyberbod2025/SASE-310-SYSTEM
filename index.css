@@ -3,306 +3,158 @@
 @tailwind utilities;
 
 :root {
-  /* SASE 2026 Color Tokens */
-  --sase-dark: #0f1225;
-  --sase-card: #1a1f3c;
-  --sase-purple: #7c3aed;
-  --sase-cyan: #06b6d4;
+  /* SASE 2026 "Cyber-Institutional" Palette */
+  --sase-bg: #0b0e14;
+  --sase-card: rgba(17, 24, 39, 0.7);
+  --sase-card-border: rgba(255, 255, 255, 0.08);
+
+  /* Neon Accents */
+  --sase-cyan: #00f2ff;
+  --sase-blue: #3b82f6;
+  --sase-purple: #a855f7;
+  --sase-emerald: #10b981;
   --sase-amber: #f59e0b;
-  --sase-text: #f8fafc;
-  --sase-text-muted: #64748b;
+  --sase-rose: #f43f5e;
+  --sase-crimson: #e11d48;
+
+  /* Text */
+  --sase-text-head: #ffffff;
+  --sase-text-main: #94a3b8;
+  --sase-text-dim: #475569;
 }
 
 body {
-  background-color: var(--sase-dark);
-  color: var(--sase-text);
-  font-family: "Inter", system-ui, sans-serif;
+  background-color: var(--sase-bg);
+  color: var(--sase-text-main);
+  font-family: "Inter", "Manrope", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* ===================================
-   SASE 2026 Design System Components
-   (Solo elementos globales, no dashboards)
-   =================================== */
-
 @layer components {
-  /* === BUTTONS === */
-  .btn-primary {
-    @apply px-6 py-3 text-white font-bold rounded-xl shadow-lg transition-all duration-200
-           hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
-    background: linear-gradient(to right, #7c3aed, #6366f1);
-    box-shadow: 0 4px 20px -4px rgba(124, 58, 237, 0.3);
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 8px 30px -6px rgba(124, 58, 237, 0.4);
-  }
-
-  .btn-secondary {
-    @apply px-6 py-3 border text-white font-medium rounded-xl transition-all duration-200;
-    background-color: #1a1f3c;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .btn-secondary:hover {
-    background-color: #242b4d;
-    border-color: rgba(124, 58, 237, 0.5);
-  }
-
-  .btn-accent {
-    @apply px-6 py-3 text-white font-bold rounded-xl transition-all duration-200;
-    background: linear-gradient(to right, #06b6d4, #14b8a6);
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
-  }
-
-  .btn-warning {
-    @apply px-6 py-3 text-black font-bold rounded-xl transition-all duration-200;
-    background: linear-gradient(to right, #f59e0b, #f97316);
-  }
-
-  .btn-ghost {
-    @apply px-4 py-2 bg-transparent font-medium rounded-lg transition-all duration-200;
-    color: #94a3b8;
-  }
-
-  .btn-ghost:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: white;
-  }
-
-  .btn-icon {
-    @apply w-10 h-10 flex items-center justify-center border rounded-lg transition-all;
-    background-color: #1a1f3c;
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
-  }
-
-  .btn-icon:hover {
-    color: white;
-    border-color: rgba(124, 58, 237, 0.5);
-  }
-
-  /* === INPUTS === */
-  .input-sase {
-    @apply w-full border rounded-xl px-4 py-3 text-white transition-all duration-200;
-    background-color: rgba(26, 31, 60, 0.5);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .input-sase::placeholder {
-    color: #64748b;
-  }
-
-  .input-sase:focus {
-    @apply outline-none;
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
-  }
-
-  .input-search {
-    @apply w-full border rounded-full px-5 py-2.5 pl-11 text-white text-sm transition-all duration-200;
-    background-color: #1a1f3c;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .input-search::placeholder {
-    color: #64748b;
-  }
-
-  .input-search:focus {
-    @apply outline-none;
-    border-color: #06b6d4;
-    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
-  }
-
-  /* === CARDS === */
+  /* === THE EVOLVED SASE CARD === */
   .card-sase {
-    @apply border rounded-2xl p-6 shadow-lg transition-all duration-300;
-    background-color: #1a1f3c;
-    border-color: rgba(255, 255, 255, 0.05);
+    @apply backdrop-blur-3xl border rounded-3xl p-6 transition-all duration-500;
+    background: var(--sase-card);
+    border-color: var(--sase-card-border);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
 
   .card-sase:hover {
-    border-color: rgba(255, 255, 255, 0.1);
+    @apply border-white/20;
+    background: rgba(31, 41, 55, 0.8);
+    transform: translateY(-2px);
   }
 
-  .card-glass {
-    @apply backdrop-blur-xl border rounded-2xl p-6 shadow-xl;
-    background-color: rgba(26, 31, 60, 0.6);
-    border-color: rgba(255, 255, 255, 0.1);
+  /* === NEON BUTTONS === */
+  .btn-sase-primary {
+    @apply relative overflow-hidden px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all duration-300;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+  }
+
+  .btn-sase-primary:hover {
+    @apply -translate-y-0.5 shadow-[0_0_30px_rgba(59,130,246,0.6)];
+    background: linear-gradient(135deg, #60a5fa, #2563eb);
+  }
+
+  .btn-sase-danger {
+    @apply relative overflow-hidden px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all duration-300;
+    background: linear-gradient(135deg, #e11d48, #9f1239);
+    color: white;
+    box-shadow: 0 10px 20px -5px rgba(225, 29, 72, 0.4);
+  }
+
+  .btn-sase-glass {
+    @apply px-8 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-widest border transition-all duration-300;
+    @apply bg-white/5 border-white/10 text-slate-300 backdrop-blur-md;
+  }
+
+  .btn-sase-glass:hover {
+    @apply bg-white/10 border-white/20 text-white;
+  }
+
+  /* === MODERN INPUTS === */
+  .input-sase {
+    @apply w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-sm font-medium text-white transition-all outline-none;
+    @apply placeholder:text-slate-600;
+  }
+
+  .input-sase:focus {
+    @apply border-blue-500/50 bg-white/[0.06] ring-4 ring-blue-500/10;
+  }
+
+  /* === STATUS GLOWS === */
+  .status-glow-red {
+    @apply w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)] animate-pulse;
+  }
+
+  .status-glow-green {
+    @apply w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)] animate-pulse;
+  }
+
+  .status-glow-blue {
+    @apply w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_12px_rgba(0,242,255,0.8)] animate-pulse;
   }
 
   /* === BADGES === */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide;
-  }
-
-  .badge-purple {
-    @apply badge;
-    background-color: rgba(124, 58, 237, 0.2);
-    color: #a78bfa;
-    border: 1px solid rgba(124, 58, 237, 0.3);
-  }
-
-  .badge-cyan {
-    @apply badge;
-    background-color: rgba(6, 182, 212, 0.2);
-    color: #06b6d4;
-    border: 1px solid rgba(6, 182, 212, 0.3);
-  }
-
-  .badge-amber {
-    @apply badge;
-    background-color: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-  }
-
-  .badge-success {
-    @apply badge;
-    background-color: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.3);
-  }
-
-  .badge-danger {
-    @apply badge;
-    background-color: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-  }
-
-  /* === TAGS (for lists) === */
-  .tag {
-    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium;
-    background-color: #1a1f3c;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #94a3b8;
-  }
-
-  .tag-active {
-    background-color: rgba(124, 58, 237, 0.2);
-    border-color: rgba(124, 58, 237, 0.4);
-    color: #a78bfa;
-  }
-
-  /* === NAVIGATION === */
-  .nav-item {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 cursor-pointer;
-    color: #94a3b8;
-  }
-
-  .nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: white;
-  }
-
-  .nav-item-active {
-    background-color: rgba(124, 58, 237, 0.2);
-    color: white;
-    border-left: 4px solid #7c3aed;
-  }
-
-  /* === TABLE ROWS === */
-  .table-row-sase {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    transition: background-color 0.2s;
-  }
-
-  .table-row-sase:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-
-  /* === PROGRESS BARS === */
-  .progress-bar {
-    @apply h-2 rounded-full overflow-hidden;
-    background-color: #1a1f3c;
-  }
-
-  .progress-fill {
-    @apply h-full rounded-full transition-all duration-500;
-    background: linear-gradient(to right, #7c3aed, #06b6d4);
+  .badge-sase {
+    @apply px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border;
   }
 }
 
-/* === SCROLLBAR (Dark theme) === */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* === UTILITIES & ANIMATIONS === */
+.glass-panel {
+  background: radial-gradient(
+    circle at top left,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+.text-gradient-blue {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-400;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 9999px;
-  transition: background-color 0.2s;
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* === ANIMATIONS === */
-.animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-pulse-subtle {
-  animation: pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulseSubtle {
+@keyframes float {
   0%,
   100% {
-    opacity: 1;
+    transform: translateY(0);
   }
   50% {
-    opacity: 0.7;
+    transform: translateY(-15px);
   }
 }
 
-.animate-glow {
-  animation: glow 2s ease-in-out infinite alternate;
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.3);
 }
 
-@keyframes glow {
-  from {
-    box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
-  }
-  to {
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.6);
-  }
+/* Legacy Support Overrides */
+.bg-background-light {
+  background-color: var(--sase-bg);
 }
-
-/* === LEGACY SUPPORT === */
-.glass {
-  background: rgba(26, 31, 60, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.text-text-main {
+  color: var(--sase-text-main);
 }
-
-/* Light mode overrides for institutional sections */
-.light-section {
-  background-color: #f8fafc;
-  color: #1e293b;
+.bg-white {
+  background-color: var(--sase-card);
 }
-
-.light-section .card-sase {
-  background-color: white;
-  border-color: #e2e8f0;
-  color: #1e293b;
+.border-slate-200 {
+  border-color: var(--sase-card-border);
 }

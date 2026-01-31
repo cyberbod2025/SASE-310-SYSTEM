@@ -6,6 +6,17 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export type AppRole =
+  | "directivo"
+  | "docente"
+  | "docente_tutor"
+  | "prefectura"
+  | "orientacion"
+  | "trabajo_social"
+  | "enfermeria"
+  | "secretaria"
+  | "udeii";
+
 export type Database = {
   public: {
     Tables: {
@@ -25,8 +36,9 @@ export type Database = {
           datos_tutor: Json | null;
           datos_bap: Json | null;
           modificado_por: string | null;
-          modificado_en: string | null; // timestamptz
+          modificado_en: string | null;
           creado_en: string;
+          is_distancia: boolean | null;
         };
         Insert: {
           id?: string;
@@ -45,6 +57,7 @@ export type Database = {
           modificado_por?: string | null;
           modificado_en?: string | null;
           creado_en?: string;
+          is_distancia?: boolean | null;
         };
         Update: {
           id?: string;
@@ -63,6 +76,7 @@ export type Database = {
           modificado_por?: string | null;
           modificado_en?: string | null;
           creado_en?: string;
+          is_distancia?: boolean | null;
         };
         Relationships: [];
       };
@@ -72,7 +86,7 @@ export type Database = {
           alumno_id: string;
           tipo: string;
           descripcion: string | null;
-          fecha: string; // timestamptz
+          fecha: string;
           reportado_por: string | null;
           creado_en: string;
         };
@@ -108,8 +122,8 @@ export type Database = {
           id: string;
           alumno_id: string;
           folio: string | null;
-          fecha_inicio: string | null; // date
-          fecha_fin: string | null; // date
+          fecha_inicio: string | null;
+          fecha_fin: string | null;
           motivo: string | null;
           descripcion: string | null;
           emitido_por: string | null;
@@ -171,6 +185,92 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "salud_alumno_id_fkey";
+            columns: ["alumno_id"];
+            referencedRelation: "alumnos";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      calificaciones: {
+        Row: {
+          id: string;
+          alumno_id: string;
+          materia: string;
+          trimestre1: number | null;
+          trimestre2: number | null;
+          trimestre3: number | null;
+          creado_en: string;
+        };
+        Insert: {
+          id?: string;
+          alumno_id: string;
+          materia: string;
+          trimestre1?: number | null;
+          trimestre2?: number | null;
+          trimestre3?: number | null;
+          creado_en?: string;
+        };
+        Update: {
+          id?: string;
+          alumno_id?: string;
+          materia?: string;
+          trimestre1?: number | null;
+          trimestre2?: number | null;
+          trimestre3?: number | null;
+          creado_en?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "calificaciones_alumno_id_fkey";
+            columns: ["alumno_id"];
+            referencedRelation: "alumnos";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      documentos_institucionales: {
+        Row: {
+          id: string;
+          alumno_id: string;
+          tipo: string;
+          folio: string;
+          fecha: string;
+          titulo: string;
+          contenido: string;
+          narracion_ia: string | null;
+          firmas: string[] | null;
+          creado_por: string | null;
+          creado_en: string;
+        };
+        Insert: {
+          id?: string;
+          alumno_id: string;
+          tipo: string;
+          folio: string;
+          fecha?: string;
+          titulo: string;
+          contenido: string;
+          narracion_ia?: string | null;
+          firmas?: string[] | null;
+          creado_por?: string | null;
+          creado_en?: string;
+        };
+        Update: {
+          id?: string;
+          alumno_id?: string;
+          tipo?: string;
+          folio?: string;
+          fecha?: string;
+          titulo?: string;
+          contenido?: string;
+          narracion_ia?: string | null;
+          firmas?: string[] | null;
+          creado_por?: string | null;
+          creado_en?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "documentos_institucionales_alumno_id_fkey";
             columns: ["alumno_id"];
             referencedRelation: "alumnos";
             referencedColumns: ["id"];
@@ -243,19 +343,19 @@ export type Database = {
       profiles: {
         Row: {
           id: string;
-          role: Database["public"]["Enums"]["app_role"] | null;
+          role: AppRole | null;
           full_name: string | null;
           active: boolean | null;
         };
         Insert: {
           id: string;
-          role?: Database["public"]["Enums"]["app_role"] | null;
+          role?: AppRole | null;
           full_name?: string | null;
           active?: boolean | null;
         };
         Update: {
           id?: string;
-          role?: Database["public"]["Enums"]["app_role"] | null;
+          role?: AppRole | null;
           full_name?: string | null;
           active?: boolean | null;
         };
@@ -357,16 +457,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      app_role:
-        | "directivo"
-        | "docente"
-        | "docente_tutor"
-        | "prefectura"
-        | "orientacion"
-        | "trabajo_social"
-        | "enfermeria"
-        | "secretaria"
-        | "udeii";
+      app_role: AppRole;
     };
   };
 };
