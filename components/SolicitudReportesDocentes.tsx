@@ -104,7 +104,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
     ("academico" | "conductual")[]
   >([]);
   const [docentesSeleccionados, setDocentesSeleccionados] = useState<string[]>(
-    []
+    [],
   );
   const [observaciones, setObservaciones] = useState("");
 
@@ -115,7 +115,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
 
   const toggleTipoReporte = (tipo: "academico" | "conductual") => {
     setTipoReporte((prev) =>
-      prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo]
+      prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo],
     );
   };
 
@@ -123,7 +123,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
     setDocentesSeleccionados((prev) =>
       prev.includes(docente)
         ? prev.filter((d) => d !== docente)
-        : [...prev, docente]
+        : [...prev, docente],
     );
   };
 
@@ -168,7 +168,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
     setActiveTab("pendientes");
 
     alert(
-      `Solicitud enviada a ${docentesSeleccionados.length} docente(s) para el alumno ${selectedStudentData?.name}`
+      `Solicitud enviada a ${docentesSeleccionados.length} docente(s) para el alumno ${selectedStudentData?.name}`,
     );
   };
 
@@ -179,12 +179,9 @@ export const SolicitudReportesDocentes: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-main flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">
-              psychology
-            </span>
-            Reportes Docentes
-          </h1>
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+            Solicitud de Reportes
+          </h2>
           <p className="text-text-secondary">
             Solicitar información académica y conductual a docentes
           </p>

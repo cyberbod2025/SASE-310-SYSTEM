@@ -68,12 +68,12 @@ export const DashboardPromotora = () => {
             </span>
           </div>
           <div>
-            <h1
+            <h2
               id="promotora-header"
-              className="text-2xl font-bold text-slate-800 tracking-tight"
+              className="text-3xl font-black text-slate-800 tracking-tight"
             >
-              Promoción de Lectura
-            </h1>
+              Fomento a la Lectura
+            </h2>
             <p className="text-xs font-bold text-pink-600 uppercase tracking-wider mt-1">
               Gestión de 12 Grupos Asignados
             </p>

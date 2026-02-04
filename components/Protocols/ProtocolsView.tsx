@@ -9,7 +9,7 @@ export const ProtocolsView: React.FC = () => {
   const [protocols, setProtocols] = useState<Protocol[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProtocol, setSelectedProtocol] = useState<Protocol | null>(
-    null
+    null,
   );
   const [filterType, setFilterType] = useState<ProtocolType | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -58,14 +58,9 @@ export const ProtocolsView: React.FC = () => {
     <div className="p-6 md:p-10 max-w-7xl mx-auto min-h-full flex flex-col">
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-          <span className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-lg">
-            <span className="material-symbols-outlined text-white text-2xl">
-              local_library
-            </span>
-          </span>
-          Protocolos Institucionales
-        </h1>
+        <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+          Protocolos de Actuación
+        </h2>
         <p className="text-gray-400 max-w-2xl text-lg">
           Guías de actuación estandarizadas para situaciones escolares.
           Selecciona un protocolo para ver los pasos operativos.

@@ -750,15 +750,14 @@ export const AppProvider: React.FC<{
         ).length;
         msg =
           highRisk > 0
-            ? `${contextPrefix} Hoy hay ${highRisk} alumnos que requieren seguimiento prioritario.`
-            : `${contextPrefix} Sin alertas activas. Todos los grupos estables.`;
+            ? `Hola ${userName}. Hoy acompañamos ${highRisk} trayectorias con atención prioritaria activa. El sistema respalda su noble labor educativa.`
+            : `Hola ${userName}. Las trayectorias están en calma institucional. Su presencia es el corazón de nuestra comunidad escolar.`;
         break;
       case UserRole.PREFECTURA:
-        const lateToday = 32; // Mocked from dashboard
-        msg = `${contextPrefix} Patrón detectado: 5 retardos en 3º B. Se sugiere revisión de uniforme.`;
+        msg = `Hola ${userName}. Se han detectado patrones de puntualidad en 3º B. Iniciemos juntos este seguimiento para transformar hábitos.`;
         break;
       case UserRole.ENFERMERIA:
-        msg = `${contextPrefix} Alerta de inventario: Vendas elásticas (4 unidades). Revisar stock de emergencia.`;
+        msg = `Hola ${userName}. El inventario de emergencia requiere su revisión experta. El sistema acompaña su labor para cuidar la salud de los alumnos.`;
         break;
       case UserRole.ORIENTACION:
         const pendingCases = students.filter(
@@ -766,30 +765,23 @@ export const AppProvider: React.FC<{
         ).length;
         msg =
           pendingCases > 0
-            ? `${contextPrefix} ${pendingCases} patrones de conducta detectados esta semana. Requieren análisis.`
-            : `${contextPrefix} Sin patrones nuevos. Seguimientos al día.`;
+            ? `Hola ${userName}. Tenemos ${pendingCases} patrones detectados que requieren atención. Su mirada experta es clave para el bienestar estudiantil.`
+            : `Hola ${userName}. No hay patrones críticos hoy. Gracias por mantener encendida la llama del bienestar escolar.`;
         break;
       case UserRole.TRABAJO_SOCIAL:
-        msg = `${contextPrefix} 2 seguimientos domiciliarios pendientes. 1 justificante por validar.`;
+        msg = `Hola ${userName}. Tenemos 2 seguimientos y un justificante por validar. Juntos fortalecemos el vínculo familia-escuela.`;
         break;
       case UserRole.SECRETARIA:
-        msg = `${contextPrefix} Sistema listo para carga masiva. Verificar integridad de CURP antes de importar.`;
+        msg = `Hola ${userName}. El sistema está listo para validación masiva. Su gestión impecable garantiza la integridad de nuestra comunidad.`;
         break;
       case UserRole.DIRECTIVO:
-        const totalIncidents = students.reduce(
-          (acc, s) => acc + s.incidents.length,
-          0,
-        );
-        msg = `${contextPrefix} Resumen ejecutivo: ${totalIncidents} incidencias este mes. Asistencia global: 92%.`;
+        msg = `Hola ${userName}. La asistencia global es del 92%. Agradecemos su liderazgo estratégico para el éxito de la comunidad ESD 310.`;
         break;
-
       case UserRole.DEVELOPER:
-        const totalSysStudents = students.length;
-        msg = `${contextPrefix} Nucleo SASE operando al 100%. ${totalSysStudents} registros sincronizados en 12 grupos. Todo el personal en linea.`;
+        msg = `Hola ${userName}. Núcleo SASE operando con integridad total. Todo el personal colaborando en tiempo real por el éxito escolar.`;
         break;
-
       default:
-        msg = `${contextPrefix} Bienvenido al Sistema SASE-310. El sistema esta monitoreando los 12 grupos institucionales.`;
+        msg = `Hola ${userName}. Bienvenido al núcleo SASE de la ESD 310. Juntos construimos un entorno de acompañamiento y éxito educativo.`;
     }
 
     setAssistantMessage(msg);

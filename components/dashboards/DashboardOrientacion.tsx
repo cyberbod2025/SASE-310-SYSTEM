@@ -118,12 +118,12 @@ export const DashboardOrientacion = () => {
             </div>
           </div>
           <div>
-            <h1
-              id="orientacion-title"
-              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+            <h2
+              id="orientacion-header"
+              className="text-3xl font-black text-slate-800 tracking-tight"
             >
-              Orientación Educativa
-            </h1>
+              Orientación
+            </h2>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
               <span className="flex items-center gap-1.5 text-amber-700">
                 <span className="w-2 h-2 bg-amber-500 rounded-full"></span>

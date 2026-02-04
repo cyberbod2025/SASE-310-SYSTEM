@@ -116,9 +116,9 @@ export const Agenda: React.FC = () => {
             </span>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3 uppercase italic">
-              Agenda <span className="text-blue-700">Institucional</span>
-            </h1>
+            <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+              Agenda Escolar
+            </h2>
             <div className="flex items-center gap-3 mt-1 text-[11px] font-black uppercase tracking-widest text-slate-500">
               <span>Planificación Estratégica</span>
               <span className="text-slate-200">|</span>

@@ -109,7 +109,7 @@ export const PanelSolicitudes: React.FC = () => {
   // Get selected student and secretary info
   const selectedStudent = students.find((s) => s.id === newSolicitud.alumnoId);
   const selectedSecretario = SECRETARIOS.find(
-    (s) => s.id === newSolicitud.asignadoA
+    (s) => s.id === newSolicitud.asignadoA,
   );
 
   const [newComunicado, setNewComunicado] = useState<{
@@ -234,16 +234,16 @@ export const PanelSolicitudes: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-main flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+            <span className="material-symbols-outlined text-blue-600 text-3xl">
               assignment
             </span>
-            Centro de Solicitudes
-            <span className="ml-3 px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200">
-              Turno Vespertino | CCT 09DES4310M
+            Panel de Solicitudes
+            <span className="ml-3 px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-black uppercase tracking-widest border border-blue-200">
+              Turno Vespertino
             </span>
-          </h1>
-          <p className="text-gray-600">
+          </h2>
+          <p className="text-slate-500 font-bold text-sm mt-1">
             Gestión de documentos y comunicados institucionales
           </p>
         </div>
@@ -321,14 +321,14 @@ export const PanelSolicitudes: React.FC = () => {
                       <div className="flex items-center gap-2 mb-1">
                         <span
                           className={`px-2.5 py-1 rounded text-xs font-black uppercase tracking-widest ${getPrioridadStyle(
-                            sol.prioridad
+                            sol.prioridad,
                           )}`}
                         >
                           {sol.prioridad}
                         </span>
                         <span
                           className={`px-2.5 py-1 rounded text-xs font-black uppercase tracking-widest ${getEstadoStyle(
-                            sol.estado
+                            sol.estado,
                           )}`}
                         >
                           {sol.estado.replace("_", " ")}
@@ -358,7 +358,7 @@ export const PanelSolicitudes: React.FC = () => {
                         <p className="text-xs text-text-secondary">
                           Límite:{" "}
                           {new Date(sol.fechaLimite).toLocaleDateString(
-                            "es-MX"
+                            "es-MX",
                           )}
                         </p>
                       )}
@@ -404,16 +404,16 @@ export const PanelSolicitudes: React.FC = () => {
                         com.tipo === "urgente"
                           ? "bg-red-100 text-red-600"
                           : com.tipo === "evento"
-                          ? "bg-purple-100 text-purple-600"
-                          : "bg-blue-100 text-blue-600"
+                            ? "bg-purple-100 text-purple-600"
+                            : "bg-blue-100 text-blue-600"
                       }`}
                     >
                       <span className="material-symbols-outlined">
                         {com.tipo === "evento"
                           ? "event"
                           : com.tipo === "urgente"
-                          ? "priority_high"
-                          : "campaign"}
+                            ? "priority_high"
+                            : "campaign"}
                       </span>
                     </div>
                     <div className="flex-1">

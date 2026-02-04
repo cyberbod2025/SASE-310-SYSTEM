@@ -84,9 +84,9 @@ export const DashboardDireccion = () => {
             </span>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight">
+            <h2 className="text-3xl font-black text-slate-800 tracking-tight">
               Dirección
-            </h1>
+            </h2>
             <p className="text-xs font-bold text-red-800 uppercase tracking-widest flex items-center gap-2">
               <span
                 className={`w-2 h-2 rounded-full animate-pulse ${semaphoreStatus === "red" ? "bg-red-600" : semaphoreStatus === "yellow" ? "bg-amber-500" : "bg-emerald-500"}`}

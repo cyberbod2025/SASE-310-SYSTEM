@@ -52,7 +52,7 @@ export const Inscripciones: React.FC = () => {
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setter: React.Dispatch<React.SetStateAction<File | null>>
+    setter: React.Dispatch<React.SetStateAction<File | null>>,
   ) => {
     if (e.target.files && e.target.files.length > 0) setter(e.target.files[0]);
   };
@@ -123,7 +123,7 @@ export const Inscripciones: React.FC = () => {
     const uploadFile = async (
       fileToUpload: File,
       bucket: string,
-      prefix: string
+      prefix: string,
     ) => {
       const fileExt = fileToUpload.name.split(".").pop();
       const fileName = `${prefix}_${Date.now()}.${fileExt}`;
@@ -145,13 +145,13 @@ export const Inscripciones: React.FC = () => {
         studentPhotoUrl = await uploadFile(
           fileStudent,
           "avatars",
-          `student_${formData.curp}`
+          `student_${formData.curp}`,
         );
       if (fileGuardian)
         guardianPhotoUrl = await uploadFile(
           fileGuardian,
           "avatars",
-          `guardian_${formData.curp}`
+          `guardian_${formData.curp}`,
         );
 
       const { data: newStudent, error: studentError } = await (
@@ -196,7 +196,7 @@ export const Inscripciones: React.FC = () => {
           docUrl = await uploadFile(
             file,
             "documentos_salud",
-            `${newStudent.id}_salud`
+            `${newStudent.id}_salud`,
           );
         await supabase.from("salud").insert([
           {
@@ -246,9 +246,9 @@ export const Inscripciones: React.FC = () => {
           </span>
         </div>
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">
-            Registro de Inscripción
-          </h1>
+          <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+            Control de Inscripciones
+          </h2>
           <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
             Control Escolar • Ciclo 2024-2025
           </p>

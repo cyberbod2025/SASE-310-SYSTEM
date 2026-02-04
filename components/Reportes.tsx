@@ -24,13 +24,13 @@ export const Reportes: React.FC = () => {
         ...i,
         studentName: s.name,
         group: s.group,
-      }))
+      })),
     );
   }, [students]);
 
   const filteredIncidents = React.useMemo(() => {
     return allIncidents.filter(
-      (i) => i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59"
+      (i) => i.date >= dateRange.start && i.date <= dateRange.end + "T23:59:59",
     );
   }, [allIncidents, dateRange]);
 
@@ -44,9 +44,9 @@ export const Reportes: React.FC = () => {
           if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
           return acc;
         },
-        { retardos: 0, uniformes: 0, conducta: 0, faltas: 0 }
+        { retardos: 0, uniformes: 0, conducta: 0, faltas: 0 },
       ),
-    [filteredIncidents]
+    [filteredIncidents],
   );
 
   const studentsByState = React.useMemo(
@@ -58,9 +58,9 @@ export const Reportes: React.FC = () => {
           if (s.caseState === CaseState.PATRON_DETECTADO) acc.patron++;
           return acc;
         },
-        { cerrados: 0, observados: 0, patron: 0 }
+        { cerrados: 0, observados: 0, patron: 0 },
       ),
-    [students]
+    [students],
   );
 
   const handlePrintReport = () => {
@@ -99,7 +99,11 @@ export const Reportes: React.FC = () => {
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.retardos}</td>
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${
                     filteredIncidents.length > 0
-                      ? ((incidentsByType.retardos / filteredIncidents.length) * 100).toFixed(1)
+                      ? (
+                          (incidentsByType.retardos /
+                            filteredIncidents.length) *
+                          100
+                        ).toFixed(1)
                       : 0
                   }%</td>
                 </tr>
@@ -108,7 +112,11 @@ export const Reportes: React.FC = () => {
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.uniformes}</td>
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${
                     filteredIncidents.length > 0
-                      ? ((incidentsByType.uniformes / filteredIncidents.length) * 100).toFixed(1)
+                      ? (
+                          (incidentsByType.uniformes /
+                            filteredIncidents.length) *
+                          100
+                        ).toFixed(1)
                       : 0
                   }%</td>
                 </tr>
@@ -117,7 +125,11 @@ export const Reportes: React.FC = () => {
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.conducta}</td>
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${
                     filteredIncidents.length > 0
-                      ? ((incidentsByType.conducta / filteredIncidents.length) * 100).toFixed(1)
+                      ? (
+                          (incidentsByType.conducta /
+                            filteredIncidents.length) *
+                          100
+                        ).toFixed(1)
                       : 0
                   }%</td>
                 </tr>
@@ -126,7 +138,10 @@ export const Reportes: React.FC = () => {
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.faltas}</td>
                   <td style="padding: 12px; border: 1px solid #e2e8f0;">${
                     filteredIncidents.length > 0
-                      ? ((incidentsByType.faltas / filteredIncidents.length) * 100).toFixed(1)
+                      ? (
+                          (incidentsByType.faltas / filteredIncidents.length) *
+                          100
+                        ).toFixed(1)
                       : 0
                   }%</td>
                 </tr>
@@ -160,14 +175,22 @@ export const Reportes: React.FC = () => {
                     <td style="padding: 10px; border: 1px solid #e2e8f0;">${i.group}</td>
                     <td style="padding: 10px; border: 1px solid #e2e8f0;">
                       <span style="padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; background: ${
-                        i.type === IncidentType.RETARDO ? "#fef3c7" : i.type === IncidentType.CONDUCTA ? "#fee2e2" : "#dbeafe"
+                        i.type === IncidentType.RETARDO
+                          ? "#fef3c7"
+                          : i.type === IncidentType.CONDUCTA
+                            ? "#fee2e2"
+                            : "#dbeafe"
                       }; color: ${
-                        i.type === IncidentType.RETARDO ? "#92400e" : i.type === IncidentType.CONDUCTA ? "#991b1b" : "#1e40af"
+                        i.type === IncidentType.RETARDO
+                          ? "#92400e"
+                          : i.type === IncidentType.CONDUCTA
+                            ? "#991b1b"
+                            : "#1e40af"
                       }; text-transform: uppercase;">${i.type}</span>
                     </td>
                     <td style="padding: 10px; border: 1px solid #e2e8f0; color: #64748b;">${i.description}</td>
                   </tr>
-                `
+                `,
                   )
                   .join("")}
               </tbody>
@@ -197,24 +220,32 @@ export const Reportes: React.FC = () => {
               <tr><td><span class="badge badge-green">Cerrado</span></td><td>${
                 studentsByState.cerrados
               }</td><td>${
-          students.length > 0
-            ? ((studentsByState.cerrados / students.length) * 100).toFixed(1)
-            : 0
-        }%</td></tr>
+                students.length > 0
+                  ? (
+                      (studentsByState.cerrados / students.length) *
+                      100
+                    ).toFixed(1)
+                  : 0
+              }%</td></tr>
               <tr><td><span class="badge badge-blue">Observado</span></td><td>${
                 studentsByState.observados
               }</td><td>${
-          students.length > 0
-            ? ((studentsByState.observados / students.length) * 100).toFixed(1)
-            : 0
-        }%</td></tr>
+                students.length > 0
+                  ? (
+                      (studentsByState.observados / students.length) *
+                      100
+                    ).toFixed(1)
+                  : 0
+              }%</td></tr>
               <tr><td><span class="badge badge-red">Patrón Detectado</span></td><td>${
                 studentsByState.patron
               }</td><td>${
-          students.length > 0
-            ? ((studentsByState.patron / students.length) * 100).toFixed(1)
-            : 0
-        }%</td></tr>
+                students.length > 0
+                  ? ((studentsByState.patron / students.length) * 100).toFixed(
+                      1,
+                    )
+                  : 0
+              }%</td></tr>
             </tbody>
           </table>
           <h3>Listado Completo</h3>
@@ -242,12 +273,12 @@ export const Reportes: React.FC = () => {
                     s.caseState === CaseState.CERRADO
                       ? "green"
                       : s.caseState === CaseState.OBSERVADO
-                      ? "blue"
-                      : "red"
+                        ? "blue"
+                        : "red"
                   }">${s.caseState}</span></td>
                   <td>${s.incidents.length}</td>
                 </tr>
-              `
+              `,
                 )
                 .join("")}
             </tbody>
@@ -275,7 +306,7 @@ export const Reportes: React.FC = () => {
               <tr><td>Tasa de Asistencia Estimada</td><td>${
                 students.length > 0
                   ? (100 - (faltasCount / (students.length * 5)) * 100).toFixed(
-                      1
+                      1,
                     )
                   : 100
               }%</td></tr>
@@ -296,7 +327,7 @@ export const Reportes: React.FC = () => {
                       if (i.type === IncidentType.RETARDO) acc.retardos++;
                       return acc;
                     },
-                    { faltas: 0, retardos: 0 }
+                    { faltas: 0, retardos: 0 },
                   );
                   return { ...s, ...counts };
                 })
@@ -311,7 +342,7 @@ export const Reportes: React.FC = () => {
                     <td>${s.faltas}</td>
                     <td>${s.retardos}</td>
                   </tr>
-                `
+                `,
                 )
                 .join("")}
             </tbody>
@@ -359,9 +390,9 @@ export const Reportes: React.FC = () => {
             </span>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3 uppercase italic">
-              Centro de <span className="text-blue-700">Estadística</span>
-            </h1>
+            <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+              Reportes Institucionales
+            </h2>
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mt-1">
               Inteligencia de Datos Institucionales
             </p>

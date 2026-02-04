@@ -5,15 +5,15 @@ import toast from "react-hot-toast";
 
 interface AuditEntry {
   id: string;
-  usuario_id: string | null;
-  email_usuario: string | null;
-  rol_usuario: string | null;
-  tipo_accion: string;
-  descripcion_accion: string | null;
-  tabla_objetivo: string | null;
-  id_registro_objetivo: string | null;
-  nombre_alumno_objetivo: string | null;
-  creado_en: string;
+  user_id: string | null;
+  user_email: string | null;
+  user_role: string | null;
+  action_type: string;
+  action_description: string | null;
+  target_table: string | null;
+  target_record_id: string | null;
+  target_student_name: string | null;
+  created_at: string;
 }
 
 export const BitacoraAuditoria: React.FC = () => {
@@ -30,9 +30,9 @@ export const BitacoraAuditoria: React.FC = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("auditoria")
+        .from("audit_log")
         .select("*")
-        .order("creado_en", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(100);
 
       if (error) {
@@ -49,7 +49,7 @@ export const BitacoraAuditoria: React.FC = () => {
   const filteredEntries =
     filter === "all"
       ? entries
-      : entries.filter((e) => e.tipo_accion === filter);
+      : entries.filter((e) => e.action_type === filter);
 
   return (
     <div className="flex-1 w-full space-y-8 animate-fadeIn">
@@ -60,9 +60,9 @@ export const BitacoraAuditoria: React.FC = () => {
             <span className="material-symbols-outlined text-3xl">policy</span>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight uppercase italic">
-              Bitácora <span className="text-blue-700">Institucional</span>
-            </h1>
+            <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+              Bitácora de Auditoría
+            </h2>
             <p className="text-emerald-700 font-black text-xs uppercase tracking-widest mt-1.5 flex items-center gap-2">
               <span className="size-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
               Seguridad y Auditoría del Sistema
@@ -97,27 +97,27 @@ export const BitacoraAuditoria: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <StatCard
           label="Consultas"
-          value={entries.filter((e) => e.tipo_accion === "CONSULTA").length}
+          value={entries.filter((e) => e.action_type === "CONSULTA").length}
           icon="visibility"
           color="blue"
         />
         <StatCard
           label="Actualizaciones"
           value={
-            entries.filter((e) => e.tipo_accion === "ACTUALIZACION").length
+            entries.filter((e) => e.action_type === "ACTUALIZACION").length
           }
           icon="edit_note"
           color="amber"
         />
         <StatCard
           label="Creaciones"
-          value={entries.filter((e) => e.tipo_accion === "CREACION").length}
+          value={entries.filter((e) => e.action_type === "CREACION").length}
           icon="add_circle"
           color="emerald"
         />
         <StatCard
           label="Personal Activo"
-          value={new Set(entries.map((e) => e.email_usuario)).size}
+          value={new Set(entries.map((e) => e.user_email)).size}
           icon="group"
           color="indigo"
         />
@@ -201,49 +201,55 @@ export const BitacoraAuditoria: React.FC = () => {
                   >
                     <td className="px-8 py-5">
                       <span className="text-xs font-black text-slate-600 block">
-                        {new Date(entry.creado_en).toLocaleDateString("es-MX", {
-                          day: "2-digit",
-                          month: "short",
-                        })}
+                        {new Date(entry.created_at).toLocaleDateString(
+                          "es-MX",
+                          {
+                            day: "2-digit",
+                            month: "short",
+                          },
+                        )}
                       </span>
                       <span className="text-xs font-bold text-slate-400 block mt-0.5">
-                        {new Date(entry.creado_en).toLocaleTimeString("es-MX", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {new Date(entry.created_at).toLocaleTimeString(
+                          "es-MX",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          },
+                        )}
                       </span>
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-3">
                         <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-black text-[10px]">
-                          {(entry.rol_usuario || "S").charAt(0)}
+                          {(entry.user_role || "S").charAt(0)}
                         </div>
                         <div>
                           <p className="text-xs font-black text-slate-800 truncate max-w-[150px]">
-                            {entry.email_usuario || "SISTEMA"}
+                            {entry.user_email || "SISTEMA"}
                           </p>
                           <p className="text-[10px] font-black text-blue-700 uppercase tracking-tight mt-0.5">
-                            {entry.rol_usuario || "PROCESO AUTO"}
+                            {entry.user_role || "PROCESO AUTO"}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <ActionBadge type={entry.tipo_accion} />
+                      <ActionBadge type={entry.action_type} />
                     </td>
                     <td className="px-8 py-5">
                       <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-[250px] line-clamp-2">
-                        {entry.descripcion_accion}
+                        {entry.action_description}
                       </p>
                     </td>
                     <td className="px-8 py-5">
-                      {entry.nombre_alumno_objetivo ? (
+                      {entry.target_student_name ? (
                         <div className="flex items-center gap-2">
                           <span className="material-symbols-outlined text-sm text-slate-300">
                             person
                           </span>
                           <span className="text-xs font-bold text-slate-700 italic">
-                            {entry.nombre_alumno_objetivo}
+                            {entry.target_student_name}
                           </span>
                         </div>
                       ) : (

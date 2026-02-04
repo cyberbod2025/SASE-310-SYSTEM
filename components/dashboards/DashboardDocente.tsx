@@ -49,12 +49,12 @@ export const DashboardDocente = () => {
             <span className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">
               Portal Docente
             </span>
-            <h1
+            <h2
               id="docente-dashboard-title"
-              className="text-2xl font-black text-slate-800 tracking-tight uppercase leading-none"
+              className="text-lg font-black text-slate-400 tracking-widest uppercase leading-none opacity-60"
             >
-              Control de Grupo
-            </h1>
+              Gestión de Trayectorias
+            </h2>
           </div>
         </div>
 
@@ -131,7 +131,7 @@ export const DashboardDocente = () => {
               className="grid grid-cols-1 md:grid-cols-3 gap-4"
             >
               <SolidStatCard
-                label="Alumnos en Riesgo"
+                label="Atención Prioritaria Activa"
                 value={riskCount}
                 color="bg-red-600"
                 icon="warning"
@@ -198,7 +198,7 @@ export const DashboardDocente = () => {
                 >
                   <span className="material-symbols-outlined">add_circle</span>
                   <span className="text-xs font-bold uppercase tracking-wider">
-                    Nueva Incidencia
+                    Registrar Seguimiento
                   </span>
                 </button>
                 <div className="grid grid-cols-2 gap-3">
@@ -311,7 +311,7 @@ export const DashboardDocente = () => {
                 </div>
                 <div>
                   <span className="inline-block bg-blue-100 text-blue-800 text-[10px] font-black px-2 py-0.5 rounded-sm uppercase tracking-wider mb-2">
-                    Expediente Activo
+                    Acompañamiento Activo
                   </span>
                   <h2 className="text-3xl font-black text-slate-800 uppercase leading-none mb-1">
                     {selectedStudent.name}
@@ -364,9 +364,9 @@ export const DashboardDocente = () => {
                 <div className="flex justify-between items-center">
                   <h3 className="text-sm font-bold text-slate-800 uppercase flex items-center gap-2">
                     <span className="material-symbols-outlined text-slate-400">
-                      history
+                      history_edu
                     </span>
-                    Historial de Incidencias
+                    Trayectoria Escolar
                   </h3>
                   <button
                     onClick={() => handleQuickAction("incidencia")}

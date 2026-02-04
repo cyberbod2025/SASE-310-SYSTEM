@@ -140,9 +140,9 @@ export const DashboardPrefectura = () => {
             </span>
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+            <h2 className="text-2xl font-black text-slate-800 tracking-tight">
               Prefectura
-            </h1>
+            </h2>
             <p className="text-xs font-bold text-amber-700 uppercase tracking-widest flex items-center gap-2">
               <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
               Operativo • {todayDisplay}
@@ -232,9 +232,9 @@ export const DashboardPrefectura = () => {
             <div className="p-6">
               <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">
-                  touch_app
+                  handshake
                 </span>
-                Acciones Rápidas (Un toque)
+                Acompañamiento Inmediato (Un toque)
               </h2>
 
               {/* Show instruction when no student selected */}
@@ -425,7 +425,7 @@ export const DashboardPrefectura = () => {
                       {s.name}
                     </p>
                     <p className="text-[10px] font-bold text-red-400">
-                      {s.incidents.length} Incidencias detectadas
+                      {s.incidents.length} Seguimientos en curso
                     </p>
                   </div>
                 ))}

@@ -61,7 +61,7 @@ const AdminLoginModal = ({
       window.location.assign("/"); // Clean reload without query params
     } else {
       alert(
-        "Acceso Denegado: Este usuario no tiene privilegios de Super Admin."
+        "Acceso Denegado: Este usuario no tiene privilegios de Super Admin.",
       );
       await supabase.auth.signOut();
     }
@@ -377,9 +377,9 @@ export const OrbNavigation = () => {
           className="h-20 mx-auto mb-4"
         />
 
-        <h1 className="text-5xl md:text-7xl font-black text-slate-800 tracking-tighter uppercase italic leading-none">
-          Centro de <span className="text-blue-700">Comando</span>
-        </h1>
+        <h2 className="text-4xl md:text-5xl font-black text-slate-400 tracking-tighter uppercase italic leading-none opacity-40">
+          Jornada de <span className="text-slate-300">Acompañamiento</span>
+        </h2>
 
         {/* Registro de Usuarios Button - Only for Admin Roles */}
         {(currentUserRole === UserRole.DIRECTIVO ||

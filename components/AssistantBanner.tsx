@@ -1,6 +1,35 @@
 import React from "react";
 import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
+import { useAuth } from "./AuthProvider";
+
+// Role-based avatars for visual integration
+const roleImages: Record<UserRole, string> = {
+  [UserRole.DIRECTIVO]:
+    "https://ui-avatars.com/api/?name=Director&background=fecaca&color=7f1d1d",
+  [UserRole.DOCENTE]:
+    "https://ui-avatars.com/api/?name=Docente&background=dbeafe&color=1e3a8a",
+  [UserRole.DOCENTE_TUTOR]:
+    "https://ui-avatars.com/api/?name=Tutor&background=dbeafe&color=1e3a8a",
+  [UserRole.PREFECTURA]:
+    "https://ui-avatars.com/api/?name=Prefectura&background=ffedd5&color=7c2d12",
+  [UserRole.ORIENTACION]:
+    "https://ui-avatars.com/api/?name=Orientación&background=d1fae5&color=064e3b",
+  [UserRole.TRABAJO_SOCIAL]:
+    "https://ui-avatars.com/api/?name=Trabajo+Social&background=f3e8ff&color=581c87",
+  [UserRole.ENFERMERIA]:
+    "https://ui-avatars.com/api/?name=Enfermería&background=fee2e2&color=991b1b",
+  [UserRole.SECRETARIA]:
+    "https://ui-avatars.com/api/?name=Secretaría&background=cffafe&color=083344",
+  [UserRole.UDEII]:
+    "https://ui-avatars.com/api/?name=UDEII&background=e0e7ff&color=312e81",
+  [UserRole.PROMOTORA]:
+    "https://ui-avatars.com/api/?name=Enlace&background=fce7f3&color=701a75",
+  [UserRole.GUEST]:
+    "https://ui-avatars.com/api/?name=Invitado&background=f1f5f9&color=0f172a",
+  [UserRole.DEVELOPER]:
+    "https://ui-avatars.com/api/?name=Admin&background=000&color=fff",
+};
 
 interface PendingAction {
   id: string;
@@ -20,6 +49,7 @@ export const AssistantBanner: React.FC<{
     notifications,
     setCurrentModule,
   } = useApp();
+  const { user } = useAuth();
 
   // Generate pending actions based on role and data
   const getPendingActions = (): PendingAction[] => {
@@ -94,139 +124,61 @@ export const AssistantBanner: React.FC<{
 
   return (
     <div
-      className={`mb-8 p-6 rounded-2xl border backdrop-blur-md shadow-xl animate-fade-in transition-all duration-500 overflow-hidden relative group ${
+      className={`mb-12 p-8 rounded-[3rem] border backdrop-blur-xl animate-fade-in transition-all duration-700 relative overflow-hidden group ${
         hasUrgent
-          ? "bg-red-500/10 border-red-500/30 ring-4 ring-red-500/5 shadow-red-900/10"
-          : "bg-white border-slate-200 shadow-slate-200/50"
+          ? "bg-red-500/5 border-red-500/10 ring-8 ring-red-500/5 shadow-2xl shadow-red-900/5"
+          : "bg-white/40 border-slate-200/40 shadow-2xl shadow-slate-200/20"
       }`}
     >
-      {/* Decorative Background Element */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-bl-full pointer-events-none transition-transform group-hover:scale-110"></div>
+      {/* Decorative Background Element - Softer and larger */}
+      <div className="absolute -top-24 -right-24 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none transition-transform group-hover:scale-125 duration-1000"></div>
 
-      <div className="flex items-start gap-5 relative z-10">
-        {/* SASE Agent Avatar with Animated Reflections */}
-        <div className="relative size-16 shrink-0 flex items-center justify-center">
-          {/* Agent Avatar Image with Overlay Effects */}
-          <div className="relative size-full rounded-full overflow-hidden bg-gradient-to-br from-amber-900/30 to-blue-900/30 animate-[float_3s_ease-in-out_infinite]">
-            {/* Base Image */}
-            <img
-              src="/assets/branding/IA-SASE.png"
-              alt="SASE Agent"
-              className="w-full h-full object-cover"
-            />
-
-            {/* Animated Golden Reflections Moving Over the Logo */}
-            <div className="absolute inset-0 overflow-hidden">
-              {/* Diagonal sweep reflection 1 */}
-              <div
-                className="absolute inset-0 bg-gradient-to-br from-transparent via-amber-300/40 to-transparent"
-                style={{
-                  animation: "sweep-diagonal 4s ease-in-out infinite",
-                  transform:
-                    "translateX(-100%) translateY(-100%) rotate(45deg)",
-                  width: "200%",
-                  height: "200%",
-                }}
-              ></div>
-
-              {/* Diagonal sweep reflection 2 (opposite direction) */}
-              <div
-                className="absolute inset-0 bg-gradient-to-tl from-transparent via-amber-400/30 to-transparent"
-                style={{
-                  animation:
-                    "sweep-diagonal-reverse 5s ease-in-out infinite 1s",
-                  transform: "translateX(100%) translateY(100%) rotate(-45deg)",
-                  width: "200%",
-                  height: "200%",
-                }}
-              ></div>
-
-              {/* Circular pulse glow overlay */}
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background:
-                    "radial-gradient(circle at center, rgba(251, 191, 36, 0.2) 0%, transparent 70%)",
-                  animation: "pulse-glow-overlay 3s ease-in-out infinite",
-                }}
-              ></div>
-
-              {/* Rotating shimmer spots */}
-              <div
-                className="absolute top-1/4 left-1/4 w-2 h-2 bg-amber-200/60 rounded-full blur-sm"
-                style={{
-                  animation: "orbit-shimmer 6s linear infinite",
-                  transformOrigin: "100% 100%",
-                }}
-              ></div>
-              <div
-                className="absolute bottom-1/4 right-1/4 w-2 h-2 bg-amber-300/50 rounded-full blur-sm"
-                style={{
-                  animation: "orbit-shimmer 6s linear infinite 3s",
-                  transformOrigin: "-100% -100%",
-                }}
-              ></div>
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
+        {/* User Interaction Hub - Avatar and Status */}
+        <div className="flex flex-col items-center gap-4 shrink-0">
+          <div className="relative group/avatar">
+            <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400/20 to-purple-400/20 rounded-full blur-2xl opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-700"></div>
+            <div className="relative size-24 rounded-full overflow-hidden border-4 border-white shadow-2xl shadow-blue-900/10">
+              <img
+                src={roleImages[currentUserRole]}
+                alt="Usuario"
+                className="w-full h-full object-cover"
+              />
             </div>
-
-            {/* Subtle border glow */}
-            <div className="absolute inset-0 rounded-full ring-1 ring-amber-400/30 animate-pulse"></div>
+            {/* Subtle IA Identity Tag */}
+            <div className="absolute -bottom-2 -right-2 size-10 rounded-full bg-white shadow-lg border border-slate-100 flex items-center justify-center animate-bounce">
+              <img
+                src="/assets/branding/IA-SASE.png"
+                alt="IA"
+                className="size-6 object-contain opacity-80"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Custom animations */}
-        <style>{`
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-          }
-          
-          @keyframes sweep-diagonal {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-            100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-          }
-          
-          @keyframes sweep-diagonal-reverse {
-            0% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
-            50% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
-          }
-          
-          @keyframes pulse-glow-overlay {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.1); }
-          }
-          
-          @keyframes orbit-shimmer {
-            0% { transform: rotate(0deg) translateX(20px) rotate(0deg); opacity: 0.4; }
-            50% { opacity: 0.8; }
-            100% { transform: rotate(360deg) translateX(20px) rotate(-360deg); opacity: 0.4; }
-          }
-        `}</style>
+        <div className="flex-1 text-center md:text-left">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100/50 border border-slate-200/50 mb-6">
+            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">
+              Acompañamiento SASE Activo
+            </span>
+          </div>
 
-        <div className="flex-1 min-w-0">
-          <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 text-blue-600/80 flex justify-between items-center">
-            <span>Asistente IA SASE • Inteligencia Operativa</span>
-          </h4>
-
-          {/* Main message */}
+          {/* Main Greeting - THE PRIMARY ELEMENT (H1) */}
           {assistantMessage && (
-            <p
-              className={`text-sm font-bold leading-relaxed mb-4 ${
-                hasUrgent ? "text-red-900" : "text-slate-700"
+            <h1
+              className={`text-3xl md:text-4xl font-black tracking-tight leading-tight mb-4 ${
+                hasUrgent ? "text-red-900" : "text-slate-800"
               }`}
             >
               {assistantMessage}
-            </p>
+            </h1>
           )}
 
-          {/* Pending actions */}
-          {pendingActions.length > 0 && (
-            <div className="space-y-3">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                Sugerencias para tu rol:
-              </p>
-              <div className="flex flex-wrap gap-2">
+          {/* Secondary Information & Actions */}
+          <div className="flex flex-col md:flex-row md:items-center gap-6 mt-8">
+            {pendingActions.length > 0 && (
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                 {pendingActions.map((action) => (
                   <button
                     key={action.id}
@@ -237,27 +189,40 @@ export const AssistantBanner: React.FC<{
                         setCurrentModule(action.module);
                       }
                     }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all border hover:scale-[1.02] active:scale-[0.98] shadow-sm uppercase tracking-tight ${
+                    className={`flex items-center gap-3 px-6 py-2.5 rounded-2xl text-[11px] font-black transition-all border shadow-sm uppercase tracking-widest hover:translate-y-[-2px] active:translate-y-[0px] ${
                       action.priority === "urgent"
                         ? "bg-red-600 border-red-500 text-white hover:bg-red-700 shadow-red-200"
                         : action.priority === "warning"
                           ? "bg-amber-500 border-amber-400 text-white hover:bg-amber-600 shadow-amber-200"
-                          : "bg-white border-slate-200 text-slate-700 hover:border-blue-400 hover:text-blue-700 shadow-slate-100"
+                          : "bg-white border-slate-200 text-slate-500 hover:border-blue-400 hover:text-blue-600"
                     }`}
                   >
                     <span className="material-symbols-outlined text-[18px]">
-                      {action.priority === "urgent"
-                        ? "priority_high"
-                        : action.priority === "warning"
-                          ? "schedule"
-                          : "bolt"}
+                      {action.priority === "urgent" ? "priority_high" : "bolt"}
                     </span>
                     {action.title}
                   </button>
                 ))}
+
+                {/* New: Humanized AI Assistant Trigger - Explains usage */}
+                <button
+                  id="btn-asistente-banner"
+                  onClick={() => {
+                    const btn = document.getElementById(
+                      "btn-asistente-trigger",
+                    );
+                    if (btn) btn.click();
+                  }}
+                  className="flex items-center gap-3 px-6 py-2.5 rounded-2xl text-[11px] font-black transition-all border shadow-lg border-blue-600 bg-blue-700 text-white hover:bg-blue-800 hover:shadow-blue-500/20 uppercase tracking-widest hover:translate-y-[-2px] animate-fade-in"
+                >
+                  <span className="material-symbols-outlined text-[18px] animate-pulse">
+                    psychology
+                  </span>
+                  Consultar al Asistente
+                </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

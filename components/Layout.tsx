@@ -78,7 +78,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     <div className="flex h-screen bg-slate-100 text-slate-800 overflow-hidden font-sans">
       <TutorialController />
       <QuickRegisterModal />
-      <FloatingAssistant />
+      {/* Assistant is now integrated into AssistantBanner */}
+      {/* <FloatingAssistant /> */}
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (
@@ -282,8 +283,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 </span>
               </button>
             </div>
-            <div className="mt-4 text-[8px] font-bold text-white/40 uppercase tracking-[0.4em]">
-              SISTEMA SASE • {VERSION.fase} {VERSION.numero}
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2 text-[8px] font-black text-white/30 uppercase tracking-[0.4em]">
+                SISTEMA SASE <span className="text-white/20">•</span>{" "}
+                {VERSION.numero}
+              </div>
+
+              {/* Dev Mode Indicator - Minimalist but clearly visible for developers */}
+              {currentUserRole === UserRole.DEVELOPER && (
+                <div className="px-3 py-1 rounded-full bg-black/40 border border-white/10 text-cyan-400 text-[8px] font-black uppercase tracking-[0.2em] shadow-lg animate-pulse">
+                  Modo Dev Activo
+                </div>
+              )}
+
+              <div className="text-[7px] font-bold text-white/20 uppercase tracking-widest mt-1">
+                ESD 310 • PILOTO INSTITUCIONAL
+              </div>
             </div>
           </div>
         </div>
@@ -304,13 +319,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <span className="material-symbols-outlined">menu</span>
             </button>
 
-            {/* Breadcrumbs / Page Title */}
+            {/* Breadcrumbs / Page Title - Humanized & Secondary */}
             <div className="flex flex-col">
-              <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight leading-none">
-                Panel de Control
+              <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] leading-none mb-1">
+                Espacio de Acompañamiento
               </h2>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                ESD 310 <span className="text-slate-300">/</span>{" "}
+              <div className="flex items-center gap-2 text-[9px] font-bold text-slate-300 uppercase tracking-widest">
+                ESD 310 <span className="text-slate-200">/</span>{" "}
                 {currentUserRole}
               </div>
             </div>

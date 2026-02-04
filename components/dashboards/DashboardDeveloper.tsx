@@ -88,9 +88,9 @@ export const DashboardDeveloper: React.FC = () => {
             </span>
           </div>
           <div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-              Panel de Control Técnico
-            </h1>
+            <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+              Modo Root
+            </h2>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
               <span className="flex items-center gap-1.5 text-slate-700">
                 <span className="w-2 h-2 bg-slate-500 rounded-full"></span>

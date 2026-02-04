@@ -138,6 +138,21 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
         </div>
       </div>
 
+      {/* SKIP INTRO BUTTON */}
+      <button
+        onClick={handleStart}
+        className="fixed top-8 right-8 z-[100] px-6 py-2 rounded-full border border-white/10 bg-black/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white hover:bg-white/10 transition-all active:scale-95 flex items-center gap-2 group"
+        style={{
+          opacity: progress > 0.9 ? 0 : 1,
+          pointerEvents: progress > 0.9 ? "none" : "auto",
+        }}
+      >
+        Saltar Intro
+        <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+          fast_forward
+        </span>
+      </button>
+
       {PHRASES.map((phrase, index) => {
         const start = index / 8;
         const end = (index + 1) / 8;

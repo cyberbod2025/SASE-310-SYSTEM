@@ -199,12 +199,12 @@ export const DashboardTrabajoSocial = () => {
             </div>
           </div>
           <div>
-            <h1
+            <h2
               id="ts-header"
-              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+              className="text-3xl font-black text-slate-800 tracking-tight"
             >
               Trabajo Social
-            </h1>
+            </h2>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest">
               <span className="flex items-center gap-1.5 text-orange-700">
                 <span className="w-2 h-2 bg-orange-600 rounded-full"></span>

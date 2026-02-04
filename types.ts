@@ -23,24 +23,24 @@ export const RoleLabels: Record<UserRole, string> = {
   [UserRole.ENFERMERIA]: "Enfermería",
   [UserRole.SECRETARIA]: "Secretaría",
   [UserRole.UDEII]: "UDEII",
-  [UserRole.PROMOTORA]: "Promotora de Lectura",
+  [UserRole.PROMOTORA]: "Enlace de Fomento a la Lectura",
   [UserRole.GUEST]: "Invitado",
   [UserRole.DEVELOPER]: "Desarrollador (Acceso Total)",
 };
 
 export enum CaseState {
-  OBSERVADO = "Observado", // 1-2 Incidents
-  PATRON_DETECTADO = "Patrón Detectado", // 3 Incidents
-  EN_ANALISIS = "En Análisis",
-  INTERVENCION = "Intervención",
-  SEGUIMIENTO = "Seguimiento",
-  CERRADO = "Cerrado",
+  OBSERVADO = "En Seguimiento Preventivo", // 1-2 Incidents
+  PATRON_DETECTADO = "Atención Prioritaria", // 3 Incidents
+  EN_ANALISIS = "En Análisis de Trayectoria",
+  INTERVENCION = "Acompañamiento Intensivo",
+  SEGUIMIENTO = "Seguimiento Institucional",
+  CERRADO = "Acompañamiento Concluido",
 }
 
 export enum IncidentType {
   ASISTENCIA = "Asistencia / Falta",
   RETARDO = "Retardo",
-  CONDUCTA = "Incidencia Conductual",
+  CONDUCTA = "Observación de Convivencia",
   ACADEMICO = "Observación Académica",
   SALUD = "Atención Médica",
   UNIFORME = "Falta de Uniforme",

@@ -97,12 +97,12 @@ export const DashboardEnfermeria = () => {
             </div>
           </div>
           <div>
-            <h1
+            <h2
               id="enfermeria-header"
-              className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3"
+              className="text-3xl font-black text-slate-800 tracking-tight"
             >
-              Salud y Enfermería
-            </h1>
+              Enfermería
+            </h2>
             <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest">
               <span className="flex items-center gap-1.5 text-red-700">
                 <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>

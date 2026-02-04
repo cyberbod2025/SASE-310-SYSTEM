@@ -146,6 +146,24 @@ export const FloatingAssistant: React.FC = () => {
             action: () => setCurrentModule(AppModule.APROBACIONES_PERSONAL),
           },
         ];
+      case UserRole.DEVELOPER:
+        return [
+          {
+            icon: "terminal",
+            label: "Gestión de Núcleo",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
+          },
+          {
+            icon: "policy",
+            label: "Auditoría Total",
+            action: () => setCurrentModule(AppModule.REPORTES),
+          },
+          {
+            icon: "database",
+            label: "Integridad de Datos",
+            action: () => setCurrentModule(AppModule.INSCRIPCIONES),
+          },
+        ];
       default:
         return [];
     }
@@ -286,12 +304,13 @@ export const FloatingAssistant: React.FC = () => {
         </form>
       </div>
 
-      {/* Floating Toggle Button */}
+      {/* Floating Toggle Button - Now with Trigger ID for Banner Integration */}
       <button
+        id="btn-asistente-trigger"
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="relative size-16 group outline-none"
+        className={`relative size-16 group outline-none transition-opacity duration-500 ${!isOpen && !isHovered ? "opacity-20" : "opacity-100"}`}
       >
         {/* Glow Effect */}
         <div
@@ -324,16 +343,16 @@ export const FloatingAssistant: React.FC = () => {
           )}
         </div>
 
-        {/* Tooltip */}
+        {/* Tooltip - Clearer Feedback */}
         {!isOpen && (
           <div
-            className={`absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-white/10 whitespace-nowrap transition-all duration-300 ${
+            className={`absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur text-white text-xs font-black uppercase tracking-widest px-4 py-2 rounded-xl border border-white/10 whitespace-nowrap transition-all duration-300 ${
               isHovered
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 translate-x-4 pointer-events-none"
             }`}
           >
-            Asistente IA
+            Inteligencia SASE
           </div>
         )}
       </button>
