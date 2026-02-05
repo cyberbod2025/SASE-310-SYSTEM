@@ -14,6 +14,7 @@ import {
   AppModule,
   Calificacion,
   DocumentoInstitucional,
+  RoleLabels,
 } from "./types";
 import { evaluateEscalation } from "./utils/saseUtils";
 import { getSaludo } from "./config/sase.config";
@@ -370,10 +371,7 @@ export const AppProvider: React.FC<{
             padecimiento, documento_url
           ),
           calificaciones (
-            materia, trimestre1, trimestre2, trimestre3
-          ),
-          documentos_institucionales (
-            id, tipo, folio, fecha, titulo, contenido, narracion_ia, firmas, creado_por
+            id, materia, trimestre1, trimestre2, trimestre3, promedio_final, ciclo_escolar
           )
         `);
 
@@ -420,21 +418,14 @@ export const AppProvider: React.FC<{
               accommodations: [],
               lastUpdated: "",
             },
-            calificaciones: d.calificaciones || [],
-            documentos: (d.documentos_institucionales || []).map(
-              (doc: any) => ({
-                id: doc.id,
-                tipo: doc.tipo,
-                folio: doc.folio,
-                fecha: doc.fecha,
-                titulo: doc.titulo,
-                contenido: doc.contenido,
-                narracionIA: doc.narracion_ia,
-                firmas: doc.firmas || [],
-                studentId: d.id,
-                creado_por: doc.creado_por,
-              }),
-            ),
+            calificaciones: (d.calificaciones || []).map((c: any) => ({
+              materia: c.materia,
+              trimestre1: c.trimestre1,
+              trimestre2: c.trimestre2,
+              trimestre3: c.trimestre3,
+              promedioFinal: c.promedio_final,
+            })),
+            documentos: [], // documentos_institucionales aún no existe
             isDistancia: d.is_distancia || false,
           }));
           setStudents(mappedStudents);
@@ -734,10 +725,14 @@ export const AppProvider: React.FC<{
   useEffect(() => {
     // Generate institutional message based on Role + Data State
     let msg = "";
-    const userName =
-      user?.user_metadata?.full_name ||
-      user?.email?.split("@")[0] ||
-      currentUserRole;
+
+    // Humanized greeting logic (Action 1)
+    const rawName =
+      user?.user_metadata?.full_name || user?.email?.split("@")[0];
+    const isInvalidName = !rawName || /^\d+$/.test(rawName.toString());
+    const roleLabel = RoleLabels[currentUserRole];
+    const userName = isInvalidName ? roleLabel : rawName;
+
     const greeting = getSaludo();
     const contextPrefix = `${greeting}, ${userName}. (Turno Vespertino | CCT 09DES4310M).`;
 

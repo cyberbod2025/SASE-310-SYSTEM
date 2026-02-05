@@ -96,21 +96,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         }`}
       >
         <div className="flex flex-col h-full relative overflow-hidden backdrop-blur-md">
-          {/* Top Logo */}
-          <div className="p-8 pb-4 flex flex-col items-center">
-            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-xl border border-white/20 shadow-xl mb-4">
-              <img
-                src="/assets/branding/SASE.png"
-                alt="SASE"
-                className="h-10 w-auto brightness-0 invert"
-              />
-            </div>
-            <span className="text-[10px] font-black tracking-[0.4em] text-white/40 uppercase">
-              Plataforma Institucional
-            </span>
-          </div>
-
-          {/* User Profile - EXACTLY AS IMAGE */}
+          {/* User Profile - PRIMARY FOCUS (Action 2) */}
           <div className="px-6 py-6 border-b border-white/10 flex flex-col items-center text-center">
             <div className="relative group">
               <div className="absolute -inset-2 bg-gradient-to-tr from-white/20 to-transparent rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -130,10 +116,24 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </div>
           </div>
 
+          {/* Institutional Logo - SECONDARY (Action 2) */}
+          <div className="p-4 py-2 flex flex-col items-center opacity-40 hover:opacity-100 transition-opacity">
+            <span className="text-[8px] font-black tracking-[0.4em] text-white/40 uppercase mb-2">
+              Plataforma Institucional
+            </span>
+            <div className="p-2 bg-white/5 rounded-xl backdrop-blur-xl border border-white/10 shadow-sm">
+              <img
+                src="/assets/branding/SASE.png"
+                alt="SASE"
+                className="h-6 w-auto brightness-0 invert"
+              />
+            </div>
+          </div>
+
           {/* Navigation Links */}
           <nav
             id="sidebar-nav"
-            className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 mt-4"
+            className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 mt-1"
           >
             <NavItem
               icon="dashboard"
@@ -196,7 +196,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             )}
 
             <div className="py-3 px-3 text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-4 mb-1">
-              Admin
+              Seguimiento Institucional
             </div>
 
             <NavItem

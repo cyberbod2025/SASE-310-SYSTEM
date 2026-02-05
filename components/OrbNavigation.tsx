@@ -395,7 +395,7 @@ export const OrbNavigation = () => {
 
         <div className="h-1 w-24 bg-blue-700 rounded-full mx-auto mb-6"></div>
         <p className="text-slate-500 font-black text-[11px] uppercase tracking-[0.5em] flex items-center justify-center gap-4">
-          MÓDULOS DE GESTIÓN :: {currentUserRole}
+          ESPACIOS DE ACOMPAÑAMIENTO :: {currentUserRole}
         </p>
       </div>
 
