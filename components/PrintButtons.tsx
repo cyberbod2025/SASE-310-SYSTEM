@@ -81,7 +81,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
                   day: "numeric",
                   hour: "2-digit",
                   minute: "2-digit",
-                }
+                },
               )}</div>
             </div>
             ${content.innerHTML}
@@ -108,7 +108,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
     // For now, trigger print dialog which allows saving as PDF
     // (native browser "Save as PDF" option)
     alert(
-      `Para guardar como PDF:\n\n1. Se abrirá el diálogo de impresión\n2. Seleccione "Guardar como PDF" o "Microsoft Print to PDF"\n3. Guarde el archivo como "${fileName}.pdf"`
+      `Para guardar como PDF:\n\n1. Se abrirá el diálogo de impresión\n2. Seleccione "Guardar como PDF" o "Microsoft Print to PDF"\n3. Guarde el archivo como "${fileName}.pdf"`,
     );
     handlePrint();
   };
@@ -140,7 +140,8 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
 // Utility function for programmatic printing from any component
 export const printContent = (title: string, htmlContent: string) => {
   const printWindow = window.open("", "_blank");
-  const logoUrl = `${window.location.origin}/branding/escudo_oficial.png`;
+  const leftLogo = `${window.location.origin}/assets/branding/SASE.png`;
+  const rightLogo = `${window.location.origin}/assets/branding/PILOTO.png`;
   if (printWindow) {
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -250,7 +251,7 @@ export const printContent = (title: string, htmlContent: string) => {
       <body>
         <!-- Official Header with Logo -->
         <div class="official-header">
-          <img src="${logoUrl}" alt="Escudo Oficial" class="official-logo" />
+          <img src="${leftLogo}" alt="Logo SASE" class="official-logo" />
           <div class="official-info">
             <div class="official-sep">SECRETARÍA DE EDUCACIÓN PÚBLICA</div>
             <div class="official-school">Escuela Secundaria Diurna No. 310</div>
@@ -258,7 +259,7 @@ export const printContent = (title: string, htmlContent: string) => {
             <div class="official-location">Turno Vespertino • Iztapalapa, CDMX</div>
             <div class="official-motto">"La Educación para un México Mejor"</div>
           </div>
-          <img src="${logoUrl}" alt="Escudo Oficial" class="official-logo" />
+          <img src="${rightLogo}" alt="Logo Institucional" class="official-logo" />
         </div>
         
         <div class="header-meta">

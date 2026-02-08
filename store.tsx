@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { supabase } from "./supabase/client";
 import { useAuth } from "./components/AuthProvider";
 import {
@@ -380,6 +381,17 @@ export const AppProvider: React.FC<{
           return;
         }
 
+        if (error) {
+          console.error("Error fetching students:", error);
+          toast.error(
+            "Error al cargar datos de estudiantes: " + error.message,
+            {
+              id: "fetch-error",
+            },
+          );
+          return;
+        }
+
         if (data) {
           const mappedStudents: Student[] = data.map((d: any) => ({
             id: d.id,
@@ -411,13 +423,19 @@ export const AppProvider: React.FC<{
             lastModifiedBy: d.modificado_por,
             lastModifiedAt: d.modificado_en,
             guardianInfo: d.datos_tutor || undefined,
-            bapInfo: {
-              // Mock BAP info for now as we don't have a table
-              hasBAP: false,
-              diagnosisPrivate: "",
-              accommodations: [],
-              lastUpdated: "",
-            },
+            bapInfo: d.datos_bap
+              ? {
+                  hasBAP: d.datos_bap.hasBAP || false,
+                  diagnosisPrivate: d.datos_bap.diagnosisPrivate || "",
+                  accommodations: d.datos_bap.accommodations || [],
+                  lastUpdated: d.datos_bap.lastUpdated || "",
+                }
+              : {
+                  hasBAP: false,
+                  diagnosisPrivate: "",
+                  accommodations: [],
+                  lastUpdated: "",
+                },
             calificaciones: (d.calificaciones || []).map((c: any) => ({
               materia: c.materia,
               trimestre1: c.trimestre1,
@@ -430,8 +448,9 @@ export const AppProvider: React.FC<{
           }));
           setStudents(mappedStudents);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Unexpected error:", err);
+        toast.error("Error de conexión: " + (err.message || "Desconocido"));
       }
     };
 
@@ -526,11 +545,14 @@ export const AppProvider: React.FC<{
 
       if (error) {
         console.error("Error saving incident:", error);
+        toast.error("Error al guardar incidencia: " + error.message);
         // Revert logic would go here in a robust app
-        alert("Error al guardar incidencia en la nube. Verifique conexión.");
+      } else {
+        toast.success("Incidencia registrada correctamente");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Async error in addIncident:", err);
+      toast.error("Error de conexión al guardar incidencia");
     }
   };
 

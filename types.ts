@@ -198,6 +198,7 @@ export enum AppModule {
   APROBACIONES_PERSONAL = "aprobaciones_personal",
   CALIFICACIONES = "calificaciones",
   DOCUMENTACION = "documentacion",
+  MIS_GRUPOS = "mis_grupos",
   NOT_FOUND = "not_found",
   HOME = "home",
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../store";
 import { supabase } from "../supabase/client";
+import { CaseState } from "../types";
 
 export const Archivo: React.FC = () => {
   const { students } = useApp();
@@ -141,9 +142,9 @@ export const Archivo: React.FC = () => {
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border uppercase ${
-                          s.caseState === "Cerrado"
+                          s.caseState === CaseState.CERRADO
                             ? "bg-green-100 text-green-800 border-green-200"
-                            : s.caseState === "Observado"
+                            : s.caseState === CaseState.OBSERVADO
                               ? "bg-blue-100 text-blue-800 border-blue-200"
                               : "bg-red-100 text-red-800 border-red-200"
                         }`}

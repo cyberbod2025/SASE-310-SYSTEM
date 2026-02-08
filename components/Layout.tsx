@@ -79,7 +79,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       <TutorialController />
       <QuickRegisterModal />
       {/* Assistant is now integrated into AssistantBanner */}
-      {/* <FloatingAssistant /> */}
+      {/* Assistant is now integrated into AssistantBanner but we need the component for the floating behavior */}
+      <FloatingAssistant />
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (
@@ -158,9 +159,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <NavItem
                 icon="groups"
                 label="Mis Grupos"
-                active={false}
+                active={currentModule === AppModule.MIS_GRUPOS}
                 onClick={() => {
-                  setCurrentModule(AppModule.DASHBOARD);
+                  setCurrentModule(AppModule.MIS_GRUPOS);
                   setIsSidebarOpen(false);
                 }}
                 color={currentUserRole}

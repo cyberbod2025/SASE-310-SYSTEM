@@ -128,6 +128,12 @@ const AprobacionesPersonal = React.lazy(() =>
   })),
 );
 
+const MisGrupos = React.lazy(() =>
+  import("./components/MisGrupos").then((module) => ({
+    default: module.MisGrupos,
+  })),
+);
+
 // Loading Component
 const LoadingSpinner = () => (
   <div className="h-full w-full flex items-center justify-center p-10">
@@ -157,6 +163,7 @@ const MainContent = () => {
         if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
         if (currentModule === AppModule.APROBACIONES_PERSONAL)
           return <AprobacionesPersonal />;
+        if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
         if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
         // If user is on DASHBOARD module, show the Orb Menu instead of the classic grid

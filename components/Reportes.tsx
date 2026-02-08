@@ -73,11 +73,16 @@ export const Reportes: React.FC = () => {
         htmlContent = `
           <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 800px; margin: 0 auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px;">
-              <img src="/assets/branding/SASE_LOGO_OFICIAL.png" style="height: 60px;" />
-              <div style="text-align: right;">
-                <h1 style="margin: 0; font-size: 24px; color: #1d4ed8;">REPORTE DE INCIDENCIAS</h1>
-                <p style="margin: 5px 0 0; font-size: 14px; color: #64748b; font-weight: bold;">SISTEMA DE ASISTENCIA Y SEGUIMIENTO ESCOLAR</p>
+              <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="/assets/branding/SASE.png" style="height: 60px;" />
+                <div style="border-left: 2px solid #cbd5e1; padding-left: 20px; height: 50px; display: flex; flex-direction: column; justify-content: center;">
+                  <h1 style="margin: 0; font-size: 20px; color: #1e293b; text-transform: uppercase;">${
+                    title
+                  }</h1>
+                  <p style="margin: 5px 0 0; font-size: 10px; color: #64748b; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">Sistema de Asistencia y Seguimiento Escolar</p>
+                </div>
               </div>
+              <img src="/assets/branding/PILOTO.png" style="height: 60px;" />
             </div>
             
             <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
