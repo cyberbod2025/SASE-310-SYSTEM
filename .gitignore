@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Security
+chrome_profile_notebooklm/
+.env.local
+.env
