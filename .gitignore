@@ -27,3 +27,31 @@ dist-ssr
 chrome_profile_notebooklm/
 .env.local
 .env
+
+# --- ENHANCED SECURITY RULES (Added by Antigravity) ---
+
+# Browser & Automation Profiles
+chrome_profile*/
+test_profile*/
+browser_data/
+UserData/
+.jules-browser-data/
+
+# OS Artifacts
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100
+.Trashes
+._*
+
+# Cache & Temporary Files
+.cache/
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+temp/
+tmp/
