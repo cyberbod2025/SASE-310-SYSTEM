@@ -1,0 +1,131 @@
+/* SASE 2026 "Cyber-Institutional" Palette & Grid System */
+/* Base from SKILL: estilo-marca-sase + brainstorming: Command Center */
+
+/* --- 1. CORE VARIABLES --- */
+:root {
+  /* -- Backgrounds -- */
+  --sase-bg: #030712; /* gray-950 (Deep Space) */
+  --sase-mac: #0f172a; /* gray-900 (Mac Panel) */
+  --sase-glass: rgba(17, 25, 40, 0.75); /* Translucent panel */
+
+  /* -- Accents (Neon & Functional) -- */
+  --neon-red: #f43f5e; /* Rose-500 */
+  --neon-amber: #f59e0b; /* Amber-500 */
+  --neon-green: #10b981; /* Emerald-500 */
+  --neon-blue: #3b82f6; /* Blue-500 */
+
+  /* -- Borders -- */
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.15); /* Top border light */
+}
+
+/* --- 2. GRID AREAS TEMPLATE (Bento) --- */
+/* Mobile First: Stacked */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+/* Desktop: Command Center */
+@media (min-width: 1024px) {
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 1.5rem;
+    grid-template-areas:
+      "status status agenda agenda"
+      "kpi1   kpi2   agenda agenda"
+      "kpi3   kpi4   decision decision"
+      "feed   feed   decision decision";
+  }
+
+  /* Area Assignments */
+  .area-status {
+    grid-area: status;
+  }
+  .area-agenda {
+    grid-area: agenda;
+  }
+  .area-kpi1 {
+    grid-area: kpi1;
+  }
+  .area-kpi2 {
+    grid-area: kpi2;
+  }
+  .area-kpi3 {
+    grid-area: kpi3;
+  }
+  .area-kpi4 {
+    grid-area: kpi4;
+  }
+  .area-feed {
+    grid-area: feed;
+  }
+  .area-decision {
+    grid-area: decision;
+  }
+}
+
+/* --- 4. MICRO-ANIMATIONS --- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-pulse-ring::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  animation: pulse-ring 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+/* --- 5. TYPOGRAPHY TWEAKS --- */
+.text-xxs {
+  font-size: 0.65rem;
+  line-height: 1rem;
+}
+
+.tracking-widest-xl {
+  letter-spacing: 0.2em;
+}

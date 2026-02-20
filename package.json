@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@_davideast/stitch-mcp": "^0.3.2",
+    "@notionhq/notion-mcp-server": "^2.1.0",
     "@supabase/supabase-js": "^2.89.0",
     "date-fns": "^4.1.0",
     "driver.js": "^1.4.0",
@@ -33,5 +35,22 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "vitest": "^4.0.16"
-  }
+  },
+  "description": "",
+  "main": "postcss.config.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyberbod2025/SASE-310-SYSTEM.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cyberbod2025/SASE-310-SYSTEM/issues"
+  },
+  "homepage": "https://github.com/cyberbod2025/SASE-310-SYSTEM#readme"
 }

@@ -1,0 +1,172 @@
+/* SASE Student Profile: Institutional Light / Futuristic Style */
+/* Base SASE Palette - Clean, Modern, Professional */
+:root {
+  /* Fondo General: Slate 50 (Casi Blanco) */
+  --profile-bg: #f8fafc;
+
+  /* Paneles: Blanco Puro con Transparencia y Blur */
+  --profile-panel: rgba(255, 255, 255, 0.85);
+
+  /* Bordes: Slate 200 (Gris Claro, sutil) */
+  --profile-border: rgba(226, 232, 240, 0.8);
+
+  /* Sombras: Suaves para dar profundidad (Apple-like) */
+  --profile-shadow: 0 10px 40px -10px rgba(148, 163, 184, 0.3);
+
+  /* Colores de Acento (Institucionales) */
+  --holo-cyan: #0ea5e9; /* Sky 500 - Más legible en fondo claro */
+  --holo-blue: #2563eb; /* Blue 600 - Institucional fuerte */
+  --alert-red: #e11d48; /* Rose 600 */
+  --safe-green: #059669; /* Emerald 600 */
+
+  /* Textos */
+  --text-primary: #0f172a; /* Slate 900 */
+  --text-secondary: #475569; /* Slate 600 */
+  --text-tertiary: #94a3b8; /* Slate 400 */
+}
+
+/* --- 1. LAYOUT --- */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 340px; /* Right column slightly wider for better readability */
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem;
+  height: 90vh;
+  max-width: 1600px;
+  width: 95vw;
+  font-family: "Inter", sans-serif; /* Ensure modern sans */
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    height: auto;
+    overflow-y: auto;
+    padding-bottom: 2rem;
+  }
+}
+
+/* --- 2. PANELS (Glassmorphism Light) --- */
+.clinical-panel {
+  background: var(--profile-panel);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--profile-border);
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--profile-shadow);
+  transition: all 0.3s ease;
+}
+
+/* Subtle Gradient Header Line */
+.clinical-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(37, 99, 235, 0.2),
+    /* Blue 600 / 20 */ transparent
+  );
+  opacity: 0.6;
+}
+
+/* --- 3. AVATAR SCANNER (Revised for Light Mode) --- */
+.avatar-scanner {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 2px solid rgba(226, 232, 240, 1); /* Slate 200 */
+  box-shadow: 0 10px 30px -5px rgba(148, 163, 184, 0.5); /* Soft shadow */
+  background: white;
+}
+
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--holo-blue);
+  box-shadow: 0 0 15px var(--holo-blue);
+  animation: scan 3s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes scan {
+  0% {
+    top: -10%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 110%;
+    opacity: 0;
+  }
+}
+
+/* --- 4. TYPOGRAPHY & BUTTONS --- */
+.font-mono-tech {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  letter-spacing: -0.02em;
+}
+
+.text-glow {
+  text-shadow: none; /* Removed neon glow for clearer reading */
+  font-weight: 800;
+}
+
+/* Modern Button Base */
+.btn-action {
+  @apply transition-all active:scale-[0.98];
+}
+
+/* --- 5. DATA VISUALIZATION --- */
+.stat-bar {
+  height: 6px; /* Slightly thicker */
+  background: #e2e8f0; /* Slate 200 */
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.stat-value {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease-out;
+}
+
+.grade-cell input:focus {
+  background: #fff;
+  border-color: var(--holo-blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Scrollbar Clean */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Slate 300 */
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Slate 400 */
+}
