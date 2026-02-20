@@ -116,155 +116,128 @@ export const Login: React.FC<LoginProps> = ({
   }, [showForm]);
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center bg-slate-50 overflow-hidden">
-      {/* 1. SEAMLESS VIDEO BACKGROUND (Institutional Polish) */}
-      <div className="absolute inset-0 z-0 select-none">
-        {/* White Overlay Transition */}
-        <div
-          className={`absolute inset-0 bg-white z-10 transition-opacity duration-1000 ${showForm ? "opacity-95" : "opacity-0"}`}
-        ></div>
-
-        {!videoEnded && (
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            onTimeUpdate={onTimeUpdate}
-            onEnded={triggerTransition}
-            onError={() => triggerTransition()}
-            className="w-full h-full object-cover grayscale opacity-30"
-          >
-            <source src="/assets/videos/intro_sase_2026.mp4" type="video/mp4" />
-          </video>
-        )}
+    <div className="relative min-h-screen w-full flex items-center justify-center bg-[#05070a] overflow-hidden">
+      {/* 1. CINEMATIC VIDEO BACKGROUND */}
+      <div className="absolute inset-0 z-0">
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          playsInline
+          onTimeUpdate={onTimeUpdate}
+          onEnded={triggerTransition}
+          onError={() => triggerTransition()}
+          className="w-full h-full object-cover opacity-40 grayscale"
+        >
+          <source src="/assets/videos/intro_sase_2026.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent to-[#05070a]"></div>
       </div>
 
-      {/* SKIP BUTTON */}
-      {!showForm && (
-        <button
-          onClick={triggerTransition}
-          className="absolute top-8 right-8 z-50 text-slate-800/40 hover:text-slate-800 text-[10px] font-black uppercase tracking-[0.3em] transition-all"
-        >
-          [ Saltar Secuencia ]
-        </button>
-      )}
-
-      {/* 2. LOGIN CARD CONTAINER */}
+      {/* 2. LOGIN CARD - RECONSTRUCTED */}
       <div
-        className={`relative z-20 w-full max-w-[440px] px-6 transition-all duration-700 ease-out transform ${
+        className={`relative z-20 w-full max-w-[480px] px-6 transition-all duration-1000 ${
           showForm ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >
-        <div className="card-sase-direccion bg-white p-10 relative overflow-hidden group">
-          {/* Admin Bypass Indicator */}
-          {showAdminPortal && (
-            <div
-              className="absolute top-4 right-6 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors"
-              onClick={handleAdminBypass}
-              title="Acceso Super Admin"
-            >
-              <span className="material-symbols-outlined text-lg">
-                admin_panel_settings
-              </span>
+        <div className="card-sase-blue m-auto">
+          {/* LOGO INSTITUCIONAL - FIXED PATH */}
+          <div className="flex flex-col items-center mb-8">
+            <img
+              src="/assets/branding/SASE.png"
+              alt="SASE"
+              className="w-48 h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.3)] mb-4"
+            />
+            <div className="space-y-1 text-center">
+              <h1 className="h1-sase text-3xl">
+                SASE <span className="text-blue-500">310</span>
+              </h1>
+              <p className="text-[10px] font-bold text-blue-500/60 uppercase tracking-[0.5em]">
+                CONECTAMOS CONTIGO
+              </p>
             </div>
-          )}
-
-          {/* BRANDING */}
-          <div className="flex flex-col items-center mb-8 text-center">
-            <div className="w-16 h-16 mb-4">
-              <img
-                src="/assets/branding/SASE_LOGO.png"
-                alt="Logo SASE"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <h1 className="text-3xl font-black text-slate-800 tracking-tighter leading-none mb-1">
-              SASE <span className="text-slate-400 font-normal">310</span>
-            </h1>
-            <p className="slogan-sase text-[11px] uppercase tracking-[0.2em] text-slate-500">
-              CONECTAMOS CONTIGO
-            </p>
           </div>
 
-          {/* FORM */}
           <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-1">
-              <label className="label-sase font-black">
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">
                 Identificador Institucional
               </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
-                  badge
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors">
+                  person
                 </span>
                 <input
                   type="email"
-                  required
-                  autoFocus
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="input-sase pl-12"
-                  placeholder="usuario@aefcm.gob.mx"
+                  placeholder="usuario@sase.edu.mx"
+                  required
                 />
               </div>
             </div>
 
-            <div className="space-y-1">
-              <label className="label-sase font-black">Clave de Acceso</label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-widest text-slate-500 font-bold ml-1">
+                Clave de Acceso
+              </label>
+              <div className="relative group">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors">
                   lock
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="input-sase pl-12 pr-12"
                   placeholder="••••••••"
+                  required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
                 >
-                  <span className="material-symbols-outlined text-[18px]">
+                  <span className="material-symbols-outlined">
                     {showPassword ? "visibility_off" : "visibility"}
                   </span>
                 </button>
               </div>
             </div>
 
-            {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 p-4 rounded text-red-700 flex items-start gap-3 animate-sase-fade">
-                <span className="material-symbols-outlined text-red-600">
-                  report
-                </span>
-                <p className="text-xs font-bold leading-tight uppercase">
-                  {error}
-                </p>
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[11px] font-bold text-center animate-shake">
+                {error}
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="btn-sase-secondary w-full py-4 text-sm"
+              className="btn-sase-primary w-full py-4 text-sm"
             >
-              {loading ? "Verificando Protocolos..." : "Entrar al Sistema"}
+              {loading ? (
+                <span className="material-symbols-outlined animate-spin">
+                  progress_activity
+                </span>
+              ) : (
+                <>
+                  Entrar al Sistema
+                  <span className="material-symbols-outlined mr-[-4px]">
+                    arrow_right_alt
+                  </span>
+                </>
+              )}
             </button>
           </form>
 
-          {/* Footer Links */}
-          <div className="mt-10 pt-6 border-t border-slate-100 flex justify-between items-center text-[10px] font-black text-slate-400 tracking-widest uppercase">
-            <button
-              onClick={onRegisterClick}
-              className="hover:text-blue-600 transition-colors"
-            >
+          {/* Footer Card info */}
+          <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between text-[8px] font-bold text-slate-600 uppercase tracking-widest">
+            <button onClick={onRegisterClick} className="hover:text-blue-500">
               Registro de Personal
             </button>
-            <span className="opacity-40">SASE ESD 310</span>
+            <span>SASE ESD 310</span>
           </div>
         </div>
       </div>
