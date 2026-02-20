@@ -80,7 +80,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   const sidebarWidth = isSidebarCollapsed ? "w-20" : "w-72";
 
   return (
-    <div className="flex h-screen bg-slate-100 text-slate-800 overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#05070a] text-slate-300 overflow-hidden font-sans">
       <TutorialController />
       <QuickRegisterModal />
       {/* Assistant is now integrated into AssistantBanner */}
@@ -90,18 +90,18 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/40 z-40 md:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar - Colored by Role */}
+      {/* Sidebar - Colored by Role with Premium Finish */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 ${sidebarWidth} ${sidebarClass} text-white transition-all duration-300 shadow-[20px_0_50px_rgba(0,0,0,0.2)] md:relative md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 ${sidebarWidth} ${sidebarClass} text-white transition-all duration-300 shadow-[20px_0_50px_rgba(0,0,0,0.4)] md:relative md:translate-x-0 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex flex-col h-full relative overflow-hidden backdrop-blur-md">
+        <div className="flex flex-col h-full relative overflow-hidden backdrop-blur-xl border-r border-white/5">
           {/* User Profile - PRIMARY FOCUS (Action 2) */}
           <div className="px-4 py-6 border-b border-white/10 flex flex-col items-center text-center transition-all duration-300">
             {/* Collapse Toggle (Desktop) */}
@@ -354,16 +354,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 bg-[#F9FBFF] relative transition-all duration-300">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#0b0e14] relative transition-all duration-300">
         {/* Layered Institutional Depth */}
-        <div className="absolute inset-0 z-0 pointer-events-none bg-slate-50">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-slate-200/50 rounded-full blur-[120px] -mr-48 -mt-48 opacity-50"></div>
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[120px] -mr-48 -mt-48 opacity-50"></div>
         </div>
 
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-30 shadow-sm transition-all">
+        <header className="h-20 bg-black/40 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-6 shrink-0 z-30 shadow-2xl transition-all">
           <div className="flex items-center gap-4">
             <button
-              className="md:hidden text-slate-500 p-2 hover:bg-slate-100 rounded-lg"
+              className="md:hidden text-slate-400 p-2 hover:bg-white/5 rounded-lg"
               onClick={() => setIsSidebarOpen(true)}
             >
               <span className="material-symbols-outlined">menu</span>
@@ -371,22 +371,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             {/* Breadcrumbs / Page Title - Humanized & Secondary */}
             <div className="flex flex-col">
-              <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] leading-none mb-1">
+              <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] leading-none mb-1">
                 Espacio de Acompañamiento
               </h2>
-              <div className="flex items-center gap-2 text-[9px] font-bold text-slate-300 uppercase tracking-widest">
-                ESD 310 <span className="text-slate-200">/</span>{" "}
+              <div className="flex items-center gap-2 text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                ESD 310 <span className="text-slate-200/10">/</span>{" "}
                 {currentUserRole}
               </div>
             </div>
 
             {/* CRITICAL PROTOCOL BANNER */}
             {notifications.some((n) => !n.read && n.type === "error") && (
-              <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-red-50 border border-red-200 rounded-xl animate-pulse ml-6">
-                <span className="material-symbols-outlined text-red-600 animate-bounce">
+              <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-xl animate-pulse ml-6">
+                <span className="material-symbols-outlined text-red-500 animate-bounce">
                   emergency
                 </span>
-                <span className="text-[10px] font-black text-red-700 uppercase tracking-wider">
+                <span className="text-[10px] font-black text-red-500 uppercase tracking-wider">
                   Protocolo de Emergencia Activo
                 </span>
                 <button
@@ -401,21 +401,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           <div className="flex items-center gap-4">
             {/* Dev Tools (Role Switcher) */}
-            <div className="hidden xl:flex items-center bg-slate-100 p-1 px-3 rounded-full border border-slate-200">
-              <span className="material-symbols-outlined text-slate-400 text-sm mr-2">
+            <div className="hidden xl:flex items-center bg-white/5 p-1 px-3 rounded-full border border-white/5">
+              <span className="material-symbols-outlined text-slate-500 text-sm mr-2">
                 manage_accounts
               </span>
               <select
                 value={currentUserRole}
                 onChange={(e) => switchRole(e.target.value as UserRole)}
-                className="bg-transparent text-[10px] font-black text-slate-600 uppercase tracking-wide outline-none cursor-pointer hover:text-blue-600 transition-colors"
+                className="bg-transparent text-[10px] font-black text-slate-400 uppercase tracking-wide outline-none cursor-pointer hover:text-blue-500 transition-colors"
               >
                 {Object.values(UserRole)
                   .filter(
                     (r) => r !== UserRole.GUEST && r !== UserRole.DEVELOPER,
                   )
                   .map((role) => (
-                    <option key={role} value={role}>
+                    <option key={role} value={role} className="bg-slate-900">
                       {role}
                     </option>
                   ))}
@@ -429,15 +429,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               }}
               className={`relative p-2 transition-all hover:scale-110 active:scale-95 ${
                 unreadCount > 0
-                  ? "text-blue-600 animate-pulse"
-                  : "text-slate-400 hover:text-blue-600"
+                  ? "text-blue-500 animate-pulse"
+                  : "text-slate-500 hover:text-blue-500"
               }`}
             >
               <span className="material-symbols-outlined text-[28px]">
                 notifications
               </span>
               {unreadCount > 0 && (
-                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm animate-ping"></span>
+                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0b0e14] shadow-sm animate-ping"></span>
               )}
             </button>
           </div>
@@ -445,19 +445,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
         {/* Improved Institutional Notification Popover - Real Data */}
         {showNotifications && (
-          <div className="absolute top-20 right-6 w-96 bg-white border border-slate-200 shadow-2xl rounded-2xl z-50 animate-fade-in overflow-hidden max-h-[80vh] flex flex-col">
-            <div className="p-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <div className="absolute top-20 right-6 w-96 bg-[#0b0e14] border border-white/5 shadow-2xl rounded-2xl z-50 animate-fade-in overflow-hidden max-h-[80vh] flex flex-col">
+            <div className="p-4 bg-white/5 border-b border-white/5 flex items-center justify-between">
               <span className="font-black text-[10px] uppercase text-slate-500 tracking-[0.2em]">
                 Centro de Alertas
               </span>
               {unreadCount > 0 && (
-                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse">
+                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-full text-[9px] font-black uppercase tracking-widest animate-pulse">
                   {unreadCount} Pendientes
                 </span>
               )}
             </div>
 
-            <div className="overflow-y-auto custom-scrollbar flex-1">
+            <div className="overflow-y-auto custom-scrollbar flex-1 bg-black/20">
               {notifications.length === 0 ? (
                 <div className="p-12 text-center">
                   <span className="material-symbols-outlined text-[48px] text-slate-200 block mb-2">
@@ -472,14 +472,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   {notifications.map((notif) => (
                     <div
                       key={notif.id}
-                      className={`p-4 transition-all hover:bg-slate-50 cursor-pointer border-l-4 ${
+                      className={`p-4 transition-all hover:bg-white/5 cursor-pointer border-l-4 ${
                         notif.read
-                          ? "border-transparent opacity-60"
+                          ? "border-transparent opacity-40"
                           : notif.type === "error"
-                            ? "border-red-500 bg-red-50/20"
+                            ? "border-red-500 bg-red-500/5"
                             : notif.type === "warning"
-                              ? "border-orange-500 bg-orange-50/20"
-                              : "border-blue-500 bg-blue-50/20"
+                              ? "border-orange-500 bg-orange-500/5"
+                              : "border-blue-500 bg-blue-500/5"
                       }`}
                       onClick={() => {
                         markNotificationRead(notif.id);
