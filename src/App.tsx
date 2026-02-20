@@ -227,23 +227,21 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[#0b0e14]">
+      <div className="h-screen w-full flex items-center justify-center bg-slate-50">
         <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
           <div className="relative mb-8">
-            {/* Glow Background */}
-            <div className="absolute inset-0 bg-blue-500/20 blur-[60px] rounded-full animate-pulse"></div>
-            {/* Neon Spinner */}
-            <div className="size-24 relative z-10">
-              <div className="absolute inset-0 rounded-full border-2 border-blue-500/10"></div>
-              <div className="absolute inset-0 rounded-full border-t-2 border-r-2 border-blue-500 animate-spin shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
+            {/* Minimal Spinner */}
+            <div className="size-16 relative">
+              <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
+              <div className="absolute inset-0 rounded-full border-t-4 border-blue-600 animate-spin"></div>
             </div>
           </div>
-          <div className="text-center space-y-2 z-10">
-            <h3 className="text-white font-black text-xs uppercase tracking-[0.5em] animate-pulse">
+          <div className="text-center space-y-2">
+            <h3 className="text-slate-800 font-black text-xs uppercase tracking-[0.5em] animate-pulse">
               Validando Credenciales
             </h3>
-            <p className="text-blue-500/50 text-[9px] font-bold uppercase tracking-[0.3em]">
-              S.A.S.E. v3.10.0 • ESD 310
+            <p className="slogan-sase text-[10px] uppercase tracking-[0.3em]">
+              CONECTAMOS CONTIGO
             </p>
           </div>
         </main>

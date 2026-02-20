@@ -37,7 +37,6 @@
     "vitest": "^4.0.16"
   },
   "description": "",
-  "main": "postcss.config.js",
   "directories": {
     "doc": "docs",
     "test": "tests"

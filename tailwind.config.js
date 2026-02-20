@@ -4,53 +4,31 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Inter", "Manrope", "system-ui", "sans-serif"],
       },
       colors: {
-        // SASE 2026 Palette (MY CLASSES inspired)
+        // Paleta Oficial SASE 2026 "Metro Lab Institucional"
         sase: {
-          // Backgrounds
-          dark: "#0f1225",
-          darker: "#0a0d1a",
-          card: "#1a1f3c",
-          cardHover: "#242b4d",
+          bg: "#f8fafc", // slate-50
+          text: "#1e293b", // slate-800
+          textMuted: "#64748b", // slate-500
 
-          // Primary accents
-          purple: "#7c3aed",
-          violet: "#8b5cf6",
-          indigo: "#6366f1",
-
-          // Secondary accents
-          cyan: "#06b6d4",
-          teal: "#14b8a6",
-
-          // Warm accents
-          amber: "#f59e0b",
-          orange: "#f97316",
-          pink: "#ec4899",
-
-          // Status
-          success: "#22c55e",
-          warning: "#eab308",
-          danger: "#ef4444",
-          info: "#3b82f6",
-
-          // Text
-          textPrimary: "#f8fafc",
-          textSecondary: "#94a3b8",
-          textMuted: "#64748b",
+          // Semántica por Rol
+          docente: "#2563eb", // blue-600
+          prefectura: "#ea580c", // orange-600
+          orientacion: "#059669", // emerald-600
+          social: "#9333ea", // purple-600
+          direccion: "#1e293b", // slate-800
+          error: "#dc2626", // red-600
         },
       },
       boxShadow: {
-        sase: "0 4px 20px -4px rgba(124, 58, 237, 0.3)",
-        "sase-lg": "0 8px 30px -6px rgba(124, 58, 237, 0.4)",
-        "glow-purple": "0 0 20px rgba(124, 58, 237, 0.5)",
-        "glow-cyan": "0 0 20px rgba(6, 182, 212, 0.5)",
+        sase: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)",
+        "sase-md":
+          "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
       },
       borderRadius: {
-        sase: "12px",
-        "sase-lg": "16px",
-        "sase-xl": "20px",
+        sase: "4px", // Diseño cuadrado/mínimo
       },
     },
   },
