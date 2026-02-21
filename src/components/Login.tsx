@@ -244,6 +244,11 @@ export const Login: React.FC<LoginProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Version Float for Verification */}
+      <div className="absolute bottom-4 left-4 text-[8px] font-black text-white/20 uppercase tracking-[0.4em] select-none">
+        SASE v3.10.1 • PREMIUM BUILD
+      </div>
     </div>
   );
 };
