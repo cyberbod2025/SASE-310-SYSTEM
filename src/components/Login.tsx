@@ -145,17 +145,30 @@ export const Login: React.FC<LoginProps> = ({
       >
         <div className="card-sase-blue m-auto">
           {/* LOGO INSTITUCIONAL - FIXED PATH */}
+          {/* BRANDING PREMIUM UPGRADE */}
           <div className="flex flex-col items-center mb-8">
-            <img
-              src="/assets/branding/SASE.png"
-              alt="SASE"
-              className="w-48 h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.3)] mb-4"
-            />
-            <div className="space-y-1 text-center">
-              <h1 className="h1-sase text-3xl">
+            <div className="logo-premium-container group mb-6 scale-110">
+              {/* Outer Aura */}
+              <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full scale-150 animate-pulse-slow"></div>
+
+              {/* Logo Wrapper with Float & Aura */}
+              <div className="relative animate-logo-float animate-logo-aura">
+                <img
+                  src="/assets/branding/SASE.png"
+                  alt="SASE"
+                  className="w-56 h-auto relative z-10 brightness-110 contrast-125 drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+                />
+                {/* Dynamic Shine Layer */}
+                <div className="logo-premium-shine z-20"></div>
+              </div>
+            </div>
+
+            <div className="space-y-1 text-center relative">
+              <h1 className="h1-sase text-4xl tracking-[0.2em] font-black">
                 SASE <span className="text-blue-500">310</span>
               </h1>
-              <p className="text-[10px] font-bold text-blue-500/60 uppercase tracking-[0.5em]">
+              <div className="h-[2px] w-12 bg-blue-500 mx-auto my-3 rounded-full shadow-[0_0_15px_#3b82f6]"></div>
+              <p className="text-[10px] font-black text-blue-500/60 uppercase tracking-[0.6em] ml-[0.6em]">
                 CONECTAMOS CONTIGO
               </p>
             </div>
