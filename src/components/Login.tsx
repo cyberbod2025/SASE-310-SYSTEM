@@ -19,26 +19,9 @@ export const Login: React.FC<LoginProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Transition State
-  const [showForm, setShowForm] = useState(false);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  // Admin Portal State
+  // State
+  const [showForm, setShowForm] = useState(true);
   const [showAdminPortal, setShowAdminPortal] = useState(false);
-
-  // --- EFFECT: Check if Intro Seen ---
-  useEffect(() => {
-    try {
-      const introSeen = sessionStorage.getItem("sase_login_intro_seen");
-      if (introSeen) {
-        setVideoEnded(true);
-        setShowForm(true);
-      }
-    } catch (e) {
-      console.warn("Session storage access failed", e);
-    }
-  }, []);
 
   // --- EFFECT: Admin Shortcode (Alt + S) ---
   useEffect(() => {
@@ -78,63 +61,12 @@ export const Login: React.FC<LoginProps> = ({
     }
   };
 
-  const triggerTransition = () => {
-    if (videoEnded) return;
-
-    if (videoRef.current) {
-      try {
-        videoRef.current.pause();
-      } catch (err) {
-        /* ignore */
-      }
-    }
-
-    setVideoEnded(true);
-    setShowForm(true);
-    try {
-      sessionStorage.setItem("sase_login_intro_seen", "true");
-    } catch (e) {}
-  };
-
-  const onTimeUpdate = () => {
-    if (!videoRef.current || videoEnded) return;
-    const { currentTime, duration } = videoRef.current;
-    if (duration && !isNaN(duration) && duration > 0) {
-      if (currentTime > duration - 1.2) {
-        triggerTransition();
-      }
-    }
-  };
-
-  // Failsafe
-  useEffect(() => {
-    if (showForm) return;
-    const timeout = setTimeout(() => {
-      triggerTransition();
-    }, 8000);
-    return () => clearTimeout(timeout);
-  }, [showForm]);
-
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center bg-[#05070a] overflow-hidden">
-      {/* 1. CINEMATIC VIDEO BACKGROUND */}
+      {/* 1. PREMIUM BACKGROUND GRADIENT (Instead of Video) */}
       <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          playsInline
-          onTimeUpdate={onTimeUpdate}
-          onEnded={triggerTransition}
-          onError={() => triggerTransition()}
-          className="w-full h-full object-cover opacity-40 grayscale"
-        >
-          <source
-            src="/assets/videos/intro_sase_parallax.mp4"
-            type="video/mp4"
-          />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent to-[#05070a]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#0f172a_0%,#05070a_100%)]"></div>
+        <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
       </div>
 
       {/* 2. LOGIN CARD - RECONSTRUCTED */}
