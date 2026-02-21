@@ -129,7 +129,10 @@ export const Login: React.FC<LoginProps> = ({
           onError={() => triggerTransition()}
           className="w-full h-full object-cover opacity-40 grayscale"
         >
-          <source src="/assets/videos/intro_sase_2026.mp4" type="video/mp4" />
+          <source
+            src="/assets/videos/intro_sase_parallax.mp4"
+            type="video/mp4"
+          />
         </video>
         <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent to-[#05070a]"></div>
       </div>

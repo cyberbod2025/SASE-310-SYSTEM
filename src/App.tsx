@@ -227,21 +227,21 @@ const App: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-50">
+      <div className="h-screen w-full flex items-center justify-center bg-[#05070a]">
         <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
           <div className="relative mb-8">
             {/* Minimal Spinner */}
             <div className="size-16 relative">
-              <div className="absolute inset-0 rounded-full border-4 border-slate-200"></div>
-              <div className="absolute inset-0 rounded-full border-t-4 border-blue-600 animate-spin"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-white/5"></div>
+              <div className="absolute inset-0 rounded-full border-t-4 border-blue-500 animate-spin"></div>
             </div>
           </div>
           <div className="text-center space-y-2">
-            <h3 className="text-slate-800 font-black text-xs uppercase tracking-[0.5em] animate-pulse">
-              Validando Credenciales
+            <h3 className="text-white font-black text-xs uppercase tracking-[0.5em] animate-pulse">
+              Iniciando Protocolos
             </h3>
-            <p className="slogan-sase text-[10px] uppercase tracking-[0.3em]">
-              CONECTAMOS CONTIGO
+            <p className="text-blue-500/50 text-[10px] font-bold uppercase tracking-[0.3em]">
+              S.A.S.E. • CONECTAMOS CONTIGO
             </p>
           </div>
         </main>
