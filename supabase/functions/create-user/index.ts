@@ -19,12 +19,10 @@ serve(async (req: Request) => {
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     // 1. Verificar que quien llama es Super Admin o Dirección (auth context)
-    // Para simplificar en piloto, confiamos en la key,
-    // pero idealmente decodificamos el JWT del header Authorization.
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       throw new Error("No authorization header");
@@ -39,8 +37,21 @@ serve(async (req: Request) => {
       throw new Error("Unauthorized caller");
     }
 
-    // Check role of caller in profiles/perfiles_usuario
-    // ... (Skipped for brevity in this initial implementation, assume UI guards + RLS on logic)
+    // 1.1 Verificar el rol del solicitante en perfiles_usuario
+    const { data: callerProfile, error: profileError } = await supabase
+      .from("perfiles_usuario")
+      .select("rol")
+      .eq("id", caller.id)
+      .single();
+
+    if (profileError || !callerProfile) {
+      throw new Error("No se pudo verificar el perfil del solicitante.");
+    }
+
+    const permittedRoles = ["directivo", "developer", "subdireccion"];
+    if (!permittedRoles.includes(callerProfile.rol?.toLowerCase())) {
+      throw new Error("No tienes permisos suficientes (Admin Required)");
+    }
 
     const { email, password, userData } = await req.json();
 
