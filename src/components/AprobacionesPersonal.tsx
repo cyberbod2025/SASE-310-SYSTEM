@@ -140,34 +140,15 @@ export const AprobacionesPersonal: React.FC = () => {
         }
       } catch (edgeErr: any) {
         console.warn(
-          "Edge Function Failed, trying Admin Client (Dev Mode)...",
+          "Edge Function Failed (Expected if not deployed), using Simulation Mode...",
           edgeErr,
         );
 
-        // INTENTO 2: Crear usuario Real via Client (Solo funciona con Service Role local/dev)
-        try {
-          const { data: authData, error: authError } =
-            await supabase.auth.admin.createUser({
-              email: solicitud.correo_institucional,
-              email_confirm: true,
-              user_metadata: {
-                full_name: `${solicitud.nombres} ${solicitud.apellido_paterno} ${solicitud.apellido_materno}`,
-                curp: solicitud.curp,
-              },
-            });
-
-          if (authError) throw authError;
-          userId = authData.user.id;
-        } catch (authErr: any) {
-          console.warn(
-            "Auth Admin Create Failed (Expected on Client):",
-            authErr.message,
-          );
-          toast("Modo Simulación: Aprobando sin crear Auth User real.", {
-            icon: "🔧",
-          });
-          userId = `sim-${Date.now()}`;
-        }
+        // MODO SIMULACIÓN: Para desarrollo/preview sin Edge Functions configuradas
+        toast("Modo Simulación: Aprobando sin crear Auth User real.", {
+          icon: "🔧",
+        });
+        userId = `sim-${Date.now()}`;
       }
 
       // 2. Calcular permisos combinados (Asumimos el rol principal como base)
