@@ -89,16 +89,13 @@ export const AppProvider: React.FC<{
   // 2. Audit Logic Slice (Needs auth status)
   const audit = useAuditLogic(user, auth.currentUserRole);
 
-  // 3. UI State Slice
-  const ui = useUiSlice(user, auth.currentUserRole, []); // We'll update students later
-
-  // 4. Notifications Slice
+  // 3. Notifications Slice
   const notificationsSlice = useNotificationSlice();
 
-  // 5. Inventory & Stats Slice
+  // 4. Inventory & Stats Slice
   const statsSlice = useInventoryStatsSlice(user);
 
-  // 6. Students & Incidents Slice (The heavy one)
+  // 5. Students & Incidents Slice (The heavy one)
   const studentsSlice = useStudentsSlice(
     user,
     auth.currentUserRole,
@@ -106,6 +103,9 @@ export const AppProvider: React.FC<{
     audit.logAudit,
     statsSlice.fetchDailyStats,
   );
+
+  // 6. UI State Slice
+  const ui = useUiSlice(user, auth.currentUserRole, studentsSlice.students);
 
   // Update UI slice with real students for assistant messages
   // (In a real refactor, we might use a combined hook, but this works for now)
