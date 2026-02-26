@@ -115,10 +115,16 @@ export const AprobacionesPersonal: React.FC = () => {
 
       // INTENTO 1: Crear usuario Real via Edge Function (Seguro)
       try {
+        // Generate a cryptographically safer-ish random temp password
+        const tempPassword =
+          Math.random().toString(36).slice(-10) +
+          Math.random().toString(36).toUpperCase().slice(-4) +
+          "!@#";
+
         const { data, error } = await supabase.functions.invoke("create-user", {
           body: {
             email: solicitud.correo_institucional,
-            password: "TempPassword123!", // En prod: generar aleatoria
+            password: tempPassword,
             userData: {
               full_name: `${solicitud.nombres} ${solicitud.apellido_paterno} ${solicitud.apellido_materno}`,
               curp: solicitud.curp,
