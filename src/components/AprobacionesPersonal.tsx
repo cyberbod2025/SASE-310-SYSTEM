@@ -139,16 +139,26 @@ export const AprobacionesPersonal: React.FC = () => {
           throw new Error("No user ID returned from Edge Function");
         }
       } catch (edgeErr: any) {
-        console.warn(
-          "Edge Function Failed (Expected if not deployed), using Simulation Mode...",
-          edgeErr,
-        );
+        if (import.meta.env.DEV) {
+          console.warn(
+            "Edge Function Failed (Expected if not deployed), using Simulation Mode...",
+            edgeErr,
+          );
 
-        // MODO SIMULACIÓN: Para desarrollo/preview sin Edge Functions configuradas
-        toast("Modo Simulación: Aprobando sin crear Auth User real.", {
-          icon: "🔧",
-        });
-        userId = `sim-${Date.now()}`;
+          // MODO SIMULACIÓN: Para desarrollo/preview sin Edge Functions configuradas
+          toast("Modo Simulación: Aprobando sin crear Auth User real.", {
+            icon: "🔧",
+          });
+          userId = `sim-${Date.now()}`;
+        } else {
+          // En PROD, si la Edge Function falla, detenemos el proceso
+          console.error("Critical Security Error in Edge Function:", edgeErr);
+          toast.error(
+            "Error Crítico de Seguridad: " +
+              (edgeErr.message || "Fallo en creación de usuario"),
+          );
+          throw edgeErr;
+        }
       }
 
       // 2. Calcular permisos combinados (Asumimos el rol principal como base)
