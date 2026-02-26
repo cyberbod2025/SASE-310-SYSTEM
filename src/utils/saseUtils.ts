@@ -4,8 +4,8 @@ import { UserRole, Incident, IncidentType, ProtocolType } from "../types";
 // 1. GOD MODE & AUTH
 // ==========================================
 export const GOD_MODE_CREDENTIALS = {
-  email: "dev@sase.mx",
-  password: "dev-access-granted", // In production this would be env var
+  email: import.meta.env.VITE_DEV_EMAIL || "",
+  password: import.meta.env.VITE_DEV_PASSWORD || "",
 };
 
 export const isGodMode = (role: UserRole): boolean => {
