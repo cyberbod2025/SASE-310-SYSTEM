@@ -56,16 +56,16 @@ export const BitacoraAuditoria: React.FC = () => {
       {/* Header Institucional */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-5">
-          <div className="size-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-700 shadow-sm border border-blue-200/50">
+          <div className="size-16 backdrop-blur-3xl bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 shadow-lg border border-white/10">
             <span className="material-symbols-outlined text-3xl">policy</span>
           </div>
           <div>
-            <h2 className="text-3xl font-black text-slate-800 tracking-tight">
+            <h2 className="text-3xl font-black text-white tracking-tight uppercase italic">
               Bitácora de Auditoría
             </h2>
-            <p className="text-emerald-700 font-black text-xs uppercase tracking-widest mt-1.5 flex items-center gap-2">
-              <span className="size-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-              Seguridad y Auditoría del Sistema
+            <p className="text-blue-500/80 font-black text-xs uppercase tracking-[0.3em] mt-1.5 flex items-center gap-2">
+              <span className="size-2.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
+              Seguridad y Monitoreo de Protocolos
             </p>
           </div>
         </div>
@@ -73,7 +73,8 @@ export const BitacoraAuditoria: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchAuditLog}
-            className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-bold text-sm shadow-sm active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 hover:text-white transition-all font-bold text-xs uppercase tracking-widest shadow-lg active:scale-95"
+            title="Sincronizar y actualizar bitácora de auditoría"
           >
             <span className="material-symbols-outlined text-xl">refresh</span>
             Sincronizar
@@ -82,7 +83,8 @@ export const BitacoraAuditoria: React.FC = () => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="bg-slate-100 border-none rounded-xl px-4 py-3 text-sm font-black text-slate-700 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none uppercase tracking-wider"
+            title="Filtrar por tipo de acción"
+            className="bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-xs font-black text-blue-400 focus:border-blue-500/40 transition-all outline-none uppercase tracking-[0.15em] backdrop-blur-md"
           >
             <option value="all">Todas las Acciones</option>
             <option value="CONSULTA">Consultas</option>
@@ -94,7 +96,7 @@ export const BitacoraAuditoria: React.FC = () => {
       </div>
 
       {/* KPI Cards Estilo Institucional */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         <StatCard
           label="Consultas"
           value={entries.filter((e) => e.action_type === "CONSULTA").length}
@@ -102,7 +104,7 @@ export const BitacoraAuditoria: React.FC = () => {
           color="blue"
         />
         <StatCard
-          label="Actualizaciones"
+          label="Actualiz."
           value={
             entries.filter((e) => e.action_type === "ACTUALIZACION").length
           }
@@ -116,58 +118,117 @@ export const BitacoraAuditoria: React.FC = () => {
           color="emerald"
         />
         <StatCard
-          label="Personal Activo"
+          label="Personal"
           value={new Set(entries.map((e) => e.user_email)).size}
           icon="group"
           color="indigo"
         />
       </div>
 
-      {/* Tabla Institucional de Auditoría */}
-      <div className="bg-white border border-slate-200 rounded-[2rem] shadow-xl shadow-slate-200/50 overflow-hidden">
-        <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Registro de Auditoría */}
+      <div className="bg-[#0b121a]/60 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl backdrop-blur-3xl overflow-hidden">
+        <div className="px-5 md:px-8 py-5 md:py-6 border-b border-white/5 bg-white/[0.02] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
-              <span className="material-symbols-outlined text-blue-600">
+            <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
+              <span className="material-symbols-outlined text-blue-500 text-sm md:text-base">
                 history
               </span>
-              Historial de Actividad del Plantel
+              Actividad del Plantel
             </h3>
-            <p className="text-xs text-slate-500 font-black uppercase tracking-widest mt-1.5">
+            <p className="hidden md:block text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mt-1.5">
               Registro inalterable de protocolos digitales
             </p>
           </div>
           <button
             onClick={() => toast.success("Exportando registro oficial...")}
-            className="text-[10px] font-black text-blue-700 uppercase tracking-widest flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+            className="w-full md:w-auto text-[9px] font-black text-blue-400 uppercase tracking-widest flex items-center justify-center gap-3 px-6 py-3 md:py-2.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 transition-all"
+            title="Descargar reporte oficial en formato CSV"
           >
             <span className="material-symbols-outlined text-sm">download</span>
             Descargar Reporte CSV
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* --- VISTA MÓVIL: TICKETS DE ACTIVIDAD --- */}
+        <div className="md:hidden divide-y divide-white/5">
+          {loading ? (
+            <div className="p-10 text-center space-y-3">
+              <div className="size-8 border-2 border-slate-700 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
+              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                Validando libros...
+              </p>
+            </div>
+          ) : (
+            filteredEntries.map((entry) => (
+              <div
+                key={entry.id}
+                className="p-5 space-y-4 active:bg-white/5 transition-colors"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2">
+                    <div className="size-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[9px]">
+                      {(entry.user_role || "S").charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-white">
+                        {entry.user_email?.split("@")[0] || "SISTEMA"}
+                      </p>
+                      <p className="text-[8px] font-black text-blue-500/60 uppercase tracking-widest">
+                        {entry.user_role || "SISTEMA"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-black text-white">
+                      {new Date(entry.created_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <p className="text-[8px] font-bold text-slate-500 uppercase">
+                      {new Date(entry.created_at).toLocaleDateString([], {
+                        day: "2-digit",
+                        month: "short",
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-white/[0.02] border border-white/5 p-3 rounded-xl">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ActionBadge type={entry.action_type} />
+                  </div>
+                  <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                    "{entry.action_description}"
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* --- VISTA WEB: TABLA ROBUSTA --- */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/50">
-                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+              <tr className="bg-white/[0.01]">
+                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
                   Fecha y Hora
                 </th>
-                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
                   Personal Responsable
                 </th>
-                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
                   Operación
                 </th>
-                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
                   Detalle de Acción
                 </th>
-                <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">
+                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
                   Afectado / Alumno
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/[0.03]">
               {loading ? (
                 <tr>
                   <td colSpan={5} className="px-8 py-20 text-center">
@@ -197,10 +258,10 @@ export const BitacoraAuditoria: React.FC = () => {
                 filteredEntries.map((entry) => (
                   <tr
                     key={entry.id}
-                    className="hover:bg-slate-50 transition-colors group"
+                    className="hover:bg-white/[0.03] transition-colors group"
                   >
                     <td className="px-8 py-5">
-                      <span className="text-xs font-black text-slate-600 block">
+                      <span className="text-[11px] font-black text-white block">
                         {new Date(entry.created_at).toLocaleDateString(
                           "es-MX",
                           {
@@ -209,7 +270,7 @@ export const BitacoraAuditoria: React.FC = () => {
                           },
                         )}
                       </span>
-                      <span className="text-xs font-bold text-slate-400 block mt-0.5">
+                      <span className="text-[10px] font-bold text-slate-500 block mt-0.5">
                         {new Date(entry.created_at).toLocaleTimeString(
                           "es-MX",
                           {
@@ -221,14 +282,14 @@ export const BitacoraAuditoria: React.FC = () => {
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 font-black text-[10px]">
+                        <div className="size-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[10px]">
                           {(entry.user_role || "S").charAt(0)}
                         </div>
                         <div>
-                          <p className="text-xs font-black text-slate-800 truncate max-w-[150px]">
+                          <p className="text-[11px] font-black text-white truncate max-w-[150px]">
                             {entry.user_email || "SISTEMA"}
                           </p>
-                          <p className="text-[10px] font-black text-blue-700 uppercase tracking-tight mt-0.5">
+                          <p className="text-[9px] font-black text-blue-400/60 uppercase tracking-tight mt-0.5">
                             {entry.user_role || "PROCESO AUTO"}
                           </p>
                         </div>
@@ -238,22 +299,22 @@ export const BitacoraAuditoria: React.FC = () => {
                       <ActionBadge type={entry.action_type} />
                     </td>
                     <td className="px-8 py-5">
-                      <p className="text-xs text-slate-600 font-medium leading-relaxed max-w-[250px] line-clamp-2">
+                      <p className="text-[11px] text-slate-400 font-medium leading-relaxed max-w-[250px] line-clamp-2">
                         {entry.action_description}
                       </p>
                     </td>
                     <td className="px-8 py-5">
                       {entry.target_student_name ? (
                         <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-sm text-slate-300">
+                          <span className="material-symbols-outlined text-sm text-blue-500/40">
                             person
                           </span>
-                          <span className="text-xs font-bold text-slate-700 italic">
+                          <span className="text-[11px] font-black text-blue-400/80 italic">
                             {entry.target_student_name}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-slate-300 text-[10px] font-black uppercase">
+                        <span className="text-slate-700 text-[10px] font-black uppercase tracking-widest">
                           --
                         </span>
                       )}
@@ -278,26 +339,24 @@ const StatCard: React.FC<{
   color: string;
 }> = ({ label, value, icon, color }) => {
   const colors: any = {
-    blue: "bg-blue-50 text-blue-600 border-blue-100",
-    amber: "bg-amber-50 text-amber-600 border-amber-100",
-    emerald: "bg-emerald-50 text-emerald-600 border-emerald-100",
-    indigo: "bg-indigo-50 text-indigo-600 border-indigo-100",
+    blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    indigo: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
   };
 
   return (
-    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center gap-5 hover:shadow-md transition-all">
+    <div className="bg-[#0b121a]/60 p-6 rounded-[2rem] border border-white/5 shadow-lg backdrop-blur-3xl flex items-center gap-5 hover:border-white/10 transition-all group">
       <div
-        className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-sm`}
+        className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-lg group-hover:scale-110 transition-transform duration-500`}
       >
         <span className="material-symbols-outlined text-2xl">{icon}</span>
       </div>
       <div>
-        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
+        <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
           {label}
         </p>
-        <p className="text-2xl font-black text-slate-800 tracking-tight">
-          {value}
-        </p>
+        <p className="text-2xl font-black text-white tracking-tight">{value}</p>
       </div>
     </div>
   );

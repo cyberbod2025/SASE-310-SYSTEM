@@ -113,8 +113,7 @@ export const CanvasParticles: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-0 opacity-60"
-      style={{ pointerEvents: "none" }}
+      className="absolute inset-0 z-0 opacity-60 pointer-events-none"
     />
   );
 };

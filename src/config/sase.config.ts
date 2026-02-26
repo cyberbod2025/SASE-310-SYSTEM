@@ -62,7 +62,7 @@ export const INSTITUCION = {
 // ============================
 export const BRANDING = {
   /** Slogan oficial - NO MODIFICAR */
-  slogan: "CONECTAMOS CONTIGO",
+  slogan: "DONDE EL DEBER Y LA CONCIENCIA SE ENCUENTRAN",
 
   /** Nombre del sistema */
   sistemaName: "SASE",

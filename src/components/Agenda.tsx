@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useApp } from "../store";
+import { useAuth } from "./AuthProvider";
 import toast from "react-hot-toast";
 import { CICLO_ESCOLAR } from "../config/sase.config";
 import { supabase } from "../supabase/client";
@@ -14,7 +15,7 @@ interface CalendarEvent {
 }
 
 export const Agenda: React.FC = () => {
-  const { user } = useApp();
+  const { user } = useAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(
     new Date().toISOString().split("T")[0],
@@ -172,8 +173,11 @@ export const Agenda: React.FC = () => {
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
-          className="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-100 flex items-center gap-3 active:scale-95"
+          onClick={() => {
+            console.log("Opening Agenda Modal...");
+            setShowModal(true);
+          }}
+          className="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center gap-3 active:scale-95 relative z-20 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[20px]">
             add_circle
@@ -355,8 +359,8 @@ export const Agenda: React.FC = () => {
 
       {/* Modal Minimalista e Institucional */}
       {showModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-scale-up">
+        <div className="fixed inset-0 z-[100] flex items-start justify-center py-6 px-4 overflow-y-auto bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-scale-up my-auto">
             <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
               <h3 className="text-lg font-black text-slate-800 uppercase italic tracking-tighter">
                 Nueva Actividad
@@ -364,6 +368,7 @@ export const Agenda: React.FC = () => {
               <button
                 onClick={() => setShowModal(false)}
                 className="size-8 rounded-full border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all flex items-center justify-center"
+                title="Cerrar modal de nueva actividad"
               >
                 <span className="material-symbols-outlined text-sm">close</span>
               </button>
@@ -379,6 +384,7 @@ export const Agenda: React.FC = () => {
                   autoFocus
                   className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:italic placeholder:font-normal"
                   placeholder="Ej. Consejo Técnico Escolar..."
+                  title="Título o nombre de la actividad escolar"
                   value={newEvent.title || ""}
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, title: e.target.value })
@@ -394,6 +400,7 @@ export const Agenda: React.FC = () => {
                   <input
                     type="date"
                     className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+                    title="Fecha programada para la actividad"
                     value={newEvent.date}
                     onChange={(e) =>
                       setNewEvent({ ...newEvent, date: e.target.value })
@@ -407,6 +414,7 @@ export const Agenda: React.FC = () => {
                   <input
                     type="time"
                     className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+                    title="Hora programada para la actividad (opcional)"
                     value={newEvent.time || ""}
                     onChange={(e) =>
                       setNewEvent({ ...newEvent, time: e.target.value })
@@ -421,6 +429,7 @@ export const Agenda: React.FC = () => {
                 </label>
                 <select
                   className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none"
+                  title="Seleccionar el tipo de actividad institucional"
                   value={newEvent.type}
                   onChange={(e: any) =>
                     setNewEvent({ ...newEvent, type: e.target.value })
@@ -441,6 +450,7 @@ export const Agenda: React.FC = () => {
                 <textarea
                   className="w-full h-24 bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:italic resize-none"
                   placeholder="Detalles institucionales..."
+                  title="Descripción detallada de la actividad"
                   value={newEvent.description || ""}
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, description: e.target.value })

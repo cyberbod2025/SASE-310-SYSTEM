@@ -139,15 +139,15 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
             : "bg-blue-600";
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-2 md:p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
       <div className="bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-white/10 flex flex-col overflow-hidden">
         {/* Header */}
         <div
-          className={`${colorClass} p-6 text-white flex justify-between items-start shrink-0`}
+          className={`${colorClass} p-3 md:p-6 text-white flex justify-between items-start shrink-0 relative z-10`}
         >
           <div className="flex gap-4">
-            <div className="bg-white/20 p-3 rounded-xl backdrop-blur-md min-w-[100px] flex items-center justify-center">
-              <span className="text-xs font-black uppercase tracking-widest text-center leading-tight">
+            <div className="bg-white/20 p-2 md:p-3 rounded-xl backdrop-blur-md min-w-[80px] md:min-w-[100px] hidden sm:flex items-center justify-center">
+              <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-center leading-tight">
                 {getProtocolLabel(protocol.icono)}
               </span>
             </div>
@@ -169,10 +169,16 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
             </div>
           </div>
           <button
-            onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            className="p-2 hover:bg-white/20 rounded-full transition-colors relative z-20 cursor-pointer"
+            title="Cerrar el detalle del protocolo"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined pointer-events-none">
+              close
+            </span>
           </button>
         </div>
 
@@ -276,10 +282,16 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
             fines de auditoría.
           </div>
           <button
-            onClick={onClose}
-            className="bg-white text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-gray-200 transition-colors flex items-center gap-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            className="bg-white text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-gray-200 transition-colors flex items-center gap-2 relative z-20 cursor-pointer"
+            title="He leído y comprendido los pasos del protocolo"
           >
-            <span className="material-symbols-outlined">check</span>
+            <span className="material-symbols-outlined pointer-events-none">
+              check
+            </span>
             Entendido / Cerrar
           </button>
         </div>

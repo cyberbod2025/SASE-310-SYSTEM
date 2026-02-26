@@ -95,7 +95,10 @@ export const PlaneacionNEM = () => {
                   <span className="text-xs text-blue-400/60 uppercase font-bold tracking-widest ml-1">
                     Metodología Sugerida
                   </span>
-                  <select className="w-full mt-2 bg-black/40 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-blue-500/50">
+                  <select
+                    className="w-full mt-2 bg-black/40 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-blue-500/50"
+                    title="Seleccionar metodología pedagógica sugerida"
+                  >
                     <option>STEAM (Indagación)</option>
                     <option>Aprendizaje Basado en Problemas (ABP)</option>
                     <option>Aprendizaje Servicio (AS)</option>
@@ -106,7 +109,10 @@ export const PlaneacionNEM = () => {
                   <span className="text-xs text-blue-400/60 uppercase font-bold tracking-widest ml-1">
                     Eje Articulador
                   </span>
-                  <select className="w-full mt-2 bg-black/40 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-blue-500/50">
+                  <select
+                    className="w-full mt-2 bg-black/40 border border-white/10 rounded-xl p-4 text-white outline-none focus:border-blue-500/50"
+                    title="Seleccionar eje articulador de la Nueva Escuela Mexicana"
+                  >
                     <option>Pensamiento Crítico</option>
                     <option>Inclusión</option>
                     <option>Vida Saludable</option>

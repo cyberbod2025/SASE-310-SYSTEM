@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
 import { supabase } from "../supabase/client";
 import { CaseState, Solicitud, SolicitudPriority } from "../types";
@@ -38,7 +39,6 @@ export const Archivo: React.FC = () => {
 
     setUploading(true);
     const file = event.target.files[0];
-    const fileExt = file.name.split(".").pop();
     const fileName = `${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
 
     try {
@@ -46,15 +46,13 @@ export const Archivo: React.FC = () => {
         .from("documentos_salud")
         .upload(fileName, file);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
-      alert("Archivo subido correctamente");
+      toast.success("Archivo sincronizado con la bóveda digital");
       fetchFiles();
     } catch (error: any) {
       console.error("Error uploading file:", error.message);
-      alert("Error al subir el archivo: " + error.message);
+      toast.error("Fallo en la sincronización: " + error.message);
     } finally {
       setUploading(false);
       event.target.value = ""; // Reset input
@@ -75,10 +73,8 @@ export const Archivo: React.FC = () => {
   };
 
   const getStudentNameFromFileName = (fileName: string) => {
-    // Convention: studentId_timestamp.ext
     const possibleId = fileName.split("_")[0];
-    const student = students.find((s) => s.id === possibleId);
-    return student; // Return full object or undefined
+    return students.find((s) => s.id === possibleId);
   };
 
   const getFileUrl = (fileName: string) => {
@@ -89,251 +85,308 @@ export const Archivo: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-text-main">
-            Expediente Digital
-          </h2>
-          <p className="text-text-secondary">
-            Información y Documentación del Alumnado
-          </p>
+    <div className="p-4 lg:p-8 space-y-8 animate-fade-in max-w-[1600px] mx-auto pb-32">
+      {/* TACTICAL HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-6">
+          <div className="size-16 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center justify-center text-indigo-500 shadow-2xl">
+            <span className="material-symbols-outlined text-4xl font-black">
+              inventory_2
+            </span>
+          </div>
+          <div>
+            <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
+              EXPEDIENTE <span className="text-indigo-500">DIGITAL</span>
+            </h2>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-2 italic">
+              BÓVEDA CENTRAL DE DATOS // SASE-310
+            </p>
+          </div>
         </div>
-        <div className="flex bg-gray-100 p-1 rounded-lg">
-          <button
-            onClick={() => setActiveTab("students")}
-            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${
-              activeTab === "students"
-                ? "bg-white shadow text-text-main"
-                : "text-text-secondary hover:bg-gray-200"
-            }`}
-          >
-            Expedientes del Alumnado
-          </button>
-          <button
-            onClick={() => setActiveTab("files")}
-            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${
-              activeTab === "files"
-                ? "bg-white shadow text-text-main"
-                : "text-text-secondary hover:bg-gray-200"
-            }`}
-          >
-            Repositorio en la Nube
-          </button>
-          <button
-            onClick={() => setActiveTab("requests")}
-            className={`px-4 py-2 text-sm font-bold rounded-md transition-all ${
-              activeTab === "requests"
-                ? "bg-white shadow text-text-main"
-                : "text-text-secondary hover:bg-gray-200"
-            }`}
-          >
-            Solicitudes y Comunicados
-          </button>
+
+        <div className="flex p-1 bg-white/[0.03] border border-white/5 rounded-2xl backdrop-blur-xl">
+          {[
+            { id: "students", label: "EXPEDIENTES", icon: "badge" },
+            { id: "files", label: "NUBE", icon: "cloud" },
+            { id: "requests", label: "SOLICITUDES", icon: "mail" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 ${
+                activeTab === tab.id
+                  ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20"
+                  : "text-slate-500 hover:text-slate-300 hover:bg-white/5"
+              }`}
+            >
+              <span className="material-symbols-outlined text-sm">
+                {tab.icon}
+              </span>
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {activeTab === "requests" && <PanelSolicitudes />}
-
-      {activeTab === "students" ? (
-        <>
-          <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-border-color shadow-sm">
-            <div className="relative w-full md:w-96">
-              <input
-                type="text"
-                placeholder="Buscar por nombre o matrícula..."
-                className="pl-10 pr-4 py-2 border border-border-color rounded-lg w-full focus:ring-2 focus:ring-primary outline-none"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <span className="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-lg">
-                search
-              </span>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl border border-border-color shadow-sm overflow-hidden">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
-                    Alumno
-                  </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
-                    Matrícula
-                  </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
-                    Grupo
-                  </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest">
-                    Estatus
-                  </th>
-                  <th className="px-6 py-4 text-xs font-black text-slate-600 uppercase tracking-widest text-right">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filteredStudents.map((s) => (
-                  <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
-                          {s.name.substring(0, 2)}
-                        </div>
-                        <span className="font-bold text-text-main">
-                          {s.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 font-mono text-xs font-black text-slate-600">
-                      {s.matricula}
-                    </td>
-                    <td className="px-6 py-4 text-sm">{s.group}</td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border uppercase ${
-                          s.caseState === CaseState.CERRADO
-                            ? "bg-green-100 text-green-800 border-green-200"
-                            : s.caseState === CaseState.OBSERVADO
-                              ? "bg-blue-100 text-blue-800 border-blue-200"
-                              : "bg-red-100 text-red-800 border-red-200"
-                        }`}
-                      >
-                        {s.caseState}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() =>
-                          alert(
-                            `Funcionalidad en desarrollo: Detalles de ${s.name}`,
-                          )
-                        }
-                        className="text-blue-700 hover:text-blue-900 text-xs font-black uppercase tracking-widest underline decoration-2 underline-offset-4"
-                      >
-                        Ver Expediente
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {filteredStudents.length === 0 && (
-              <div className="p-8 text-center text-gray-500">
-                No se encontraron expedientes.
-              </div>
-            )}
-          </div>
-        </>
-      ) : (
-        <div className="bg-white rounded-xl border border-border-color shadow-sm p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-lg">
-              Documentos en la Nube (Supabase Storage)
-            </h3>
-            <div className="flex items-center gap-3">
-              <div className="relative">
+      <AnimatePresence mode="wait">
+        {activeTab === "requests" ? (
+          <motion.div
+            key="requests"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <PanelSolicitudes />
+          </motion.div>
+        ) : activeTab === "students" ? (
+          <motion.div
+            key="students"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-6"
+          >
+            {/* SEARCH TACTICAL */}
+            <div className="card-sase p-6 border-white/5 bg-white/[0.01]">
+              <div className="relative group max-w-lg">
+                <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-500 transition-colors">
+                  search
+                </span>
                 <input
-                  type="file"
-                  onChange={handleFileUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-[0]"
-                  disabled={uploading}
-                  title="Subir archivo"
+                  type="text"
+                  placeholder="FILTRAR POR NOMBRE O MATRÍCULA..."
+                  className="input-sase pl-14 h-14 text-[11px] font-black tracking-widest"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
-                <button
-                  disabled={uploading}
-                  className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm hover:bg-blue-700 transition-colors ${
-                    uploading ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-sm">
-                    cloud_upload
+              </div>
+            </div>
+
+            {/* DATA STREAM TERMINAL (TABLE) */}
+            <div className="card-sase border-white/5 overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-white/[0.02] border-b border-white/5">
+                  <tr className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+                    <th className="px-8 py-5"># IDENTIDAD // ALUMNO</th>
+                    <th className="px-8 py-5">MATRÍCULA</th>
+                    <th className="px-8 py-5">ZONA_GRUPO</th>
+                    <th className="px-8 py-5">STATUS_CODE</th>
+                    <th className="px-8 py-5 text-right">ACCIONES</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.02]">
+                  {filteredStudents.map((s, idx) => (
+                    <motion.tr
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: idx * 0.03 }}
+                      key={s.id}
+                      className="hover:bg-indigo-500/[0.02] transition-colors group/row"
+                    >
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="size-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 flex items-center justify-center font-black text-xs italic tracking-tighter">
+                            {s.name.substring(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-black text-white text-sm italic uppercase tracking-tighter group-hover/row:text-indigo-400 transition-colors">
+                              {s.name}
+                            </p>
+                            <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
+                              ID_{s.id.substring(0, 8).toUpperCase()}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className="font-mono text-xs font-black text-slate-500 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                          {s.matricula}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-lg text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          {s.group}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6">
+                        <span
+                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[9px] font-black border uppercase tracking-widest ${
+                            s.caseState === CaseState.CERRADO
+                              ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                              : s.caseState === CaseState.OBSERVADO
+                                ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                                : "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                          }`}
+                        >
+                          <div
+                            className={`size-1.5 rounded-full ${
+                              s.caseState === CaseState.CERRADO
+                                ? "bg-emerald-500"
+                                : s.caseState === CaseState.OBSERVADO
+                                  ? "bg-amber-500"
+                                  : "bg-rose-500"
+                            }`}
+                          ></div>
+                          {s.caseState}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <button
+                          onClick={() => toast("Cargando Expediente...")}
+                          className="px-5 py-2.5 bg-indigo-600/10 border border-indigo-500/20 text-indigo-500 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all active:scale-95"
+                        >
+                          Abrir Bóveda
+                        </button>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+              {filteredStudents.length === 0 && (
+                <div className="p-20 text-center opacity-40">
+                  <span className="material-symbols-outlined text-5xl mb-4">
+                    search_off
                   </span>
-                  {uploading ? "Subiendo..." : "Subir Archivo"}
+                  <p className="text-[10px] font-black uppercase tracking-widest">
+                    No record found in primary database
+                  </p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="files"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="card-sase p-8 border-white/5 bg-white/[0.01] space-y-8"
+          >
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-white/5">
+              <div>
+                <h3 className="text-xl font-black text-white italic tracking-tighter uppercase leading-none">
+                  Repositorio <span className="text-amber-500">Cloud</span>
+                </h3>
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mt-2 italic">
+                  SUPABASE_STORAGE // BUCKET: DOCUMENTOS_SALUD
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <input
+                    type="file"
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={uploading}
+                    title="Subir"
+                  />
+                  <button
+                    disabled={uploading}
+                    className={`px-8 py-4 bg-amber-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-600/20 hover:bg-amber-700 transition-all flex items-center gap-3 active:scale-95 ${
+                      uploading ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-lg">
+                      cloud_upload
+                    </span>
+                    {uploading ? "SINCRONIZANDO..." : "CARGAR ARCHIVO"}
+                  </button>
+                </div>
+
+                <button
+                  onClick={fetchFiles}
+                  className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    refresh
+                  </span>
                 </button>
               </div>
+            </div>
 
-              <button
-                onClick={fetchFiles}
-                className="text-primary text-sm font-bold hover:underline flex items-center gap-1 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <span className="material-symbols-outlined text-sm">
-                  refresh
-                </span>{" "}
-                Actualizar
-              </button>
-            </div>
-          </div>
-
-          {loadingFiles ? (
-            <div className="p-10 text-center text-gray-400">
-              Cargando archivos...
-            </div>
-          ) : files.length === 0 ? (
-            <div className="p-10 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
-              La bandeja 'documentos_salud' está vacía.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {files.map((file) => {
-                const student = getStudentNameFromFileName(file.name);
-                return (
-                  <div
-                    key={file.id}
-                    className="border border-gra-200 rounded-lg p-4 hover:shadow-md transition-shadow group relative"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="p-3 bg-red-50 text-red-600 rounded-lg">
-                        <span className="material-symbols-outlined">
-                          description
+            {loadingFiles ? (
+              <div className="p-20 text-center flex flex-col items-center gap-6 opacity-40">
+                <div className="size-12 border-2 border-amber-500/20 border-t-amber-500 rounded-full animate-spin"></div>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em]">
+                  Descifrando stream de datos...
+                </p>
+              </div>
+            ) : files.length === 0 ? (
+              <div className="p-20 text-center flex flex-col items-center gap-6 border-2 border-dashed border-white/5 rounded-3xl opacity-30">
+                <span className="material-symbols-outlined text-6xl">
+                  inventory
+                </span>
+                <p className="text-[10px] font-black uppercase tracking-[0.5em]">
+                  Repositorio vacío // Standby
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {files.map((file, idx) => {
+                  const student = getStudentNameFromFileName(file.name);
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.05 }}
+                      key={file.id}
+                      className="card-sase p-6 bg-white/[0.02] border-white/5 hover:border-amber-500/30 group relative overflow-hidden flex flex-col justify-between min-h-[180px]"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="size-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-xl group-hover:scale-110 transition-transform">
+                          <span className="material-symbols-outlined text-2xl font-black">
+                            {file.name.match(/\.(pdf|doc|docx)$/i)
+                              ? "description"
+                              : "image"}
+                          </span>
+                        </div>
+                        <span className="text-[8px] font-mono text-slate-600 font-bold uppercase">
+                          {new Date(file.created_at).toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="overflow-hidden">
+
+                      <div className="mt-6 mb-2">
                         <p
-                          className="font-bold text-text-main text-sm truncate w-full"
+                          className="text-xs font-black text-white uppercase italic tracking-tight truncate mb-1"
                           title={file.name}
                         >
                           {file.name}
                         </p>
-                        <p className="text-xs text-text-secondary mt-1">
-                          {student ? (
-                            <span className="text-blue-600 font-bold flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[10px]">
-                                person
-                              </span>
-                              {student.name}
-                            </span>
-                          ) : (
-                            "Sin asignar"
-                          )}
-                        </p>
-                        <p className="text-[10px] text-gray-400 mt-2">
-                          {(file.metadata?.size / 1024).toFixed(1)} KB •{" "}
-                          {new Date(file.created_at).toLocaleDateString()}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`size-1.5 rounded-full ${student ? "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]" : "bg-slate-700"}`}
+                          ></div>
+                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest truncate">
+                            {student ? student.name : "SIN_ASIGNAR"}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <a
-                      href={getFileUrl(file.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-                    >
-                      <span className="bg-white text-black px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm">
-                          visibility
+
+                      <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                        <span className="text-[9px] font-mono text-slate-600 uppercase font-black">
+                          {(file.metadata?.size / 1024).toFixed(1)} KB
                         </span>
-                        Ver Archivo
-                      </span>
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+                        <a
+                          href={getFileUrl(file.name)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[9px] font-black text-amber-500 uppercase tracking-widest hover:text-white transition-colors flex items-center gap-1"
+                        >
+                          Ver Archivo
+                          <span className="material-symbols-outlined text-sm">
+                            open_in_new
+                          </span>
+                        </a>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

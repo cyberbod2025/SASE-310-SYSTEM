@@ -154,6 +154,7 @@
         z-index: 1000;
         padding: 15px;
         background: var(--glass);
+        -webkit-backdrop-filter: blur(20px);
         backdrop-filter: blur(20px);
         border: 1px solid var(--glass-border);
         border-radius: 50px;
@@ -173,6 +174,30 @@
         background: var(--secondary);
         box-shadow: 0 0 15px var(--secondary);
         transform: scale(1.3);
+      }
+
+      /* BACKDROP CUSTOM COLORS */
+      #hero-backdrop {
+        background: radial-gradient(
+          circle at 60% 40%,
+          #0a1020 0%,
+          #04060b 100%
+        );
+      }
+      #que-es-backdrop {
+        background: radial-gradient(
+          circle at 30% 20%,
+          #0b1426 0%,
+          #05080f 100%
+        );
+        opacity: 0.6;
+      }
+      #selector-rol-backdrop {
+        background: radial-gradient(
+          circle at 80% 60%,
+          rgba(20, 30, 50, 0.4) 0%,
+          #05070a 100%
+        );
       }
 
       .menu-dot::after {
@@ -199,46 +224,108 @@
       }
 
       #hero {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         text-align: center;
-        min-height: 100vh;
+        position: relative;
+        background: radial-gradient(
+          circle at 50% 50%,
+          #0b121a 0%,
+          #020408 100%
+        );
+        padding: 4rem 2rem;
+        overflow: hidden;
+      }
+      #hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgba(255, 255, 255, 0.05) 1px,
+          transparent 0
+        );
+        background-size: 40px 40px;
+        opacity: 0.5;
+        pointer-events: none;
       }
 
       .hero-badge {
         display: inline-flex;
         align-items: center;
-        padding: 8px 20px;
-        background: rgba(59, 130, 246, 0.15);
-        color: var(--secondary);
-        border-radius: 50px;
+        gap: 0.5rem;
+        padding: 0.5rem 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 2rem;
         font-size: 10px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 30px;
-        border: 1px solid rgba(59, 130, 246, 0.3);
+        letter-spacing: 0.3em;
+        color: #94a3b8;
+        margin-bottom: 2rem;
+      }
+      .hero-badge::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: #22c55e;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #22c55e;
+        animation: pulse 2s infinite;
       }
 
       .hero-logo {
-        width: 280px;
-        height: auto;
-        margin-bottom: 40px;
-        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6));
-        transition: transform 0.5s ease;
+        height: 120px;
+        width: auto;
+        margin-bottom: 2.5rem;
+        filter: brightness(0) invert(1)
+          drop-shadow(0 0 30px rgba(59, 130, 246, 0.3));
+        transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0.9;
+        position: relative;
+        z-index: 10;
       }
       .hero-logo:hover {
-        transform: scale(1.05);
+        transform: scale(1.05) rotate(2deg);
+        filter: brightness(0) invert(1)
+          drop-shadow(0 0 50px rgba(59, 130, 246, 0.5));
       }
 
       .hero-title {
-        font-size: clamp(2rem, 6vw, 4.5rem);
-        line-height: 1.1;
+        font-size: clamp(2.5rem, 8vw, 5.5rem);
+        line-height: 0.95;
         font-weight: 900;
-        margin-bottom: 25px;
-        background: linear-gradient(135deg, #fff 0%, #3b82f6 100%);
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to bottom, #fff 40%, #64748b 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.04em;
+        text-transform: uppercase;
+        animation: titleGlow 4s infinite alternate;
+      }
+
+      .hero-subtitle {
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.8em;
+        color: #3b82f6;
+        margin-top: 0.5rem;
+        opacity: 0.8;
+      }
+
+      @keyframes titleGlow {
+        from {
+          filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0));
+        }
+        to {
+          filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.4));
+        }
       }
 
       .hero-subtitle {
@@ -246,6 +333,8 @@
         color: var(--text-muted);
         margin-bottom: 5px;
         font-weight: 500;
+        letter-spacing: 4px;
+        text-transform: uppercase;
       }
 
       .hero-author {
@@ -312,6 +401,7 @@
         border: 1px solid var(--glass-border);
         border-radius: 30px;
         padding: 45px;
+        -webkit-backdrop-filter: blur(20px);
         backdrop-filter: blur(20px);
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
@@ -614,6 +704,187 @@
         transform: translateY(-3px);
       }
 
+      /* ===================== TOOLTIPS & INTERACTIVE ELEMENTS ===================== */
+      .hotspot {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        color: var(--darker);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        z-index: 10;
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .hotspot:hover {
+        transform: scale(1.2) rotate(15deg);
+        background: white;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+      }
+
+      .tooltip-manual {
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: var(--glass);
+        -webkit-backdrop-filter: blur(15px);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--accent);
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        width: 200px;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s;
+        z-index: 100;
+        text-align: left;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .hotspot:hover + .tooltip-manual {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* INTERNAL MODAL MANUAL */
+      .modal-manual {
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 23, 0.95);
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.4s;
+        padding: 20px;
+      }
+
+      .modal-manual.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-manual-content {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        max-width: 600px;
+        width: 100%;
+        border-radius: 30px;
+        padding: 40px;
+        position: relative;
+        transform: scale(0.9) translateY(20px);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border-top: 4px solid var(--secondary);
+      }
+
+      .modal-manual.active .modal-manual-content {
+        transform: scale(1) translateY(0);
+      }
+
+      .close-modal-manual {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+
+      .close-modal-manual:hover {
+        background: #f43f5e;
+        transform: rotate(90deg);
+      }
+
+      /* ===================== GUÍA DE BOTONES ===================== */
+      .botones-guide {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 40px;
+      }
+
+      .btn-help-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 30px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        align-items: center;
+      }
+
+      .btn-help-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--accent);
+      }
+
+      .btn-preview-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        background: #000;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-help-card h5 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent);
+        font-weight: 900;
+        margin-top: 5px;
+      }
+
+      .btn-help-card p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      .help-badge {
+        background: var(--accent);
+        color: var(--darker);
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 9px;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
       /* SASE INSTITUTIONAL BACKGROUND SYSTEM */
       #sase-parallax-container {
         position: fixed;
@@ -662,38 +933,89 @@
         height: 1px;
         background: rgba(255, 255, 255, 0.2);
       }
-    </style>
-  </head>
-  <body>
-    <!-- SASE INSTITUTIONAL BACKGROUND -->
-    <div id="sase-parallax-container">
-      <canvas id="bgSpiral"></canvas>
-      <div
-        class="sase-watermark"
-        style="top: 15%; left: 5%; transform: rotate(-15deg)"
-      ></div>
-      <div
-        class="sase-watermark"
-        style="top: 45%; right: -5%; transform: rotate(10deg)"
-      ></div>
-      <div
-        class="sase-watermark"
-        style="top: 75%; left: -10%; transform: rotate(-5deg)"
-      ></div>
-    </div>
 
-    <!-- SCROLL PROGRESS -->
-    <div class="scroll-progress" id="scrollProgress"></div>
+      .btn-help-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 30px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        align-items: center;
+      }
 
-    <!-- RETURN BUTTON -->
-    <a
-      href="/"
-      style="
+      .btn-help-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--accent);
+      }
+
+      .btn-preview-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        background: #000;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-help-card h5 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--accent);
+        font-weight: 900;
+        margin-top: 5px;
+      }
+
+      .btn-help-card p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      .help-badge {
+        background: var(--accent);
+        color: var(--darker);
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 9px;
+        font-weight: 900;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* COMPATIBILITY & CLEANUP CLASSES */
+      .watermark-1 {
+        top: 15%;
+        left: 5%;
+        transform: rotate(-15deg);
+      }
+      .watermark-2 {
+        top: 45%;
+        right: -5%;
+        transform: rotate(10deg);
+      }
+      .watermark-3 {
+        top: 75%;
+        left: -10%;
+        transform: rotate(-5deg);
+      }
+
+      .btn-back-floating {
         position: fixed;
         top: 30px;
         left: 40px;
         z-index: 10000;
         background: var(--glass);
+        -webkit-backdrop-filter: blur(20px);
         backdrop-filter: blur(20px);
         color: white;
         text-decoration: none;
@@ -708,12 +1030,84 @@
         align-items: center;
         gap: 10px;
         transition: all 0.3s;
-      "
-      class="nav-btn fade-up"
-    >
-      <span class="material-symbols-outlined" style="font-size: 18px"
-        >arrow_back</span
-      >
+      }
+      .btn-back-floating .material-symbols-outlined {
+        font-size: 18px;
+      }
+
+      .hero-firma-ciclo {
+        font-size: 14px;
+        margin-top: 40px;
+        letter-spacing: 4px;
+      }
+      .hero-btn-start {
+        margin-top: 60px;
+      }
+
+      .text-center-muted {
+        text-align: center;
+        color: var(--text-muted);
+      }
+      .mt-neg-30 {
+        margin-top: -30px;
+      }
+      .mb-20 {
+        margin-bottom: 20px;
+      }
+      .mb-50 {
+        margin-bottom: 50px;
+      }
+
+      .pos-relative {
+        position: relative;
+      }
+      .icon-sm {
+        font-size: 12px !important;
+      }
+
+      .circle-blue {
+        color: #60a5fa;
+        border: 1px solid rgba(96, 165, 250, 0.3);
+      }
+      .circle-red {
+        color: #f87171;
+        border: 1px solid rgba(248, 113, 113, 0.3);
+      }
+      .circle-yellow {
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+      }
+      .circle-green {
+        color: #34d399;
+        border: 1px solid rgba(52, 211, 153, 0.3);
+      }
+
+      .badge-red {
+        background: #f87171 !important;
+      }
+      .badge-yellow {
+        background: #fbbf24 !important;
+      }
+      .badge-green {
+        background: #34d399 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SASE INSTITUTIONAL BACKGROUND -->
+    <div id="sase-parallax-container">
+      <canvas id="bgSpiral"></canvas>
+      <div class="sase-watermark watermark-1"></div>
+      <div class="sase-watermark watermark-2"></div>
+      <div class="sase-watermark watermark-3"></div>
+    </div>
+
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- RETURN BUTTON -->
+    <a href="/" class="btn-back-floating fade-up">
+      <span class="material-symbols-outlined">arrow_back</span>
       Volver al Sistema
     </a>
 
@@ -728,6 +1122,11 @@
         class="menu-dot"
         data-title="Propósito"
         onclick="scrollToId('que-es')"
+      ></div>
+      <div
+        class="menu-dot"
+        data-title="Ayuda"
+        onclick="scrollToId('guia-interfaz')"
       ></div>
       <div
         class="menu-dot"
@@ -748,13 +1147,7 @@
 
     <!-- ==================== HERO ==================== -->
     <section id="hero">
-      <div
-        class="section-backdrop"
-        id="hero-backdrop"
-        style="
-          background-image: url(&quot;../../.gemini/antigravity/brain/1222524f-60a4-434e-aecc-5a1fd3f1e3c3/sase_manual_hero_bg_1769675278725.png&quot;);
-        "
-      ></div>
+      <div class="section-backdrop" id="hero-backdrop"></div>
       <div class="section-overlay"></div>
       <div class="container">
         <div class="hero-badge fade-up">Plataforma Certificada</div>
@@ -770,17 +1163,8 @@
           Documentación Institucional Dinámica
         </p>
         <p class="hero-author fade-up delay-2">SASE-310 | MÉXICO</p>
-        <div
-          class="firma-ciclo fade-up delay-3"
-          style="font-size: 14px; margin-top: 40px; letter-spacing: 4px"
-        >
-          EST 310
-        </div>
-        <a
-          href="#que-es"
-          class="btn-start fade-up delay-4"
-          style="margin-top: 60px"
-        >
+        <div class="firma-ciclo hero-firma-ciclo fade-up delay-3">EST 310</div>
+        <a href="#que-es" class="btn-start hero-btn-start fade-up delay-4">
           Explorar Manual
           <span class="material-symbols-outlined">expand_more</span>
         </a>
@@ -789,13 +1173,7 @@
 
     <!-- ==================== ¿QUÉ ES SASE? ==================== -->
     <section id="que-es">
-      <div
-        class="section-backdrop"
-        style="
-          background-image: url(&quot;../../.gemini/antigravity/brain/1222524f-60a4-434e-aecc-5a1fd3f1e3c3/sase_manual_section_bg_1_1769675313418.png&quot;);
-          opacity: 0.4;
-        "
-      ></div>
+      <div class="section-backdrop" id="que-es-backdrop"></div>
       <div class="section-overlay"></div>
       <div class="container">
         <h2 class="section-title fade-up">Propósito del Sistema</h2>
@@ -831,25 +1209,11 @@
 
     <!-- ==================== SELECTOR DE ROL ==================== -->
     <section id="selector-rol">
-      <div
-        class="section-backdrop"
-        style="
-          background-image: url(&quot;../../.gemini/antigravity/brain/1222524f-60a4-434e-aecc-5a1fd3f1e3c3/sase_manual_section_bg_2_1769675418657.png&quot;);
-          filter: brightness(0.2);
-        "
-      ></div>
+      <div class="section-backdrop" id="selector-rol-backdrop"></div>
       <div class="section-overlay"></div>
       <div class="container">
         <h2 class="section-title fade-up">Experiencia por Función</h2>
-        <p
-          class="fade-up delay-1"
-          style="
-            text-align: center;
-            color: var(--text-muted);
-            margin-top: -30px;
-            margin-bottom: 20px;
-          "
-        >
+        <p class="text-center-muted mt-neg-30 mb-20 fade-up delay-1">
           El contenido del manual se adaptará a tu función institucional.
         </p>
         <div class="rol-buttons fade-up delay-2">
@@ -877,6 +1241,95 @@
             <span class="icon">🏛️</span>
             Dirección
           </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== GUÍA DE INTERFAZ ==================== -->
+    <section id="guia-interfaz">
+      <div class="container">
+        <h2 class="section-title fade-up">Identificación de Funciones</h2>
+        <p class="text-center-muted mt-neg-30 mb-50 fade-up delay-1">
+          Guía rápida para entender los controles principales del ecosistema
+          SASE.
+        </p>
+
+        <div class="botones-guide">
+          <!-- Botón Bitácora -->
+          <div class="btn-help-card pos-relative fade-up">
+            <div class="hotspot" onclick="showHelp('bitacora')">?</div>
+            <div class="tooltip-manual">
+              Haz clic para ver detalles avanzados
+            </div>
+            <div class="btn-preview-circle circle-blue">
+              <span class="material-symbols-outlined">menu_book</span>
+            </div>
+            <h5>Generar Bitácora</h5>
+            <div class="help-badge">
+              <span class="material-symbols-outlined icon-sm">edit_note</span
+              >Editable
+            </div>
+            <p>
+              Genera un resumen oficial de actividades. Permite editar el
+              contenido antes de imprimir para añadir observaciones
+              personalizadas.
+            </p>
+          </div>
+
+          <!-- Botón SOS -->
+          <div class="btn-help-card pos-relative fade-up delay-1">
+            <div class="hotspot" onclick="showHelp('sos')">?</div>
+            <div class="tooltip-manual">Protocolo de emergencia</div>
+            <div class="btn-preview-circle circle-red">
+              <span class="material-symbols-outlined">emergency</span>
+            </div>
+            <h5>Reporte Rápido</h5>
+            <div class="help-badge badge-red">
+              <span class="material-symbols-outlined icon-sm"
+                >priority_high</span
+              >Crítico
+            </div>
+            <p>
+              Acceso inmediato para registrar incidencias graves. Notifica
+              automáticamente a las áreas correspondientes según el protocolo.
+            </p>
+          </div>
+
+          <!-- Botón Notificaciones -->
+          <div class="btn-help-card pos-relative fade-up delay-2">
+            <div class="hotspot" onclick="showHelp('ia')">?</div>
+            <div class="tooltip-manual">Inteligencia Predictiva</div>
+            <div class="btn-preview-circle circle-yellow">
+              <span class="material-symbols-outlined">notifications</span>
+            </div>
+            <h5>Alertas IA</h5>
+            <div class="help-badge badge-yellow">
+              <span class="material-symbols-outlined icon-sm">smart_toy</span
+              >Predictivo
+            </div>
+            <p>
+              Muestra avisos generados por el sistema, como patrones de riesgo
+              detectados en alumnos o citatorios pendientes por cerrar.
+            </p>
+          </div>
+
+          <!-- Botón Imprimir -->
+          <div class="btn-help-card pos-relative fade-up delay-3">
+            <div class="hotspot" onclick="showHelp('print')">?</div>
+            <div class="tooltip-manual">Validez Institucional</div>
+            <div class="btn-preview-circle circle-green">
+              <span class="material-symbols-outlined">print</span>
+            </div>
+            <h5>Vista Impresa</h5>
+            <div class="help-badge badge-green">
+              <span class="material-symbols-outlined icon-sm">check_circle</span
+              >Oficial
+            </div>
+            <p>
+              Prepara cualquier vista de datos para su impresión física,
+              añadiendo encabezados y pies de página institucionales.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -921,18 +1374,83 @@
       </div>
     </section>
 
+    <!-- MODAL DE AYUDA INTERACTIVA -->
+    <div class="modal-manual" id="modalHelp">
+      <div class="modal-manual-content">
+        <button class="close-modal-manual" onclick="closeHelp()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <div id="helpContent">
+          <!-- Content injected via JS -->
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== CIERRE ==================== -->
     <section id="cierre">
       <div class="container">
-        <h2 class="section-title fade-up">Gracias por ser parte</h2>
-        <p class="cierre-text fade-up delay-1">
-          Tu participación en SASE contribuye a una cultura de mejora continua,
-          documentación responsable y acompañamiento genuino a nuestra comunidad
-          escolar.
-        </p>
+        <h2 class="section-title fade-up">Gracias por formar parte</h2>
+        <div
+          class="cierre-text fade-up delay-1"
+          style="
+            max-width: 800px;
+            margin: 0 auto 60px;
+            text-align: left;
+            opacity: 0.9;
+            line-height: 2;
+          "
+        >
+          <p
+            style="
+              margin-bottom: 25px;
+              font-weight: 700;
+              color: #fff;
+              font-size: 1.1rem;
+              border-left: 4px solid var(--secondary);
+              padding-left: 20px;
+            "
+          >
+            Este sistema no nace de la necesidad de controlar, sino del
+            compromiso de cuidar.
+          </p>
+          <p style="margin-bottom: 25px">
+            Porque dentro de cada docente existen dos voces: la que exige orden…
+            y la que protege con humanidad.
+            <strong>SASE no sustituye al maestro. Lo respalda.</strong>
+          </p>
+          <p style="margin-bottom: 25px">
+            Cada registro es memoria institucional. Cada seguimiento es
+            presencia. Cada acción documentada es una decisión que honra nuestra
+            responsabilidad.
+          </p>
+          <p style="margin-bottom: 25px">
+            Educar es más que enseñar contenidos. Es sostener límites sin perder
+            el corazón. Es intervenir a tiempo. Es prevenir antes de que el
+            silencio se convierta en daño.
+          </p>
+          <p style="margin-bottom: 25px">
+            SASE existe para eso: para que la justicia no sea improvisada, para
+            que la autoridad no sea arbitraria, para que el acompañamiento no
+            sea casual.
+          </p>
+          <p
+            style="
+              font-size: 1.4rem;
+              font-weight: 900;
+              color: #fff;
+              text-align: center;
+              margin-top: 50px;
+              letter-spacing: -0.02em;
+              font-style: italic;
+            "
+          >
+            "Una escuela que documenta, protege. Una escuela que protege,
+            trasciende."
+          </p>
+        </div>
         <div class="firma fade-up delay-2">
           <p class="firma-nombre">Profr. Hugo Sánchez Reséndiz</p>
-          <p class="firma-titulo">Creador del sistema SASE-310</p>
+          <p class="firma-titulo">Fundador del Sistema SASE-310</p>
           <p class="firma-ciclo">Ciclo Escolar 2025–2026</p>
         </div>
       </div>
@@ -1101,84 +1619,148 @@
       };
 
       // ============ FUNCIONES ============
+      function getUrlParam(name) {
+        const results = new RegExp("[\\?&]" + name + "=([^&#]*)").exec(
+          window.location.href,
+        );
+        return results ? results[1] : null;
+      }
+
       function renderRolContent(rolKey) {
-        const rol = rolesData[rolKey];
+        const rol = rolesData[rolKey.toLowerCase()];
         if (!rol) return;
 
-        document.getElementById("rol-titulo").textContent = rol.titulo;
-        document.getElementById("rol-intro").textContent = rol.intro;
+        // Animar cambio para una transición suave
+        const contentSection = document.getElementById("contenido-rol");
+        contentSection.style.opacity = "0";
+        contentSection.style.transform = "translateY(20px)";
 
-        const grid = document.getElementById("permisos-grid");
-        grid.innerHTML = "";
-
-        // Qué ves
-        if (rol.ves && rol.ves.length) {
-          grid.innerHTML += `
-          <div class="permiso-card ves fade-up">
-            <h4><span class="material-symbols-outlined">visibility</span> Qué ves</h4>
-            <ul>${rol.ves.map((item) => `<li>${item}</li>`).join("")}</ul>
-          </div>
-        `;
-        }
-
-        // Qué haces
-        if (rol.haces && rol.haces.length) {
-          grid.innerHTML += `
-          <div class="permiso-card haces fade-up delay-1">
-            <h4><span class="material-symbols-outlined">bolt</span> Qué puedes hacer</h4>
-            <ul>${rol.haces.map((item) => `<li>${item}</li>`).join("")}</ul>
-          </div>
-        `;
-        }
-
-        // Qué NO
-        if (rol.no && rol.no.length) {
-          grid.innerHTML += `
-          <div class="permiso-card no fade-up delay-2">
-            <h4><span class="material-symbols-outlined">block</span> Qué NO te corresponde</h4>
-            <ul>${rol.no.map((item) => `<li>${item}</li>`).join("")}</ul>
-          </div>
-        `;
-        }
-
-        // Buenas prácticas
-        if (rol.tips && rol.tips.length) {
-          grid.innerHTML += `
-          <div class="permiso-card tips fade-up delay-3">
-            <h4><span class="material-symbols-outlined">lightbulb</span> Buenas prácticas</h4>
-            <ul>${rol.tips.map((item) => `<li>${item}</li>`).join("")}</ul>
-          </div>
-        `;
-        }
-
-        // Show section
-        document.getElementById("contenido-rol").classList.add("visible");
-
-        // Scroll to content
         setTimeout(() => {
-          document
-            .getElementById("contenido-rol")
-            .scrollIntoView({ behavior: "smooth" });
-          // Trigger animations
+          document.getElementById("rol-titulo").textContent = rol.titulo;
+          document.getElementById("rol-intro").textContent = rol.intro;
+
+          const grid = document.getElementById("permisos-grid");
+          grid.innerHTML = "";
+
+          // --- SECCIÓN 1: Botones Tácticos (Contexto de App vs Dash) ---
+          let botonesHTML = `
+            <div class="permiso-card general fade-up">
+              <h4><span class="material-symbols-outlined">apps</span> Botones de la App</h4>
+              <p class="text-[9px] text-slate-500 mb-4 uppercase tracking-[0.2em]">Funciones transversales del ecosistema SASE</p>
+              <ul class="botones-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                <li style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+                  <span style="background: rgba(59, 130, 246, 0.1); color: #60a5fa; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900; border: 1px solid rgba(59, 130, 246, 0.2);">NOTIFICACIONES</span> Alertas en tiempo real
+                </li>
+                <li style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+                  <span style="background: rgba(239, 68, 68, 0.1); color: #f87171; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900; border: 1px solid rgba(239, 68, 68, 0.2);">REPORTE RÁPIDO</span> Botón de pánico S.O.S.
+                </li>
+                <li style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+                  <span style="background: rgba(139, 92, 246, 0.1); color: #a78bfa; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900; border: 1px solid rgba(139, 92, 246, 0.2);">ASISTENTE</span> IA de acompañamiento NEM
+                </li>
+              </ul>
+            </div>
+
+            <div class="permiso-card dash-specific fade-up delay-1">
+              <h4><span class="material-symbols-outlined">dashboard_customize</span> Botones del Dashboard</h4>
+              <p class="text-[9px] text-slate-500 mb-4 uppercase tracking-[0.2em]">Funciones exclusivas de tu interfaz institucional</p>
+              <ul class="botones-list" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;">
+                ${(rol.haces || [])
+                  .map(
+                    (h) => `
+                  <li style="display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+                    <span style="background: rgba(255, 255, 255, 0.05); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900; border: 1px solid rgba(255,255,255,0.1);">${h.split(" ")[0].toUpperCase()}</span> ${h}
+                  </li>
+                `,
+                  )
+                  .join("")}
+              </ul>
+            </div>
+          `;
+          grid.innerHTML = botonesHTML;
+
+          // --- SECCIÓN 2: Qué ves ---
+          if (rol.ves && rol.ves.length) {
+            grid.innerHTML += `
+              <div class="permiso-card ves fade-up delay-2">
+                <h4><span class="material-symbols-outlined">visibility</span> Qué ves</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+                  ${rol.ves.map((item) => `<li style="font-size: 0.85rem; color: #94a3b8; display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; border-radius: 50%; background: #3b82f6;"></span> ${item}</li>`).join("")}
+                </ul>
+              </div>
+            `;
+          }
+
+          // --- SECCIÓN 3: Restricciones ---
+          if (rol.no && rol.no.length) {
+            grid.innerHTML += `
+              <div class="permiso-card no fade-up delay-3">
+                <h4><span class="material-symbols-outlined">block</span> Restricciones</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+                  ${rol.no.map((item) => `<li style="font-size: 0.85rem; color: #64748b; display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; border-radius: 50%; background: #ef4444;"></span> ${item}</li>`).join("")}
+                </ul>
+              </div>
+            `;
+          }
+
+          // --- SECCIÓN 4: Tips ---
+          if (rol.tips && rol.tips.length) {
+            grid.innerHTML += `
+              <div class="permiso-card tips fade-up delay-4">
+                <h4><span class="material-symbols-outlined">lightbulb</span> Tips de Uso</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+                  ${rol.tips.map((item) => `<li style="font-size: 0.85rem; color: #cbd5e1; font-style: italic; display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; border-radius: 50%; background: #fbbf24;"></span> ${item}</li>`).join("")}
+                </ul>
+              </div>
+            `;
+          }
+
+          // Mostrar con animación
+          contentSection.style.opacity = "1";
+          contentSection.style.transform = "translateY(0)";
+          contentSection.classList.add("visible");
+
+          // Trigger inner animations
           setTimeout(() => {
-            document
-              .querySelectorAll("#contenido-rol .fade-up")
-              .forEach((el) => el.classList.add("visible"));
-          }, 300);
-        }, 100);
+            contentSection.querySelectorAll(".fade-up").forEach((el) => {
+              el.classList.add("visible");
+            });
+          }, 100);
+        }, 300);
       }
 
       // ============ EVENT LISTENERS ============
-      document.querySelectorAll(".rol-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          // Remove active from all
+      window.addEventListener("DOMContentLoaded", () => {
+        // Autodetectar ROL desde URL Parameters
+        const dash = getUrlParam("dash");
+        if (dash && rolesData[dash.toLowerCase()]) {
+          renderRolContent(dash.toLowerCase());
+          // Add active class to corresponding button
+          document.querySelectorAll(".rol-btn").forEach((btn) => {
+            if (btn.dataset.rol === dash.toLowerCase())
+              btn.classList.add("active");
+          });
+          // Scroll to guide
+          setTimeout(() => {
+            document
+              .getElementById("guia-roles")
+              .scrollIntoView({ behavior: "smooth" });
+          }, 500);
+        } else {
+          renderRolContent("docente"); // Por defecto
           document
-            .querySelectorAll(".rol-btn")
-            .forEach((b) => b.classList.remove("active"));
-          // Add active to clicked
-          btn.classList.add("active");
-          // Render content
-          renderRolContent(btn.dataset.rol);
+            .querySelector('[data-rol="docente"]')
+            ?.classList.add("active");
+        }
+
+        // Click en botones de rol
+        document.querySelectorAll(".rol-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".rol-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            renderRolContent(btn.dataset.rol);
+          });
         });
       });
 
@@ -1195,23 +1777,71 @@
           }
         });
 
-        // Progress bar
         const scrollTop = window.scrollY;
         const docHeight =
           document.documentElement.scrollHeight - window.innerHeight;
         const progress = (scrollTop / docHeight) * 100;
-        document.getElementById("scrollProgress").style.width = progress + "%";
+        const progressBar = document.getElementById("scrollProgress");
+        if (progressBar) progressBar.style.width = progress + "%";
 
-        // Scroll to top button
-        if (scrollTop > 500) {
-          document.getElementById("scrollTop").classList.add("visible");
-        } else {
-          document.getElementById("scrollTop").classList.remove("visible");
+        const scrollBtn = document.getElementById("scrollTop");
+        if (scrollBtn) {
+          if (scrollTop > 500) scrollBtn.classList.add("visible");
+          else scrollBtn.classList.remove("visible");
         }
       }
 
       window.addEventListener("scroll", handleScrollAnimations);
       window.addEventListener("load", handleScrollAnimations);
+
+      // ============ AYUDA INTERACTIVA ============
+      const helpData = {
+        bitacora: {
+          icon: "menu_book",
+          title: "Sistema de Bitácora Inteligente",
+          text: "La bitácora no es solo un PDF. Es un documento dinámico que extrae automáticamente las incidencias del período seleccionado. <br><br><strong>Uso Pro:</strong> Antes de confirmar, puedes personalizar el 'Cuerpo del Reporte' para incluir observaciones que no se capturaron en incidencias individuales.",
+        },
+        sos: {
+          icon: "emergency",
+          title: "Protocolo de Respuesta SOS",
+          text: "Al activar un reporte rápido, el sistema ignora los flujos estándar y pone el caso en estado CRÍTICO. <br><br><strong>Alerta:</strong> Este botón debe usarse solo en situaciones que requieran intervención inmediata de las autoridades escolares o servicios de emergencia.",
+        },
+        ia: {
+          icon: "smart_toy",
+          title: "Análisis Predictivo SASE-IA",
+          text: "Nuestra red neuronal analiza patrones de conducta y asistencia. <br><br><strong>¿Qué busca?</strong> Cambios drásticos en el comportamiento, acumulación de retardos en días específicos o patrones que coincidan con casos históricos de riesgo escolar.",
+        },
+        print: {
+          icon: "print",
+          title: "Certificación de Impresión",
+          text: "Todos los documentos generados por SASE incluyen un identificador único institucional y el ciclo escolar vigente. <br><br><strong>Tip:</strong> Asegúrate de que el Zoom de tu navegador esté al 100% para que los márgenes institucionales se mantengan perfectos en el papel.",
+        },
+      };
+
+      function showHelp(key) {
+        const data = helpData[key];
+        if (!data) return;
+        const content = `
+          <div style="display: flex; flex-direction: column; gap: 20px; align-items: center; text-align: center;">
+            <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 1px solid rgba(59, 130, 246, 0.3)">
+              <span class="material-symbols-outlined" style="font-size: 40px">${data.icon}</span>
+            </div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: white; text-transform: uppercase; letter-spacing: 1px;">${data.title}</h3>
+            <p style="color: #94a3b8; font-size: 1rem; line-height: 1.8; margin-bottom: 20px;">${data.text}</p>
+            <button onclick="closeHelp()" class="btn-start" style="padding: 12px 30px; font-size: 0.9rem; cursor: pointer;">ENTENDIDO</button>
+          </div>
+        `;
+        document.getElementById("helpContent").innerHTML = content;
+        document.getElementById("modalHelp").classList.add("active");
+      }
+
+      function closeHelp() {
+        document.getElementById("modalHelp").classList.remove("active");
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeHelp();
+      });
 
       // ============ SASE INSTITUTIONAL BACKGROUND LOGIC ============
       const canvas = document.getElementById("bgSpiral");

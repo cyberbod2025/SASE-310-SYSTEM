@@ -258,12 +258,15 @@ export const Inscripciones: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-12">
         <Section title="01. Datos del Alumno" icon="person">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FormField label="Apellido Paterno" required>
+            <FormField label="Apellido Paterno" required id="apellidoPaterno">
               <input
+                id="apellidoPaterno"
                 type="text"
                 className="inst-input"
                 required
                 value={formData.apellidoPaterno}
+                placeholder="EJ. GARCÍA"
+                title="Ingrese el apellido paterno del alumno"
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -272,11 +275,14 @@ export const Inscripciones: React.FC = () => {
                 }
               />
             </FormField>
-            <FormField label="Apellido Materno">
+            <FormField label="Apellido Materno" id="apellidoMaterno">
               <input
+                id="apellidoMaterno"
                 type="text"
                 className="inst-input"
                 value={formData.apellidoMaterno}
+                placeholder="EJ. LÓPEZ"
+                title="Ingrese el apellido materno del alumno"
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -285,12 +291,15 @@ export const Inscripciones: React.FC = () => {
                 }
               />
             </FormField>
-            <FormField label="Nombre(s)" required>
+            <FormField label="Nombre(s)" required id="nombre">
               <input
+                id="nombre"
                 type="text"
                 className="inst-input"
                 required
                 value={formData.nombre}
+                placeholder="EJ. JUAN CARLOS"
+                title="Ingrese el nombre o nombres del alumno"
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -311,6 +320,8 @@ export const Inscripciones: React.FC = () => {
                   }`}
                   required
                   value={formData.curp}
+                  placeholder="CURP DE 18 CARACTERES"
+                  title="Clave Única de Registro de Población (18 dígitos)"
                   onChange={(e) =>
                     setFormData({
                       ...formData,
@@ -321,6 +332,7 @@ export const Inscripciones: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleVerifyCurp}
+                  title="Validar CURP contra base de datos oficial"
                   className={`px-4 rounded-xl text-xs font-black uppercase ${
                     formData.verifiedCurp
                       ? "bg-green-600 text-white"
@@ -335,6 +347,7 @@ export const Inscripciones: React.FC = () => {
               <select
                 className="inst-input"
                 value={formData.group}
+                title="Seleccione el grado y grupo asignado"
                 onChange={(e) =>
                   setFormData({ ...formData, group: e.target.value })
                 }
@@ -349,6 +362,7 @@ export const Inscripciones: React.FC = () => {
               <input
                 type="checkbox"
                 id="udeii"
+                title="Marcar si el alumno requiere apoyo UDEII"
                 className="size-5 rounded border-slate-300 text-cyan-600"
                 checked={formData.isUdeii}
                 onChange={(e) =>
@@ -370,6 +384,7 @@ export const Inscripciones: React.FC = () => {
                 required
                 className="inst-input"
                 value={formData.fechaNacimiento}
+                title="Seleccione la fecha de nacimiento oficial"
                 onChange={(e) =>
                   setFormData({ ...formData, fechaNacimiento: e.target.value })
                 }
@@ -379,6 +394,7 @@ export const Inscripciones: React.FC = () => {
               <select
                 className="inst-input"
                 value={formData.genero}
+                title="Seleccione el género del alumno"
                 onChange={(e) =>
                   setFormData({ ...formData, genero: e.target.value })
                 }
@@ -394,6 +410,8 @@ export const Inscripciones: React.FC = () => {
                 step="0.1"
                 className="inst-input"
                 value={formData.promedioAnterior}
+                placeholder="0.0"
+                title="Promedio obtenido en el ciclo anterior"
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -408,6 +426,7 @@ export const Inscripciones: React.FC = () => {
               <input
                 type="file"
                 accept="image/*"
+                title="Subir fotografía reciente del estudiante"
                 onChange={(e) => handleFileChange(e, setFileStudent)}
                 className="text-xs file:bg-white file:border file:border-slate-200 file:rounded-xl file:px-4 file:py-2.5 file:mr-4 file:font-black file:uppercase file:text-slate-600 file:shadow-sm"
               />
@@ -426,6 +445,7 @@ export const Inscripciones: React.FC = () => {
                   key={v}
                   type="button"
                   onClick={() => setFormData({ ...formData, viveCon: v })}
+                  title={`El alumno vive con: ${v.toUpperCase()}`}
                   className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all shadow-sm ${
                     formData.viveCon === v
                       ? "bg-slate-800 text-white border-slate-800"
@@ -476,6 +496,8 @@ export const Inscripciones: React.FC = () => {
                   maxLength={4}
                   className="w-full text-center text-4xl font-black py-4 bg-slate-50 rounded-2xl border"
                   value={formData.verificationCode}
+                  placeholder="0000"
+                  title="Ingrese el código de 4 dígitos enviado al teléfono"
                   onChange={(e) =>
                     setFormData({
                       ...formData,
@@ -508,7 +530,8 @@ export const Inscripciones: React.FC = () => {
           <Section title="03. Salud" icon="medical_services">
             <textarea
               className="inst-input h-32 resize-none"
-              placeholder="Situación médica..."
+              placeholder="Describa alergias, padecimientos o requerimientos médicos..."
+              title="Ingrese detalles de salud o situación médica de riesgo"
               value={formData.situacionRiesgo}
               onChange={(e) =>
                 setFormData({ ...formData, situacionRiesgo: e.target.value })
@@ -518,6 +541,7 @@ export const Inscripciones: React.FC = () => {
               <input
                 type="checkbox"
                 id="mDoc"
+                title="Confirmar que se anexa expediente médico digital"
                 className="size-5 rounded border-slate-300 text-cyan-600"
                 checked={formData.hasMedicalDoc}
                 onChange={(e) =>
@@ -536,6 +560,7 @@ export const Inscripciones: React.FC = () => {
                 type="file"
                 onChange={(e) => handleFileChange(e, setFile)}
                 className="mt-4 text-xs"
+                title="Seleccione el expediente médico digital del alumno"
               />
             )}
           </Section>
@@ -572,6 +597,7 @@ export const Inscripciones: React.FC = () => {
         <button
           type="submit"
           disabled={isSubmitting}
+          title="Guardar y finalizar inscripción oficial en el sistema"
           className="w-full py-6 bg-cyan-700 hover:bg-cyan-800 text-white font-black text-xs uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-cyan-900/10 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
         >
           <span className="material-symbols-outlined">
@@ -598,9 +624,12 @@ const Section = ({ title, icon, children }: any) => (
   </section>
 );
 
-const FormField = ({ label, required, children }: any) => (
+const FormField = ({ label, required, id, children }: any) => (
   <div className="space-y-2">
-    <label className="text-xs font-black text-slate-600 uppercase tracking-[0.2em] ml-1">
+    <label
+      htmlFor={id}
+      className="text-xs font-black text-slate-600 uppercase tracking-[0.2em] ml-1 cursor-pointer"
+    >
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     {children}
@@ -635,6 +664,8 @@ const ParentCard = ({
           className="inst-input"
           value={name}
           onChange={(e) => onName(e.target.value)}
+          placeholder="Nombre completo"
+          title={`Nombre del ${role}`}
         />
       </FormField>
       <FormField label="Teléfono">
@@ -647,6 +678,8 @@ const ParentCard = ({
             }`}
             value={phone}
             onChange={(e) => onPhone(e.target.value)}
+            placeholder="10 dígitos"
+            title={`Teléfono del ${role}`}
           />
           {!disabled && (
             <button

@@ -1,65 +1,146 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 interface IntroProps {
   onEnter: () => void;
 }
 
 const PHRASES = [
-  "La escuela no solo enseña.",
-  "También cuida, acompaña y protege.",
-  "Cada alumno importa.",
-  "Cada situación deja huella.",
-  "SASE convierte los hechos en seguimiento.",
-  "Y el seguimiento en decisiones justas.",
+  "Este sistema no nace de la necesidad de controlar, sino del compromiso de cuidar.",
+  "Porque dentro de cada docente existen dos voces: la que exige orden… y la que protege con humanidad.",
+  "SASE no sustituye al maestro. Lo respalda.",
+  "Cada registro es memoria institucional. Cada seguimiento es presencia.",
+  "Educar es sostener límites sin perder el corazón e intervenir a tiempo.",
+  "Una escuela que documenta, protege. Una escuela que protege, trasciende.",
 ];
 
 export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
-  const [scrollY, setScrollY] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const requestRef = useRef<number | null>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const auraRef = useRef<HTMLDivElement>(null);
+  const skipRef = useRef<HTMLButtonElement>(null);
+  const finalRef = useRef<HTMLElement>(null);
+  const scrollIndRef = useRef<HTMLDivElement>(null);
 
-  // Synchronize video currentTime with scroll progress
+  const updateDynamicStyles = () => {
+    const scrollY = window.scrollY;
+    const innerH = window.innerHeight;
+    const totalH = innerH * 8;
+    const maxScroll = totalH - innerH;
+    const prog = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+
+    // 1. Container height
+    if (containerRef.current) {
+      containerRef.current.style.height = `${totalH}px`;
+    }
+
+    // 2. Video Frame Control
+    const video = videoRef.current;
+    if (video && video.duration && video.readyState >= 2) {
+      const targetTime = prog * (video.duration - 0.1);
+      if (Math.abs(video.currentTime - targetTime) > 0.01) {
+        video.currentTime = targetTime;
+      }
+    }
+
+    // 3. Background Cinematic Layer
+    if (bgRef.current) {
+      const bgOpacity = prog > 0.9 ? "0" : "0.6";
+      const bgBlur = `blur(${prog > 0.8 ? (prog - 0.8) * 40 : 0}px) grayscale(0.4) brightness(0.4)`;
+      bgRef.current.style.opacity = bgOpacity;
+      bgRef.current.style.filter = bgBlur;
+    }
+
+    // 4. Transition Aura
+    if (auraRef.current) {
+      auraRef.current.style.opacity = prog > 0.85 ? "1" : "0";
+    }
+
+    // 5. Skip Button
+    if (skipRef.current) {
+      skipRef.current.style.opacity = prog > 0.8 ? "0" : "1";
+      skipRef.current.style.pointerEvents = prog > 0.8 ? "none" : "auto";
+    }
+
+    // 6. Phrases Animation
+    if (containerRef.current) {
+      const phraseElements =
+        containerRef.current.querySelectorAll(".phrase-section");
+      phraseElements.forEach((el, index) => {
+        const htmlEl = el as HTMLElement;
+        const start = index / 8;
+        const end = (index + 1) / 8;
+        let pOpacity = 0;
+        let translateY = 40;
+        let scale = 0.95;
+
+        if (prog > start && prog < end) {
+          const sectionProgress = (prog - start) / (end - start);
+          if (sectionProgress < 0.2) {
+            pOpacity = sectionProgress / 0.2;
+            translateY = 40 * (1 - pOpacity);
+            scale = 0.95 + 0.05 * pOpacity;
+          } else if (sectionProgress < 0.8) {
+            pOpacity = 1;
+            translateY = 0;
+            scale = 1;
+          } else {
+            pOpacity = 1 - (sectionProgress - 0.8) / 0.2;
+            translateY = -40 * (1 - pOpacity);
+            scale = 1 + 0.05 * (1 - pOpacity);
+          }
+        }
+        htmlEl.style.opacity = pOpacity.toString();
+        htmlEl.style.transform = `translateY(${translateY}px) scale(${scale})`;
+        htmlEl.style.visibility = pOpacity <= 0 ? "hidden" : "visible";
+      });
+    }
+
+    // 7. Final Interactive Section
+    if (finalRef.current) {
+      const fOpacity = prog > 7.1 / 8 ? (prog - 7.1 / 8) * 10 : 0;
+      const fTransform = `translateY(${prog > 7.1 / 8 ? (1 - prog) * 100 : 100}px)`;
+      finalRef.current.style.opacity = fOpacity.toString();
+      finalRef.current.style.transform = fTransform;
+      finalRef.current.style.display = prog > 6.8 / 8 ? "flex" : "none";
+      finalRef.current.style.pointerEvents = prog > 0.9 ? "auto" : "none";
+    }
+
+    // 8. Scroll Indicator
+    if (scrollIndRef.current) {
+      scrollIndRef.current.style.opacity = prog > 0.05 ? "0" : "1";
+    }
+  };
+
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     const video = videoRef.current;
     if (!video) return;
 
-    const updateVideoFrame = () => {
-      if (video.duration && video.readyState >= 2) {
-        const h = window.innerHeight * 8;
-        const maxScroll = h - window.innerHeight;
-        const p = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
-        const targetTime = p * (video.duration - 0.1);
-
-        if (Math.abs(video.currentTime - targetTime) > 0.01) {
-          video.currentTime = targetTime;
-        }
-      }
-    };
-
-    // Use scroll event for real-time tracking
-    window.addEventListener("scroll", updateVideoFrame, { passive: true });
-
-    // Initial sync and unlock
     const metadataHandler = () => {
       video.playbackRate = 0;
       video.pause();
-      updateVideoFrame();
+      updateDynamicStyles();
     };
+
     video.addEventListener("loadedmetadata", metadataHandler);
     video.addEventListener("canplay", metadataHandler);
 
-    // Some browsers need a tiny play/pause to enable seeking
+    window.addEventListener("scroll", updateDynamicStyles, { passive: true });
+    window.addEventListener("resize", updateDynamicStyles);
+
+    // Initial Trigger
+    setTimeout(updateDynamicStyles, 100);
+
     const unlockVideo = () => {
       video
         .play()
         .then(() => {
           video.pause();
-          updateVideoFrame();
+          updateDynamicStyles();
         })
-        .catch(() => {
-          /* Autoplay block is fine, seeking might still work */
-        });
+        .catch(() => {});
       window.removeEventListener("touchstart", unlockVideo);
       window.removeEventListener("mousedown", unlockVideo);
     };
@@ -67,21 +148,14 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
     window.addEventListener("mousedown", unlockVideo);
 
     return () => {
-      window.removeEventListener("scroll", updateVideoFrame);
+      window.removeEventListener("scroll", updateDynamicStyles);
+      window.removeEventListener("resize", updateDynamicStyles);
       video.removeEventListener("loadedmetadata", metadataHandler);
       video.removeEventListener("canplay", metadataHandler);
       window.removeEventListener("touchstart", unlockVideo);
       window.removeEventListener("mousedown", unlockVideo);
     };
-  }, []);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleStart = () => {
@@ -89,159 +163,115 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
     onEnter();
   };
 
-  const totalHeight = window.innerHeight * 8;
-  const progress = Math.min(
-    Math.max(scrollY / (totalHeight - window.innerHeight), 0),
-    1,
-  );
-
-  // Keep video visible throughout the sequence, only blur slightly at the end
-  const videoOpacity = 1;
-  const videoBlur = progress > 0.8 ? (progress - 0.8) * 15 : 0;
-
   return (
     <div
       ref={containerRef}
-      className="relative w-full bg-[#020617] text-white font-['Inter',sans-serif]"
-      style={{ height: `${totalHeight}px` }}
+      className="relative w-full bg-[#05070a] text-white font-sans overflow-x-hidden min-h-screen"
     >
+      {/* Cinematic Background Layer */}
       <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div
-          className="absolute inset-0 transition-opacity duration-500"
-          style={{
-            opacity: Math.max(0, videoOpacity),
-            filter: `blur(${Math.min(videoBlur, 8)}px) brightness(0.5)`,
-          }}
+          ref={bgRef}
+          className="absolute inset-0 transition-opacity duration-700"
         >
           <video
             ref={videoRef}
             muted
             playsInline
             preload="auto"
-            className="w-full h-full object-cover grayscale opacity-60"
+            className="w-full h-full object-cover"
           >
             <source
               src="/assets/videos/intro_sase_parallax.mp4"
               type="video/mp4"
             />
           </video>
-          {/* MASKING GRADIENT - Stronger at bottom to hide video errors */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#020617]/90 via-transparent via-70% to-[#020617]"></div>
+          {/* Deep Masking */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05070a]/90 via-transparent via-50% to-[#05070a]"></div>
         </div>
 
+        {/* Transition Aura */}
         <div
-          className="absolute inset-0 bg-[#020617] transition-opacity duration-1000"
-          style={{ opacity: progress > 0.85 ? 1 : 0 }}
+          ref={auraRef}
+          className="absolute inset-0 bg-[#05070a] transition-opacity duration-1000"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#020617]"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-blue-900/10 blur-[150px] animate-pulse"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#0f172a_0%,#05070a_100%)]"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[60%] bg-blue-600/10 blur-[150px] animate-pulse-slow"></div>
         </div>
       </div>
 
-      {/* SKIP INTRO BUTTON */}
+      {/* Skip Action */}
       <button
+        ref={skipRef}
         onClick={handleStart}
-        className="fixed top-8 right-8 z-[100] px-6 py-2 rounded-full border border-white/10 bg-black/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white hover:bg-white/10 transition-all active:scale-95 flex items-center gap-2 group"
-        style={{
-          opacity: progress > 0.9 ? 0 : 1,
-          pointerEvents: progress > 0.9 ? "none" : "auto",
-        }}
+        className="fixed top-8 right-8 z-[100] px-6 py-2.5 rounded-full border border-white/5 bg-white/5 backdrop-blur-xl text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white hover:bg-white/10 transition-all active:scale-95 flex items-center gap-2 group"
       >
-        Saltar Intro
+        <span>Omitir Protocolo</span>
         <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
-          fast_forward
+          arrow_forward
         </span>
       </button>
 
-      {PHRASES.map((phrase, index) => {
-        const start = index / 8;
-        const end = (index + 1) / 8;
-        let opacity = 0;
-        let translateY = 30;
+      {/* Cinematic Phrases */}
+      {PHRASES.map((phrase, index) => (
+        <section
+          key={index}
+          className="phrase-section fixed inset-0 flex items-center justify-center p-8 pointer-events-none z-10"
+        >
+          <h2 className="text-3xl md:text-6xl font-black text-center tracking-tight leading-tight max-w-5xl text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] italic">
+            {phrase.toUpperCase()}
+          </h2>
+        </section>
+      ))}
 
-        if (progress > start && progress < end) {
-          const sectionProgress = (progress - start) / (end - start);
-          if (sectionProgress < 0.2) {
-            opacity = sectionProgress / 0.2;
-            translateY = 40 * (1 - opacity);
-          } else if (sectionProgress < 0.8) {
-            opacity = 1;
-            translateY = 0;
-          } else {
-            opacity = 1 - (sectionProgress - 0.8) / 0.2;
-            translateY = -40 * (1 - opacity);
-          }
-        }
-
-        return (
-          <section
-            key={index}
-            className="fixed inset-0 flex items-center justify-center p-8 pointer-events-none z-10"
-            style={{
-              opacity,
-              transform: `translateY(${translateY}px)`,
-              display: opacity <= 0 ? "none" : "flex",
-            }}
-          >
-            <h2 className="text-2xl md:text-5xl font-light text-center tracking-tight leading-snug max-w-4xl text-slate-100 drop-shadow-2xl px-4">
-              {phrase}
-            </h2>
-          </section>
-        );
-      })}
-
+      {/* Final Interface Wrapper */}
       <section
+        ref={finalRef}
         className="fixed inset-0 flex flex-col items-center justify-center p-6 z-20 transition-all duration-1000"
-        style={{
-          opacity: progress > 7.2 / 8 ? (progress - 7.2 / 8) * 10 : 0,
-          transform: `translateY(${progress > 7.2 / 8 ? (1 - progress) * 60 : 60}px)`,
-          display: progress > 6.8 / 8 ? "flex" : "none",
-          pointerEvents: progress > 0.92 ? "auto" : "none",
-          background: `radial-gradient(circle at center, rgba(30, 58, 138, ${(progress - 0.85) * 0.4}) 0%, transparent 70%)`,
-        }}
       >
-        <div className="mb-10 flex flex-col items-center text-center">
-          <div className="relative mb-6 group">
-            <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full animate-pulse group-hover:bg-blue-500/40 transition-all"></div>
+        <div className="mb-10 md:mb-14 flex flex-col items-center text-center px-4 max-w-[90vw]">
+          <div className="relative size-32 md:size-52 mb-8 group">
+            <div className="absolute inset-0 bg-blue-500/20 blur-[50px] rounded-full animate-pulse-slow"></div>
             <img
               src="/assets/branding/SASE.png"
               alt="SASE Logo"
-              className="relative w-40 md:w-56 drop-shadow-2xl animate-pulse-subtle"
+              className="relative w-full h-full object-contain drop-shadow-[0_0_25px_rgba(59,130,246,0.3)] scale-125"
             />
           </div>
-          <h1 className="text-4xl md:text-7xl font-bold tracking-tighter text-white uppercase leading-none drop-shadow-2xl">
-            Conectamos contigo
-          </h1>
-          <p className="mt-4 text-blue-400 font-bold uppercase tracking-[0.4em] text-[10px] md:text-sm drop-shadow-lg">
-            Sistema de Acompañamiento y Seguimiento Escolar
-          </p>
-          <p className="mt-2 text-white/30 font-black uppercase tracking-[0.6em] text-[8px]">
-            ESD 310 • CIUDAD DE MÉXICO
+
+          <div className="h-1 w-24 bg-blue-600 my-6 md:my-8 rounded-full shadow-[0_0_25px_#3b82f6]"></div>
+
+          <p className="text-blue-400/90 font-black uppercase tracking-[0.3em] md:tracking-[0.5em] text-[10px] md:text-sm max-w-[500px] leading-relaxed">
+            SASE-310 <br />
+            <span className="text-white/60">
+              DONDE EL DEBER Y LA CONCIENCIA SE ENCUENTRAN
+            </span>
           </p>
         </div>
 
         <button
           onClick={handleStart}
-          className="group relative inline-flex items-center justify-center px-12 py-5 overflow-hidden rounded-full transition-all duration-500 hover:scale-105 active:scale-95 border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl"
+          className="group relative px-10 md:px-16 py-4 md:py-5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm md:text-lg tracking-[0.15em] md:tracking-[0.25em] uppercase shadow-[0_0_30px_rgba(59,130,246,0.4)] hover:shadow-[0_0_50px_rgba(59,130,246,0.6)] border border-blue-400/30 hover:border-blue-400/60 transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <span className="relative z-10 text-base md:text-lg font-bold tracking-[0.2em] uppercase text-white group-hover:text-blue-300 transition-colors">
-            Entrar al Sistema
-          </span>
-          <span className="material-symbols-outlined ml-3 text-white transition-transform group-hover:translate-x-1">
-            login
-          </span>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+          <div className="flex items-center gap-3 md:gap-4 relative z-10">
+            <span>INGRESAR AL SISTEMA</span>
+            <span className="material-symbols-outlined text-xl md:text-2xl group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
+          </div>
         </button>
       </section>
 
+      {/* Scroll Indicator */}
       <div
-        className="fixed bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-opacity duration-700 pointer-events-none"
-        style={{ opacity: progress > 0.05 ? 0 : 1 }}
+        ref={scrollIndRef}
+        className="fixed bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 transition-opacity duration-700 pointer-events-none"
       >
-        <div className="w-6 h-10 border-2 border-slate-500 rounded-full flex justify-center p-1">
-          <div className="w-1 h-2 bg-slate-500 rounded-full animate-bounce"></div>
+        <div className="w-1 h-12 bg-gradient-to-b from-blue-500/0 via-blue-500 to-blue-500/0 relative overflow-hidden">
+          <div className="absolute inset-0 bg-white animate-scroll-indicator"></div>
         </div>
-        <p className="text-[9px] uppercase tracking-[0.5em] text-slate-500 font-bold">
+        <p className="text-[10px] font-black uppercase tracking-[0.6em] text-blue-500 ml-[0.6em] animate-pulse">
           Desliza
         </p>
       </div>

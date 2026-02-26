@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 export const FeedbackWidget = () => {
   // We get user directly from supabase auth when submitting
 
-  const [isOpen, setIsOpen] = useState(false);
+  const { isFeedbackOpen, setIsFeedbackOpen } = useApp();
   const [type, setType] = useState<"bug" | "suggestion" | "ux">("bug");
   const [comment, setComment] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -43,9 +43,9 @@ export const FeedbackWidget = () => {
       if (error) {
         console.warn("Feedback table might be missing:", error);
         // Fallback: Just toast success for UI demo purposes
-        toast.error("Error al enviar feedback (Tabla no existe).");
+        toast.error("Error al enviar (Tabla no existe).");
       } else {
-        toast.success("¡Gracias! Tu feedback ha sido recibido.");
+        toast.success("¡Gracias! Tu sugerencia ha sido recibida.");
       }
     } catch (err) {
       console.error(err);
@@ -54,101 +54,110 @@ export const FeedbackWidget = () => {
 
     setIsSending(false);
     setComment("");
-    setIsOpen(false);
+    setIsFeedbackOpen(false);
   };
 
+  if (!isFeedbackOpen) return null;
+
   return (
-    <div className="fixed bottom-24 right-6 z-[60] flex flex-col items-end gap-3 font-sans">
-      {isOpen && (
-        <div className="bg-slate-900 border border-white/20 rounded-xl shadow-2xl p-4 w-80 animate-fade-in-up backdrop-blur-md">
-          <div className="flex justify-between items-center mb-3">
-            <h4 className="text-white font-bold text-sm">Enviar Feedback</h4>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-white"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                close
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div className="bg-[#0b0e14] border border-white/20 rounded-2xl shadow-2xl p-6 w-full max-w-md animate-scale-in">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/30">
+              <span className="material-symbols-outlined text-blue-500">
+                feedback
               </span>
+            </div>
+            <div>
+              <h4 className="text-white font-black text-sm uppercase tracking-widest">
+                Sugerencias y Mejoras
+              </h4>
+              <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">
+                Tu visión construye SASE
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsFeedbackOpen(false)}
+            title="Descartar y cerrar ventana"
+            aria-label="Cerrar ventana de sugerencias"
+            className="size-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+          >
+            <span className="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex gap-2 p-1 bg-black/40 rounded-xl border border-white/5">
+            <button
+              type="button"
+              onClick={() => setType("bug")}
+              title="Reportar un error técnico o fallo en el sistema"
+              aria-label="Tipo: Error"
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                type === "bug"
+                  ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
+                  : "text-slate-500 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Error
+            </button>
+            <button
+              type="button"
+              onClick={() => setType("suggestion")}
+              title="Proponer una nueva funcionalidad o mejora"
+              aria-label="Tipo: Sugerencia"
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                type === "suggestion"
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                  : "text-slate-500 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Sugerencia
+            </button>
+            <button
+              type="button"
+              onClick={() => setType("ux")}
+              title="Comentar sobre la interfaz o facilidad de uso (UX/UI)"
+              aria-label="Tipo: Diseño"
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+                type === "ux"
+                  ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                  : "text-slate-500 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              Diseño
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="flex gap-2 p-1 bg-black/40 rounded-lg">
-              <button
-                type="button"
-                onClick={() => setType("bug")}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${
-                  type === "bug"
-                    ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                    : "text-gray-400 hover:bg-white/5"
-                }`}
-              >
-                Error
-              </button>
-              <button
-                type="button"
-                onClick={() => setType("suggestion")}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${
-                  type === "suggestion"
-                    ? "bg-blue-500/20 text-blue-400 border border-blue-500/50"
-                    : "text-gray-400 hover:bg-white/5"
-                }`}
-              >
-                Sugerencia
-              </button>
-              <button
-                type="button"
-                onClick={() => setType("ux")}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${
-                  type === "ux"
-                    ? "bg-purple-500/20 text-purple-400 border border-purple-500/50"
-                    : "text-gray-400 hover:bg-white/5"
-                }`}
-              >
-                Diseño
-              </button>
-            </div>
+          <textarea
+            id="feedback-comment"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            title="Describe aquí tu hallazgo o propuesta de mejora"
+            placeholder={
+              type === "bug"
+                ? "¿Qué no está funcionando bien? Cuéntanos el detalle..."
+                : "Escribe aquí todo lo que veas: lo que te gusta, lo que cambiarías, lo que funciona y lo que no..."
+            }
+            className="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-blue-500 h-32 resize-none transition-all placeholder:text-slate-600"
+            required
+            aria-required="true"
+          />
 
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder={
-                type === "bug"
-                  ? "¿Qué falló? Describe los pasos..."
-                  : "¿Cómo podemos mejorar?"
-              }
-              className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-blue-500 h-24 resize-none"
-              required
-            />
-
-            <button
-              type="submit"
-              disabled={isSending}
-              className="w-full bg-white text-black font-bold py-2 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 text-sm flex items-center justify-center gap-2"
-            >
-              {isSending ? "Enviando..." : "Enviar Comentario"}
-              <span className="material-symbols-outlined text-[16px]">
-                send
-              </span>
-            </button>
-          </form>
-        </div>
-      )}
-
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`size-12 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 ${
-          isOpen
-            ? "bg-white text-black rotate-90"
-            : "bg-gradient-to-br from-indigo-600 to-purple-600 text-white border border-white/20"
-        }`}
-        title="Enviar comentarios/errores"
-      >
-        <span className="material-symbols-outlined text-[24px]">
-          {isOpen ? "close" : "feedback"}
-        </span>
-      </button>
+          <button
+            type="submit"
+            disabled={isSending}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all disabled:opacity-50 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-lg shadow-blue-600/20 group"
+          >
+            {isSending ? "Enviando Sugerencia..." : "Enviar Sugerencia"}
+            <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">
+              send
+            </span>
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

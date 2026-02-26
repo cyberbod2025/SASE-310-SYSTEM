@@ -140,6 +140,7 @@ export const ProtocolsView: React.FC = () => {
                 ? "bg-white text-black shadow-md"
                 : "text-gray-400 hover:text-white hover:bg-white/5"
             }`}
+            title="Mostrar todos los protocolos disponibles"
           >
             Todos ({stats.all})
           </button>
@@ -150,6 +151,7 @@ export const ProtocolsView: React.FC = () => {
                 ? "bg-red-500 text-white shadow-md"
                 : "text-gray-400 hover:text-red-400 hover:bg-white/5"
             }`}
+            title="Filtrar por protocolos de convivencia escolar"
           >
             <span className="size-2 rounded-full bg-red-500" />
             Convivencia ({stats.convivencia})
@@ -161,6 +163,7 @@ export const ProtocolsView: React.FC = () => {
                 ? "bg-orange-500 text-white shadow-md"
                 : "text-gray-400 hover:text-orange-400 hover:bg-white/5"
             }`}
+            title="Filtrar por protocolos de salud y primeros auxilios"
           >
             <span className="size-2 rounded-full bg-orange-500" />
             Salud ({stats.salud})
@@ -172,6 +175,7 @@ export const ProtocolsView: React.FC = () => {
                 ? "bg-blue-500 text-white shadow-md"
                 : "text-gray-400 hover:text-blue-400 hover:bg-white/5"
             }`}
+            title="Filtrar por protocolos de protección civil y emergencias"
           >
             <span className="size-2 rounded-full bg-blue-500" />
             Protección Civil ({stats.pc})
@@ -183,6 +187,7 @@ export const ProtocolsView: React.FC = () => {
                 ? "bg-purple-600 text-white shadow-md"
                 : "text-gray-400 hover:text-purple-400 hover:bg-white/5"
             }`}
+            title="Filtrar por protocolos de apoyo socioemocional"
           >
             <span className="size-2 rounded-full bg-purple-600" />
             Apoyo ({stats.apoyo})
@@ -197,6 +202,7 @@ export const ProtocolsView: React.FC = () => {
           <input
             type="text"
             placeholder="Buscar situación..."
+            title="Buscar protocolos por título o situación de activación"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-black/20 border border-white/10 rounded-lg py-2.5 pl-10 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 placeholder:text-gray-500"

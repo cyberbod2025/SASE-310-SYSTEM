@@ -7,7 +7,7 @@ const QRCodeSVG = ({ url }: { url: string }) => {
     <div className="bg-white p-2.5 rounded-xl border border-slate-200 inline-block shadow-sm">
       <img
         src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-          url
+          url,
         )}`}
         alt="Login QR"
         className="size-32 mix-blend-multiply"
@@ -108,7 +108,7 @@ export const InvitationGenerator: React.FC = () => {
           <div class="qr-section">
             <div class="qr-box">
               <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
-                accessLink
+                accessLink,
               )}" alt="Acceso QR" width="120" />
             </div>
             <p style="font-size: 11px; margin-top: 15px; font-weight: 800; color: #64748b;">${accessLink}</p>
@@ -154,6 +154,7 @@ export const InvitationGenerator: React.FC = () => {
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as UserRole)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none uppercase"
+            title="Seleccionar el rol institucional para la carta de acceso"
           >
             {Object.values(UserRole).map((role) => (
               <option key={role} value={role}>
@@ -171,6 +172,7 @@ export const InvitationGenerator: React.FC = () => {
             value={customName}
             onChange={(e) => setCustomName(e.target.value)}
             placeholder="EJ. PROF. ALEJANDRO RAMÍREZ"
+            title="Ingresar el nombre del destinatario de la carta"
             className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none uppercase"
           />
         </div>
@@ -197,6 +199,7 @@ export const InvitationGenerator: React.FC = () => {
       <button
         onClick={handlePrint}
         className="w-full py-5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-amber-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
+        title="Generar e imprimir carta de credenciales oficial"
       >
         <span className="material-symbols-outlined text-[20px]">print</span>
         Imprimir Carta de Credenciales

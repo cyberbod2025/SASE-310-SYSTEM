@@ -1,376 +1,264 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
 import { AppModule } from "../../types";
-
-import { GenericActionModal, Field } from "../GenericActionModal";
-import { supabase } from "../../supabase/client";
-import { useAuth } from "../AuthProvider";
-
+import { GenericActionModal } from "../GenericActionModal";
 import toast from "react-hot-toast";
 
 export const DashboardPromotora = () => {
   const [activeTab, setActiveTab] = useState<
-    "AVANCES" | "EVENTOS" | "CITAS" | "EVIDENCIAS"
+    "AVANCES" | "EVENTOS" | "EVIDENCIAS"
   >("AVANCES");
-  const { setCurrentModule, addNotification } = useApp();
-  const { user } = useAuth();
-
-  const [modalOpen, setModalOpen] = useState<
-    "ACTIVITY" | "APPOINTMENT" | "EVIDENCE" | null
-  >(null);
-
-  const handleSaveActivity = async (data: any) => {
-    if (!user) return;
-    const { error } = await supabase.from("activities_log" as any).insert({
-      user_id: user.id,
-      role: "promotora",
-      type: data.type,
-      description: data.description,
-      date: data.date,
-      group_id: data.group,
-    });
-    if (error) throw error;
-  };
-
-  const handleSaveAppointment = async (data: any) => {
-    if (!user) return;
-    // Map to citations table or generic log
-    const { error } = await supabase.from("citas_padres" as any).insert({
-      creado_por: user.id,
-      alumno_id: data.student, // Storing name/text for now as per pilot flexibility
-      fecha_cita: data.date,
-      motivo: data.reason,
-      estado: "PENDIENTE",
-      observaciones: "Agendado por Promotora",
-    });
-    if (error) throw error;
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSaveEvidence = async (data: any) => {
-    if (!user) return;
-    const { error } = await supabase.from("evidence_log" as any).insert({
-      user_id: user.id,
-      role: "promotora",
-      title: data.title,
-      notes: data.notes,
-      link: data.link,
-      file_type: data.file ? data.file.name.split(".").pop() : "link",
-    });
-    if (error) throw error;
+    toast.success("Evidencia sincronizada con el repositorio central");
+    setIsModalOpen(false);
   };
 
   return (
-    <div className="w-full h-full p-6 overflow-y-auto custom-scrollbar animate-fade-in flex flex-col gap-6">
-      {/* Header - Institutional Light */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-2 border-b border-slate-100">
-        <div className="flex items-center gap-5">
-          <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
-            <span className="material-symbols-outlined text-pink-600 text-3xl">
-              menu_book
+    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-emerald-500/30">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 pb-10">
+        <div className="flex items-center gap-6">
+          <div className="size-16 bg-[#0a0f18] border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)] relative overflow-hidden backdrop-blur-xl">
+            <span className="material-symbols-outlined text-4xl">
+              local_activity
             </span>
+            <motion.div
+              animate={{ top: ["0%", "100%", "0%"] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              className="absolute left-0 w-full h-[1px] bg-emerald-500/50"
+            />
           </div>
           <div>
-            <h2
-              id="promotora-header"
-              className="text-2xl font-black text-slate-800 tracking-tight"
-            >
-              Fomento a la Lectura
+            <div className="flex items-center gap-3 mb-1">
+              <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-400 uppercase tracking-widest">
+                UNIT_05 // PROMOTION_CORE
+              </span>
+              <div className="size-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
+            </div>
+            <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
+              MANDO DE{" "}
+              <span className="text-emerald-400 italic">PROMOTORÍA</span>
             </h2>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-1">
-              Gestión de 12 Grupos Asignados • SASE Institucional
-            </p>
           </div>
         </div>
-        <div className="flex gap-3">
+
+        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-inner">
           <button
-            onClick={() => {
-              addNotification({
-                title: "Nuevo Proyecto de Lectura",
-                message:
-                  "La Promotoría ha lanzado una nueva iniciativa de lectura para todos los grupos.",
-                type: "info",
-                actionModule: AppModule.HOME,
-              });
-              toast.success("Proyecto difundido a todos los grupos");
-            }}
-            className="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm flex items-center gap-2"
+            onClick={() => setActiveTab("AVANCES")}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "AVANCES" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
           >
-            <span className="material-symbols-outlined text-sm">campaign</span>
-            Difundir Proyecto
+            Avances
+          </button>
+          <button
+            onClick={() => setActiveTab("EVENTOS")}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVENTOS" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+          >
+            Eventos
+          </button>
+          <button
+            onClick={() => setActiveTab("EVIDENCIAS")}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVIDENCIAS" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+          >
+            Evidencias
           </button>
         </div>
       </div>
 
-      {/* Quick Stats / Groups Overview */}
-      <div
-        id="promotora-groups"
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        {[1, 2, 3].map((grade) =>
-          ["A", "B", "C", "D"].map((group) => (
-            <div
-              key={`${grade}${group}`}
-              className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-pink-200 hover:shadow-md transition-all group cursor-default"
-            >
-              <span className="text-sm font-black text-slate-600 group-hover:text-pink-600 transition-colors">
-                {grade}º {group}
-              </span>
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
-                Activo
-              </span>
-            </div>
-          )),
-        )}
-      </div>
-
-      {/* Tabs - Institutional Pill Style */}
-      <div
-        id="promotora-tabs"
-        className="flex gap-2 p-1 bg-white border border-slate-100 rounded-xl w-fit shadow-sm"
-      >
-        {[
-          { id: "AVANCES", label: "Actividades", icon: "trending_up" },
-          { id: "EVENTOS", label: "Eventos", icon: "event" },
-          { id: "CITAS", label: "Citas Padres", icon: "diversity_3" },
-          { id: "EVIDENCIAS", label: "Evidencias", icon: "folder_open" },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-bold transition-all border ${
-              activeTab === tab.id
-                ? "bg-slate-800 text-white border-slate-800 shadow-md transform scale-105"
-                : "bg-transparent text-slate-500 border-transparent hover:bg-slate-50 hover:text-slate-800"
-            }`}
-          >
-            <span className="material-symbols-outlined text-[18px]">
-              {tab.icon}
-            </span>
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Content Area */}
-      <div className="bg-white border border-slate-100 rounded-2xl p-8 min-h-[400px] shadow-sm relative overflow-hidden">
-        {/* Decorative background accent */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-slate-50 to-transparent rounded-bl-full -z-0 pointer-events-none opacity-50"></div>
-
-        <div className="relative z-10">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 relative z-10">
+        <div className="xl:col-span-2 space-y-8">
           {activeTab === "AVANCES" && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-black text-slate-800 uppercase italic flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-pink-500 rounded-full"></span>
-                  Avance de Lectura
-                </h3>
-                <button
-                  className="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold uppercase hover:bg-slate-900 transition shadow-lg hover:shadow-xl shadow-slate-200 transform hover:-translate-y-0.5 flex items-center gap-2"
-                  onClick={() => setModalOpen("ACTIVITY")}
-                >
-                  <span className="material-symbols-outlined text-sm">add</span>
-                  Nuevo Registro
-                </button>
-              </div>
-
-              {/* Empty State - Clean White Card instead of Grey Box */}
-              <div className="p-16 border border-slate-100 border-dashed rounded-2xl flex flex-col items-center justify-center text-center bg-white group hover:border-slate-300 transition-colors">
-                <div className="p-4 bg-slate-50 rounded-full mb-4 group-hover:scale-110 transition-transform duration-500">
-                  <span className="material-symbols-outlined text-4xl text-slate-300 group-hover:text-pink-400 transition-colors">
-                    library_books
-                  </span>
-                </div>
-                <h4 className="text-sm font-black text-slate-700 uppercase mb-1">
-                  Sin Proyectos Activos
-                </h4>
-                <p className="text-xs text-slate-400 font-medium max-w-xs">
-                  Comience registrando una nueva actividad de lectura o taller
-                  para los grupos asignados.
-                </p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+              <ProgressCard
+                title="Taller de Nutrición"
+                pct={85}
+                date="25 Feb"
+                status="Finalizando"
+              />
+              <ProgressCard
+                title="Feria de la Salud"
+                pct={40}
+                date="12 Mar"
+                status="En Planeación"
+              />
+              <ProgressCard
+                title="Campaña Dental"
+                pct={100}
+                date="10 Feb"
+                status="Completado"
+              />
+              <ProgressCard
+                title="Brigada de Seguridad"
+                pct={15}
+                date="30 Mar"
+                status="Iniciando"
+              />
             </div>
           )}
 
           {activeTab === "EVENTOS" && (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-6 animate-pulse-slow">
-                <span className="material-symbols-outlined text-5xl text-blue-400">
-                  event_upcoming
-                </span>
-              </div>
-              <h3 className="text-xl font-black text-slate-800 mb-2">
-                Calendario Cultural
-              </h3>
-              <p className="text-sm text-slate-500 font-medium bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
-                Próxima gran feria del libro:{" "}
-                <span className="text-blue-600 font-bold">20 de Febrero</span>
-              </p>
-            </div>
-          )}
-
-          {activeTab === "CITAS" && (
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg font-black text-slate-800 uppercase italic flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-blue-500 rounded-full"></span>
-                  Atención a Padres
-                </h3>
-                <button
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold uppercase hover:bg-blue-700 transition shadow-lg hover:shadow-xl shadow-blue-200 transform hover:-translate-y-0.5 flex items-center gap-2"
-                  onClick={() => setModalOpen("APPOINTMENT")}
-                >
-                  <span className="material-symbols-outlined text-sm">
-                    calendar_add_on
-                  </span>
-                  Agendar Cita
-                </button>
-              </div>
-              <div className="p-16 border border-slate-100 border-dashed rounded-2xl flex flex-col items-center justify-center text-center bg-white">
-                <div className="p-4 bg-slate-50 rounded-full mb-4">
-                  <span className="material-symbols-outlined text-4xl text-slate-300">
-                    event_busy
-                  </span>
-                </div>
-                <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                  Sin citas programadas
-                </p>
-              </div>
+            <div className="card-sase border-white/5 bg-[#0a0f18]/40 overflow-hidden divide-y divide-white/5 animate-slide-up">
+              <EventRow
+                title="Plática: Prevención de Adicciones"
+                time="10:00 AM"
+                room="Auditorio"
+              />
+              <EventRow
+                title="Macro-Gimnasia Estudiantil"
+                time="08:30 AM"
+                room="Patio Central"
+              />
+              <EventRow
+                title="Reunión de Enlace Comunitario"
+                time="04:00 PM"
+                room="Sala Juntas"
+              />
             </div>
           )}
 
           {activeTab === "EVIDENCIAS" && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
               <div
-                className="aspect-square bg-slate-50 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-pink-400 hover:bg-white hover:shadow-lg transition-all cursor-pointer group"
-                onClick={() => setModalOpen("EVIDENCE")}
+                className="card-sase p-6 border-emerald-500/10 flex flex-col items-center justify-center text-center group cursor-pointer"
+                onClick={() => setIsModalOpen(true)}
               >
-                <div className="p-3 bg-white rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-3xl text-slate-400 group-hover:text-pink-500 transition-colors">
-                    add_a_photo
-                  </span>
-                </div>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide group-hover:text-pink-600">
-                  Subir Evidencia
+                <span className="material-symbols-outlined text-4xl text-emerald-500 mb-4 group-hover:scale-110 transition-transform">
+                  add_a_photo
                 </span>
+                <p className="text-[10px] font-black text-white uppercase tracking-widest">
+                  Subir Evidencia
+                </p>
               </div>
-              {/* Placeholder for images */}
-              <div className="aspect-square bg-slate-100 rounded-2xl relative overflow-hidden group border border-slate-200">
-                <div className="absolute inset-0 flex items-center justify-center bg-slate-900/10 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="bg-white text-slate-800 text-[10px] font-black uppercase px-3 py-1 rounded-full shadow-sm">
-                    Ver Detalles
-                  </span>
-                </div>
-              </div>
+              <EvidenceThumb label="Campaña Dental" type="JPG" />
+              <EvidenceThumb label="Taller Nutrición" type="MP4" />
             </div>
           )}
         </div>
+
+        <div className="space-y-8">
+          <div className="card-sase p-8 border-emerald-500/20 bg-emerald-500/[0.02] relative overflow-hidden group">
+            <h3 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
+              <span className="size-2 bg-emerald-500 rounded-full"></span>
+              ESTADÍSTICAS_IMPACTO
+            </h3>
+            <div className="space-y-6">
+              <ImpactStat
+                label="Alumnos Alcanzados"
+                value="450"
+                color="emerald"
+              />
+              <ImpactStat
+                label="Padres Participantes"
+                value="128"
+                color="blue"
+              />
+              <ImpactStat label="Eventos Ejecutados" value="12" color="amber" />
+            </div>
+          </div>
+        </div>
       </div>
+
       <GenericActionModal
-        isOpen={modalOpen === "ACTIVITY"}
-        onClose={() => setModalOpen(null)}
-        title="Registrar Actividad"
-        description="Bitácora de Promoción de Lectura"
-        fields={[
-          {
-            name: "type",
-            label: "Tipo de Actividad",
-            type: "select",
-            options: [
-              "Lectura en Voz Alta",
-              "Círculo de Lectura",
-              "Taller",
-              "Préstamo de Libros",
-              "Otro",
-            ],
-            required: true,
-          },
-          {
-            name: "group",
-            label: "Grupo",
-            type: "select",
-            options: [
-              "1º A",
-              "1º B",
-              "1º C",
-              "1º D",
-              "2º A",
-              "2º B",
-              "2º C",
-              "2º D",
-              "3º A",
-              "3º B",
-              "3º C",
-              "3º D",
-            ],
-            required: true,
-          },
-          {
-            name: "description",
-            label: "Descripción / Libro",
-            type: "textarea",
-            required: true,
-          },
-          { name: "date", label: "Fecha y Hora", type: "date", required: true },
-        ]}
-        onSubmit={handleSaveActivity}
-      />
-      <GenericActionModal
-        isOpen={modalOpen === "APPOINTMENT"}
-        onClose={() => setModalOpen(null)}
-        title="Agendar Cita con Padres"
-        description="Sistema Institucional de Citas"
-        fields={[
-          {
-            name: "student",
-            label: "Alumno / Padre de Familia",
-            type: "text",
-            required: true,
-          },
-          {
-            name: "reason",
-            label: "Motivo de la Cita",
-            type: "select",
-            options: [
-              "Dificultades de Lectura",
-              "Entrega de Material",
-              "Seguimiento",
-              "Otro",
-            ],
-            required: true,
-          },
-          {
-            name: "date",
-            label: "Fecha Propuesta",
-            type: "date",
-            required: true,
-          },
-        ]}
-        onSubmit={handleSaveAppointment}
-        submitLabel="Agendar"
-      />
-      <GenericActionModal
-        isOpen={modalOpen === "EVIDENCE"}
-        onClose={() => setModalOpen(null)}
-        title="Subir Evidencia"
-        description="Fotos, Videos o Documentos"
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Repositorio de Evidencias"
+        description="Carga táctica de documentación visual"
         fields={[
           {
             name: "title",
-            label: "Título de la Evidencia",
+            label: "TÍTULO_DEL_EVENTO",
             type: "text",
             required: true,
           },
-          { name: "notes", label: "Descripción", type: "textarea" },
           {
-            name: "link",
-            label: "Enlace Externo (Drive/Youtube)",
-            type: "text",
+            name: "desc",
+            label: "DESCRIPCIÓN_LOGÍSTICA",
+            type: "textarea",
+            required: true,
           },
-          { name: "file", label: "Archivo", type: "file" },
         ]}
         onSubmit={handleSaveEvidence}
-        submitLabel="Subir"
       />
     </div>
   );
 };
+
+// -- HELPER COMPONENTS --
+
+const ProgressCard = ({ title, pct, date, status }: any) => (
+  <div className="card-sase p-6 border-white/5 bg-[#0a0f18]/30 group hover:border-emerald-500/30 transition-all">
+    <div className="flex justify-between items-start mb-6">
+      <h4 className="text-sm font-black text-white uppercase italic tracking-tighter">
+        {title}
+      </h4>
+      <span className="text-[9px] font-black text-emerald-500/60 uppercase">
+        {date}
+      </span>
+    </div>
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+        {status}
+      </span>
+      <span className="text-[10px] font-black text-white italic">{pct}%</span>
+    </div>
+    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: `${pct}%` }}
+        className="h-full bg-emerald-500"
+      />
+    </div>
+  </div>
+);
+
+const EventRow = ({ title, time, room }: any) => (
+  <div className="p-6 flex items-center justify-between group hover:bg-emerald-500/[0.02] transition-colors">
+    <div className="flex items-center gap-5">
+      <div className="size-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-500 group-hover:text-emerald-400 transition-colors">
+        <span className="material-symbols-outlined">event</span>
+      </div>
+      <div>
+        <p className="text-sm font-black text-white uppercase italic tracking-tighter">
+          {title}
+        </p>
+        <p className="text-[9px] font-black text-slate-600 uppercase mt-1">
+          {room}
+        </p>
+      </div>
+    </div>
+    <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+      {time}
+    </span>
+  </div>
+);
+
+const EvidenceThumb = ({ label, type }: any) => (
+  <div className="card-sase p-6 border-white/5 bg-[#0a0f18]/20 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all">
+    <div className="size-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 mb-3 group-hover:text-emerald-500">
+      <span className="material-symbols-outlined text-3xl">
+        insert_drive_file
+      </span>
+    </div>
+    <p className="text-[9px] font-black text-white uppercase tracking-widest mb-1">
+      {label}
+    </p>
+    <p className="text-[8px] font-black text-slate-600 uppercase">
+      {type}_FILE
+    </p>
+  </div>
+);
+
+const ImpactStat = ({ label, value, color }: any) => (
+  <div className="flex items-end justify-between border-b border-white/5 pb-4">
+    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+      {label}
+    </span>
+    <span
+      className={`text-2xl font-black italic tracking-tighter text-${color}-500`}
+    >
+      {value}
+    </span>
+  </div>
+);

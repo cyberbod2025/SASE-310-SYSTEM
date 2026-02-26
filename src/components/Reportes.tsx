@@ -1,15 +1,92 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { useApp } from "../store";
-import { CaseState, IncidentType } from "../types";
+import { CaseState, IncidentType, UserRole, AppModule } from "../types";
 import { printContent } from "./PrintButtons";
 import { anonymizeName } from "../utils/saseUtils";
 
 type ReportType = "incidencias" | "asistencia" | "estudiantes" | "bitacora";
 
+// --- MICRO-COMPONENT: IntelligenceKPI ---
+const IntelligenceKPI = ({
+  icon,
+  label,
+  value,
+  color = "cyan",
+  delay = 0,
+}: {
+  icon: string;
+  label: string;
+  value: string | number;
+  color?: "cyan" | "indigo" | "rose" | "amber" | "emerald";
+  delay?: number;
+}) => {
+  const colors = {
+    cyan: "text-cyan-400 border-cyan-500/20 bg-cyan-500/5 shadow-cyan-500/10",
+    indigo:
+      "text-indigo-400 border-indigo-500/20 bg-indigo-500/5 shadow-indigo-500/10",
+    rose: "text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10",
+    amber:
+      "text-amber-400 border-amber-500/20 bg-amber-500/5 shadow-amber-500/10",
+    emerald:
+      "text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-emerald-500/10",
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: delay * 0.1 }}
+      className={`card-sase p-6 border ${colors[color]} relative overflow-hidden group hover:bg-white/[0.03] transition-all`}
+    >
+      <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.03] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:opacity-[0.06] transition-opacity"></div>
+      <div className="flex items-center gap-3 mb-4">
+        <div
+          className={`p-2 rounded-xl border ${colors[color]} bg-transparent`}
+        >
+          <span className="material-symbols-outlined text-lg">{icon}</span>
+        </div>
+        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+          {label}
+        </p>
+      </div>
+      <h4 className="text-4xl font-black text-white tracking-tighter italic font-mono tabular-nums">
+        {value}
+      </h4>
+      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-current to-transparent opacity-20"></div>
+    </motion.div>
+  );
+};
+
 export const Reportes: React.FC = () => {
-  const { students, currentUserRole } = useApp();
+  const { students, currentUserRole, setCurrentModule } = useApp();
   const [selectedReport, setSelectedReport] =
     useState<ReportType>("incidencias");
+
+  // --- SECURITY ENFORCEMENT ---
+  if (currentUserRole === UserRole.SECRETARIA) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-20 text-center animate-fade-in">
+        <div className="size-24 bg-rose-500/10 border border-rose-500/20 rounded-full flex items-center justify-center text-rose-500 mb-8 shadow-2xl shadow-rose-500/10">
+          <span className="material-symbols-outlined text-5xl">lock</span>
+        </div>
+        <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-4">
+          Acceso Restringido
+        </h2>
+        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest max-w-md leading-relaxed">
+          Su rol (Secretaría) no tiene autorizada la generación de reportes de
+          asistencia o incidencias por protocolos de privacidad institucional.
+        </p>
+        <button
+          onClick={() => setCurrentModule(AppModule.DASHBOARD)}
+          className="mt-10 px-8 py-3 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+        >
+          Volver al Inicio
+        </button>
+      </div>
+    );
+  }
+
   const [dateRange, setDateRange] = useState({
     start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -369,68 +446,91 @@ export const Reportes: React.FC = () => {
       label: "Incidencias",
       icon: "warning",
       description: "Retardos, conducta, uniformes",
+      color: "amber" as const,
     },
     {
       id: "asistencia",
       label: "Asistencia",
       icon: "fact_check",
       description: "Faltas y puntualidad",
+      color: "emerald" as const,
     },
     {
       id: "estudiantes",
       label: "Estudiantes",
       icon: "groups",
       description: "Directorio y estados",
+      color: "indigo" as const,
     },
   ];
 
+  const reportColors: Record<string, string> = {
+    amber: "text-amber-400 border-amber-500/20 bg-amber-500/5",
+    emerald: "text-emerald-400 border-emerald-500/20 bg-emerald-500/5",
+    indigo: "text-indigo-400 border-indigo-500/20 bg-indigo-500/5",
+  };
+
   return (
-    <div className="w-full h-full overflow-y-auto custom-scrollbar p-6 animate-fade-in font-sans">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-slate-200">
-          <div className="flex items-center gap-5">
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-1 h-full bg-blue-600"></div>
-              <span className="material-symbols-outlined text-blue-700 text-4xl">
+    <div className="w-full h-full overflow-y-auto custom-scrollbar p-4 lg:p-8 animate-fade-in font-sans">
+      <div className="max-w-[1600px] mx-auto space-y-8 pb-32">
+        {/* COMMAND HEADER */}
+        <div className="card-sase p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 border-white/5 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px] -mr-40 -mt-40 group-hover:bg-cyan-500/10 transition-colors duration-1000"></div>
+
+          <div className="flex items-center gap-6 relative z-10">
+            <div className="size-20 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center justify-center text-cyan-500 shadow-2xl relative overflow-hidden">
+              <div className="absolute inset-0 bg-cyan-500/10 animate-pulse"></div>
+              <span className="material-symbols-outlined text-4xl font-black relative z-10">
                 analytics
               </span>
             </div>
             <div>
-              <h2 className="text-3xl font-black text-slate-800 tracking-tight">
-                Reportes Institucionales
+              <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
+                TERMINAL DE <span className="text-cyan-400">INTELIGENCIA</span>
               </h2>
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 mt-1">
-                Inteligencia de Datos Institucionales
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3 italic">
+                DATA_ANALYTICS_MODULE // SASE-310
               </p>
             </div>
           </div>
-          <button
-            onClick={handlePrintReport}
-            className="flex items-center gap-3 px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-100"
-          >
-            <span className="material-symbols-outlined text-[20px]">print</span>
-            Generar Informe Oficial
-          </button>
+
+          <div className="flex flex-wrap items-center gap-4 relative z-10">
+            <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/10 text-cyan-500 text-[9px] font-black rounded border border-cyan-500/20 tabular-nums uppercase tracking-widest overflow-hidden relative">
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="size-1.5 bg-cyan-500 rounded-full shadow-[0_0_8px_rgba(6,182,212,0.8)]"
+              />
+              <span className="relative z-10">PIPELINE_ACTIVE</span>
+            </div>
+            <button
+              onClick={handlePrintReport}
+              className="px-8 py-4 bg-cyan-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-cyan-600/20 hover:bg-cyan-500 transition-all flex items-center gap-3 active:scale-95"
+            >
+              <span className="material-symbols-outlined text-xl">print</span>
+              GENERAR_INFORME
+            </button>
+          </div>
         </div>
 
-        {/* Report Type Selector - Premium Grid */}
+        {/* REPORT TYPE SELECTOR — TACTICAL CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {reportOptions.map((opt) => (
             <button
               key={opt.id}
               onClick={() => setSelectedReport(opt.id as ReportType)}
-              className={`p-6 rounded-[2rem] border-2 transition-all text-left relative group overflow-hidden ${
+              className={`card-sase p-6 text-left transition-all relative overflow-hidden group/card ${
                 selectedReport === opt.id
-                  ? "border-blue-700 bg-white shadow-xl shadow-blue-900/5 scale-[1.02]"
-                  : "border-slate-100 bg-slate-50/50 hover:border-blue-200 hover:bg-white"
+                  ? `border ${reportColors[opt.color]} scale-[1.02] shadow-xl`
+                  : "border-white/5 hover:border-white/10 hover:bg-white/[0.02]"
               }`}
             >
               <div className="flex items-start gap-4 relative z-10">
                 <div
-                  className={`size-12 rounded-2xl flex items-center justify-center transition-colors ${
+                  className={`size-12 rounded-2xl flex items-center justify-center border transition-all ${
                     selectedReport === opt.id
-                      ? "bg-blue-700 text-white shadow-lg shadow-blue-700/20"
-                      : "bg-white text-slate-400 border border-slate-100"
+                      ? reportColors[opt.color]
+                      : "bg-white/[0.03] border-white/10 text-slate-500"
                   }`}
                 >
                   <span className="material-symbols-outlined">{opt.icon}</span>
@@ -439,62 +539,67 @@ export const Reportes: React.FC = () => {
                   <p
                     className={`font-black text-sm uppercase italic tracking-tight ${
                       selectedReport === opt.id
-                        ? "text-blue-700"
-                        : "text-slate-600"
+                        ? "text-white"
+                        : "text-slate-400"
                     }`}
                   >
                     {opt.label}
                   </p>
-                  <p className="text-[11px] font-bold text-slate-500 uppercase mt-1 leading-relaxed opacity-80">
+                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-1">
                     {opt.description}
                   </p>
                 </div>
               </div>
+              {selectedReport === opt.id && (
+                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-current to-transparent opacity-30"></div>
+              )}
             </button>
           ))}
         </div>
 
-        {/* Filter Bar - Modern & Clean */}
-        <div className="bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] border border-slate-200 shadow-sm">
+        {/* FILTER BAR — TACTICAL */}
+        <div className="card-sase p-6 border-white/5">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <div className="flex items-center gap-3">
-              <div className="size-8 bg-slate-100 rounded-lg flex items-center justify-center">
-                <span className="material-symbols-outlined text-[18px] text-slate-500">
+              <div className="size-8 bg-white/[0.03] border border-white/10 rounded-lg flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px] text-cyan-500">
                   date_range
                 </span>
               </div>
-              <span className="text-xs font-black text-slate-500 uppercase tracking-widest">
-                Periodo de Análisis
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                VENTANA_TEMPORAL
               </span>
             </div>
 
-            <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+            <div className="flex items-center gap-4 bg-white/[0.02] p-2 rounded-2xl border border-white/5">
               <input
                 type="date"
+                title="Fecha de inicio del reporte"
                 value={dateRange.start}
                 onChange={(e) =>
                   setDateRange({ ...dateRange, start: e.target.value })
                 }
-                className="bg-transparent border-none text-xs font-black text-slate-700 outline-none p-2 cursor-pointer"
+                className="bg-transparent border-none text-xs font-black text-slate-300 outline-none p-2 cursor-pointer font-mono"
               />
-              <span className="text-slate-300 font-bold text-xs uppercase">
-                al
+              <span className="text-slate-600 font-black text-[9px] uppercase tracking-widest">
+                →
               </span>
               <input
                 type="date"
+                title="Fecha de fin del reporte"
                 value={dateRange.end}
                 onChange={(e) =>
                   setDateRange({ ...dateRange, end: e.target.value })
                 }
-                className="bg-transparent border-none text-xs font-black text-slate-700 outline-none p-2 cursor-pointer"
+                className="bg-transparent border-none text-xs font-black text-slate-300 outline-none p-2 cursor-pointer font-mono"
               />
             </div>
 
             <div className="flex gap-2">
-              {["Semana", "Mes", "Año"].map((lbl) => (
+              {["7D", "30D", "1Y"].map((lbl) => (
                 <button
                   key={lbl}
-                  className="px-4 py-2 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all"
+                  className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/5 rounded-xl border border-transparent hover:border-cyan-500/20 transition-all"
                 >
                   {lbl}
                 </button>
@@ -503,76 +608,99 @@ export const Reportes: React.FC = () => {
           </div>
         </div>
 
-        {/* Preview Section - Executive High Contrast */}
-        <div className="bg-white border border-slate-200 rounded-[3rem] shadow-xl shadow-slate-200/50 overflow-hidden">
-          <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="w-1.5 h-6 bg-blue-700 rounded-full"></div>
-              <h3 className="font-black text-lg text-slate-800 uppercase italic tracking-tight">
-                Vista Previa Institucional
-              </h3>
+        {/* DATA PREVIEW — INTELLIGENCE VIEW */}
+        <div className="card-sase border-white/5 overflow-hidden">
+          <div className="px-8 py-6 border-b border-white/5 bg-white/[0.01] flex justify-between items-center relative">
+            <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500"></div>
+            <div className="flex items-center gap-4 pl-4">
+              <div className="size-10 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-500">
+                <span className="material-symbols-outlined text-xl">
+                  query_stats
+                </span>
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] italic">
+                  VISTA PREVIA{" "}
+                  <span className="text-cyan-400">INTELIGENTE</span>
+                </h3>
+                <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
+                  PROCESADOR DE DATOS INSTITUCIONALES
+                </p>
+              </div>
             </div>
-            <span className="px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-black uppercase tracking-widest border border-blue-100">
-              {filteredIncidents.length} Registros Activos
+            <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-mono text-slate-500 uppercase tracking-widest">
+              {filteredIncidents.length} REG_ACTIVOS
             </span>
           </div>
 
-          <div className="p-10">
+          <div className="p-8">
             {selectedReport === "incidencias" && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <ReportStat
+                <IntelligenceKPI
                   label="Retardos"
                   value={incidentsByType.retardos}
                   color="amber"
                   icon="timer"
+                  delay={0}
                 />
-                <ReportStat
+                <IntelligenceKPI
                   label="Uniforme"
                   value={incidentsByType.uniformes}
-                  color="blue"
+                  color="indigo"
                   icon="checkroom"
+                  delay={1}
                 />
-                <ReportStat
+                <IntelligenceKPI
                   label="Conducta"
                   value={incidentsByType.conducta}
-                  color="red"
+                  color="rose"
                   icon="gavel"
+                  delay={2}
                 />
-                <ReportStat
+                <IntelligenceKPI
                   label="Faltas"
                   value={incidentsByType.faltas}
-                  color="slate"
+                  color="cyan"
                   icon="event_busy"
+                  delay={3}
                 />
               </div>
             )}
 
             {selectedReport === "estudiantes" && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <ReportStat
-                  label="Cerrado"
+                <IntelligenceKPI
+                  label="Caso Cerrado"
                   value={studentsByState.cerrados}
-                  color="green"
+                  color="emerald"
                   icon="task_alt"
+                  delay={0}
                 />
-                <ReportStat
-                  label="Observación"
+                <IntelligenceKPI
+                  label="Bajo Observación"
                   value={studentsByState.observados}
-                  color="blue"
+                  color="indigo"
                   icon="visibility"
+                  delay={1}
                 />
-                <ReportStat
-                  label="En Riesgo"
+                <IntelligenceKPI
+                  label="Patrón Detectado"
                   value={studentsByState.patron}
-                  color="red"
+                  color="rose"
                   icon="warning"
+                  delay={2}
                 />
               </div>
             )}
 
             {selectedReport === "asistencia" && (
-              <div className="flex flex-col items-center py-12 bg-slate-50/50 rounded-[2rem] border border-slate-100 border-dashed">
-                <p className="text-7xl font-black text-blue-700 italic tracking-tighter mb-4">
+              <div className="card-sase p-10 border-white/5 flex flex-col items-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.03] to-transparent pointer-events-none"></div>
+                <motion.p
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-7xl font-black text-white italic tracking-tighter mb-4 font-mono tabular-nums relative z-10 drop-shadow-[0_0_40px_rgba(6,182,212,0.3)]"
+                >
                   {students.length > 0
                     ? (
                         100 -
@@ -580,54 +708,31 @@ export const Reportes: React.FC = () => {
                       ).toFixed(1)
                     : 100}
                   %
+                </motion.p>
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic relative z-10">
+                  EFICIENCIA_ASISTENCIA_GLOBAL
                 </p>
-                <p className="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">
-                  Eficiencia de Asistencia Global
-                </p>
-                <div className="flex gap-8 mt-8">
+                <div className="flex gap-8 mt-8 relative z-10">
                   <div className="flex items-center gap-2">
-                    <span className="size-2 bg-slate-300 rounded-full"></span>
-                    <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
-                      {incidentsByType.faltas} Faltas
+                    <span className="size-2 bg-rose-400 rounded-full shadow-[0_0_6px_rgba(251,113,133,0.6)]"></span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
+                      {incidentsByType.faltas} FALTAS
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="size-2 bg-blue-400 rounded-full"></span>
-                    <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">
-                      {incidentsByType.retardos} Retardos
+                    <span className="size-2 bg-amber-400 rounded-full shadow-[0_0_6px_rgba(251,191,36,0.6)]"></span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
+                      {incidentsByType.retardos} RETARDOS
                     </span>
                   </div>
                 </div>
+                {/* Decorative scan line */}
+                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent"></div>
               </div>
             )}
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-const ReportStat = ({ label, value, color, icon }: any) => {
-  const colors: any = {
-    amber: "border-amber-200 text-amber-700 bg-amber-50/50",
-    blue: "border-blue-200 text-blue-700 bg-blue-50/50",
-    red: "border-red-200 text-red-700 bg-red-50/50",
-    green: "border-green-200 text-green-700 bg-green-50/50",
-    slate: "border-slate-200 text-slate-700 bg-slate-50/50",
-  };
-  return (
-    <div
-      className={`p-8 rounded-[2rem] border shadow-sm flex flex-col items-center text-center group transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 ${colors[color]}`}
-    >
-      <span className="material-symbols-outlined text-4xl mb-4 opacity-40 group-hover:scale-110 transition-transform">
-        {icon}
-      </span>
-      <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">
-        {label}
-      </p>
-      <p className="text-5xl font-black tracking-tight text-slate-800 italic">
-        {value}
-      </p>
     </div>
   );
 };

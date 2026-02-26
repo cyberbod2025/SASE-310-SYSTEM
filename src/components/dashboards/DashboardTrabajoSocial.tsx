@@ -1,564 +1,616 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
-import { PrintButtons } from "../PrintButtons";
 import { VoiceInput } from "../VoiceInput";
+import { GenericActionModal } from "../GenericActionModal";
 import toast from "react-hot-toast";
 
-// -- COMPONENT: Justificante Generator (Trabajo Social) --
-const JustificanteGenerator = () => {
-  const { students, addJustificante, addIncident } = useApp();
-  const [selectedStudent, setSelectedStudent] = useState<string>("");
-  const [isDistancia, setIsDistancia] = useState(false);
-  const [dates, setDates] = useState({ start: "", end: "" });
-  const [reason, setReason] = useState<"Médico" | "Social" | "Legal">("Médico");
-  const [desc, setDesc] = useState("");
+// -- ATOMIC COMPONENTS --
 
-  const handleGenerate = () => {
-    if (!selectedStudent || !dates.start) return;
-
-    // Si es a distancia, enviamos comunicación a docentes
-    if (isDistancia) {
-      addIncident(
-        selectedStudent,
-        "ACADEMICO" as any,
-        `⚠️ AVISO INSTITUCIONAL: Alumno trabajando A DISTANCIA del ${dates.start} al ${dates.end || dates.start}. Favor de prever actividades por Classroom/SASE.`,
-      );
-      toast.success("Aviso de Trabajo a Distancia enviado a Docentes", {
-        icon: "📧",
-      });
-    }
-
-    addJustificante(selectedStudent, {
-      startDate: dates.start,
-      endDate: dates.end || dates.start,
-      reason,
-      description: desc,
-      issuedBy: "Trabajo Social",
-    });
-    // Reset
-    setDates({ start: "", end: "" });
-    setDesc("");
-  };
-
-  const handleVoiceInput = (text: string) => {
-    setDesc((prev) => (prev ? `${prev} ${text}` : text));
+const SocialMetric = ({ label, value, icon, color, pct }: any) => {
+  const colors: any = {
+    orange: "text-orange-500 border-orange-500/20 bg-orange-500/5",
+    blue: "text-blue-500 border-blue-500/20 bg-blue-500/5",
+    rose: "text-rose-500 border-rose-500/20 bg-rose-500/5",
+    indigo: "text-indigo-500 border-indigo-500/20 bg-indigo-500/5",
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-        <span className="material-symbols-outlined text-orange-600">
-          history_edu
-        </span>
-        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest">
-          Emisión de Justificante
-        </h3>
-      </div>
-
-      <div className="space-y-5">
-        <div>
-          <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
-            Alumno / Estudiante
-          </label>
-          <select
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
-            value={selectedStudent}
-            onChange={(e) => setSelectedStudent(e.target.value)}
-          >
-            <option value="">Seleccione un alumno...</option>
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} - {s.group}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
-              Fecha Inicio
-            </label>
-            <input
-              type="date"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
-              value={dates.start}
-              onChange={(e) => setDates({ ...dates, start: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
-              Fecha Término
-            </label>
-            <input
-              type="date"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
-              value={dates.end}
-              onChange={(e) => setDates({ ...dates, end: e.target.value })}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">
-            Tipo de Motivo
-          </label>
-          <select
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-800 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none transition-all"
-            value={reason}
-            onChange={(e) => setReason(e.target.value as any)}
-          >
-            <option value="Médico">Motivo Médico</option>
-            <option value="Social">Motivo Familiar / Social</option>
-            <option value="Legal">Trámite Legal u Oficial</option>
-          </select>
-        </div>
-
+    <div
+      className={`card-sase p-6 border ${colors[color]} relative overflow-hidden group`}
+    >
+      <div className="flex justify-between items-center mb-4">
         <div
-          className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-100 rounded-xl mb-4 group cursor-pointer"
-          onClick={() => setIsDistancia(!isDistancia)}
+          className={`size-10 rounded-xl border ${colors[color]} flex items-center justify-center`}
         >
-          <div
-            className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${isDistancia ? "bg-blue-600 border-blue-600" : "border-blue-300"}`}
-          >
-            {isDistancia && (
-              <span className="material-symbols-outlined text-white text-sm">
-                check
-              </span>
-            )}
-          </div>
-          <div className="flex-1">
-            <p className="text-xs font-black text-blue-800 uppercase tracking-widest">
-              Modalidad a Distancia
-            </p>
-            <p className="text-[10px] text-blue-600 font-bold uppercase transition-opacity">
-              Notificar a docentes automáticamente
-            </p>
-          </div>
-          <span className="material-symbols-outlined text-blue-400 group-hover:rotate-12 transition-transform">
-            cloud_sync
-          </span>
+          <span className="material-symbols-outlined text-xl">{icon}</span>
         </div>
-
-        <div>
-          <div className="flex justify-between items-center mb-1.5 ml-1">
-            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">
-              Observaciones
-            </label>
-            <VoiceInput
-              onTranscript={handleVoiceInput}
-              className="scale-75 origin-right"
-            />
-          </div>
-          <textarea
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm h-24 text-slate-800 placeholder-slate-400 focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/10 outline-none resize-none transition-all"
-            placeholder="Documentación presentada, folio médico, etc..."
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-          ></textarea>
-        </div>
-
-        <button
-          onClick={handleGenerate}
-          disabled={!selectedStudent}
-          className="w-full py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl shadow-lg shadow-orange-600/20 transition-all active:scale-[0.98] disabled:opacity-40 disabled:grayscale uppercase tracking-widest text-xs flex items-center justify-center gap-2"
-        >
-          <span className="material-symbols-outlined text-[18px]">
-            verified
+        {pct && (
+          <span className="text-[10px] font-black px-2 py-0.5 rounded border border-white/10 bg-white/5 text-slate-500 italic">
+            {pct}% DEL_TOTAL
           </span>
-          REGISTRAR Y TIMBRAR JUSTIFICANTE
-        </button>
+        )}
       </div>
+      <h4 className="text-3xl font-black text-white italic tracking-tighter mb-1 leading-none">
+        {value}
+      </h4>
+      <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+        {label}
+      </p>
+
+      {pct && (
+        <div className="w-full bg-white/5 h-[2px] mt-4 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            className={`h-full bg-current ${colors[color].split(" ")[0]}`}
+          />
+        </div>
+      )}
     </div>
   );
 };
 
 export const DashboardTrabajoSocial = () => {
-  const { students } = useApp();
+  const { students, addJustificante, addIncident, printDocument } = useApp();
   const [activeTab, setActiveTab] = useState<
-    "justificantes" | "casos" | "comunidad"
+    "justificantes" | "riesgos" | "comunidad"
   >("justificantes");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState("");
 
-  const recentJustificantes = students
-    .flatMap((s) =>
-      s.justificantes.map((j) => ({
-        ...j,
-        studentName: s.name,
-        group: s.group,
-      })),
-    )
-    .sort((a, b) => b.issuedAt.localeCompare(a.issuedAt));
+  // Logic for Justificantes
+  const [justForm, setJustForm] = useState({
+    student: "",
+    start: "",
+    end: "",
+    reason: "Médico" as any,
+    desc: "",
+    distal: false,
+  });
 
-  // Alumnos con patrón de falta (más de 3 faltas en el historial de incidentes)
+  const handleGenerateJustificante = () => {
+    if (!justForm.student || !justForm.start) return;
+
+    if (justForm.distal) {
+      addIncident(
+        justForm.student,
+        "ACADEMICO" as any,
+        `⚠️ AVISO TS: Alumno a DISTANCIA del ${justForm.start} al ${justForm.end || justForm.start}.`,
+      );
+      toast.success("Notificación enviada a Docencia", { icon: "📧" });
+    }
+
+    addJustificante(justForm.student, {
+      startDate: justForm.start,
+      endDate: justForm.end || justForm.start,
+      reason: justForm.reason,
+      description: justForm.desc,
+      issuedBy: "Trabajo Social",
+    });
+
+    toast.success("Justificante Timbrado con Éxito");
+    setJustForm({ ...justForm, student: "", desc: "" });
+  };
+
+  const recentJustificantes = useMemo(
+    () =>
+      students
+        .flatMap((s) =>
+          s.justificantes.map((j) => ({
+            ...j,
+            studentName: s.name,
+            group: s.group,
+            studentId: s.id,
+          })),
+        )
+        .sort((a, b) => b.issuedAt.localeCompare(a.issuedAt)),
+    [students],
+  );
+
   const dropoutRisk = students.filter(
     (s) =>
       s.incidents.filter((i) => i.type === "Asistencia / Falta").length >= 3,
   );
 
-  // Estadísticas de Comunidad (Socioeconómicas)
-  const calculateCommunityAnalysis = () => {
+  const communityAnalysis = useMemo(() => {
     const total = students.length || 1;
-    const stats = {
+    return {
       nuclear: students.filter(
         (s) => s.socioeconomicData?.familyType === "Nuclear",
       ).length,
       mono: students.filter(
         (s) => s.socioeconomicData?.familyType === "Monoparental",
       ).length,
-      internet: students.filter((s) => s.socioeconomicData?.internetAccess)
-        .length,
-      lowIncome: students.filter(
-        (s) => s.socioeconomicData?.incomeLevel === "Bajo",
-      ).length,
-    };
-
-    return {
-      ...stats,
-      internetPct: Math.round((stats.internet / total) * 100),
-      vulnerabilityPct: Math.round(
-        ((stats.mono + stats.lowIncome) / (total * 2)) * 100,
+      internet: Math.round(
+        (students.filter((s) => s.socioeconomicData?.internetAccess).length /
+          total) *
+          100,
+      ),
+      vulnerability: Math.round(
+        ((students.filter((s) => s.socioeconomicData?.incomeLevel === "Bajo")
+          .length +
+          students.filter(
+            (s) => s.socioeconomicData?.familyType === "Monoparental",
+          ).length) /
+          (total * 2)) *
+          100,
       ),
     };
-  };
-
-  const communityAnalysis = calculateCommunityAnalysis();
+  }, [students]);
 
   return (
-    <div className="flex-1 w-full space-y-8 animate-fade-in custom-scrollbar overflow-y-auto h-full p-2">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
-        <div className="flex items-center gap-5">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden hidden md:block">
-            <div className="absolute top-0 right-0 w-1 h-full bg-orange-600"></div>
-            <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
-              <span className="material-symbols-outlined text-3xl">
-                diversity_3
-              </span>
-            </div>
+    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-orange-500/30">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 pb-10">
+        <div className="flex items-center gap-6">
+          <div className="size-16 bg-[#0a0f18] border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-500 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+            <span className="material-symbols-outlined text-4xl">
+              diversity_3
+            </span>
+            <motion.div
+              animate={{ top: ["0%", "100%", "0%"] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              className="absolute left-0 w-full h-[1px] bg-orange-500/50"
+            />
           </div>
           <div>
-            <h2
-              id="ts-header"
-              className="text-3xl font-black text-slate-800 tracking-tight"
-            >
-              Trabajo Social
-            </h2>
-            <div className="flex items-center gap-3 mt-1 text-xs font-bold uppercase tracking-widest">
-              <span className="flex items-center gap-1.5 text-orange-700">
-                <span className="w-2 h-2 bg-orange-600 rounded-full"></span>
-                Atención Socioeducativa
+            <div className="flex items-center gap-3 mb-1">
+              <span className="px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded text-[9px] font-black text-orange-400 uppercase tracking-widest">
+                UNIT_03 // SOCIAL_CORE
               </span>
-              <span className="text-slate-300">|</span>
-              <span className="text-slate-500 uppercase">Plantel ESD 310</span>
+              <div className="size-1.5 bg-orange-600 rounded-full animate-ping"></div>
             </div>
+            <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
+              TRABAJO <span className="text-orange-500 italic">SOCIAL</span>
+            </h2>
           </div>
         </div>
 
-        <div className="flex bg-slate-100 p-1 rounded-xl gap-1 shadow-inner border border-slate-200">
+        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-inner">
           <button
             onClick={() => setActiveTab("justificantes")}
-            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-white text-orange-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-orange-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
           >
             Justificantes
           </button>
           <button
-            onClick={() => setActiveTab("casos")}
-            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === "casos" ? "bg-white text-orange-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+            onClick={() => setActiveTab("riesgos")}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-orange-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
           >
             Riesgos ({dropoutRisk.length})
           </button>
           <button
             onClick={() => setActiveTab("comunidad")}
-            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-white text-orange-600 shadow-sm" : "text-slate-500 hover:text-slate-800"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-orange-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
           >
-            Análisis de Comunidad
+            Análisis Comunidad
           </button>
         </div>
       </div>
 
-      {activeTab === "justificantes" ? (
+      {activeTab === "justificantes" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div id="ts-form-justificante" className="lg:col-span-1">
-            <JustificanteGenerator />
-          </div>
+          {/* TERMINAL GENERATOR */}
+          <div className="card-sase border-white/5 p-8 bg-[#0a0f18]/40 backdrop-blur-xl">
+            <h3 className="text-xs font-black text-orange-500 uppercase tracking-[0.3em] mb-8 italic flex items-center gap-3">
+              <span className="material-symbols-outlined text-xl">
+                history_edu
+              </span>
+              EMISOR_JUSTIFICANTES
+            </h3>
 
-          <div className="lg:col-span-2">
-            <div
-              id="ts-history"
-              className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col h-full"
-            >
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
-                  <span className="material-symbols-outlined text-orange-600 text-[20px]">
-                    inventory
-                  </span>
-                  Historial de Justificantes Emitidos
-                </h3>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                  OBJETIVO_ESTUDIANTE
+                </label>
+                <select
+                  className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
+                  value={justForm.student}
+                  title="Seleccionar alumno para justificante"
+                  onChange={(e) =>
+                    setJustForm({ ...justForm, student: e.target.value })
+                  }
+                >
+                  <option value="">SELECCIONAR_TARGET...</option>
+                  {students.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} - {s.group}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              {recentJustificantes.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center p-12 text-slate-400 gap-3 grayscale opacity-40">
-                  <span className="material-symbols-outlined text-5xl">
-                    folder_off
-                  </span>
-                  <p className="text-sm font-black uppercase tracking-widest">
-                    Sin actividad reciente
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                    INICIO
+                  </label>
+                  <input
+                    type="date"
+                    title="Fecha de inicio"
+                    value={justForm.start}
+                    onChange={(e) =>
+                      setJustForm({ ...justForm, start: e.target.value })
+                    }
+                    className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                    FIN
+                  </label>
+                  <input
+                    type="date"
+                    title="Fecha de fin"
+                    value={justForm.end}
+                    onChange={(e) =>
+                      setJustForm({ ...justForm, end: e.target.value })
+                    }
+                    className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                  NATURALEZA_DEL_MOTIVO
+                </label>
+                <select
+                  className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
+                  value={justForm.reason}
+                  title="Motivo del justificante"
+                  onChange={(e) =>
+                    setJustForm({ ...justForm, reason: e.target.value as any })
+                  }
+                >
+                  <option value="Médico">MOTIVO_MÉDICO</option>
+                  <option value="Social">MOTIVO_FAMILIAR</option>
+                  <option value="Legal">TRÁMITE_LEGAL</option>
+                </select>
+              </div>
+
+              <div
+                className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${justForm.distal ? "bg-orange-600/10 border-orange-500/30" : "bg-white/5 border-white/10 opacity-50"}`}
+                onClick={() =>
+                  setJustForm({ ...justForm, distal: !justForm.distal })
+                }
+              >
+                <div
+                  className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${justForm.distal ? "bg-orange-500 border-orange-500" : "border-slate-600"}`}
+                >
+                  {justForm.distal && (
+                    <span className="material-symbols-outlined text-white text-sm">
+                      check
+                    </span>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">
+                    TRABAJO_A_DISTANCIA
+                  </p>
+                  <p className="text-[8px] font-black text-slate-500 uppercase tracking-tighter italic">
+                    NOTIFICAR_CUERPO_DOCENTE
                   </p>
                 </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="bg-slate-50 text-slate-500 text-xs uppercase font-black border-b border-slate-100">
-                        <th className="px-6 py-4">ID</th>
-                        <th className="px-6 py-4">Alumno</th>
-                        <th className="px-6 py-4">Vigencia</th>
-                        <th className="px-6 py-4">Motivo</th>
-                        <th className="px-6 py-4 text-right">Docs</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                      {recentJustificantes.map((j) => (
-                        <tr
-                          key={j.id}
-                          className="hover:bg-slate-50/50 transition-colors group"
-                        >
-                          <td className="px-6 py-5 font-mono text-[10px] text-slate-400 font-bold">
-                            {j.folio}
-                          </td>
-                          <td className="px-6 py-5">
-                            <p className="font-bold text-slate-800 text-sm group-hover:text-orange-700 transition-colors uppercase italic">
-                              {j.studentName}
-                            </p>
-                            <p className="text-xs text-slate-500 font-bold uppercase tracking-tight">
-                              {j.group}
-                            </p>
-                          </td>
-                          <td className="px-6 py-5 text-[11px] font-bold text-slate-500 uppercase">
-                            {j.startDate}{" "}
-                            <span className="text-slate-300 mx-1">/</span>{" "}
-                            {j.endDate}
-                          </td>
-                          <td className="px-6 py-5">
-                            <span
-                              className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${
-                                j.reason === "Médico"
-                                  ? "bg-blue-50 text-blue-700 border-blue-100"
-                                  : j.reason === "Legal"
-                                    ? "bg-red-50 text-red-700 border-red-100"
-                                    : "bg-orange-50 text-orange-700 border-orange-100"
-                              }`}
-                            >
-                              {j.reason}
-                            </span>
-                          </td>
-                          <td className="px-6 py-5 text-right">
-                            <span className="material-symbols-outlined text-slate-300 group-hover:text-orange-600 transition-colors cursor-pointer">
-                              print
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">
+                    OBSERVACIONES_CAMPO
+                  </label>
+                  <VoiceInput
+                    onTranscript={(t) =>
+                      setJustForm({
+                        ...justForm,
+                        desc: justForm.desc + " " + t,
+                      })
+                    }
+                  />
                 </div>
-              )}
+                <textarea
+                  value={justForm.desc}
+                  onChange={(e) =>
+                    setJustForm({ ...justForm, desc: e.target.value })
+                  }
+                  placeholder="DATOS_ADICIONALES..."
+                  className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs h-24 text-white resize-none outline-none focus:border-orange-500/50"
+                />
+              </div>
+
+              <button
+                onClick={handleGenerateJustificante}
+                disabled={!justForm.student || !justForm.start}
+                className="w-full py-5 bg-orange-600 hover:bg-orange-500 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-orange-600/20 active:scale-95 transition-all disabled:grayscale disabled:opacity-40"
+              >
+                TIMBRAR_REGISTRO_OFICIAL
+              </button>
+            </div>
+          </div>
+
+          {/* HISTORY TABLE */}
+          <div className="lg:col-span-2 card-sase border-white/5 bg-[#0a0f18]/20 flex flex-col h-full">
+            <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3 italic">
+                <span className="material-symbols-outlined text-orange-500">
+                  inventory
+                </span>
+                HISTORIAL_DE_EMISIÓN_SINCRO
+              </h3>
+            </div>
+
+            <div className="overflow-x-auto custom-scrollbar flex-1">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-white/5 text-slate-500 text-[9px] uppercase font-black border-b border-white/5 italic italic tracking-widest font-mono">
+                    <th className="px-8 py-5">FOLIO_ID</th>
+                    <th className="px-8 py-5">EXPEDIENTE</th>
+                    <th className="px-8 py-5">VIGENCIA</th>
+                    <th className="px-8 py-5">TIPO</th>
+                    <th className="px-8 py-5 text-right">OPS</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.03]">
+                  {recentJustificantes.map((j) => (
+                    <tr
+                      key={j.id}
+                      className="hover:bg-white/[0.02] transition-colors group"
+                    >
+                      <td className="px-8 py-6 font-mono text-[10px] text-slate-500 font-bold">
+                        {j.folio}
+                      </td>
+                      <td className="px-8 py-6">
+                        <p className="font-black text-white text-sm uppercase italic tracking-tighter group-hover:text-orange-400 transition-colors">
+                          {j.studentName}
+                        </p>
+                        <p className="text-[9px] font-bold text-slate-600 uppercase mt-1">
+                          {j.group}
+                        </p>
+                      </td>
+                      <td className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase italic">
+                        {j.startDate}{" "}
+                        <span className="text-white/20 px-1">/</span>{" "}
+                        {j.endDate}
+                      </td>
+                      <td className="px-8 py-6">
+                        <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-[9px] font-black text-slate-400 uppercase tracking-widest italic group-hover:border-orange-500/40">
+                          {j.reason}
+                        </span>
+                      </td>
+                      <td className="px-8 py-6 text-right">
+                        <button
+                          onClick={() =>
+                            printDocument({
+                              type: "JUSTIFICANTE",
+                              studentId: j.studentId,
+                              data: j,
+                            })
+                          }
+                          className="size-10 bg-white/5 hover:bg-orange-600 hover:text-white rounded-xl flex items-center justify-center transition-all"
+                        >
+                          <span className="material-symbols-outlined text-lg">
+                            print
+                          </span>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {recentJustificantes.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="py-20 text-center text-slate-700 font-black uppercase text-[10px] tracking-widest opacity-30 italic"
+                      >
+                        NO_DATA_STREAM_AVAILABLE
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      ) : activeTab === "casos" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dropoutRisk.map((student) => (
+      )}
+
+      {activeTab === "riesgos" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up">
+          {dropoutRisk.map((s) => (
             <div
-              key={student.id}
-              className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all group border-l-4 border-l-rose-500"
+              key={s.id}
+              className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.02] group relative overflow-hidden border-l-4 border-l-rose-600"
             >
-              <div className="flex justify-between items-start mb-4">
-                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-black text-lg">
-                  {student.name.charAt(0)}
+              <div className="flex justify-between items-start mb-6">
+                <div className="size-14 bg-[#0a0f18] border border-white/10 rounded-2xl flex items-center justify-center text-rose-500 text-2xl font-black italic">
+                  {s.name.charAt(0)}
                 </div>
-                <span className="px-2 py-1 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                  RIESGO DE DESERCIÓN
+                <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg animate-pulse">
+                  ALERTA_DESERCIÓN
                 </span>
               </div>
-              <h3 className="text-lg font-black text-slate-800 mb-1">
-                {student.name}
+
+              <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1">
+                {s.name}
               </h3>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
-                {student.group} • {student.id.substring(0, 6)}
+              <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">
+                FALTAS_DETECTADAS:{" "}
+                {
+                  s.incidents.filter((i) => i.type === "Asistencia / Falta")
+                    .length
+                }
               </p>
 
-              <div className="space-y-3 mb-6">
+              <div className="space-y-3 mb-8">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-rose-500 text-sm">
-                    event_busy
+                  <span className="material-symbols-outlined text-rose-500 text-lg">
+                    error
                   </span>
-                  <p className="text-xs text-slate-600 font-medium">
-                    Patrón de inasistencia detectado (+3)
+                  <p className="text-[10px] font-black text-slate-400 uppercase italic">
+                    Patrón de inasistencia crítico
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-sm">
-                    home
+                  <span className="material-symbols-outlined text-slate-600 text-lg">
+                    home_pin
                   </span>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase">
+                  <p className="text-[10px] font-black text-slate-600 uppercase italic">
                     Visita domiciliaria pendiente
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <button className="flex-1 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase hover:bg-black transition-all">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedStudentId(s.id);
+                    setIsModalOpen(true);
+                  }}
+                  className="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
+                >
                   Programar Visita
                 </button>
-                <button className="px-3 py-2.5 bg-white border border-slate-200 text-slate-500 rounded-xl hover:bg-slate-50 transition-all">
-                  <span className="material-symbols-outlined text-sm">
-                    call
-                  </span>
+                <button
+                  onClick={() =>
+                    toast.success(
+                      `Iniciando enlace telefónico con tutor de ${s.name}...`,
+                      { icon: "📞" },
+                    )
+                  }
+                  className="size-12 bg-white/5 border border-white/10 text-slate-500 rounded-2xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95"
+                >
+                  <span className="material-symbols-outlined">call</span>
                 </button>
               </div>
             </div>
           ))}
-
           {dropoutRisk.length === 0 && (
-            <div className="col-span-full py-20 text-center opacity-30">
-              <span className="material-symbols-outlined text-5xl mb-3">
-                verified
+            <div className="col-span-full py-40 text-center opacity-30 flex flex-col items-center gap-6">
+              <span className="material-symbols-outlined text-6xl text-emerald-500">
+                verified_user
               </span>
-              <p className="text-sm font-black uppercase tracking-[0.2em]">
-                Todos los expedientes están al corriente
+              <p className="text-[11px] font-black uppercase tracking-[0.5em] italic">
+                NULL_RISK_DETECTED_IN_CORE
               </p>
             </div>
           )}
         </div>
-      ) : (
-        /* TAB: ANÁLISIS DE COMUNIDAD (ESPECIAL) */
-        <div className="space-y-8 animate-slide-up">
+      )}
+
+      {activeTab === "comunidad" && (
+        <div className="space-y-8 animate-fade-in">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 rounded-3xl text-white shadow-xl shadow-orange-500/20">
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">
-                Familias Nucleares
-              </p>
-              <h4 className="text-4xl font-black">
-                {communityAnalysis.nuclear}
-              </h4>
-              <p className="text-[9px] font-bold uppercase mt-2 bg-white/20 inline-block px-2 py-0.5 rounded-full">
-                Predominante
-              </p>
-            </div>
-            <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                Familias Monoparentales
-              </p>
-              <h4 className="text-4xl font-black text-slate-800">
-                {communityAnalysis.mono}
-              </h4>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full mt-4">
-                <div
-                  className="bg-orange-500 h-full rounded-full"
-                  style={{
-                    width: `${Math.round((communityAnalysis.mono / (students.length || 1)) * 100)}%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-            <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                Acceso a Internet
-              </p>
-              <h4 className="text-4xl font-black text-slate-800">
-                {communityAnalysis.internetPct}%
-              </h4>
-              <p className="text-[9px] font-bold text-emerald-600 mt-2 uppercase">
-                Conectividad Estable
-              </p>
-            </div>
-            <div className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                Índice de Vulnerabilidad
-              </p>
-              <h4 className="text-4xl font-black text-rose-600">
-                {communityAnalysis.vulnerabilityPct}%
-              </h4>
-              <p className="text-[9px] font-bold text-rose-400 mt-2 uppercase tracking-tighter">
-                Requiere Atención Social
-              </p>
-            </div>
+            <SocialMetric
+              label="Familias Nucleares"
+              value={communityAnalysis.nuclear}
+              icon="family_restroom"
+              color="indigo"
+            />
+            <SocialMetric
+              label="Vulnerabilidad Social"
+              value={`${communityAnalysis.vulnerability}%`}
+              icon="priority_high"
+              color="rose"
+              pct={communityAnalysis.vulnerability}
+            />
+            <SocialMetric
+              label="Acceso Conectividad"
+              value={`${communityAnalysis.internet}%`}
+              icon="wifi"
+              color="blue"
+              pct={communityAnalysis.internet}
+            />
+            <SocialMetric
+              label="Crecimiento Social"
+              value="+12"
+              icon="trending_up"
+              color="emerald"
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Análisis Predictivo IA */}
-            <div className="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-8xl">
-                  psychology
+            <div className="card-sase p-10 bg-slate-900 border-white/5 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-8xl text-orange-500">
+                  online_prediction
                 </span>
               </div>
-              <h3 className="text-xl font-black mb-6 flex items-center gap-3">
-                <span className="material-symbols-outlined text-orange-400">
+              <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-6 flex items-center gap-4">
+                <span className="material-symbols-outlined text-orange-500">
                   auto_awesome
                 </span>
-                Análisis de Perfil Comunitario (IA)
+                SOCIAL_INSIGHT_IA
               </h3>
-              <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                Basado en los estudios socioeconómicos capturados, la comunidad
-                estudiantil del plantel 310 presenta un perfil de **clase
-                media-baja** con un fuerte núcleo familiar. Se detecta un **
-                {communityAnalysis.vulnerabilityPct}% de casos en situación de
-                riesgo social** que podrían derivar en deserción escolar.
+              <p className="text-slate-400 text-xs font-medium leading-relaxed uppercase italic max-w-lg mb-8">
+                EL ANÁLISIS DE INTERACCIÓN SOCIOECONÓMICA DETECTA UN PERFIL DE
+                COMUNIDAD CON FUERTE COHESIÓN FAMILIAR PERO BAJA CAPACIDAD
+                TÉCNICA. SE RECOMIENDA PRIORIZAR EL PROGRAMA DE BECAS DE
+                TRANSPORTE.
               </p>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3 text-xs font-bold text-orange-200">
-                  <span className="w-1.5 h-1.5 bg-orange-400 rounded-full"></span>
-                  Alta demanda de becas de transporte (Radio &gt; 5km)
-                </li>
-                <li className="flex items-center gap-3 text-xs font-bold text-orange-200">
-                  <span className="w-1.5 h-1.5 bg-orange-400 rounded-full"></span>
-                  Necesidad de talleres de convivencia monoparental
-                </li>
-              </ul>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-orange-300 text-[10px] font-black uppercase tracking-widest">
+                  <span className="size-1.5 bg-orange-500 rounded-full"></span>
+                  ALTO IMPACTO EN MOVILIDAD GEOGRÁFICA
+                </div>
+                <div className="flex items-center gap-3 text-orange-300 text-[10px] font-black uppercase tracking-widest">
+                  <span className="size-1.5 bg-orange-500 rounded-full"></span>
+                  DEMANDA CRECIENTE DE APOYO PSICOPEDAGÓGICO
+                </div>
+              </div>
             </div>
 
-            {/* Generación de Reportes */}
-            <div className="bg-white border-2 border-dashed border-slate-200 rounded-3xl p-8 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 mb-4">
-                <span className="material-symbols-outlined text-3xl">
+            <div className="card-sase p-10 border-2 border-dashed border-white/5 flex flex-col flex-col items-center justify-center text-center group">
+              <div className="size-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
+                <span className="material-symbols-outlined text-4xl">
                   analytics
                 </span>
               </div>
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-2">
-                Reportes de Trabajo Social
+              <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] mb-2 italic italic">
+                EXPORTAR_INTELIGENCIA_SOCIAL
               </h3>
-              <p className="text-xs text-slate-500 mb-6 max-w-xs">
-                Genera el análisis estadístico completo de la comunidad para
-                supervisión de zona.
+              <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-8 max-w-xs">
+                GÉNERA EL REPORTE ESTADÍSTICO PARA SUPERVISIÓN DE ZONA
               </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() =>
-                    toast.success(
-                      "Generando Estudio Socioeconómico Colectivo...",
-                    )
-                  }
-                  className="px-6 py-3 bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase hover:shadow-lg hover:shadow-orange-600/20 transition-all"
-                >
-                  Exportar Análisis de Comunidad
-                </button>
-                <button
-                  onClick={() =>
-                    toast.success("Imprimiendo Estadísticas Sociales...")
-                  }
-                  className="px-4 py-3 bg-slate-100 text-slate-600 rounded-xl text-[10px] font-black uppercase hover:bg-slate-200 transition-all font-symbols"
-                >
-                  <span className="material-symbols-outlined text-sm">
-                    print
-                  </span>
-                </button>
-              </div>
+              <button
+                onClick={() =>
+                  toast.success("Compilando Atlas Social del Plantel...")
+                }
+                className="px-10 py-4 bg-orange-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-600/20 hover:bg-orange-500 transition-all active:scale-95"
+              >
+                DESCARGAR_ESTADÍSTICA_GZ
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* MODAL PARA VISITAS */}
+      <GenericActionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Programar Visita de Campo"
+        description="Coordinación de intervención domiciliaria"
+        fields={[
+          {
+            name: "date",
+            label: "FECHA_INTERVENCIÓN",
+            type: "date",
+            required: true,
+          },
+          {
+            name: "objective",
+            label: "OBJETIVOS_TÁCTICOS",
+            type: "textarea",
+            required: true,
+          },
+        ]}
+        onSubmit={async () => {
+          toast.success("Visita programada en Agenda TS");
+          setIsModalOpen(false);
+        }}
+      />
     </div>
   );
 };
+
+export default DashboardTrabajoSocial;

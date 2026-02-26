@@ -21,17 +21,78 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
   student,
   onClose,
 }) => {
-  const { currentUserRole, updateGrades, toggleDistanceState, logAudit } =
-    useApp();
+  const {
+    currentUserRole,
+    updateGrades,
+    toggleDistanceState,
+    logAudit,
+    addIncident,
+  } = useApp();
   const [activeTab, setActiveTab] = useState<"CLINICAL" | "ACADEMIC" | "LEGAL">(
     "ACADEMIC",
   );
   const [showAIGenerator, setShowAIGenerator] = useState(false);
 
+  // Incident Form State
+  const [showIncidentForm, setShowIncidentForm] = useState(false);
+  const [newIncident, setNewIncident] = useState({
+    type: IncidentType.CONDUCTA,
+    description: "",
+    photo: null as string | null,
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewIncident((prev) => ({ ...prev, photo: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveIncident = async () => {
+    if (!newIncident.description) {
+      toast.error("Por favor describa la incidencia");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await addIncident(
+        student.id,
+        newIncident.type,
+        newIncident.description,
+        newIncident.photo ? [newIncident.photo] : [],
+      );
+
+      setShowIncidentForm(false);
+      setNewIncident({
+        type: IncidentType.CONDUCTA,
+        description: "",
+        photo: null,
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // --- PERMISOS ---
   const canEditGrades =
     currentUserRole === UserRole.SECRETARIA ||
     currentUserRole === UserRole.DEVELOPER;
+
+  const canViewClinical =
+    currentUserRole !== UserRole.SECRETARIA &&
+    currentUserRole !== UserRole.PROMOTORA;
+
+  const canPrintSensitive =
+    currentUserRole !== UserRole.SECRETARIA &&
+    currentUserRole !== UserRole.DOCENTE; // Solo directivos y áreas especializadas imprimen lo sensible
 
   // --- CÁLCULO DE PROMEDIO ---
   const gpa = student.calificaciones?.length
@@ -100,25 +161,25 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-slate-200/60 backdrop-blur-md flex items-center justify-center p-4 overflow-hidden animate-fade-in font-['Inter']">
-      {/* --- GRID PRINCIPAL --- */}
-      <div className="profile-grid relative bg-[#F8FAFC] rounded-[2rem] shadow-2xl border border-slate-200 p-6 overflow-hidden">
+    <div className="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-0 md:p-4 overflow-hidden animate-fade-in font-['Inter']">
+      {/* --- CONTENEDOR PRINCIPAL: Adaptativo --- */}
+      <div className="relative w-full h-full md:w-full md:max-w-6xl md:h-[90vh] bg-[#F8FAFC] rounded-none md:rounded-[2rem] shadow-2xl border-none md:border md:border-slate-200 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row">
         {/* BOTÓN CERRAR (Visible y Claro) */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-50 p-2 bg-white text-slate-400 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-md border border-slate-200 hover:rotate-90 duration-300 group"
+          className="absolute top-4 right-4 z-[70] p-3 md:p-2 bg-white/80 backdrop-blur-md text-slate-500 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-lg border border-slate-200 group active:scale-95"
           title="Cerrar Expediente"
         >
-          <span className="material-symbols-outlined text-xl group-hover:scale-110">
+          <span className="material-symbols-outlined text-2xl md:text-xl group-hover:rotate-90 duration-300">
             close
           </span>
         </button>
 
-        {/* --- COLUMNA IZQUIERDA: IDENTIDAD --- */}
-        <div className="flex flex-col items-center text-center gap-6 h-full border-r border-slate-200 pr-6 bg-white/50 rounded-l-[1.5rem]">
-          {/* Avatar Scanner (Clean Version) */}
-          <div className="relative group cursor-pointer mt-8">
-            <div className="w-36 h-36 rounded-full overflow-hidden border-4 border-white shadow-xl relative bg-slate-100 ring-1 ring-slate-100">
+        {/* --- COLUMNA IZQUIERDA: IDENTIDAD (Apilable) --- */}
+        <div className="w-full md:w-80 flex flex-col items-center text-center gap-4 md:gap-6 md:h-full border-b md:border-b-0 md:border-r border-slate-200 p-6 bg-white/50">
+          {/* Avatar Scanner */}
+          <div className="relative group cursor-pointer mt-4 md:mt-8">
+            <div className="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-white shadow-xl relative bg-slate-100 ring-1 ring-slate-100">
               <img
                 src={student.avatar}
                 alt={student.name}
@@ -205,22 +266,25 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 },
                 { id: "LEGAL", icon: "gavel", label: "Legal & Protocolos" },
               ] as const
-            ).map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wide transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? "bg-white text-slate-800 shadow-sm border border-slate-200"
-                    : "text-slate-400 hover:bg-white/50 hover:text-slate-600"
-                }`}
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  {tab.icon}
-                </span>
-                <span className="hidden sm:inline">{tab.label}</span>
-              </button>
-            ))}
+            )
+              .filter((tab) => tab.id !== "CLINICAL" || canViewClinical)
+              .map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  title={`Ver información ${tab.label}`}
+                  className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wide transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? "bg-white text-slate-800 shadow-sm border border-slate-200"
+                      : "text-slate-400 hover:bg-white/50 hover:text-slate-600"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {tab.icon}
+                  </span>
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              ))}
           </div>
 
           {/* ÁREA DE CONTENIDO (Scrollable) */}
@@ -281,14 +345,36 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                                 </span>
                                 <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
                                   <div
-                                    className={`h-full rounded-full transition-all duration-700 ${!score ? "bg-transparent" : score < 6 ? "bg-rose-500" : "bg-cyan-500"}`}
-                                    style={{ width: `${(score || 0) * 10}%` }}
+                                    className={`h-full rounded-full transition-all duration-700 ${!score ? "bg-transparent w-0" : score < 6 ? "bg-rose-500" : "bg-cyan-500"} ${
+                                      !score
+                                        ? "w-0"
+                                        : score <= 1
+                                          ? "w-[10%]"
+                                          : score <= 2
+                                            ? "w-[20%]"
+                                            : score <= 3
+                                              ? "w-[30%]"
+                                              : score <= 4
+                                                ? "w-[40%]"
+                                                : score <= 5
+                                                  ? "w-[50%]"
+                                                  : score <= 6
+                                                    ? "w-[60%]"
+                                                    : score <= 7
+                                                      ? "w-[70%]"
+                                                      : score <= 8
+                                                        ? "w-[80%]"
+                                                        : score <= 9
+                                                          ? "w-[90%]"
+                                                          : "w-full"
+                                    }`}
                                   ></div>
                                 </div>
                                 {canEditGrades ? (
                                   <input
                                     type="number"
                                     value={score || ""}
+                                    title={`Calificación Trimestre ${idx + 1} para ${cal.materia}`}
                                     onChange={(e) =>
                                       handleUpdateGrades(
                                         cal.materia,
@@ -316,7 +402,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             )}
 
             {/* CLÍNICO / CONDUCTUAL */}
-            {activeTab === "CLINICAL" && (
+            {activeTab === "CLINICAL" && canViewClinical && (
               <div className="overflow-y-auto custom-scrollbar h-full pr-2">
                 <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                   <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
@@ -389,9 +475,21 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                     </span>
                     Bitácora Cronológica
                   </h4>
-                  <span className="bg-slate-100 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-full border border-slate-200">
-                    {student.incidents.length} Registros
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setShowIncidentForm(true)}
+                      className="px-4 py-1.5 bg-rose-600 text-white text-[10px] font-black rounded-lg uppercase shadow-sm hover:bg-rose-700 transition-all flex items-center gap-2"
+                      title="Registrar nueva incidencia o reporte clínico/conductual"
+                    >
+                      <span className="material-symbols-outlined text-sm">
+                        add_photo_alternate
+                      </span>
+                      Nuevo Reporte
+                    </button>
+                    <span className="bg-slate-100 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-full border border-slate-200">
+                      {student.incidents.length} Registros
+                    </span>
+                  </div>
                 </div>
 
                 {student.incidents.length === 0 ? (
@@ -412,7 +510,6 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                       <div
                         key={inc.id}
                         className="relative pl-8 animate-fade-in-up"
-                        style={{ animationDelay: `${i * 100}ms` }}
                       >
                         {/* Punto de Tiempo */}
                         <div
@@ -452,6 +549,30 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                           <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-100">
                             {inc.description}
                           </p>
+
+                          {/* EVIDENCE PREVIEW */}
+                          {inc.evidence && inc.evidence.length > 0 && (
+                            <div className="mt-4 grid grid-cols-2 gap-2">
+                              {inc.evidence.map((ev, idx) => (
+                                <div
+                                  key={idx}
+                                  className="relative group/ev overflow-hidden rounded-xl border border-slate-200 shadow-sm cursor-zoom-in"
+                                >
+                                  <img
+                                    src={ev}
+                                    alt="Evidencia"
+                                    className="w-full h-24 object-cover group-hover/ev:scale-110 transition-transform duration-500"
+                                  />
+                                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/ev:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span className="material-symbols-outlined text-white">
+                                      fullscreen
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
                           <div className="mt-3 flex items-center gap-2">
                             <div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-500 font-bold border border-slate-300">
                               {inc.reportedBy.charAt(0)}
@@ -490,15 +611,18 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => setShowAIGenerator(true)}
-                    className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white hover:shadow-md transition-all px-4 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 shadow-sm"
-                  >
-                    Generar Nuevo
-                    <span className="material-symbols-outlined text-sm">
-                      arrow_forward
-                    </span>
-                  </button>
+                  {canPrintSensitive && (
+                    <button
+                      onClick={() => setShowAIGenerator(true)}
+                      className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white hover:shadow-md transition-all px-4 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 shadow-sm"
+                      title="Abrir asistente de IA para redactar documentos institucionales"
+                    >
+                      Generar Nuevo
+                      <span className="material-symbols-outlined text-sm">
+                        arrow_forward
+                      </span>
+                    </button>
+                  )}
                 </div>
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 grid grid-cols-1 gap-3">
@@ -528,15 +652,17 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             </div>
                           </div>
                         </div>
-                        <button
-                          onClick={() => handlePrintDoc(doc)}
-                          className="text-slate-300 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-all"
-                          title="Imprimir"
-                        >
-                          <span className="material-symbols-outlined text-[20px]">
-                            print
-                          </span>
-                        </button>
+                        {canPrintSensitive && (
+                          <button
+                            onClick={() => handlePrintDoc(doc)}
+                            className="text-slate-300 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-all"
+                            title="Imprimir"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">
+                              print
+                            </span>
+                          </button>
+                        )}
                       </div>
                       <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-2">
                         <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed font-mono">
@@ -605,88 +731,76 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           </div>
 
           {/* Barreras para el Aprendizaje (BAP/UDEII) */}
-          <div className="bg-indigo-50/50 rounded-xl p-5 border border-indigo-100 shadow-sm">
-            <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-indigo-200 pb-2">
-              <span className="material-symbols-outlined text-[16px]">
-                psychology_alt
-              </span>
-              UDEII / Perfil de Inclusión (BAP)
-            </h3>
-            {student.bapInfo ? (
-              <div className="space-y-3">
-                <div>
-                  <p className="text-[9px] font-black text-indigo-300 uppercase tracking-widest">
-                    Diagnóstico (Docente)
-                  </p>
-                  <p className="text-xs font-bold text-indigo-900">
-                    {student.bapInfo.diagnosisPrivate}
-                  </p>
+          {canViewClinical && (
+            <div className="bg-indigo-50/50 rounded-xl p-5 border border-indigo-100 shadow-sm">
+              <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-indigo-200 pb-2">
+                <span className="material-symbols-outlined text-[16px]">
+                  psychology_alt
+                </span>
+                UDEII / Perfil de Inclusión (BAP)
+              </h3>
+              {student.bapInfo ? (
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-[9px] font-black text-indigo-300 uppercase tracking-widest">
+                      Diagnóstico (Docente)
+                    </p>
+                    <p className="text-xs font-bold text-indigo-900">
+                      {student.bapInfo.diagnosisPrivate}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black text-indigo-300 uppercase tracking-widest">
+                      Ajustes Razonables
+                    </p>
+                    <p className="text-[10px] text-indigo-700 leading-tight italic">
+                      "{student.bapInfo.accommodations.join(", ")}"
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[9px] font-black text-indigo-300 uppercase tracking-widest">
-                    Ajustes Razonables
-                  </p>
-                  <p className="text-[10px] text-indigo-700 leading-tight italic">
-                    "{student.bapInfo.accommodations.join(", ")}"
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <p className="text-[10px] text-slate-400 font-bold italic text-center py-2">
-                Sin registros de apoyo UDEII
-              </p>
-            )}
-          </div>
+              ) : (
+                <p className="text-[10px] text-slate-400 font-bold italic text-center py-2">
+                  Sin registros de apoyo UDEII
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Contexto Social (Estudio Socioeconómico) */}
-          <div className="bg-orange-50/50 rounded-xl p-5 border border-orange-100 shadow-sm">
-            <h3 className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-orange-200 pb-2">
-              <span className="material-symbols-outlined text-[16px]">
-                communities
-              </span>
-              Estudio Socioeconómico
-            </h3>
-            {student.socioeconomicData ? (
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-2 bg-white/60 rounded border border-orange-100">
-                  <p className="text-[8px] font-black text-orange-300 uppercase">
-                    Familia
-                  </p>
-                  <p className="text-[10px] font-bold text-orange-900">
-                    {student.socioeconomicData.familyType}
-                  </p>
+          {canViewClinical && (
+            <div className="bg-orange-50/50 rounded-xl p-5 border border-orange-100 shadow-sm">
+              <h3 className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-orange-200 pb-2">
+                <span className="material-symbols-outlined text-[16px]">
+                  communities
+                </span>
+                Estudio Socioeconómico
+              </h3>
+              {student.socioeconomicData ? (
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="p-2 bg-white/60 rounded border border-orange-100">
+                    <p className="text-[8px] font-black text-orange-300 uppercase">
+                      Familia
+                    </p>
+                    <p className="text-[10px] font-bold text-orange-900">
+                      {student.socioeconomicData.familyType}
+                    </p>
+                  </div>
+                  <div className="p-2 bg-white/60 rounded border border-orange-100">
+                    <p className="text-[8px] font-black text-orange-300 uppercase">
+                      Ingresos
+                    </p>
+                    <p className="text-[10px] font-bold text-orange-900">
+                      {student.socioeconomicData.incomeLevel}
+                    </p>
+                  </div>
                 </div>
-                <div className="p-2 bg-white/60 rounded border border-orange-100">
-                  <p className="text-[8px] font-black text-orange-300 uppercase">
-                    Ingresos
-                  </p>
-                  <p className="text-[10px] font-bold text-orange-900">
-                    {student.socioeconomicData.incomeLevel}
-                  </p>
-                </div>
-                <div className="p-2 bg-white/60 rounded border border-orange-100">
-                  <p className="text-[8px] font-black text-orange-300 uppercase">
-                    Residencia
-                  </p>
-                  <p className="text-[10px] font-bold text-orange-900">
-                    {student.socioeconomicData.distanceToSchool}
-                  </p>
-                </div>
-                <div className="p-2 bg-white/60 rounded border border-orange-100">
-                  <p className="text-[8px] font-black text-orange-300 uppercase">
-                    Internet
-                  </p>
-                  <p className="text-[10px] font-bold text-orange-900">
-                    {student.socioeconomicData.internetAccess ? "Sí" : "No"}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <p className="text-[10px] text-slate-400 font-bold italic text-center py-2">
-                Estudio social no capturado
-              </p>
-            )}
-          </div>
+              ) : (
+                <p className="text-[10px] text-slate-400 font-bold italic text-center py-2">
+                  Sin registros socioeconómicos
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Acciones Rápidas (Panel de Control) */}
           <div className="flex-1 bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col">
@@ -731,24 +845,26 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               </button>
 
               {/* Generar Reporte */}
-              <button
-                onClick={() => toast("Abrir modal de citatorio")} // Placeholder funcional
-                className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
-              >
-                <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-rose-100 group-hover:border-rose-200 group-hover:text-rose-600 flex items-center justify-center transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">
-                    notifications_active
-                  </span>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider leading-tight">
-                    Citar Tutor
-                  </p>
-                  <p className="text-[9px] opacity-60 font-medium">
-                    Generar citatorio
-                  </p>
-                </div>
-              </button>
+              {canPrintSensitive && (
+                <button
+                  onClick={() => toast("Abrir modal de citatorio")} // Placeholder funcional
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                >
+                  <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-rose-100 group-hover:border-rose-200 group-hover:text-rose-600 flex items-center justify-center transition-colors">
+                    <span className="material-symbols-outlined text-[18px]">
+                      notifications_active
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider leading-tight">
+                      Citar Tutor
+                    </p>
+                    <p className="text-[9px] opacity-60 font-medium">
+                      Generar citatorio
+                    </p>
+                  </div>
+                </button>
+              )}
 
               {/* Imprimir Kardex */}
               <button
@@ -811,6 +927,141 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           </div>
         </div>
       </div>
+
+      {showIncidentForm && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="p-8 space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+                  Nueva Incidencia con Evidencia
+                </h3>
+                <button
+                  onClick={() => setShowIncidentForm(false)}
+                  className="size-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">
+                    Tipo de Reporte
+                  </label>
+                  <select
+                    value={newIncident.type}
+                    title="Seleccionar tipo de reporte de incidencia"
+                    onChange={(e) =>
+                      setNewIncident((prev) => ({
+                        ...prev,
+                        type: e.target.value as IncidentType,
+                      }))
+                    }
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-rose-300 focus:ring-4 focus:ring-rose-500/5 transition-all"
+                  >
+                    {Object.values(IncidentType).map((type) => (
+                      <option key={type} value={type}>
+                        {type.charAt(0) + type.slice(1).toLowerCase()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">
+                    Descripción Operativa
+                  </label>
+                  <textarea
+                    value={newIncident.description}
+                    onChange={(e) =>
+                      setNewIncident((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                    placeholder="Detalle los hechos de forma objetiva..."
+                    rows={4}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-700 outline-none focus:border-rose-300 focus:ring-4 focus:ring-rose-500/5 transition-all resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase mb-2 block tracking-widest">
+                    Evidencia Fotográfica
+                  </label>
+                  <div className="relative group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      title="Subir evidencia fotográfica"
+                      onChange={handlePhotoUpload}
+                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center group-hover:border-rose-300 group-hover:bg-rose-50/30 transition-all">
+                      {newIncident.photo ? (
+                        <div className="relative">
+                          <img
+                            src={newIncident.photo}
+                            alt="Preview"
+                            className="w-full h-32 object-cover rounded-xl shadow-sm"
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setNewIncident((prev) => ({
+                                ...prev,
+                                photo: null,
+                              }));
+                            }}
+                            className="absolute top-2 right-2 size-6 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <span className="material-symbols-outlined text-xs">
+                              close
+                            </span>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <span className="material-symbols-outlined text-3xl text-slate-300">
+                            add_a_photo
+                          </span>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase">
+                            Haz clic para subir o arrastra una imagen
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  onClick={() => setShowIncidentForm(false)}
+                  className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl text-[10px] font-black uppercase hover:bg-slate-200 transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSaveIncident}
+                  disabled={isSaving}
+                  className="flex-[2] py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isSaving ? (
+                    <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <span className="material-symbols-outlined text-sm">
+                      save
+                    </span>
+                  )}
+                  Guardar Reporte
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showAIGenerator && (
         <AIDocumentGenerator

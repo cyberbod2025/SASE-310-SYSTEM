@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
+import { OFFICIAL_STAFF_LIST } from "../data/officialStaff";
 
 interface RegistroPersonalProps {
   onBack: () => void;
@@ -71,6 +72,7 @@ const InputGroupSase = ({
   onChange,
   type = "text",
   placeholder = "",
+  title = "",
   isMono = false,
   readonly = false,
   autoComplete = "off",
@@ -98,6 +100,7 @@ const InputGroupSase = ({
         // @ts-ignore
         onKeyDown={onKeyDown}
         placeholder={placeholder}
+        title={title || label}
         className={`
           w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 
           text-white text-sm font-medium outline-none transition-all
@@ -109,7 +112,7 @@ const InputGroupSase = ({
         `}
       />
       {rightElement && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-400 transition-colors">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-blue-400 transition-colors">
           {rightElement}
         </div>
       )}
@@ -117,30 +120,45 @@ const InputGroupSase = ({
   </div>
 );
 
-const CheckboxSase = ({ id, label, checked, onChange, onRead }: any) => (
-  <div
-    className="flex items-center gap-4 group/box cursor-pointer select-none"
-    onClick={() => onChange(!checked)}
-  >
-    <div
-      className={`size-5 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
-        checked
-          ? "bg-blue-600 border-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-          : "border-white/10 group-hover/box:border-white/30 bg-white/5"
-      }`}
-    >
-      {checked && (
-        <span className="material-symbols-outlined text-white text-[14px] font-black">
-          check
-        </span>
-      )}
-    </div>
-    <div className="flex-1 flex items-center justify-between">
-      <span
-        className={`text-[11px] font-bold uppercase tracking-tight transition-colors ${checked ? "text-white" : "text-slate-400 group-hover/box:text-slate-300"}`}
+const CheckboxSase = ({ id, label, checked, onChange, onRead }: any) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      onChange(!checked);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-4 group/box select-none outline-none">
+      <div
+        className="flex items-center gap-4 cursor-pointer outline-none flex-1 focus:ring-2 focus:ring-blue-500/20 rounded-lg p-1 -ml-1"
+        onClick={() => onChange(!checked)}
+        onKeyDown={handleKeyDown}
+        role="checkbox"
+        aria-checked={checked}
+        aria-labelledby={`${id}-label`}
+        tabIndex={0}
       >
-        {label}
-      </span>
+        <div
+          className={`size-5 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+            checked
+              ? "bg-blue-600 border-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+              : "border-white/10 group-hover/box:border-white/30 bg-white/5 group-focus-visible:border-blue-500/50"
+          }`}
+        >
+          {checked && (
+            <span className="material-symbols-outlined text-white text-[14px] font-black">
+              check
+            </span>
+          )}
+        </div>
+        <span
+          id={`${id}-label`}
+          className={`flex-1 text-[11px] font-bold uppercase tracking-tight transition-colors ${checked ? "text-white" : "text-slate-400 group-hover/box:text-slate-300"}`}
+        >
+          {label}
+        </span>
+      </div>
       {onRead && (
         <button
           type="button"
@@ -149,13 +167,15 @@ const CheckboxSase = ({ id, label, checked, onChange, onRead }: any) => (
             onRead();
           }}
           className="text-[9px] font-black text-blue-400 hover:text-white uppercase tracking-widest ml-4 transition-colors hover:underline"
+          title={`Ver información sobre: ${label}`}
+          aria-label={`Ver información detallada sobre ${label}`}
         >
           Info
         </button>
       )}
     </div>
-  </div>
-);
+  );
+};
 
 export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   onBack,
@@ -183,6 +203,11 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
     correoInstitucional: "",
     password: "",
     confirmPassword: "",
+    // Security Questions
+    preguntaSeguridad1: "",
+    respuestaSeguridad1: "",
+    preguntaSeguridad2: "",
+    respuestaSeguridad2: "",
     checkPrivacidad: false,
     checkEtica: false,
     checkAuditoria: false,
@@ -259,6 +284,32 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
     if (formData.matricula.trim().length === 0)
       return toast.error("La matrícula personal es obligatoria");
 
+    // VALIDACION CONTRA NOMINA OFICIAL
+    const fullName =
+      `${formData.nombres} ${formData.apellidoPaterno} ${formData.apellidoMaterno}`
+        .trim()
+        .toUpperCase();
+    const isOfficialStaff = OFFICIAL_STAFF_LIST.some(
+      (staff) => staff.full_name === fullName,
+    );
+
+    if (!isOfficialStaff) {
+      return toast.error(
+        "Su nombre no coincide con la nómina oficial del plantel 310. Verifique ortografía o acuda a Dirección.",
+      );
+    }
+
+    if (
+      !formData.preguntaSeguridad1 ||
+      !formData.respuestaSeguridad1 ||
+      !formData.preguntaSeguridad2 ||
+      !formData.respuestaSeguridad2
+    ) {
+      return toast.error(
+        "Debe completar las preguntas de seguridad para soporte técnico.",
+      );
+    }
+
     setLoading(true);
     try {
       const randomNum = Math.floor(Math.random() * 1000);
@@ -285,7 +336,17 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
             rfc_parcial: formData.rfc,
             fecha_nacimiento: formData.fechaNacimiento,
             origen: "WEB_WIZARD",
-            version_registro: "2.1",
+            version_registro: "3.10",
+            preguntas_seguridad: [
+              {
+                q: formData.preguntaSeguridad1,
+                a: formData.respuestaSeguridad1.toLowerCase().trim(),
+              },
+              {
+                q: formData.preguntaSeguridad2,
+                a: formData.respuestaSeguridad2.toLowerCase().trim(),
+              },
+            ],
           },
         });
 
@@ -306,17 +367,22 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   /* STEP 0: ¿Cuál es tu nombre? */
   if (step === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-['Inter',sans-serif]">
-        {/* BACKGROUND: Animated Aurora */}
-        <div className="absolute inset-0 bg-[#0f172a] z-0">
-          <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-blue-600/20 blur-[120px] animate-pulse-slow"></div>
-          <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-purple-600/20 blur-[120px] animate-pulse-slow delay-1000"></div>
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150"></div>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-sans bg-[#020408]">
+        {/* BACKGROUND: Tactical HUD */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#0f172a_0%,#020408_100%)]"></div>
+          <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:40px_40px]"></div>
+          <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-blue-600/10 blur-[120px] animate-pulse-slow"></div>
+          <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-purple-600/5 blur-[120px] animate-pulse-slow delay-1000"></div>
         </div>
 
-        {/* DECORATION: Floating Orbs */}
-        <div className="absolute top-20 right-20 w-32 h-32 rounded-full border border-white/5 animate-spin-slow pointer-events-none z-0"></div>
-        <div className="absolute bottom-20 left-20 w-48 h-48 rounded-full border border-white/5 animate-reverse-spin pointer-events-none z-0"></div>
+        {/* HUD Decoration */}
+        <div className="absolute inset-0 pointer-events-none opacity-20">
+          <div className="absolute top-10 left-10 w-32 h-32 border-l border-t border-white/20"></div>
+          <div className="absolute top-10 right-10 w-32 h-32 border-r border-t border-white/20"></div>
+          <div className="absolute bottom-10 left-10 w-32 h-32 border-l border-b border-white/20"></div>
+          <div className="absolute bottom-10 right-10 w-32 h-32 border-r border-b border-white/20"></div>
+        </div>
 
         <div className="w-full max-w-lg space-y-8 animate-fade-in-up relative z-10 p-8">
           {/* LOGO / BRANDING */}
@@ -350,6 +416,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
               <input
                 type="text"
                 autoFocus
+                title="Ingrese su nombre de pila"
                 className="w-full bg-slate-900 border border-slate-700 text-white text-2xl font-bold rounded-2xl p-6 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-700 placeholder:font-normal"
                 placeholder="Ej. Miguel, Luis, Hugo..."
                 value={formData.nombres}
@@ -394,12 +461,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   /* STEP 1: ¿Cuál es tu rol? */
   if (step === 1) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-['Inter',sans-serif]">
-        {/* BACKGROUND: Aurora */}
-        <div className="absolute inset-0 bg-[#0f172a] z-0">
-          <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-blue-600/20 blur-[120px] animate-pulse-slow"></div>
-          <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-purple-600/20 blur-[120px] animate-pulse-slow delay-1000"></div>
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150"></div>
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-sans bg-[#020408]">
+        {/* BACKGROUND: Tactical Refresh */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#0f172a_0%,#020408_100%)]"></div>
+          <div className="absolute inset-0 opacity-[0.02] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:60px_60px]"></div>
+          <div className="absolute top-[-20%] left-[20%] w-[80%] h-[60%] rounded-full bg-blue-600/10 blur-[140px] animate-pulse-slow"></div>
         </div>
 
         <div className="w-full max-w-4xl space-y-8 animate-fade-in-up relative z-10 p-4">
@@ -480,11 +547,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   /* STEP 2: The EPIC Reveal */
   if (step === 2) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden font-['Inter',sans-serif] text-center p-4">
-        {/* BACKGROUND: Intense Aurora */}
-        <div className="absolute inset-0 bg-[#0f172a] z-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-[#0f172a] to-[#0f172a] animate-pulse-slow"></div>
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden font-sans text-center p-4 bg-[#020408]">
+        {/* BACKGROUND: Intense Tactical Reveal */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#111827_0%,#020408_100%)]"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] opacity-[0.03] animate-spin-slow [background-image:conic-gradient(from_0deg,transparent,white,transparent)]"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-[#020408] to-[#020408] animate-pulse-slow"></div>
         </div>
 
         <div className="relative z-10 max-w-2xl animate-scale-in">
@@ -494,14 +562,14 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
             </span>
           </div>
 
-          <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 leading-none">
-            <span className="block text-2xl md:text-3xl font-bold text-blue-400 tracking-[0.3em] mb-4 uppercase opacity-80">
+          <h2 className="text-4xl md:text-8xl font-black text-white tracking-tighter mb-6 leading-none">
+            <span className="block text-xl md:text-3xl font-bold text-blue-400 tracking-[0.2em] md:tracking-[0.3em] mb-4 uppercase opacity-80">
               Bienvenido
             </span>
             {selectedRoleData?.label}
           </h2>
 
-          <p className="text-xl md:text-2xl text-slate-300 font-medium max-w-xl mx-auto leading-relaxed mb-12">
+          <p className="text-lg md:text-2xl text-slate-300 font-medium max-w-xl mx-auto leading-relaxed mb-12">
             El sistema ha configurado el entorno para tu perfil.
             <br />
             <span className="text-blue-400 font-bold">
@@ -509,13 +577,13 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
             </span>
           </p>
 
-          <div className="pt-8 flex justify-center">
+          <div className="pt-8 flex justify-center w-full px-4">
             <button
               onClick={() => setStep(3)}
-              className="btn-liquid w-full md:w-auto min-w-[350px]"
+              className="btn-liquid w-full md:w-auto md:min-w-[350px]"
             >
               <div className="btn-liquid-glass"></div>
-              <div className="btn-liquid-inner gap-4 text-sm">
+              <div className="btn-liquid-inner gap-4 text-xs md:text-sm">
                 <span>Desbloquear Funciones</span>
                 <span className="material-symbols-outlined">lock_open</span>
               </div>
@@ -573,40 +641,53 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
   /* STEP 3: The Form */
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 font-['Inter',sans-serif] relative bg-[#0f172a]">
-      {/* BACKGROUND: Aurora again */}
-      <div className="absolute inset-0 bg-[#0f172a] z-0 pointer-events-none">
-        <div className="absolute top-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[100px] animate-pulse-slow"></div>
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150"></div>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 font-sans relative bg-[#020408]">
+      {/* BACKGROUND: Tactical Grid Overlay */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,#0f172a_0%,#020408_100%)]"></div>
+        <div className="absolute inset-0 opacity-[0.02] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:40px_40px]"></div>
       </div>
 
       {/* LEFT PANEL: Context & Info */}
-      <div className="hidden lg:flex lg:col-span-4 bg-black/20 backdrop-blur-md border-r border-white/5 p-12 flex-col justify-between relative z-10">
+      <div className="hidden lg:flex lg:col-span-4 bg-[#0b0e14]/60 backdrop-blur-2xl border-r border-white/5 p-12 flex-col justify-between relative z-10 overflow-hidden">
+        {/* Glow Effects */}
+        <div className="absolute top-[-10%] left-[-20%] w-full h-1/2 bg-blue-500/10 blur-[120px] pointer-events-none"></div>
+
         <div>
           <div className="flex items-center gap-4 mb-20">
-            <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-              <span className="material-symbols-outlined text-3xl text-white">
-                school
-              </span>
+            <div className="size-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl overflow-hidden relative group">
+              <div className="absolute inset-0 bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors"></div>
+              <img
+                src="/assets/branding/SASE.png"
+                alt="SASE"
+                className="h-8 brightness-0 invert opacity-80 relative z-10"
+              />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white tracking-tight">
-                SASE 310
+              <h1 className="text-2xl font-black text-white tracking-[0.2em] uppercase italic">
+                SASE <span className="text-blue-500 font-black italic">IA</span>
               </h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                Sistema de Administración
-              </p>
+              <div className="flex items-center gap-2">
+                <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.4em]">
+                  Módulo de Alistamiento
+                </p>
+              </div>
             </div>
           </div>
 
           <div className="space-y-12">
-            <div>
+            <div className="animate-slide-right">
               <p className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">
                 Rol Seleccionado
               </p>
-              <h2 className="text-5xl font-black text-white uppercase leading-none tracking-tighter">
+              <h2 className="text-5xl font-black text-white uppercase leading-none tracking-tighter mb-4">
                 {selectedRoleData?.label}
               </h2>
+              <p className="text-slate-400 text-sm leading-relaxed font-medium">
+                Protocolo de alta institucional activo. Sus datos serán
+                procesados bajo estándares de encriptación NEM 2026.
+              </p>
             </div>
 
             <div className="glass-panel p-6 rounded-2xl border border-white/10 bg-white/5">
@@ -659,7 +740,9 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
               <span className="material-symbols-outlined text-white">
                 school
               </span>
-              <span className="text-white font-bold">SASE 310</span>
+              <span className="text-white font-bold italic tracking-widest">
+                SASE NUCLEUS
+              </span>
             </div>
           </div>
 
@@ -698,6 +781,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     id="reg-nombres"
                     name="nombres"
                     label="Nombre(s)"
+                    title="Ingrese sus nombres oficiales"
                     value={formData.nombres}
                     onChange={(v: string) =>
                       setFormData({ ...formData, nombres: v.toUpperCase() })
@@ -707,6 +791,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     id="reg-paterno"
                     name="apellidoPaterno"
                     label="Apellido Paterno"
+                    title="Ingrese su primer apellido"
                     value={formData.apellidoPaterno}
                     onChange={(v: string) =>
                       setFormData({
@@ -719,6 +804,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     id="reg-materno"
                     name="apellidoMaterno"
                     label="Apellido Materno"
+                    title="Ingrese su segundo apellido"
                     value={formData.apellidoMaterno}
                     onChange={(v: string) =>
                       setFormData({
@@ -734,6 +820,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     name="curp"
                     label="CLAVE UNICA DE REGISTRO DE POBLACION CURP"
                     placeholder="18 Caracteres"
+                    title="Ingrese su CURP de 18 caracteres"
                     isMono
                     value={formData.curp}
                     onChange={(v: string) =>
@@ -746,6 +833,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                         id="reg-fecha"
                         name="fechaNacimiento"
                         label="Fecha de Nacimiento"
+                        title="Seleccione su fecha de nacimiento"
                         type="date"
                         value={formData.fechaNacimiento}
                         onChange={(v: string) =>
@@ -808,6 +896,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     <select
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all uppercase appearance-none"
                       value={formData.turno}
+                      title="Seleccionar turno de adscripción"
+                      aria-label="Seleccionar turno de adscripción"
                       onChange={(e) =>
                         setFormData({ ...formData, turno: e.target.value })
                       }
@@ -826,61 +916,98 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 </div>
               </div>
 
-              {/* SECTION: Account */}
+              {/* SECTION: Bóveda Personal (Security Questions) */}
               <div className="space-y-6">
                 <div className="flex items-center gap-2 mb-6 opacity-80">
-                  <span className="w-8 h-[2px] bg-purple-500"></span>
-                  <h3 className="text-xs font-black text-purple-400 uppercase tracking-widest">
-                    02. DATOS DE CONTACTO
+                  <span className="w-8 h-[2px] bg-amber-500"></span>
+                  <h3 className="text-xs font-black text-amber-500 uppercase tracking-widest">
+                    03. BÓVEDA DE RECUPERACIÓN (SOPORTE)
                   </h3>
                   <span className="flex-1 h-[1px] bg-white/10"></span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6">
-                  <InputGroupSase
-                    id="reg-email"
-                    name="correoInstitucional"
-                    label="Correo Electrónico (Institucional o Personal)"
-                    type="email"
-                    placeholder="nombre@aefcm.gob.mx"
-                    value={formData.correoInstitucional}
-                    onChange={(v: string) =>
-                      setFormData({ ...formData, correoInstitucional: v })
-                    }
-                  />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputGroupSase
-                      id="reg-pass"
-                      name="password"
-                      label="Contraseña"
-                      type={showPassword ? "text" : "password"}
-                      value={formData.password}
-                      onChange={(v: string) =>
-                        setFormData({ ...formData, password: v })
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight bg-amber-500/5 p-4 rounded-xl border border-amber-500/10">
+                  Importante: Estas preguntas le permitirán cambiar su
+                  contraseña si la olvida, ya que SASE no requiere el uso de
+                  correos externos para resetear claves.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest pl-1">
+                      Pregunta 1
+                    </label>
+                    <select
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none focus:border-amber-500/50"
+                      value={formData.preguntaSeguridad1}
+                      title="Seleccionar pregunta de seguridad 1"
+                      aria-label="Seleccionar pregunta de seguridad 1"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          preguntaSeguridad1: e.target.value,
+                        })
                       }
-                      rightElement={
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="hover:text-white transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-lg">
-                            {showPassword ? "visibility_off" : "visibility"}
-                          </span>
-                        </button>
-                      }
-                    />
-                    <InputGroupSase
-                      id="reg-pass-confirm"
-                      name="confirmPassword"
-                      label="Confirmar Contraseña"
-                      type={showPassword ? "text" : "password"}
-                      value={formData.confirmPassword}
-                      onChange={(v: string) =>
-                        setFormData({ ...formData, confirmPassword: v })
-                      }
-                    />
+                    >
+                      <option value="">Seleccione una pregunta...</option>
+                      <option value="escuela">
+                        ¿Nombre de su primera escuela primaria?
+                      </option>
+                      <option value="madre">
+                        ¿Ciudad donde nació su madre?
+                      </option>
+                      <option value="mascota">
+                        ¿Nombre de su primera mascota?
+                      </option>
+                    </select>
                   </div>
+                  <InputGroupSase
+                    label="Respuesta de Seguridad 1"
+                    value={formData.respuestaSeguridad1}
+                    onChange={(v: string) =>
+                      setFormData({ ...formData, respuestaSeguridad1: v })
+                    }
+                    placeholder="Su respuesta aquí..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest pl-1">
+                      Pregunta 2
+                    </label>
+                    <select
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none focus:border-amber-500/50"
+                      value={formData.preguntaSeguridad2}
+                      title="Seleccionar pregunta de seguridad 2"
+                      aria-label="Seleccionar pregunta de seguridad 2"
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          preguntaSeguridad2: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Seleccione una pregunta...</option>
+                      <option value="libro">
+                        ¿Título de su libro favorito?
+                      </option>
+                      <option value="auto">
+                        ¿Marca de su primer automóvil?
+                      </option>
+                      <option value="idolo">
+                        ¿Nombre de su héroe de la infancia?
+                      </option>
+                    </select>
+                  </div>
+                  <InputGroupSase
+                    label="Respuesta de Seguridad 2"
+                    value={formData.respuestaSeguridad2}
+                    onChange={(v: string) =>
+                      setFormData({ ...formData, respuestaSeguridad2: v })
+                    }
+                    placeholder="Su respuesta aquí..."
+                  />
                 </div>
               </div>
 

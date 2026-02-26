@@ -28,12 +28,61 @@ export const QuickRegisterModal: React.FC = () => {
   const [showProtocolModal, setShowProtocolModal] = useState(false);
   const [supportProtocols, setSupportProtocols] = useState<Protocol[]>([]);
 
-  // Sync type with store when modal opens
+  // Sync type and set initial template when modal opens
   React.useEffect(() => {
     if (quickRegisterOpen) {
       setType(quickRegisterType);
+
+      const templates: Record<string, string> = {
+        [IncidentType.CONDUCTA]: "[PROTOCOLO CONVIVENCIA] - ",
+        [IncidentType.RETARDO]: "[SERVICIO PREFECTURA] - Ingreso tardío: ",
+        [IncidentType.UNIFORME]: "[REVISIÓN UNIFORME] - Se observa: ",
+        [IncidentType.SALUD]: "[ATENCIÓN ENFERMERÍA] - Motivo: ",
+        [IncidentType.ACADEMICO]: "[SEGUIMIENTO ACADÉMICO] - ",
+        [IncidentType.ASISTENCIA]: "[LISTA DE ASISTENCIA] - ",
+      };
+
+      if (!description) {
+        setDescription(templates[quickRegisterType] || "");
+      }
     }
   }, [quickRegisterOpen, quickRegisterType]);
+
+  const getQuickGuides = (currentType: IncidentType) => {
+    const guides: Record<string, string[]> = {
+      [IncidentType.CONDUCTA]: [
+        "Pelea física",
+        "Acoso verbal",
+        "Falta de respeto",
+        "Uso de celular",
+      ],
+      [IncidentType.RETARDO]: [
+        "15 min tarde",
+        "Sin justificante",
+        "Reincidente",
+        "Segunda hora",
+      ],
+      [IncidentType.UNIFORME]: [
+        "Falta pants",
+        "Playera no oficial",
+        "Tenis de color",
+        "Sin sudadera",
+      ],
+      [IncidentType.SALUD]: ["Dolor de cabeza", "Nauseas", "Caída", "Alergia"],
+      [IncidentType.ACADEMICO]: [
+        "No entrega tarea",
+        "Falta material",
+        "Distracción total",
+        "Bajo promedio",
+      ],
+      [IncidentType.ASISTENCIA]: [
+        "Se retiró del aula",
+        "No llegó a clase",
+        "Cuidado de hermanos",
+      ],
+    };
+    return guides[currentType] || [];
+  };
 
   // Smart search filters
   const [selectedGrado, setSelectedGrado] = useState<string>("");
@@ -334,7 +383,7 @@ export const QuickRegisterModal: React.FC = () => {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
       <div className="bg-slate-900/90 border border-white/10 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in text-white">
         {/* Header */}
         <div className="bg-primary p-4 flex justify-between items-center text-white">
@@ -731,11 +780,39 @@ export const QuickRegisterModal: React.FC = () => {
               <textarea
                 id="qr-desc"
                 name="description"
-                className="w-full px-3 py-2 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary outline-none h-24 resize-none placeholder:text-gray-500"
+                className="w-full px-3 py-2 border border-white/20 rounded-lg bg-black/40 text-white focus:ring-2 focus:ring-primary outline-none h-24 resize-none placeholder:text-gray-500 font-medium text-sm"
                 placeholder="Describa el hecho de forma objetiva..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+
+              {/* GUIAS DE REDACCIÓN (Premium Actionable Labels) */}
+              <div className="mt-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[9px] font-black uppercase text-blue-400 tracking-[0.2em]">
+                    Sugerencias de Registro
+                  </span>
+                  <div className="h-px flex-1 bg-blue-500/20"></div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getQuickGuides(type).map((guide) => (
+                    <button
+                      key={guide}
+                      type="button"
+                      onClick={() =>
+                        setDescription((prev) =>
+                          prev.endsWith(" ")
+                            ? prev + guide
+                            : prev + " " + guide,
+                        )
+                      }
+                      className="px-2 py-1.5 bg-blue-500/5 hover:bg-blue-500/10 border border-blue-500/20 hover:border-blue-500/40 rounded-lg text-[10px] text-blue-300 font-bold transition-all hover:scale-105 active:scale-95"
+                    >
+                      + {guide}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Footer Actions */}

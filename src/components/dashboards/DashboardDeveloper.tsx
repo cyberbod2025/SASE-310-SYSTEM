@@ -72,7 +72,7 @@ export const DashboardDeveloper = () => {
   };
 
   return (
-    <div className="w-full h-full p-4 md:p-8 overflow-y-auto custom-scrollbar bg-[#0b0e14] text-white">
+    <div className="min-h-full p-4 md:p-8 pb-32 bg-transparent text-white">
       {/* Dev Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-white/10 pb-6">
         <div className="flex items-center gap-4">
@@ -103,6 +103,7 @@ export const DashboardDeveloper = () => {
           <select
             className="bg-slate-800 border-none rounded-xl text-[10px] font-black uppercase px-4 cursor-pointer focus:ring-2 ring-indigo-500"
             value={currentUserRole}
+            title="Cambiar rol de usuario (Simulación)"
             onChange={(e) => switchRole(e.target.value as UserRole)}
           >
             {Object.values(UserRole).map((role) => (

@@ -116,6 +116,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/50 hover:text-white"
+            title="Cerrar generador de documentos"
           >
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -131,6 +132,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
                 value={docType}
                 onChange={(e) => setDocType(e.target.value as any)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none"
+                title="Seleccionar el tipo de documento institucional a generar"
               >
                 <option value="HECHOS">Narración de Hechos</option>
                 <option value="MINUTA">Minuta de Acuerdos</option>
@@ -147,6 +149,8 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
                 type="text"
                 value={studentName}
                 disabled
+                title="Nombre del alumno (lectura únicamente)"
+                placeholder="Nombre del alumno"
                 className="w-full bg-slate-100 border border-slate-200 rounded-xl p-3 text-sm font-black text-slate-500 uppercase"
               />
             </div>
@@ -161,6 +165,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
               value={details}
               onChange={(e) => setDetails(e.target.value)}
               placeholder="Describa brevemente lo sucedido o los acuerdos pactados..."
+              title="Ingrese los detalles o puntos clave para el documento"
               className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
             />
           </div>
@@ -174,6 +179,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
                 <button
                   onClick={() => setGeneratedContent("")}
                   className="text-[10px] font-black text-slate-400 hover:text-red-500 uppercase tracking-widest"
+                  title="Borrar el contenido generado"
                 >
                   Borrar
                 </button>
@@ -189,6 +195,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
           <button
             onClick={onClose}
             className="px-6 py-2.5 text-xs font-black text-slate-500 uppercase tracking-widest hover:bg-slate-200 rounded-xl transition-colors"
+            title="Cancelar y salir del generador"
           >
             Cancelar
           </button>
@@ -197,6 +204,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
               disabled={!details || isGenerating}
               onClick={handleGenerate}
               className="px-8 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50 transition-all shadow-xl shadow-slate-900/20 flex items-center gap-2"
+              title="Generar la estructura del documento con inteligencia artificial"
             >
               {isGenerating ? (
                 <>
@@ -218,6 +226,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
             <button
               onClick={handleSaveAndPrint}
               className="px-8 py-2.5 bg-blue-700 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-800 transition-all shadow-xl shadow-blue-200 flex items-center gap-2"
+              title="Firmar digitalmente, guardar en expediente e imprimir el documento"
             >
               <span className="material-symbols-outlined text-[18px]">
                 print

@@ -88,7 +88,72 @@ const DOCENTES_POR_GRUPO: Record<
 };
 
 // Mock data
-const MOCK_SOLICITUDES: ReporteDocenteRequest[] = [];
+// Mock data con respuestas para demostración
+const MOCK_SOLICITUDES: ReporteDocenteRequest[] = [
+  {
+    id: "srd-1",
+    alumnoId: "1",
+    alumnoNombre: "JUAN PÉREZ GARCÍA",
+    alumnoGrupo: "3º A",
+    tipoReporte: ["academico", "conductual"],
+    docentesSolicitados: ["Prof. Vargas", "Prof. Medina"],
+    observacionesOrientacion:
+      "Bajo rendimiento en el primer trimestre y reporte de indisciplina en receso.",
+    estado: "completado",
+    respuestas: [
+      {
+        docenteNombre: "Prof. Vargas",
+        materia: "Español",
+        fechaRespuesta: new Date().toISOString(),
+        academico: {
+          haceTareas: false,
+          entregaActividades: true,
+          participa: false,
+          materialCompleto: true,
+          cuadernoCompleto: true,
+          observaciones:
+            "El alumno tiene potencial pero se distrae mucho en clase. Falta entrega de tareas constantes.",
+        },
+        conductual: {
+          actitud: "indiferente",
+          observaciones:
+            "No causa problemas graves pero su actitud es de apatía ante las actividades.",
+        },
+        comunicacionPadres: {
+          envioMensajes: true,
+          recibioRespuesta: false,
+          observaciones:
+            "Se mandó recado en el cuaderno el martes pasado, no regresó firmado.",
+        },
+      },
+      {
+        docenteNombre: "Prof. Medina",
+        materia: "Matemáticas",
+        fechaRespuesta: new Date().toISOString(),
+        academico: {
+          haceTareas: true,
+          entregaActividades: true,
+          participa: true,
+          materialCompleto: true,
+          cuadernoCompleto: true,
+          observaciones:
+            "En matemáticas trabaja bien, aunque le cuesta trabajo la parte algebraica.",
+        },
+        conductual: {
+          actitud: "positiva",
+          observaciones: "Muestra buena disposición en mi clase.",
+        },
+        comunicacionPadres: {
+          envioMensajes: false,
+          recibioRespuesta: false,
+          observaciones:
+            "No ha sido necesario contactar a los padres por desempeño en mi materia.",
+        },
+      },
+    ],
+    createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+  },
+];
 
 export const SolicitudReportesDocentes: React.FC = () => {
   const { students } = useApp();
@@ -97,6 +162,9 @@ export const SolicitudReportesDocentes: React.FC = () => {
   >("nueva");
   const [solicitudes, setSolicitudes] =
     useState<ReporteDocenteRequest[]>(MOCK_SOLICITUDES);
+  const [selectedCompleted, setSelectedCompleted] = useState<string | null>(
+    null,
+  );
 
   // Form state
   const [selectedStudent, setSelectedStudent] = useState<string>("");
@@ -246,6 +314,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
             </div>
             <div className="p-4">
               <select
+                title="Seleccionar alumno para reporte"
                 value={selectedStudent}
                 onChange={(e) => {
                   const studentId = e.target.value;
@@ -534,21 +603,258 @@ export const SolicitudReportesDocentes: React.FC = () => {
 
       {/* Completadas Tab */}
       {activeTab === "completadas" && (
-        <div className="bg-white rounded-xl border border-border-color shadow-sm overflow-hidden">
+        <div className="space-y-6">
           {completadas.length === 0 ? (
-            <div className="p-10 text-center text-text-secondary">
+            <div className="bg-white rounded-xl border border-border-color shadow-sm p-10 text-center text-text-secondary">
               <span className="material-symbols-outlined text-4xl mb-2">
                 folder_open
               </span>
               <p>No hay solicitudes completadas aún.</p>
             </div>
           ) : (
-            <div className="divide-y divide-border-color">
-              {completadas.map((sol) => (
-                <div key={sol.id} className="p-4">
-                  <p className="font-bold">{sol.alumnoNombre}</p>
-                </div>
-              ))}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Lista de Solicitudes */}
+              <div className="lg:col-span-1 space-y-3">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+                  Expedientes Recientes
+                </h3>
+                {completadas.map((sol) => (
+                  <button
+                    key={sol.id}
+                    onClick={() => setSelectedCompleted(sol.id)}
+                    className={`w-full p-4 rounded-xl border text-left transition-all ${
+                      selectedCompleted === sol.id
+                        ? "bg-blue-600 border-blue-500 text-white shadow-lg"
+                        : "bg-white border-slate-200 text-slate-600 hover:border-blue-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`size-8 rounded-lg flex items-center justify-center ${selectedCompleted === sol.id ? "bg-white/20" : "bg-blue-50 text-blue-600"}`}
+                      >
+                        <span className="material-symbols-outlined text-lg">
+                          description
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-black text-xs uppercase truncate">
+                          {sol.alumnoNombre}
+                        </p>
+                        <p
+                          className={`text-[9px] font-bold ${selectedCompleted === sol.id ? "text-white/70" : "text-slate-400"}`}
+                        >
+                          {sol.alumnoGrupo} •{" "}
+                          {new Date(sol.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Detalle de Respuestas */}
+              <div className="lg:col-span-2">
+                {selectedCompleted ? (
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden animate-fadeIn">
+                    {(() => {
+                      const sol = completadas.find(
+                        (s) => s.id === selectedCompleted,
+                      );
+                      if (!sol) return null;
+                      return (
+                        <>
+                          <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+                            <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-1">
+                              Informe Consolidado: {sol.alumnoNombre}
+                            </h3>
+                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">
+                              Folio: {sol.id} • Grupo: {sol.alumnoGrupo} •{" "}
+                              {sol.respuestas.length} Docentes Respondieron
+                            </p>
+                          </div>
+                          <div className="p-6 space-y-8 max-h-[600px] overflow-y-auto custom-scrollbar">
+                            {sol.respuestas.map((resp, idx) => (
+                              <div
+                                key={idx}
+                                className="space-y-4 border-b border-slate-100 pb-8 last:border-0 last:pb-0"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="size-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+                                      <span className="material-symbols-outlined">
+                                        person
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs font-black text-slate-800 uppercase">
+                                        {resp.docenteNombre}
+                                      </h4>
+                                      <p className="text-[10px] text-blue-600 font-black uppercase tracking-tight">
+                                        {resp.materia}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                                    {new Date(
+                                      resp.fechaRespuesta,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {/* Académico */}
+                                  {resp.academico && (
+                                    <div className="bg-blue-50/30 rounded-xl p-4 border border-blue-100/50">
+                                      <h5 className="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-sm">
+                                          school
+                                        </span>
+                                        Desempeño Académico
+                                      </h5>
+                                      <div className="space-y-2">
+                                        <Indicator
+                                          label="Tareas"
+                                          value={resp.academico.haceTareas}
+                                        />
+                                        <Indicator
+                                          label="Actividades"
+                                          value={
+                                            resp.academico.entregaActividades
+                                          }
+                                        />
+                                        <Indicator
+                                          label="Participación"
+                                          value={resp.academico.participa}
+                                        />
+                                        <div className="mt-3 p-2 bg-white rounded border border-blue-100/50">
+                                          <p className="text-[9px] text-slate-500 font-bold uppercase mb-1">
+                                            Observaciones
+                                          </p>
+                                          <p className="text-[10px] text-slate-700 font-medium italic">
+                                            "
+                                            {resp.academico.observaciones ||
+                                              "Sin comentarios extra"}
+                                            "
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Conductual */}
+                                  {resp.conductual && (
+                                    <div className="bg-amber-50/30 rounded-xl p-4 border border-amber-100/50">
+                                      <h5 className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-sm">
+                                          psychology
+                                        </span>
+                                        Conducta en Clase
+                                      </h5>
+                                      <div className="space-y-4">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[10px] font-bold text-slate-500">
+                                            Actitud:
+                                          </span>
+                                          <span
+                                            className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${
+                                              resp.conductual.actitud ===
+                                              "positiva"
+                                                ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                                                : resp.conductual.actitud ===
+                                                    "agresiva"
+                                                  ? "bg-red-50 text-red-700 border-red-100"
+                                                  : "bg-slate-50 text-slate-500 border-slate-200"
+                                            }`}
+                                          >
+                                            {resp.conductual.actitud ||
+                                              "No especificado"}
+                                          </span>
+                                        </div>
+                                        <div className="p-2 bg-white rounded border border-amber-100/50">
+                                          <p className="text-[9px] text-slate-500 font-bold uppercase mb-1">
+                                            Dinámica Grupal
+                                          </p>
+                                          <p className="text-[10px] text-slate-700 font-medium italic">
+                                            "
+                                            {resp.conductual.observaciones ||
+                                              "Sin comentarios"}
+                                            "
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Comunicación */}
+                                <div className="bg-purple-50/30 rounded-xl p-4 border border-purple-100/50">
+                                  <h5 className="text-[10px] font-black text-purple-700 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-sm">
+                                      family_restroom
+                                    </span>
+                                    Vínculo con Tutor
+                                  </h5>
+                                  <div className="flex gap-4 mb-3">
+                                    <Indicator
+                                      label="Mensajes Enviados"
+                                      value={
+                                        resp.comunicacionPadres.envioMensajes
+                                      }
+                                    />
+                                    <Indicator
+                                      label="Respuesta Recibida"
+                                      value={
+                                        resp.comunicacionPadres.recibioRespuesta
+                                      }
+                                    />
+                                  </div>
+                                  <div className="p-2 bg-white rounded border border-purple-100/50">
+                                    <p className="text-[10px] text-slate-700 font-medium">
+                                      "
+                                      {resp.comunicacionPadres.observaciones ||
+                                        "No hay contacto previo"}
+                                      "
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+                            <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-black uppercase hover:bg-slate-50 transition-all flex items-center gap-2">
+                              <span className="material-symbols-outlined text-sm">
+                                print
+                              </span>
+                              Imprimir Expediente
+                            </button>
+                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-black uppercase hover:bg-blue-700 transition-all shadow-md flex items-center gap-2">
+                              <span className="material-symbols-outlined text-sm">
+                                ios_share
+                              </span>
+                              Compartir con Directivo
+                            </button>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                ) : (
+                  <div className="h-full bg-slate-50 rounded-2xl border border-dashed border-slate-200 flex flex-col items-center justify-center p-12 text-center opacity-60">
+                    <div className="size-20 rounded-full bg-white border border-slate-100 flex items-center justify-center text-slate-300 mb-6 shadow-sm">
+                      <span className="material-symbols-outlined text-4xl">
+                        visibility
+                      </span>
+                    </div>
+                    <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest">
+                      Vista de Detalle
+                    </h4>
+                    <p className="text-xs text-slate-300 mt-2 max-w-[240px]">
+                      Seleccione una solicitud de la columna izquierda para
+                      visualizar el informe completo
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -739,3 +1045,27 @@ export const SolicitudReportesDocentes: React.FC = () => {
     </div>
   );
 };
+const Indicator = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: boolean | null;
+}) => (
+  <div className="flex items-center justify-between gap-4">
+    <span className="text-[10px] font-bold text-slate-600">{label}</span>
+    <div
+      className={`px-2 py-0.5 rounded text-[8px] font-black uppercase shadow-sm ${
+        value === true
+          ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+          : value === false
+            ? "bg-rose-100 text-rose-800 border border-rose-200"
+            : "bg-slate-100 text-slate-400 border border-slate-200"
+      }`}
+    >
+      {value === true ? "SÍ" : value === false ? "NO" : "SIN RESP"}
+    </div>
+  </div>
+);
+
+export default SolicitudReportesDocentes;

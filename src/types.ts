@@ -157,6 +157,7 @@ export interface SocioeconomicData {
 export interface Student {
   id: string;
   matricula: string;
+  curp?: string;
   name: string;
   birthdate?: string; // ISO Date
   gender?: "M" | "F" | "X";
@@ -248,6 +249,8 @@ export enum AppModule {
   DEVELOPER = "developer",
   NOT_FOUND = "not_found",
   HOME = "home",
+  REGISTRO_PERSONAL = "registro_personal",
+  PLANEACION_NEM = "planeacion_nem",
 }
 
 export interface Group {
@@ -263,6 +266,38 @@ export interface TeacherAssignment {
   grupo_id: string;
   materia: string;
 }
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  read: boolean;
+  time: string;
+  type?: "info" | "warning" | "success" | "error" | "SYSTEM";
+  actionModule?: AppModule;
+  actionData?: any;
+  targetRole?: UserRole;
+}
+
+export interface Suministro {
+  id: string;
+  nombre: string;
+  cantidad: number;
+  cantidadMaxima: number;
+  categoria: string;
+  unidad: string;
+}
+
+export interface DailyStats {
+  attendanceCount: number;
+  lateCount: number;
+}
+
+export type AuditActionType =
+  | "CONSULTA"
+  | "ACTUALIZACION"
+  | "CREACION"
+  | "ELIMINACION";
 
 export interface SystemNotice {
   id: string;

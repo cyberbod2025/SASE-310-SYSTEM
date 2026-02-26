@@ -3,6 +3,7 @@ import { useApp } from "../store";
 import { UserRole } from "../types";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
+import { MiniCalendar } from "./widgets/MiniCalendar";
 
 // Types for the solicitudes system
 interface SolicitudDocumento {
@@ -363,78 +364,116 @@ export const PanelSolicitudes: React.FC = () => {
             <h3 className="font-bold text-lg">Solicitudes de Documentos</h3>
             <button
               onClick={() => setActiveTab("nuevo")}
-              className="text-primary text-sm font-bold hover:underline"
+              className="px-4 py-2 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-lg shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center gap-2"
             >
-              + Nueva Solicitud
+              <span className="material-symbols-outlined text-sm">
+                add_circle
+              </span>
+              Nueva Solicitud
             </button>
           </div>
 
-          {solicitudes.length === 0 ? (
-            <div className="p-10 text-center text-text-secondary">
-              No hay solicitudes pendientes.
-            </div>
-          ) : (
-            <div className="divide-y divide-border-color">
-              {solicitudes.map((sol) => (
-                <div
-                  key={sol.id}
-                  className="p-4 hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className={`px-2.5 py-1 rounded text-xs font-black uppercase tracking-widest ${getPrioridadStyle(
-                            sol.prioridad,
-                          )}`}
-                        >
-                          {sol.prioridad}
-                        </span>
-                        <span
-                          className={`px-2.5 py-1 rounded text-xs font-black uppercase tracking-widest ${getEstadoStyle(
-                            sol.estado,
-                          )}`}
-                        >
-                          {sol.estado.replace("_", " ")}
-                        </span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-8 divide-y divide-border-color">
+              {solicitudes.length === 0 ? (
+                <div className="p-10 text-center text-text-secondary">
+                  No hay solicitudes pendientes.
+                </div>
+              ) : (
+                solicitudes.map((sol) => (
+                  <div
+                    key={sol.id}
+                    className="p-4 hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span
+                            className={`px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest ${getPrioridadStyle(
+                              sol.prioridad,
+                            )}`}
+                          >
+                            {sol.prioridad}
+                          </span>
+                          <span
+                            className={`px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest ${getEstadoStyle(
+                              sol.estado,
+                            )}`}
+                          >
+                            {sol.estado.replace("_", " ")}
+                          </span>
+                        </div>
+                        <p className="font-bold text-slate-800">
+                          {TIPOS_DOCUMENTO.find((t) => t.id === sol.tipo)
+                            ?.label || sol.tipo}
+                        </p>
+                        <p className="text-sm text-slate-500 mt-1">
+                          {sol.descripcion}
+                        </p>
+                        {sol.alumnoNombre && (
+                          <p className="text-xs text-blue-600 mt-2 font-bold flex items-center gap-1">
+                            <span className="material-symbols-outlined text-sm">
+                              person
+                            </span>{" "}
+                            {sol.alumnoNombre}
+                          </p>
+                        )}
                       </div>
-                      <p className="font-bold text-text-main">
-                        {TIPOS_DOCUMENTO.find((t) => t.id === sol.tipo)
-                          ?.label || sol.tipo}
-                      </p>
-                      <p className="text-sm text-text-secondary">
-                        {sol.descripcion}
-                      </p>
-                      {sol.alumnoNombre && (
-                        <p className="text-xs text-blue-600 mt-1">
-                          <span className="material-symbols-outlined text-xs align-middle">
-                            person
-                          </span>{" "}
-                          {sol.alumnoNombre}
+                      <div className="text-right">
+                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">
+                          Asignado
                         </p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-text-main">
-                        Asignado a: {sol.asignadoNombre}
-                      </p>
-                      {sol.fechaLimite && (
-                        <p className="text-xs text-text-secondary">
-                          Límite:{" "}
-                          {new Date(sol.fechaLimite).toLocaleDateString(
-                            "es-MX",
-                          )}
+                        <p className="text-sm font-bold text-slate-700">
+                          {sol.asignadoNombre}
                         </p>
-                      )}
-                      <p className="text-xs text-gray-400 mt-1 font-bold">
-                        {new Date(sol.createdAt).toLocaleDateString("es-MX")}
-                      </p>
+                        {sol.fechaLimite && (
+                          <div className="mt-3 inline-flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-lg border border-amber-100">
+                            <span className="material-symbols-outlined text-[14px] text-amber-600">
+                              event
+                            </span>
+                            <p className="text-[10px] font-bold text-amber-700">
+                              {new Date(sol.fechaLimite).toLocaleDateString(
+                                "es-MX",
+                              )}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
-          )}
+            <div className="lg:col-span-4 p-6 bg-slate-50 border-l border-slate-100">
+              <MiniCalendar />
+              <div className="mt-6 space-y-4">
+                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                  Resumen de Carga
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 bg-white rounded-xl border border-slate-200">
+                    <p className="text-2xl font-black text-blue-600">
+                      {solicitudes.length}
+                    </p>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase">
+                      Totales
+                    </p>
+                  </div>
+                  <div className="p-3 bg-white rounded-xl border border-slate-200">
+                    <p className="text-2xl font-black text-amber-600">
+                      {
+                        solicitudes.filter((s) => s.estado === "pendiente")
+                          .length
+                      }
+                    </p>
+                    <p className="text-[8px] font-bold text-slate-400 uppercase">
+                      Pendientes
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

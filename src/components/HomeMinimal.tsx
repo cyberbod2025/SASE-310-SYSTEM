@@ -23,8 +23,8 @@ export const HomeMinimal: React.FC<HomeMinimalProps> = ({ user, onLogout }) => {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-white">
-            Bienvenido a SASE-310
+          <h1 className="text-2xl font-bold text-white uppercase italic tracking-tighter">
+            Bienvenido a SASE IA NUCLEUS
           </h1>
           <p className="text-sm text-slate-400 uppercase tracking-widest font-mono">
             Modo Rescate • Solo Autenticación

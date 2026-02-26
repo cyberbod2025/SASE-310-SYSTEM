@@ -69,6 +69,7 @@ export const GenericActionModal = ({
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-slate-600 transition-colors"
+            title="Cerrar modal"
           >
             <span className="material-symbols-outlined">close</span>
           </button>
@@ -88,12 +89,15 @@ export const GenericActionModal = ({
                   required={field.required}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700"
                   rows={3}
+                  placeholder="Escriba los detalles aquí..."
+                  title="Detalles de la acción"
                   onChange={(e) => handleChange(field.name, e.target.value)}
                 />
               ) : field.type === "select" ? (
                 <select
                   required={field.required}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700 appearance-none"
+                  title="Seleccionar opción"
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   defaultValue=""
                 >
@@ -117,6 +121,7 @@ export const GenericActionModal = ({
                   <input
                     type="file"
                     className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+                    title="Seleccionar archivo o evidencia"
                     onChange={(e) =>
                       handleChange(field.name, e.target.files?.[0])
                     }
@@ -132,6 +137,8 @@ export const GenericActionModal = ({
                   type={field.type}
                   required={field.required}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700"
+                  placeholder={field.label}
+                  title={field.label}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                 />
               )}

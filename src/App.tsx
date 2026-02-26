@@ -8,6 +8,7 @@ import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Login } from "./components/Login";
 import { Intro } from "./components/Intro";
+import { OfficialDocument } from "./components/OfficialDocument";
 
 // Dashboards (Lazy Loaded)
 const DashboardDocente = React.lazy(() =>
@@ -149,9 +150,26 @@ const LoadingSpinner = () => (
   </div>
 );
 
+const DocumentRenderer = () => {
+  const { activePrintJob, students } = useApp();
+  if (!activePrintJob) return null;
+
+  const student = activePrintJob.studentId
+    ? students.find((s) => s.id === activePrintJob.studentId)
+    : undefined;
+
+  return (
+    <OfficialDocument
+      type={activePrintJob.type}
+      student={student}
+      data={activePrintJob.data}
+    />
+  );
+};
+
 // -- MAIN APP SHELL --
 const MainContent = () => {
-  const { currentModule, currentUserRole } = useApp();
+  const { currentModule, currentUserRole, setCurrentModule } = useApp();
 
   return (
     <React.Suspense fallback={<LoadingSpinner />}>
@@ -202,6 +220,13 @@ const MainContent = () => {
           case UserRole.DEVELOPER:
             return <DashboardDeveloper />;
           default:
+            if (currentModule === (AppModule.REGISTRO_PERSONAL as any)) {
+              return (
+                <RegistroPersonal
+                  onBack={() => setCurrentModule(AppModule.HOME)}
+                />
+              );
+            }
             return <OrbNavigation />;
         }
       })()}
@@ -249,8 +274,8 @@ const App: React.FC = () => {
     );
   }
 
-  // --- INTRO FLOW ---
-  if (showIntro && !session && !isDemoMode) {
+  // --- STARTUP FLOW ---
+  if (showIntro) {
     return <Intro onEnter={() => setShowIntro(false)} />;
   }
 
@@ -269,7 +294,7 @@ const App: React.FC = () => {
       <Login
         onDemoEnter={() => setIsDemoMode(true)}
         onDevEnter={() => {
-          setInitialRole(UserRole.DIRECTIVO);
+          setInitialRole(UserRole.DEVELOPER);
           setIsDemoMode(true);
         }}
         onRegisterClick={() => setIsRegistering(true)}
@@ -279,6 +304,8 @@ const App: React.FC = () => {
 
   return (
     <AppProvider initialRole={initialRole}>
+      <div className="global-scan-line" />
+      <DocumentRenderer />
       <Toaster position="top-center" reverseOrder={false} />
       <ErrorBoundary>
         <Layout>

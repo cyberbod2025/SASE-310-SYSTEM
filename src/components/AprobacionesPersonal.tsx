@@ -21,7 +21,7 @@ interface Solicitud {
   grupo_tutor: string | null;
   area_cobertura: string | null;
   observaciones: string | null;
-  estado: "PENDIENTE" | "APROBADO" | "RECHAZADO" | "OBSERVACIONES";
+  estado: "PENDIENTE" | "APROBADA" | "RECHAZADA" | "OBSERVACIONES";
   observaciones_validacion: string | null;
   metadata?: {
     cct?: string;
@@ -175,22 +175,24 @@ export const AprobacionesPersonal: React.FC = () => {
       try {
         const { error: perfilError } = await supabase
           .from("perfiles_usuario")
-          .insert({
-            id: userId,
-            matricula_sase: assignmentData.matricula_sase,
-            rol: rolesFinales[0],
-            nombre_completo: `${solicitud.nombres} ${solicitud.apellido_paterno} ${solicitud.apellido_materno}`,
-            curp: solicitud.curp,
-            email: solicitud.correo_institucional,
-            telefono: solicitud.telefono,
-            materias: assignmentData.materias,
-            grupos: assignmentData.grupos,
-            turno: solicitud.turno,
-            es_tutor: assignmentData.es_tutor,
-            grupo_tutor: assignmentData.grupo_tutor,
-            alcances: permisosCombinados,
-            estado_cuenta: "activo",
-          });
+          .insert([
+            {
+              id: userId,
+              matricula_sase: assignmentData.matricula_sase,
+              rol: rolesFinales[0],
+              nombre_completo: `${solicitud.nombres} ${solicitud.apellido_paterno} ${solicitud.apellido_materno}`,
+              curp: solicitud.curp,
+              email: solicitud.correo_institucional,
+              telefono: solicitud.telefono || undefined,
+              materias: assignmentData.materias.join(", "),
+              grupos: assignmentData.grupos,
+              turno: solicitud.turno,
+              es_tutor: assignmentData.es_tutor,
+              grupo_tutor: assignmentData.grupo_tutor,
+              alcances: permisosCombinados,
+              estado_cuenta: "activo",
+            },
+          ] as any);
 
         if (perfilError) throw perfilError;
       } catch (perfilErr) {
@@ -202,12 +204,13 @@ export const AprobacionesPersonal: React.FC = () => {
       const { error: updateError } = await supabase
         .from("solicitudes_alta_personal")
         .update({
-          estado: "APROBADO",
+          estado: "APROBADA",
           aprobado_por: userData?.user?.id || "admin-simulado",
           aprobado_en: new Date().toISOString(),
           matricula_sase: assignmentData.matricula_sase,
           es_tutor: assignmentData.es_tutor,
           grupo_tutor: assignmentData.grupo_tutor,
+          materias: assignmentData.materias,
           grupos: assignmentData.grupos,
         })
         .eq("id", solicitud.id);
@@ -251,7 +254,7 @@ export const AprobacionesPersonal: React.FC = () => {
       const { error } = await supabase
         .from("solicitudes_alta_personal")
         .update({
-          estado: "RECHAZADO",
+          estado: "RECHAZADA",
           observaciones_validacion: motivoRechazo,
           aprobado_por: userData?.user?.id,
           aprobado_en: new Date().toISOString(),
@@ -292,10 +295,10 @@ export const AprobacionesPersonal: React.FC = () => {
 
   const pendientes = solicitudes.filter((s) => s.estado === "PENDIENTE");
   const aprobadas = solicitudes.filter(
-    (s) => s.estado === "APROBADO" || s.estado === ("APROBADA" as any),
+    (s) => s.estado === "APROBADA" || s.estado === ("APROBADO" as any),
   );
   const rechazadas = solicitudes.filter(
-    (s) => s.estado === "RECHAZADO" || s.estado === ("RECHAZADA" as any),
+    (s) => s.estado === "RECHAZADA" || s.estado === ("RECHAZADO" as any),
   );
 
   return (
@@ -319,6 +322,7 @@ export const AprobacionesPersonal: React.FC = () => {
             <button
               onClick={() => cargarSolicitudes()}
               className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white/60 hover:text-white transition-all text-xs font-bold uppercase tracking-widest"
+              title="Forzar recarga manual de la lista de solicitudes"
               disabled={loading}
             >
               <span
@@ -432,6 +436,7 @@ export const AprobacionesPersonal: React.FC = () => {
                 <button
                   onClick={() => setSolicitudSeleccionada(null)}
                   className="size-10 bg-white/5 rounded-full flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
+                  title="Cerrar el expediente de la solicitud"
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>
@@ -503,6 +508,7 @@ export const AprobacionesPersonal: React.FC = () => {
                     <button
                       onClick={() => rechazarSolicitud(solicitudSeleccionada)}
                       className="w-full py-4 bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white font-black text-[10px] uppercase tracking-widest rounded-xl border border-red-600/30 transition-all"
+                      title="Rechazar definitivamente esta solicitud de acceso"
                     >
                       Ejecutar Rechazo
                     </button>
@@ -548,6 +554,7 @@ export const AprobacionesPersonal: React.FC = () => {
                           })
                         }
                         placeholder="SEPARAR CON COMAS"
+                        title="Especificar grupos asignados (ej: 1A, 2B)"
                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white font-bold outline-none focus:border-blue-500 transition-all"
                       />
                     </div>
@@ -565,6 +572,7 @@ export const AprobacionesPersonal: React.FC = () => {
                               es_tutor: !assignmentData.es_tutor,
                             })
                           }
+                          title="Alternar estado de tutoría para el personal"
                           className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${assignmentData.es_tutor ? "bg-emerald-600/20 border-emerald-500 text-emerald-400" : "bg-white/5 border-white/5 text-white/40"}`}
                         >
                           <span className="material-symbols-outlined text-sm">
@@ -592,6 +600,7 @@ export const AprobacionesPersonal: React.FC = () => {
                               })
                             }
                             placeholder="EJ: 1-D"
+                            title="Especificar el grupo tutoreado"
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-black outline-none focus:border-emerald-500 transition-all"
                           />
                         </div>
@@ -603,6 +612,7 @@ export const AprobacionesPersonal: React.FC = () => {
                         disabled={procesando === solicitudSeleccionada.id}
                         onClick={() => aprobarSolicitud(solicitudSeleccionada)}
                         className="w-full h-16 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-900/40 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                        title="Finalizar proceso y activar las credenciales del personal"
                       >
                         {procesando === solicitudSeleccionada.id ? (
                           <>
