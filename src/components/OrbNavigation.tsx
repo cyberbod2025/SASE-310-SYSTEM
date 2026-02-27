@@ -3,6 +3,8 @@ import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
+import { SaseIAOrb } from "./SaseIAOrb";
+import { useSaseSystemState } from "../hooks/useSaseSystemState";
 
 // Internal component for Secure Admin Login
 const AdminLoginModal = ({
@@ -149,12 +151,19 @@ const AdminLoginModal = ({
 
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useAuth } from "../components/AuthProvider";
+
 // ... (Rest of AdminLoginModal stays the same)
 
 export const OrbNavigation = () => {
   const { setCurrentModule, currentUserRole, setIsAssistantOpen } = useApp();
+  const { user } = useAuth();
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { systemState: saseState } = useSaseSystemState(
+    currentUserRole,
+    user?.id,
+  );
 
   const getMenuItems = () => {
     const baseItems = [
@@ -363,57 +372,21 @@ export const OrbNavigation = () => {
               <button
                 onClick={() => setIsAssistantOpen(true)}
                 title="Activar IA SASE"
-                className="orb-plasma-base relative z-10 w-32 h-32 md:w-44 md:h-44 rounded-full overflow-hidden cursor-pointer group transition-all duration-700 hover:scale-110 active:scale-95 flex items-center justify-center"
+                className="relative z-10 w-32 h-32 md:w-56 md:h-56 rounded-full overflow-hidden cursor-pointer group transition-all duration-700 hover:scale-110 active:scale-95 flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/5 shadow-2xl"
               >
-                <motion.div
-                  className="absolute inset-0"
-                  animate={{ rotate: [0, 360], scale: [1, 1.15, 0.9, 1.1, 1] }}
-                  transition={{
-                    duration: 18,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                  style={{
-                    background:
-                      "radial-gradient(ellipse at 35% 35%, #00cfff 0%, #3b82f6 35%, #1e1b4b 70%, transparent 90%)",
-                    filter: "blur(8px)",
-                    opacity: 0.95,
-                  }}
-                />
-                <motion.div
-                  className="absolute inset-0"
-                  animate={{
-                    rotate: [360, 0],
-                    scale: [0.9, 1.2, 0.85, 1.05, 0.9],
-                    x: [0, 6, -4, 3, 0],
-                    y: [0, -4, 6, -3, 0],
-                  }}
-                  transition={{
-                    duration: 14,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  style={{
-                    background:
-                      "radial-gradient(ellipse at 65% 60%, #7c3aed 0%, #4f46e5 30%, transparent 65%)",
-                    filter: "blur(10px)",
-                    opacity: 0.7,
-                    mixBlendMode: "screen",
-                  }}
-                />
+                <SaseIAOrb state={saseState} className="w-full h-full" />
 
-                {/* Central IA SASE Identity Text */}
-                <div className="relative z-20 flex flex-col items-center justify-center bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                  <span className="text-[10px] font-black text-white tracking-[0.3em] leading-none mb-1">
+                {/* Central IA SASE Identity Text Overlay */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none drop-shadow-2xl">
+                  <span className="text-[12px] md:text-[14px] font-black text-white tracking-[0.4em] leading-none mb-1 opacity-90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                     IA
                   </span>
-                  <span className="text-xl md:text-2xl font-black text-white italic tracking-tighter leading-none pulse-glow">
+                  <span className="text-2xl md:text-4xl font-black text-white italic tracking-tighter leading-none pulse-glow drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
                     SASE
                   </span>
                 </div>
 
-                <div className="orb-plasma-glass-reflection absolute inset-0 rounded-full pointer-events-none" />
-                <div className="absolute inset-0 rounded-full border border-white/10 group-hover:border-cyan-300/40 transition-all duration-700" />
+                <div className="absolute inset-0 rounded-full border border-white/10 group-hover:border-white/30 transition-all duration-700 pointer-events-none" />
               </button>
             </motion.div>
 
