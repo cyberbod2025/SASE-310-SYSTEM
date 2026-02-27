@@ -10,6 +10,8 @@ import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
 import AIOrbAssistant from "./ai/AIOrbAssistant";
+import { SaseIAOrb } from "./SaseIAOrb";
+import { useSaseSystemState } from "../hooks/useSaseSystemState";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-red-900 border-none",
@@ -74,6 +76,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     markNotificationRead,
   } = useApp();
   const { user } = useAuth();
+  const { systemState } = useSaseSystemState(currentUserRole, user?.id);
 
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -304,7 +307,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             <div className="hidden sm:flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="size-2 bg-blue-500 rounded-full animate-pulse-soft"></span>
+                <SaseIAOrb state={systemState} className="w-8 h-8 mr-1" />
                 <h2 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
                   <span className="text-white/40 italic">IA_NUCLEUS</span>

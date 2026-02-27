@@ -332,9 +332,10 @@ export const Login: React.FC<LoginProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="mt-8 pt-8 border-t border-white/[0.05] flex flex-col items-center gap-6"
+              className="mt-8 pt-8 border-t border-white/[0.05] flex flex-col items-center gap-6 relative z-10"
             >
               <button
+                type="button"
                 onClick={onRegisterClick}
                 className="group flex items-center gap-3 px-8 py-3 rounded-xl bg-white/[0.02] border border-white/5 hover:border-blue-500/40 hover:bg-blue-500/5 transition-all duration-300"
               >
