@@ -54,12 +54,12 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
     eyeX = 25; // Diagonal
     eyeY = -25;
   } else if (phase >= 6) {
-    orbBase = "15, 23, 42"; // Color final imponente y serio (Slate 900)
+    orbBase = "14, 165, 233"; // Azul cielo imponente (Sky 500)
   }
 
-  // Gradiente 3D procedural con sobras más profundas
-  const orbGradient = `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7) 0%, rgba(${orbBase}, 1) 25%, rgba(${orbBase}, 0.7) 60%, rgba(0,0,0,0.95) 100%)`;
-  const orbGlow = `rgba(${orbBase}, 0.6)`;
+  // Gradiente 3D procedural estilo metal de alta densidad
+  const orbGradient = `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9) 0%, rgba(${orbBase}, 1) 40%, rgba(30,58,138, 0.9) 80%, rgba(2,6,23,0.95) 100%)`;
+  const orbGlow = `rgba(${orbBase}, 0.8)`;
   const plasmaColor = `rgba(${orbBase}, 0.8)`;
 
   return (
@@ -123,7 +123,7 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
               className="relative w-full h-full rounded-full flex justify-center items-center transition-all duration-[1200ms] overflow-hidden"
               style={{
                 background: orbGradient,
-                boxShadow: `0 0 80px 30px ${orbGlow}, inset -40px -40px 80px rgba(0,0,0,0.95), inset 20px 20px 40px rgba(255,255,255,0.4), inset -10px -10px 20px rgba(0,0,0,0.6)`,
+                boxShadow: `0 0 100px 40px ${orbGlow}, inset -30px -30px 60px rgba(0,0,0,0.8), inset 30px 30px 50px rgba(255,255,255,0.6), inset -10px -10px 15px rgba(2,8,22,0.9)`,
               }}
             >
               {/* Ojos - Se encienden poco a poco */}

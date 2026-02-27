@@ -180,6 +180,12 @@ export const OrbNavigation = () => {
         return [
           ...baseItems,
           {
+            id: AppModule.APROBACIONES_PERSONAL,
+            label: "Aprobaciones",
+            icon: "group_add",
+            color: "from-cyan-600 to-blue-700",
+          },
+          {
             id: AppModule.BITACORA,
             label: "Auditoría",
             icon: "policy",
@@ -249,9 +255,43 @@ export const OrbNavigation = () => {
             color: "from-emerald-600 to-green-500",
           },
         ];
+      case UserRole.SUBDIRECCION:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.APROBACIONES_PERSONAL,
+            label: "Aprobaciones",
+            icon: "group_add",
+            color: "from-cyan-600 to-blue-700",
+          },
+          {
+            id: AppModule.AGENDA,
+            label: "Agenda",
+            icon: "calendar_month",
+            color: "from-indigo-600 to-blue-500",
+          },
+          {
+            id: AppModule.PROTOCOLOS,
+            label: "Protocolos",
+            icon: "policy",
+            color: "from-emerald-600 to-green-500",
+          },
+          {
+            id: AppModule.REPORTES,
+            label: "Reportes",
+            icon: "analytics",
+            color: "from-amber-600 to-orange-500",
+          },
+        ];
       case UserRole.DIRECTIVO:
         return [
           ...baseItems,
+          {
+            id: AppModule.APROBACIONES_PERSONAL,
+            label: "Aprobaciones",
+            icon: "group_add",
+            color: "from-cyan-600 to-blue-700",
+          },
           {
             id: AppModule.INSCRIPCIONES,
             label: "Admisión",
