@@ -21,6 +21,10 @@ export const Login: React.FC<LoginProps> = ({
   const [loading, setLoading] = useState(false);
   const [showAdminPortal, setShowAdminPortal] = useState(false);
 
+  // IA Orb Interactive State
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [orbColor, setOrbColor] = useState("rgba(14, 165, 233, 1)"); // Cyan
+
   // Recovery State
   const [showRecovery, setShowRecovery] = useState(false);
   const [recoveryStep, setRecoveryStep] = useState(1); // 1: ID, 2: Questions, 3: New Pass
@@ -59,7 +63,32 @@ export const Login: React.FC<LoginProps> = ({
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    // Mouse tracking for Orb
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePosition({ x, y });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+
+    // Occasional Orb Color Change
+    const colors = [
+      "rgba(14, 165, 233, 1)", // Cyan
+      "rgba(0, 200, 83, 1)", // Green
+      "rgba(255, 152, 0, 1)", // Orange
+      "rgba(211, 47, 47, 1)", // Red
+      "rgba(59, 130, 246, 1)", // Blue
+    ];
+    const colorInterval = setInterval(() => {
+      setOrbColor(colors[Math.floor(Math.random() * colors.length)]);
+    }, 5000);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearInterval(colorInterval);
+    };
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -163,20 +192,44 @@ export const Login: React.FC<LoginProps> = ({
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
                 onClick={handleAdminBypass}
-                className="cursor-pointer group"
+                className="cursor-pointer group flex flex-col items-center"
               >
-                <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none mb-6 drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
-                  SASE-310
-                </h1>
+                <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
+                  {/* Interactive Dynamic Orb */}
+                  <div
+                    className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-full flex justify-center items-center transition-all duration-[1500ms] overflow-hidden"
+                    style={{
+                      background: `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7) 0%, ${orbColor} 35%, rgba(0,0,0,0.95) 100%)`,
+                      boxShadow: `0 0 40px 10px ${orbColor.replace("1)", "0.3)")}, inset -15px -15px 30px rgba(0,0,0,0.8), inset 10px 10px 20px rgba(255,255,255,0.4)`,
+                    }}
+                  >
+                    {/* Ring Plasma */}
+                    <div className="absolute inset-[-5px] rounded-full border-[3px] border-transparent border-t-[3px] border-white/30 animate-[spin_3s_linear_infinite]" />
+                    <div className="absolute inset-[-10px] rounded-full border-[3px] border-transparent border-r-[3px] border-white/20 animate-[spin_4s_linear_infinite_reverse]" />
+                    <div className="absolute inset-[-15px] rounded-full border-[2px] border-transparent border-b-[2px] border-white/10 animate-[spin_6s_linear_infinite]" />
+
+                    {/* Responsive Eyes tracking mouse */}
+                    <div
+                      className="flex gap-3 sm:gap-4 transition-transform duration-200 ease-out"
+                      style={{
+                        transform: `translate(${mousePosition.x * 15}px, ${mousePosition.y * 15}px)`,
+                      }}
+                    >
+                      <div className="w-1.5 sm:w-2 h-8 sm:h-12 bg-white rounded-[4px] shadow-[0_0_15px_rgba(255,255,255,1)] animate-[blink_5s_infinite_1s]"></div>
+                      <div className="w-1.5 sm:w-2 h-8 sm:h-12 bg-white rounded-[4px] shadow-[0_0_15px_rgba(255,255,255,1)] animate-[blink_5s_infinite_1s]"></div>
+                    </div>
+                  </div>
+
+                  <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
+                    SASE
+                  </h1>
+                </div>
 
                 <div className="flex flex-col items-center gap-3">
-                  <p className="text-[10px] md:text-[11px] font-black text-slate-400 uppercase tracking-[0.4em] max-w-[320px] leading-relaxed">
-                    SASE-310 <br />
-                    <span className="text-blue-500/80">
-                      DONDE EL DEBER Y LA CONCIENCIA SE ENCUENTRAN
-                    </span>
+                  <p className="text-[10px] md:text-[11px] font-black text-blue-500/80 uppercase tracking-widest max-w-[320px] leading-relaxed">
+                    SISTEMA DE ACOMPAÑAMIENTO Y SEGUIMIENTO ESCOLAR
                   </p>
-                  <div className="flex items-center justify-center gap-3 mt-6 opacity-30">
+                  <div className="flex items-center justify-center gap-3 mt-4 opacity-30">
                     <div className="h-[1px] w-6 bg-blue-500" />
                     <p className="text-[8px] font-black text-slate-500 uppercase tracking-[1em]">
                       ESTABLECIMIENTO
