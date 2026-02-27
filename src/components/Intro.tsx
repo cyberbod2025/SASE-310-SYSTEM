@@ -4,25 +4,28 @@ interface IntroProps {
   onEnter: () => void;
 }
 
+const GoldenStar = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M12 1L14.59 8.41L22 11L14.59 13.59L12 21L9.41 13.59L2 11L9.41 8.41L12 1Z" />
+  </svg>
+);
+
 export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    // Fase 1: Aparece orbe lentamente
-    const t1 = setTimeout(() => setPhase(1), 300);
-    // Fase 2: Ojos dibujados y activados
-    const t2 = setTimeout(() => setPhase(2), 2000);
-    // Fase 3: Texto SASE principal
-    const t3 = setTimeout(() => setPhase(3), 3500);
-    // Fase 4: Slogan oficial
-    const t4 = setTimeout(() => setPhase(4), 4500);
-    // Fase 5: Pulso final expansivo
-    const t5 = setTimeout(() => setPhase(5), 6500);
-    // Fase 6: Desvanecimiento hacia Login
-    const t6 = setTimeout(() => {
-      setPhase(6);
-      setTimeout(onEnter, 1200); // Wait for transition out
-    }, 7500);
+    // 0ms: Pantalla negra
+    const t1 = setTimeout(() => setPhase(1), 300); // Agua fluyendo al centro
+    const t2 = setTimeout(() => setPhase(2), 1500); // Nace Orbe azul y flota
+    const t3 = setTimeout(() => setPhase(3), 3500); // Verde, ojos arriba
+    const t4 = setTimeout(() => setPhase(4), 5000); // Naranja, ojos abajo
+    const t5 = setTimeout(() => setPhase(5), 6500); // Rojo, ojos diagonal
+    const t6 = setTimeout(() => setPhase(6), 8000); // Sacudida, regresa a azul luminoso, estrellas
+    const t7 = setTimeout(() => setPhase(7), 9500); // Textos SASE y slogan
+    const t8 = setTimeout(() => {
+      setPhase(8);
+      setTimeout(onEnter, 1200);
+    }, 12500); // Fade final hacia Login
 
     return () => {
       clearTimeout(t1);
@@ -31,165 +34,152 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
       clearTimeout(t4);
       clearTimeout(t5);
       clearTimeout(t6);
+      clearTimeout(t7);
+      clearTimeout(t8);
     };
   }, [onEnter]);
 
-  // Handle manual skip
   const handleSkip = () => {
-    setPhase(6);
+    setPhase(8);
     setTimeout(onEnter, 400);
   };
 
+  // Dinámica de color y posición de ojos según fase
+  let orbColor = "#3b82f6"; // Azul inicial
+  let orbGlow = "rgba(59,130,246,0.5)";
+  let eyeX = 0;
+  let eyeY = 0;
+
+  if (phase === 3) {
+    orbColor = "#00C853"; // Verde
+    orbGlow = "rgba(0, 200, 83, 0.6)";
+    eyeY = -12; // Arriba
+  } else if (phase === 4) {
+    orbColor = "#FF9800"; // Naranja
+    orbGlow = "rgba(255, 152, 0, 0.6)";
+    eyeY = 12; // Abajo
+  } else if (phase === 5) {
+    orbColor = "#D32F2F"; // Rojo
+    orbGlow = "rgba(211, 47, 47, 0.7)";
+    eyeX = 12; // Diagonal Derecha
+    eyeY = -12; // Diagonal Arriba
+  } else if (phase >= 6) {
+    orbColor = "#0ea5e9"; // Azul brillante de "Poder" (cyan)
+    orbGlow = "rgba(14, 165, 233, 0.9)";
+  }
+
   return (
     <div
-      className="fixed inset-0 z-[999] bg-[#020408] flex flex-col items-center justify-center transition-opacity duration-[1200ms] overflow-hidden font-sans"
-      style={{ opacity: phase === 6 ? 0 : 1 }}
+      className="fixed inset-0 z-[999] bg-black flex flex-col items-center justify-center transition-opacity duration-[1200ms] overflow-hidden font-sans"
+      style={{ opacity: phase === 8 ? 0 : 1 }}
       onClick={handleSkip}
     >
-      {/* Fondo estelar sutil y Glow */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="absolute inset-0 opacity-[0.03] [background-image:radial-gradient(circle_at_center,white_1px,transparent_1px)] [background-size:24px_24px]"></div>
-        <div
-          className={`w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] transition-all duration-[3000ms] ease-out ${
-            phase >= 1 ? "scale-100 opacity-100" : "scale-50 opacity-0"
-          } ${phase >= 5 ? "scale-[1.5] bg-blue-500/20" : ""}`}
-        ></div>
+      {/* Efecto de Agua Fluyendo hacia el centro (Phase 1) */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-500`}
+        style={{ opacity: phase >= 1 && phase < 3 ? 1 : 0 }}
+      >
+        <div className="absolute w-[80wv] h-[80vw] sm:w-[800px] sm:h-[800px] rounded-full border-[20px] border-[#0ea5e9]/20 blur-[10px] animate-[water-in_1.2s_ease-in_forwards]"></div>
+        <div className="absolute w-[60wv] h-[60vw] sm:w-[600px] sm:h-[600px] rounded-full border-[15px] border-[#3b82f6]/30 blur-[8px] animate-[water-in_1.2s_ease-in_0.2s_forwards]"></div>
+        <div className="absolute w-[40wv] h-[40vw] sm:w-[400px] sm:h-[400px] rounded-full border-[10px] border-[#2563eb]/40 blur-[5px] animate-[water-in_1.2s_ease-in_0.4s_forwards]"></div>
       </div>
 
-      <div className="relative z-10 flex flex-col items-center pointer-events-none">
-        {/* Etiqueta superior del sistema */}
+      <div
+        className={`relative z-10 flex flex-col items-center pointer-events-none transition-transform duration-1000 ${phase >= 7 ? "-translate-y-6" : ""}`}
+      >
+        {/* Contenedor del Orbe para animaciones de flotar y sacudida */}
         <div
-          className={`mb-8 text-[9px] font-black uppercase tracking-[0.5em] text-blue-500/50 transition-all duration-[2000ms] ease-out ${
-            phase >= 1
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-4"
-          }`}
+          className={`relative flex items-center justify-center ${phase === 6 ? "animate-[shake_0.6s_ease-in-out]" : ""}`}
         >
-          Secuencia de Inicialización
-        </div>
-
-        {/* Orbe SVG (IA SASE) */}
-        <div
-          className={`relative flex items-center justify-center w-40 h-40 transition-all duration-[2000ms] ease-out ${
-            phase >= 1 ? "opacity-100 scale-100" : "opacity-0 scale-50"
-          } ${phase >= 5 ? "scale-[1.1] filter brightness-125" : ""}`}
-        >
-          {/* Anillos de energía envolventes */}
-          <div className="absolute inset-0 rounded-full border border-blue-500/10 animate-[spin_10s_linear_infinite]"></div>
-          <div className="absolute inset-[-10px] rounded-full border border-blue-400/5 animate-[spin_15s_linear_infinite_reverse]"></div>
-
-          <svg
-            viewBox="0 0 100 100"
-            className="w-full h-full animate-[sase-intro-breathe_4s_ease-in-out_infinite]"
+          {/* Contenedor flotante y aparición */}
+          <div
+            className={`relative flex items-center justify-center w-48 h-48 transition-all duration-[1500ms] ease-out ${phase >= 2 ? "opacity-100 scale-100" : "opacity-0 scale-0"} animate-[float_4s_ease-in-out_infinite]`}
           >
-            {/* Halo externo */}
-            <circle
-              cx="50"
-              cy="50"
-              r="48"
-              fill="none"
-              stroke="#1e3a8a"
-              strokeWidth="0.5"
-              className="opacity-60 object-glow"
-            />
+            {/* Halos de Luz (aparecen en phase 6) */}
+            <div
+              className={`absolute inset-[-40px] rounded-full bg-cyan-400/20 blur-2xl transition-all duration-1000 ${phase >= 6 ? "opacity-100 scale-125" : "opacity-0 scale-90"}`}
+            ></div>
+            <div
+              className={`absolute inset-[-20px] rounded-full bg-blue-500/30 blur-xl transition-all duration-1000 delay-100 ${phase >= 6 ? "opacity-100 scale-110" : "opacity-0 scale-90"}`}
+            ></div>
 
-            {/* Relleno interno orgánico */}
-            <circle cx="50" cy="50" r="44" fill="url(#orbGradIntro)" />
+            {/* Estrellitas doradas finas (phase >= 6) */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-1000 ${phase >= 6 ? "opacity-100" : "opacity-0"}`}
+            >
+              <GoldenStar className="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)] animate-[pulse-star_2s_infinite]" />
+              <GoldenStar className="absolute -bottom-10 left-1/3 -translate-x-1/2 w-6 h-6 text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)] animate-[pulse-star_2.5s_infinite_0.5s]" />
+              <GoldenStar className="absolute top-1/2 -left-12 -translate-y-1/2 w-5 h-5 text-[#FFE066] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)] animate-[pulse-star_1.5s_infinite_0.2s]" />
+              <GoldenStar className="absolute top-1/4 -right-14 w-7 h-7 text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)] animate-[pulse-star_2s_infinite_0.8s]" />
+            </div>
 
-            {/* Borde interior brillante */}
-            <circle
-              cx="50"
-              cy="50"
-              r="44"
-              fill="none"
-              stroke="#60a5fa"
-              strokeWidth="0.8"
-              className="opacity-70"
-            />
-
-            {/* Ojos minimalistas vibrantes */}
-            <g
-              className="transition-all duration-[1000ms] ease-out transform origin-center"
+            {/* El Orbe Carita */}
+            <div
+              className="relative w-36 h-36 rounded-full flex justify-center items-center transition-colors duration-[800ms] overflow-hidden border border-white/10"
               style={{
-                opacity: phase >= 2 ? 1 : 0,
-                transform:
-                  phase >= 2
-                    ? "scale(1) translateY(0)"
-                    : "scale(0.8) translateY(10px)",
+                backgroundColor: orbColor,
+                boxShadow: `0 0 50px 15px ${orbGlow}, inset 0 0 30px rgba(0,0,0,0.4)`,
               }}
             >
-              <rect
-                x="36"
-                y="43"
-                width="6"
-                height="14"
-                rx="3"
-                fill="#ffffff"
-                className="opacity-95 animate-[sase-intro-blink_5s_infinite_1s]"
-                style={{
-                  transformOrigin: "39px 50px",
-                  filter: "drop-shadow(0px 0px 4px rgba(255,255,255,0.8))",
-                }}
-              />
-              <rect
-                x="58"
-                y="43"
-                width="6"
-                height="14"
-                rx="3"
-                fill="#ffffff"
-                className="opacity-95 animate-[sase-intro-blink_5s_infinite_1s]"
-                style={{
-                  transformOrigin: "61px 50px",
-                  filter: "drop-shadow(0px 0px 4px rgba(255,255,255,0.8))",
-                }}
-              />
-            </g>
+              {/* Brillo interno tipo cristal líquido */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-white/40 mix-blend-overlay"></div>
 
-            <defs>
-              <radialGradient id="orbGradIntro" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6" />
-                <stop offset="70%" stopColor="#1e3a8a" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#020617" stopOpacity="1" />
-              </radialGradient>
-            </defs>
-          </svg>
+              {/* Ojos (Dos lineas verticales) */}
+              <div
+                className="flex gap-5 transition-transform duration-[600ms] ease-in-out"
+                style={{
+                  transform: `translate(${eyeX}px, ${eyeY}px)`,
+                }}
+              >
+                <div className="w-2 h-14 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.9)] animate-[blink_4s_infinite_1s]"></div>
+                <div className="w-2 h-14 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.9)] animate-[blink_4s_infinite_1s]"></div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Texto Principal */}
-        <h1
-          className={`mt-12 text-6xl md:text-7xl font-black tracking-[-0.02em] text-white uppercase italic leading-none transition-all duration-[1500ms] ease-out ${
-            phase >= 3
-              ? "opacity-100 translate-y-0 filter blur-0"
-              : "opacity-0 translate-y-8 filter blur-sm"
-          }`}
-          style={{ textShadow: "0 0 30px rgba(59,130,246,0.4)" }}
-        >
-          SASE-310
-        </h1>
-
-        {/* Slogan Oficial Solicitado */}
+        {/* Palabras SASE y Slogan "CONECTAMOS CONTIGO" */}
         <div
-          className={`mt-4 flex flex-col items-center gap-3 transition-all duration-[1500ms] ease-out ${
-            phase >= 4 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
+          className={`mt-10 flex flex-col items-center justify-center transition-all duration-1000 ease-out transform ${phase >= 7 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
         >
-          <div className="h-px w-24 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
-          <h2 className="text-[10px] md:text-xs font-black tracking-[0.4em] uppercase text-blue-300/80 text-center max-w-sm leading-relaxed">
-            DONDE EL DEBER Y LA CONCIENCIA SE ENCUENTRAN
+          <h1
+            className="text-6xl md:text-8xl font-black tracking-widest text-white uppercase text-center"
+            style={{ textShadow: "0 4px 20px rgba(255,255,255,0.4)" }}
+          >
+            SASE
+          </h1>
+          <h2 className="mt-4 text-lg md:text-2xl font-black tracking-[0.4em] text-[#FFD700] uppercase text-center drop-shadow-[0_2px_10px_rgba(255,215,0,0.4)] px-4 animate-pulse">
+            CONECTAMOS CONTIGO
           </h2>
-          <div className="h-px w-24 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
         </div>
       </div>
 
       <style>{`
-        @keyframes sase-intro-breathe {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.03); }
+        @keyframes water-in {
+          0% { transform: scale(2.5); opacity: 0; }
+          40% { opacity: 1; filter: blur(5px); }
+          100% { transform: scale(0); opacity: 0; filter: blur(0px); }
         }
-        @keyframes sase-intro-blink {
-          0%, 96%, 100% { transform: scaleY(1); }
-          98% { transform: scaleY(0.1); }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-12px); }
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0) rotate(0deg); }
+          15% { transform: translateX(-10px) rotate(-8deg); filter: blur(3px); }
+          30% { transform: translateX(10px) rotate(8deg); filter: blur(2px); }
+          45% { transform: translateX(-8px) rotate(-6deg); filter: blur(1px); }
+          60% { transform: translateX(8px) rotate(6deg); filter: blur(1px); }
+          75% { transform: translateX(-4px) rotate(-3deg); filter: blur(0px); }
+          90% { transform: translateX(4px) rotate(3deg); filter: blur(0px); }
+        }
+        @keyframes pulse-star {
+          0%, 100% { transform: scale(0.8); opacity: 0.6; }
+          50% { transform: scale(1.3) rotate(30deg); opacity: 1; filter: brightness(1.2); }
+        }
+        @keyframes blink {
+          0%, 94%, 100% { transform: scaleY(1); }
+          97% { transform: scaleY(0.05); }
         }
       `}</style>
     </div>
