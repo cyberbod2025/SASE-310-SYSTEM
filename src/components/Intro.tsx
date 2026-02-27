@@ -4,24 +4,17 @@ interface IntroProps {
   onEnter: () => void;
 }
 
-const GoldenStar = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M12 1L14.59 8.41L22 11L14.59 13.59L12 21L9.41 13.59L2 11L9.41 8.41L12 1Z" />
-  </svg>
-);
-
 export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     // 0ms: Pantalla negra
     const t1 = setTimeout(() => setPhase(1), 300); // Agua fluyendo al centro
-    // Retrasar un poco la aparición del orbe para que luzca colosal
-    const t2 = setTimeout(() => setPhase(2), 1500); // Nace Orbe (esfera 3D) y flota, empiezan a encenderse ojos
+    const t2 = setTimeout(() => setPhase(2), 1500); // Nace Orbe (esfera 3D) y flota
     const t3 = setTimeout(() => setPhase(3), 4000); // Verde, ojos arriba
     const t4 = setTimeout(() => setPhase(4), 5500); // Naranja, ojos abajo
     const t5 = setTimeout(() => setPhase(5), 7000); // Rojo, ojos diagonal
-    const t6 = setTimeout(() => setPhase(6), 8500); // Sacudida, regresa a azul luminoso, estrellas
+    const t6 = setTimeout(() => setPhase(6), 8500); // Sacudida, plasma, color serio
     const t7 = setTimeout(() => setPhase(7), 10000); // Textos SASE y slogan
     const t8 = setTimeout(() => {
       setPhase(8);
@@ -61,11 +54,11 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
     eyeX = 25; // Diagonal
     eyeY = -25;
   } else if (phase >= 6) {
-    orbBase = "14, 165, 233"; // Azul de "Poder" (cyan)
+    orbBase = "15, 23, 42"; // Color final imponente y serio (Slate 900)
   }
 
-  // Gradiente 3D procedural usando the base color
-  const orbGradient = `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.8) 0%, rgba(${orbBase}, 1) 30%, rgba(${orbBase}, 0.6) 70%, rgba(0,0,0,0.8) 100%)`;
+  // Gradiente 3D procedural con sobras más profundas
+  const orbGradient = `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7) 0%, rgba(${orbBase}, 1) 25%, rgba(${orbBase}, 0.7) 60%, rgba(0,0,0,0.95) 100%)`;
   const orbGlow = `rgba(${orbBase}, 0.6)`;
   const plasmaColor = `rgba(${orbBase}, 0.8)`;
 
@@ -75,7 +68,6 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
       style={{ opacity: phase === 8 ? 0 : 1 }}
       onClick={handleSkip}
     >
-      {/* Efecto de Agua Fluyendo hacia el centro (Phase 1) */}
       <div
         className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-500`}
         style={{ opacity: phase >= 1 && phase < 3 ? 1 : 0 }}
@@ -88,23 +80,21 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
       <div
         className={`relative z-10 flex flex-col items-center justify-center w-full h-full pointer-events-none transition-transform duration-1000`}
       >
-        {/* Contenedor del Orbe para animaciones de flotar y sacudida */}
         <div
           className={`relative flex items-center justify-center transition-transform duration-1000 ${phase >= 7 ? "-translate-y-[15vh]" : ""} ${phase === 6 ? "animate-[shake_0.6s_ease-in-out]" : ""}`}
         >
-          {/* Contenedor flotante y fade in original */}
           <div
             className={`relative flex items-center justify-center w-72 h-72 sm:w-[350px] sm:h-[350px] transition-all duration-[2000ms] ease-out ${phase >= 2 ? "opacity-100 scale-100" : "opacity-0 scale-0"} animate-[float_4s_ease-in-out_infinite]`}
           >
-            {/* Halos de Luz (aparecen en phase 6) */}
+            {/* Halos de Luz */}
             <div
-              className={`absolute inset-[-60px] rounded-full bg-cyan-400/20 blur-3xl transition-all duration-1000 ${phase >= 6 ? "opacity-100 scale-125" : "opacity-0 scale-90"}`}
+              className={`absolute inset-[-60px] rounded-full bg-blue-600/10 blur-3xl transition-all duration-[1500ms] ${phase >= 6 ? "opacity-100 scale-125" : "opacity-0 scale-90"}`}
             ></div>
             <div
-              className={`absolute inset-[-30px] rounded-full bg-blue-500/30 blur-2xl transition-all duration-1000 delay-100 ${phase >= 6 ? "opacity-100 scale-110" : "opacity-0 scale-90"}`}
+              className={`absolute inset-[-30px] rounded-full bg-indigo-500/20 blur-2xl transition-all duration-[1500ms] delay-100 ${phase >= 6 ? "opacity-100 scale-110" : "opacity-0 scale-90"}`}
             ></div>
 
-            {/* Plasma rotando */}
+            {/* Plasma rotando fino */}
             <div
               className="absolute inset-[-15px] rounded-full border-[4px] border-transparent border-t-[4px] transition-colors duration-[800ms] animate-[spin_3s_linear_infinite]"
               style={{ borderTopColor: plasmaColor }}
@@ -118,25 +108,25 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
               style={{ borderBottomColor: plasmaColor, opacity: 0.3 }}
             ></div>
 
-            {/* Estrellitas doradas de poder (phase >= 6) */}
+            {/* Fluidos / Plasma Levitando Imponente (phase >= 6) */}
             <div
-              className={`absolute inset-[-50px] transition-opacity duration-1000 ${phase >= 6 ? "opacity-100" : "opacity-0"}`}
+              className={`absolute inset-[-120px] transition-opacity duration-[1500ms] ${phase >= 6 ? "opacity-100" : "opacity-0"}`}
             >
-              <GoldenStar className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-10 text-[#FFD700] drop-shadow-[0_0_12px_rgba(255,215,0,0.8)] animate-[pulse-star_2s_infinite]" />
-              <GoldenStar className="absolute bottom-4 left-1/4 -translate-x-1/2 w-8 h-8 text-[#FFD700] drop-shadow-[0_0_10px_rgba(255,215,0,0.8)] animate-[pulse-star_2.5s_infinite_0.5s]" />
-              <GoldenStar className="absolute top-1/2 -left-8 -translate-y-1/2 w-6 h-6 text-[#FFE066] drop-shadow-[0_0_8px_rgba(255,215,0,0.8)] animate-[pulse-star_1.5s_infinite_0.2s]" />
-              <GoldenStar className="absolute top-1/4 -right-8 w-9 h-9 text-[#FFD700] drop-shadow-[0_0_12px_rgba(255,215,0,0.8)] animate-[pulse-star_2s_infinite_0.8s]" />
+              <div className="absolute top-[10%] left-[0%] w-32 h-32 bg-blue-500/30 rounded-full blur-[40px] animate-[levitate_3s_ease-in-out_infinite]" />
+              <div className="absolute bottom-[0%] left-[80%] w-40 h-40 bg-indigo-600/30 rounded-full blur-[50px] animate-[levitate_4s_ease-in-out_infinite_0.5s]" />
+              <div className="absolute top-[80%] left-[10%] w-24 h-24 bg-blue-800/40 rounded-full blur-[35px] animate-[levitate_3.5s_ease-in-out_infinite_1s]" />
+              <div className="absolute top-[15%] left-[75%] w-36 h-36 bg-blue-400/20 rounded-full blur-[45px] animate-[levitate_4.5s_ease-in-out_infinite_0.2s]" />
             </div>
 
             {/* El Orbe 3D Esfera */}
             <div
-              className="relative w-full h-full rounded-full flex justify-center items-center transition-all duration-[800ms] overflow-hidden"
+              className="relative w-full h-full rounded-full flex justify-center items-center transition-all duration-[1200ms] overflow-hidden"
               style={{
                 background: orbGradient,
-                boxShadow: `0 0 60px 20px ${orbGlow}, inset -30px -30px 50px rgba(0,0,0,0.7), inset 15px 15px 30px rgba(255,255,255,0.6)`,
+                boxShadow: `0 0 80px 30px ${orbGlow}, inset -40px -40px 80px rgba(0,0,0,0.95), inset 20px 20px 40px rgba(255,255,255,0.4), inset -10px -10px 20px rgba(0,0,0,0.6)`,
               }}
             >
-              {/* Ojos - Se encienden poco a poco (crecen en altura y opacidad) */}
+              {/* Ojos - Se encienden poco a poco */}
               <div
                 className="flex gap-10 transition-transform duration-[800ms] ease-in-out"
                 style={{
@@ -162,7 +152,6 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
           </div>
         </div>
 
-        {/* Palabras SASE y Slogan "CONECTAMOS CONTIGO" */}
         <div
           className={`flex flex-col items-center justify-center transition-all duration-[1200ms] ease-out absolute bottom-[15vh] w-full ${phase >= 7 ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}
         >
@@ -188,6 +177,10 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-15px); }
         }
+        @keyframes levitate {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-30px) scale(1.1); }
+        }
         @keyframes shake {
           0%, 100% { transform: translateX(0) rotate(0deg); }
           10% { transform: translateX(-15px) rotate(-10deg); filter: blur(6px); }
@@ -199,10 +192,6 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
           70% { transform: translateX(-5px) rotate(-4deg); }
           80% { transform: translateX(5px) rotate(4deg); }
           90% { transform: translateX(-2px) rotate(-2deg); }
-        }
-        @keyframes pulse-star {
-          0%, 100% { transform: scale(0.8); opacity: 0.6; }
-          50% { transform: scale(1.5) rotate(45deg); opacity: 1; filter: brightness(1.4); }
         }
         @keyframes pulse-text {
           0%, 100% { opacity: 0.8; transform: scale(1); filter: brightness(1); }
