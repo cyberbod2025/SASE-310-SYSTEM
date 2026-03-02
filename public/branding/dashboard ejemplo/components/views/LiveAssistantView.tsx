@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 // FIX: Corrected import paths for services and icons.
-import { setupLiveConversation, closeLiveConversation } from '../../services/geminiService';
+import { setupLiveConversation, closeLiveConversation, LiveSession } from '../../services/geminiService';
 import { LiveServerMessage } from '@google/genai';
 import { MicIcon, StopCircleIcon, ChatBubbleLeftRightIcon, UserIcon, CpuChipIcon } from '../icons/SolidIcons';
 
@@ -17,9 +17,7 @@ const LiveAssistantView: React.FC = () => {
     const [currentInput, setCurrentInput] = useState('');
     const [currentOutput, setCurrentOutput] = useState('');
 
-    // FIX: The LiveSession type is not exported from @google/genai.
-    // We can use ReturnType<typeof setupLiveConversation> to get the type of the session promise.
-    const sessionPromiseRef = useRef<ReturnType<typeof setupLiveConversation> | null>(null);
+    const sessionPromiseRef = useRef<Promise<LiveSession> | null>(null);
 
     // FIX: Use refs to accumulate the full transcription for a turn to avoid stale closures in the onMessage callback.
     const currentInputRef = useRef('');
