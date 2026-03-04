@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { OFFICIAL_STAFF_LIST } from "../data/officialStaff";
+import { normalizeString, cleanCURP } from "../utils/stringUtils";
+import { useRef } from "react";
 
 interface RegistroPersonalProps {
   onBack: () => void;
@@ -187,6 +190,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   const [folioSolicitud, setFolioSolicitud] = useState("");
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const birthDateRef = useRef<HTMLInputElement>(null);
+  const curpRef = useRef<HTMLInputElement>(null);
 
   // Form Data
   const [formData, setFormData] = React.useState({
@@ -246,7 +251,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   ]);
 
   useEffect(() => {
-    if (formData.curp && formData.curp.length >= 10) {
+    const cleanedCURP = cleanCURP(formData.curp);
+    if (cleanedCURP && cleanedCURP.length >= 10) {
       const uniqueSuffix = Math.floor(1000 + Math.random() * 9000);
       const generated = `MAT-${formData.curp.substring(0, 10)}-${uniqueSuffix}`;
       // Solo generamos si no hay una o si el CURP cambió significativamente
@@ -262,8 +268,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   const selectedRoleData = AVAILABLE_ROLES.find((r) => r.id === formData.rol);
 
   const validateCURP = (curp: string) => {
-    const regex =
-      /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/;
+    const regex = /^[A-Z]{4}[0-9]{6}[HM]{1}[A-Z]{5}[0-9A-Z]{1}[0-9]{1}$/;
     return regex.test(curp);
   };
 
@@ -284,20 +289,25 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
     if (formData.matricula.trim().length === 0)
       return toast.error("La matrícula personal es obligatoria");
 
-    // VALIDACION CONTRA NOMINA OFICIAL
-    const fullName =
-      `${formData.nombres} ${formData.apellidoPaterno} ${formData.apellidoMaterno}`
-        .trim()
-        .toUpperCase();
-    const isOfficialStaff = OFFICIAL_STAFF_LIST.some(
-      (staff) => staff.full_name === fullName,
+    // VALIDACION CONTRA NOMINA OFICIAL (Improved Lenient Matching)
+    const fullNameNormalized = normalizeString(
+      `${formData.nombres} ${formData.apellidoPaterno} ${formData.apellidoMaterno}`,
+    ).replace(/\s+/g, " ");
+
+    const officialMatch = OFFICIAL_STAFF_LIST.find(
+      (staff) =>
+        normalizeString(staff.full_name).replace(/\s+/g, " ") ===
+        fullNameNormalized,
     );
 
-    if (!isOfficialStaff) {
+    if (!officialMatch) {
       return toast.error(
-        "Su nombre no coincide con la nómina oficial del plantel 310. Verifique ortografía o acuda a Dirección.",
+        "Su nombre no coincide exactamente con la nómina oficial del plantel 310. Por favor, asegúrese de escribir sus apellidos tal como aparecen en sus talones de pago o acuda a Dirección.",
       );
     }
+
+    // Auto-assign role from official list if user didn't select one or if we want to enforce it
+    const finalRole = officialMatch.role;
 
     if (
       !formData.preguntaSeguridad1 ||
@@ -367,21 +377,30 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   /* STEP 0: ¿Cuál es tu nombre? */
   if (step === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-sans bg-[#020408]">
-        {/* BACKGROUND: Tactical HUD */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#0f172a_0%,#020408_100%)]"></div>
+      <div className="relative min-h-screen w-full flex items-center justify-center bg-[#020408] overflow-hidden font-sans">
+        {/* IMMERSIVE BACKGROUND SYSTEM (SYNCED WITH LOGIN) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[#020408]"></div>
+          <motion.div
+            animate={{
+              x: [0, 100, -50, 0],
+              y: [0, -150, 50, 0],
+              scale: [1, 1.2, 0.9, 1],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            className="absolute top-1/4 -left-20 size-[500px] bg-blue-600/10 rounded-full blur-[120px]"
+          />
+          <motion.div
+            animate={{
+              x: [0, -80, 120, 0],
+              y: [0, 100, -100, 0],
+              scale: [1, 0.8, 1.1, 1],
+            }}
+            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            className="absolute -bottom-20 -right-20 size-[600px] bg-indigo-600/10 rounded-full blur-[140px]"
+          />
           <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:40px_40px]"></div>
-          <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-blue-600/10 blur-[120px] animate-pulse-slow"></div>
-          <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-purple-600/5 blur-[120px] animate-pulse-slow delay-1000"></div>
-        </div>
-
-        {/* HUD Decoration */}
-        <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div className="absolute top-10 left-10 w-32 h-32 border-l border-t border-white/20"></div>
-          <div className="absolute top-10 right-10 w-32 h-32 border-r border-t border-white/20"></div>
-          <div className="absolute bottom-10 left-10 w-32 h-32 border-l border-b border-white/20"></div>
-          <div className="absolute bottom-10 right-10 w-32 h-32 border-r border-b border-white/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/[0.02] to-transparent"></div>
         </div>
 
         <div className="w-full max-w-lg space-y-8 animate-fade-in-up relative z-10 p-8">
@@ -462,11 +481,19 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   if (step === 1) {
     return (
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden font-sans bg-[#020408]">
-        {/* BACKGROUND: Tactical Refresh */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#0f172a_0%,#020408_100%)]"></div>
+        {/* IMMERSIVE BACKGROUND SYSTEM (SYNCED WITH LOGIN) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[#020408]"></div>
+          <motion.div
+            animate={{
+              x: [0, 80, -30, 0],
+              y: [0, -100, 30, 0],
+              scale: [1, 1.1, 0.95, 1],
+            }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            className="absolute top-1/4 left-0 size-[400px] bg-blue-600/10 rounded-full blur-[100px]"
+          />
           <div className="absolute inset-0 opacity-[0.02] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:60px_60px]"></div>
-          <div className="absolute top-[-20%] left-[20%] w-[80%] h-[60%] rounded-full bg-blue-600/10 blur-[140px] animate-pulse-slow"></div>
         </div>
 
         <div className="w-full max-w-4xl space-y-8 animate-fade-in-up relative z-10 p-4">
@@ -548,11 +575,18 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   if (step === 2) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden font-sans text-center p-4 bg-[#020408]">
-        {/* BACKGROUND: Intense Tactical Reveal */}
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#111827_0%,#020408_100%)]"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] opacity-[0.03] animate-spin-slow [background-image:conic-gradient(from_0deg,transparent,white,transparent)]"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-[#020408] to-[#020408] animate-pulse-slow"></div>
+        {/* IMMERSIVE BACKGROUND SYSTEM (REVEAL MODE) */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[#020408]"></div>
+          <motion.div
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/20 rounded-full blur-[160px]"
+          />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] opacity-[0.05] animate-spin-slow [background-image:conic-gradient(from_0deg,transparent,white,transparent)]"></div>
         </div>
 
         <div className="relative z-10 max-w-2xl animate-scale-in">
@@ -823,9 +857,19 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     title="Ingrese su CURP de 18 caracteres"
                     isMono
                     value={formData.curp}
-                    onChange={(v: string) =>
-                      setFormData({ ...formData, curp: v.toUpperCase() })
-                    }
+                    onChange={(v: string) => {
+                      const cleaned = cleanCURP(v);
+                      setFormData({ ...formData, curp: cleaned });
+                      if (cleaned.length === 18) {
+                        // Intentamos enfocar el siguiente campo después de un pequeño delay
+                        setTimeout(() => {
+                          const nextInput =
+                            document.getElementById("reg-fecha");
+                          if (nextInput)
+                            (nextInput as HTMLInputElement).focus();
+                        }, 100);
+                      }
+                    }}
                   />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1">

@@ -130,12 +130,12 @@ export const DashboardEnfermeria = () => {
                 V_4.2.0_STITCH
               </span>
             </div>
-            <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter flex items-center gap-4">
-              COMMAND{" "}
-              <span className="text-emerald-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]">
-                CENTER
+            <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
+              MEDICAL{" "}
+              <span className="text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
+                STATION
               </span>
-            </h2>
+            </h1>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
               <span className="material-symbols-outlined text-[14px]">
                 shield_health

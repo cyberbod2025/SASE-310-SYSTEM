@@ -3,27 +3,32 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
+import { InteractiveBrandOrb } from "./InteractiveBrandOrb";
+import {
+  OFFICIAL_STAFF_LIST,
+  OfficialStaffMember,
+} from "../data/officialStaff";
 
 interface LoginProps {
   onDemoEnter?: () => void;
   onDevEnter?: () => void;
   onRegisterClick?: () => void;
+  onFirstLogon?: (member: OfficialStaffMember) => void;
+  onPilotLogin?: (member: OfficialStaffMember) => void;
 }
 
 export const Login: React.FC<LoginProps> = ({
   onDemoEnter,
   onDevEnter,
   onRegisterClick,
+  onFirstLogon,
+  onPilotLogin,
 }) => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showAdminPortal, setShowAdminPortal] = useState(false);
-
-  // IA Orb Interactive State
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [orbColor, setOrbColor] = useState("rgba(14, 165, 233, 1)"); // Cyan
 
   // Recovery State
   const [showRecovery, setShowRecovery] = useState(false);
@@ -64,30 +69,8 @@ export const Login: React.FC<LoginProps> = ({
     };
     window.addEventListener("keydown", handleKeyDown);
 
-    // Mouse tracking for Orb
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      setMousePosition({ x, y });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-
-    // Occasional Orb Color Change
-    const colors = [
-      "rgba(14, 165, 233, 1)", // Cyan
-      "rgba(0, 200, 83, 1)", // Green
-      "rgba(255, 152, 0, 1)", // Orange
-      "rgba(211, 47, 47, 1)", // Red
-      "rgba(59, 130, 246, 1)", // Blue
-    ];
-    const colorInterval = setInterval(() => {
-      setOrbColor(colors[Math.floor(Math.random() * colors.length)]);
-    }, 5000);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("mousemove", handleMouseMove);
-      clearInterval(colorInterval);
     };
   }, []);
 
@@ -95,12 +78,34 @@ export const Login: React.FC<LoginProps> = ({
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
+    // 1. Check against Official Staff List (Pilot Mode)
+    const officialMember = OFFICIAL_STAFF_LIST.find(
+      (m) => m.username.toLowerCase() === username.toLowerCase(),
+    );
+
+    if (officialMember) {
+      if (password === officialMember.provisional_password) {
+        toast.success(
+          `Bienvenido ${officialMember.full_name}. Iniciando configuración de cuenta.`,
+        );
+        if (onFirstLogon) onFirstLogon(officialMember);
+        setLoading(false);
+        return;
+      }
+      // If it's a known user but password doesn't match provisional, it might be their custom one.
+      // For the pilot, we assume if they exist and pass matches PROVISIONAL, it's first time.
+      // If password is NOT provisional, we might need a real DB check.
+    }
+
+    // 2. Fallback to Supabase Auth (for emails)
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: username.includes("@") ? username : `${username}@sase.mx`, // Auto-alias for pilot
       password,
     });
 
     if (error) {
+      // Si falló Supabase pero es Pilot, podemos simular el éxito para el demo si el password es el provisional
+      // Pero mejor ser estrictos.
       toast.error("Protocolo Rechazado: Credenciales no válidas", {
         style: {
           background: "#1e1b4b",
@@ -111,13 +116,31 @@ export const Login: React.FC<LoginProps> = ({
         },
       });
       setLoading(false);
+    } else if (onDemoEnter) {
+      // Logged in with Supabase
+      onDemoEnter();
     }
   };
 
-  const handleAdminBypass = () => {
-    const pin = prompt("Protocolo de Acceso Administrativo (S.A.S.E.)");
-    if (pin === "31416") {
-      if (onDevEnter) onDevEnter();
+  const [bypassClicks, setBypassClicks] = useState(0);
+
+  const handleAdminBypass = (e: React.MouseEvent) => {
+    // Blindaje de acceso: Triple Click + Shift + Alt activa el prompt
+    if (e.altKey && e.shiftKey) {
+      const newClicks = bypassClicks + 1;
+      setBypassClicks(newClicks);
+
+      if (newClicks >= 3) {
+        const pin = prompt(
+          "SASE Security Protocol - Enter Authorization Level 5",
+        );
+        if (pin === "31416") {
+          if (onDevEnter) onDevEnter();
+        }
+        setBypassClicks(0);
+      }
+    } else {
+      setBypassClicks(0);
     }
   };
 
@@ -191,35 +214,11 @@ export const Login: React.FC<LoginProps> = ({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                onClick={handleAdminBypass}
-                className="cursor-pointer group flex flex-col items-center"
+                onDoubleClick={handleAdminBypass}
+                className="cursor-pointer group flex flex-col items-center select-none"
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
-                  {/* Interactive Dynamic Orb */}
-                  <div
-                    className="relative w-20 h-20 sm:w-28 sm:h-28 rounded-full flex justify-center items-center transition-all duration-[1500ms] overflow-hidden"
-                    style={{
-                      background: `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.7) 0%, ${orbColor} 35%, rgba(0,0,0,0.95) 100%)`,
-                      boxShadow: `0 0 40px 10px ${orbColor.replace("1)", "0.3)")}, inset -15px -15px 30px rgba(0,0,0,0.8), inset 10px 10px 20px rgba(255,255,255,0.4)`,
-                    }}
-                  >
-                    {/* Ring Plasma */}
-                    <div className="absolute inset-[-5px] rounded-full border-[3px] border-transparent border-t-[3px] border-white/30 animate-[spin_3s_linear_infinite]" />
-                    <div className="absolute inset-[-10px] rounded-full border-[3px] border-transparent border-r-[3px] border-white/20 animate-[spin_4s_linear_infinite_reverse]" />
-                    <div className="absolute inset-[-15px] rounded-full border-[2px] border-transparent border-b-[2px] border-white/10 animate-[spin_6s_linear_infinite]" />
-
-                    {/* Responsive Eyes tracking mouse */}
-                    <div
-                      className="flex gap-3 sm:gap-4 transition-transform duration-200 ease-out"
-                      style={{
-                        transform: `translate(${mousePosition.x * 15}px, ${mousePosition.y * 15}px)`,
-                      }}
-                    >
-                      <div className="w-1.5 sm:w-2 h-8 sm:h-12 bg-white rounded-[4px] shadow-[0_0_15px_rgba(255,255,255,1)] animate-[blink_5s_infinite_1s]"></div>
-                      <div className="w-1.5 sm:w-2 h-8 sm:h-12 bg-white rounded-[4px] shadow-[0_0_15px_rgba(255,255,255,1)] animate-[blink_5s_infinite_1s]"></div>
-                    </div>
-                  </div>
-
+                  <InteractiveBrandOrb size={110} />
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
                     SASE
                   </h1>
@@ -229,12 +228,18 @@ export const Login: React.FC<LoginProps> = ({
                   <p className="text-[10px] md:text-[11px] font-black text-blue-500/80 uppercase tracking-widest max-w-[320px] leading-relaxed">
                     SISTEMA DE ACOMPAÑAMIENTO Y SEGUIMIENTO ESCOLAR
                   </p>
-                  <div className="flex items-center justify-center gap-3 mt-4 opacity-30">
-                    <div className="h-[1px] w-6 bg-blue-500" />
-                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-[1em]">
-                      ESTABLECIMIENTO
+                  <div className="flex items-center justify-center gap-4 mt-4 select-none">
+                    <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
+                      BUILD CENTRAL
+                    </span>
+                    <div className="h-[1px] w-4 bg-blue-500/20" />
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em]">
+                      CREDENCIALES DE ACCESO
                     </p>
-                    <div className="h-[1px] w-6 bg-blue-500" />
+                    <div className="h-[1px] w-4 bg-blue-500/20" />
+                    <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
+                      PROTOCOLO 2026
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -250,7 +255,7 @@ export const Login: React.FC<LoginProps> = ({
                 className="space-y-2"
               >
                 <label
-                  htmlFor="login-email"
+                  htmlFor="login-username"
                   className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1 flex items-center gap-2"
                 >
                   USUARIO
@@ -260,13 +265,13 @@ export const Login: React.FC<LoginProps> = ({
                     fingerprint
                   </span>
                   <input
-                    id="login-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="login-username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="input-sase pl-12 h-14 !bg-white/[0.02] !border-white/5 focus:!border-blue-500/40 text-sm"
                     placeholder="USUARIO"
-                    title="Ingrese su correo institucional"
+                    title="Ingrese su usuario o correo"
                     required
                   />
                 </div>
@@ -279,12 +284,12 @@ export const Login: React.FC<LoginProps> = ({
                 transition={{ delay: 0.4 }}
                 className="space-y-2"
               >
-                <div className="flex justify-between items-center px-1">
+                <div className="flex justify-between items-center px-1 relative mb-1">
                   <label
                     htmlFor="login-password"
-                    className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"
+                    className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"
                   >
-                    Bóveda de Seguridad
+                    CONTRASEÑA
                   </label>
                   {showAdminPortal && (
                     <span className="text-blue-500 animate-pulse text-[8px] font-black uppercase tracking-widest">
@@ -387,19 +392,6 @@ export const Login: React.FC<LoginProps> = ({
               transition={{ delay: 0.6 }}
               className="mt-8 pt-8 border-t border-white/[0.05] flex flex-col items-center gap-6 relative z-10"
             >
-              <button
-                type="button"
-                onClick={onRegisterClick}
-                className="group flex items-center gap-3 px-8 py-3 rounded-xl bg-white/[0.02] border border-white/5 hover:border-blue-500/40 hover:bg-blue-500/5 transition-all duration-300"
-              >
-                <span className="material-symbols-outlined text-blue-500 text-xl group-hover:scale-110 transition-transform">
-                  person_add
-                </span>
-                <span className="text-[9px] font-black text-slate-500 group-hover:text-blue-500 uppercase tracking-[0.2em] transition-colors">
-                  ALTA DE PERSONAL
-                </span>
-              </button>
-
               <div className="flex items-center gap-8 justify-center w-full">
                 <div className="flex flex-col items-center gap-1 opacity-20">
                   <p className="text-[7px] font-black text-white uppercase tracking-[0.3em]">
@@ -418,6 +410,29 @@ export const Login: React.FC<LoginProps> = ({
                   </p>
                   <div className="h-[1px] w-8 bg-white" />
                 </div>
+              </div>
+
+              {/* NEW: Prominent Registration Action */}
+              <div className="w-full pt-4">
+                <button
+                  type="button"
+                  onClick={onRegisterClick}
+                  className="w-full py-4 rounded-2xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-all group/reg flex items-center justify-center gap-4 group"
+                >
+                  <div className="flex flex-col items-start">
+                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] group-hover/reg:text-blue-400 transition-colors">
+                      ¿Es nuevo en el plantel?
+                    </span>
+                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">
+                      Solicitud de Alta Personal
+                    </span>
+                  </div>
+                  <div className="size-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                    <span className="material-symbols-outlined text-xl">
+                      person_add
+                    </span>
+                  </div>
+                </button>
               </div>
             </motion.div>
           </div>

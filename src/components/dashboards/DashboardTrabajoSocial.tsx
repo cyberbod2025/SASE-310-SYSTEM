@@ -4,6 +4,7 @@ import { useApp } from "../../store";
 import { VoiceInput } from "../VoiceInput";
 import { GenericActionModal } from "../GenericActionModal";
 import toast from "react-hot-toast";
+import { getDocumentTemplate } from "../../utils/documentTemplates";
 
 // -- ATOMIC COMPONENTS --
 
@@ -52,7 +53,13 @@ const SocialMetric = ({ label, value, icon, color, pct }: any) => {
 };
 
 export const DashboardTrabajoSocial = () => {
-  const { students, addJustificante, addIncident, printDocument } = useApp();
+  const {
+    students,
+    addJustificante,
+    addIncident,
+    printDocument,
+    setPrintModal,
+  } = useApp();
   const [activeTab, setActiveTab] = useState<
     "justificantes" | "riesgos" | "comunidad"
   >("justificantes");
@@ -381,13 +388,21 @@ export const DashboardTrabajoSocial = () => {
                       </td>
                       <td className="px-8 py-6 text-right">
                         <button
-                          onClick={() =>
-                            printDocument({
-                              type: "JUSTIFICANTE",
-                              studentId: j.studentId,
-                              data: j,
-                            })
-                          }
+                          onClick={() => {
+                            const student = students.find(
+                              (s) => s.id === j.studentId,
+                            );
+                            const html = getDocumentTemplate(
+                              "JUSTIFICANTE",
+                              student,
+                              j,
+                            );
+                            setPrintModal({
+                              isOpen: true,
+                              title: `JUSTIFICANTE - ${j.folio}`,
+                              html: html,
+                            });
+                          }}
                           className="size-10 bg-white/5 hover:bg-orange-600 hover:text-white rounded-xl flex items-center justify-center transition-all"
                         >
                           <span className="material-symbols-outlined text-lg">
@@ -415,85 +430,128 @@ export const DashboardTrabajoSocial = () => {
       )}
 
       {activeTab === "riesgos" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up">
-          {dropoutRisk.map((s) => (
-            <div
-              key={s.id}
-              className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.02] group relative overflow-hidden border-l-4 border-l-rose-600"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="size-14 bg-[#0a0f18] border border-white/10 rounded-2xl flex items-center justify-center text-rose-500 text-2xl font-black italic">
-                  {s.name.charAt(0)}
-                </div>
-                <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg animate-pulse">
-                  ALERTA_DESERCIÓN
+        <div className="space-y-6 animate-slide-up">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1 flex items-center gap-3">
+                <span className="material-symbols-outlined text-rose-500 animate-pulse">
+                  warning
                 </span>
-              </div>
-
-              <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1">
-                {s.name}
+                ALERTA_TEMPRANA_DETECCIÓN
               </h3>
-              <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">
-                FALTAS_DETECTADAS:{" "}
-                {
-                  s.incidents.filter((i) => i.type === "Asistencia / Falta")
-                    .length
-                }
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">
+                SISTEMA_PREDICTIVO // {dropoutRisk.length} CASOS_ACTIVOS
               </p>
-
-              <div className="space-y-3 mb-8">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-rose-500 text-lg">
-                    error
-                  </span>
-                  <p className="text-[10px] font-black text-slate-400 uppercase italic">
-                    Patrón de inasistencia crítico
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-slate-600 text-lg">
-                    home_pin
-                  </span>
-                  <p className="text-[10px] font-black text-slate-600 uppercase italic">
-                    Visita domiciliaria pendiente
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setSelectedStudentId(s.id);
-                    setIsModalOpen(true);
-                  }}
-                  className="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
-                >
-                  Programar Visita
-                </button>
-                <button
-                  onClick={() =>
-                    toast.success(
-                      `Iniciando enlace telefónico con tutor de ${s.name}...`,
-                      { icon: "📞" },
-                    )
-                  }
-                  className="size-12 bg-white/5 border border-white/10 text-slate-500 rounded-2xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95"
-                >
-                  <span className="material-symbols-outlined">call</span>
-                </button>
-              </div>
             </div>
-          ))}
-          {dropoutRisk.length === 0 && (
-            <div className="col-span-full py-40 text-center opacity-30 flex flex-col items-center gap-6">
-              <span className="material-symbols-outlined text-6xl text-emerald-500">
-                verified_user
+            <button
+              onClick={() => {
+                const items = dropoutRisk.flatMap((s) =>
+                  s.incidents.map((i) => ({
+                    date: i.date,
+                    studentName: s.name,
+                    type: i.type,
+                    description: i.description,
+                  })),
+                );
+                const html = getDocumentTemplate("BITACORA", undefined, {
+                  items,
+                  summary: `SE DETECTAN ${dropoutRisk.length} ESTUDIANTES CON PATRÓN DE INASISTENCIA CRÍTICO. SE ACTIVAN PROTOCOLOS DE VISITA DOMICILIARIA Y ENLACE CON TUTORES.`,
+                });
+                setPrintModal({
+                  isOpen: true,
+                  title: "BITÁCORA DE RIESGO - ALERTA TEMPRANA",
+                  html,
+                });
+              }}
+              className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all flex items-center gap-2 active:scale-95"
+            >
+              <span className="material-symbols-outlined text-sm text-rose-400">
+                print
               </span>
-              <p className="text-[11px] font-black uppercase tracking-[0.5em] italic">
-                NULL_RISK_DETECTED_IN_CORE
-              </p>
-            </div>
-          )}
+              GERERAR_BITÁCORA_RIESGO
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dropoutRisk.map((s) => (
+              <div
+                key={s.id}
+                className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.02] group relative overflow-hidden border-l-4 border-l-rose-600"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="size-14 bg-[#0a0f18] border border-white/10 rounded-2xl flex items-center justify-center text-rose-500 text-2xl font-black italic">
+                    {s.name.charAt(0)}
+                  </div>
+                  <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg animate-pulse">
+                    ALERTA_DESERCIÓN
+                  </span>
+                </div>
+
+                <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1">
+                  {s.name}
+                </h3>
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">
+                  FALTAS_DETECTADAS:{" "}
+                  {
+                    s.incidents.filter((i) => i.type === "Asistencia / Falta")
+                      .length
+                  }
+                </p>
+
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-rose-500 text-lg">
+                      error
+                    </span>
+                    <p className="text-[10px] font-black text-slate-400 uppercase italic">
+                      Patrón de inasistencia crítico
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-slate-600 text-lg">
+                      home_pin
+                    </span>
+                    <p className="text-[10px] font-black text-slate-600 uppercase italic">
+                      Visita domiciliaria pendiente
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setSelectedStudentId(s.id);
+                      setIsModalOpen(true);
+                    }}
+                    className="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
+                  >
+                    Programar Visita
+                  </button>
+                  <button
+                    onClick={() =>
+                      toast.success(
+                        `Iniciando enlace telefónico con tutor de ${s.name}...`,
+                        { icon: "📞" },
+                      )
+                    }
+                    className="size-12 bg-white/5 border border-white/10 text-slate-500 rounded-2xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95"
+                  >
+                    <span className="material-symbols-outlined">call</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+            {dropoutRisk.length === 0 && (
+              <div className="col-span-full py-40 text-center opacity-30 flex flex-col items-center gap-6">
+                <span className="material-symbols-outlined text-6xl text-emerald-500">
+                  verified_user
+                </span>
+                <p className="text-[11px] font-black uppercase tracking-[0.5em] italic">
+                  NULL_RISK_DETECTED_IN_CORE
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

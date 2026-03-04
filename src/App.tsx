@@ -7,8 +7,10 @@ import { UserRole, AppModule } from "./types";
 import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Login } from "./components/Login";
-import { Intro } from "./components/Intro";
+import { BrandIntro } from "./components/BrandIntro";
+import { FirstLogonSetup } from "./components/FirstLogonSetup";
 import { OfficialDocument } from "./components/OfficialDocument";
+import { PrintPreviewModal } from "./components/PrintPreviewModal";
 
 // Dashboards (Lazy Loaded)
 const DashboardDocente = React.lazy(() =>
@@ -167,6 +169,19 @@ const DocumentRenderer = () => {
   );
 };
 
+const GlobalModals = () => {
+  const { printModal, setPrintModal } = useApp();
+
+  return (
+    <PrintPreviewModal
+      isOpen={printModal.isOpen}
+      onClose={() => setPrintModal({ ...printModal, isOpen: false })}
+      title={printModal.title}
+      initialHtml={printModal.html}
+    />
+  );
+};
+
 // -- MAIN APP SHELL --
 const MainContent = () => {
   const { currentModule, currentUserRole, setCurrentModule } = useApp();
@@ -239,6 +254,11 @@ const App: React.FC = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
+  const [showFirstLogon, setShowFirstLogon] = useState(false);
+  const [setupUser, setSetupUser] = useState<{
+    fullName: string;
+    email: string;
+  } | null>(null);
   const { session, loading } = useAuth();
 
   // Handle direct links (e.g., ?registro=true)
@@ -249,6 +269,18 @@ const App: React.FC = () => {
       setShowIntro(false); // Skip intro for direct registration links
     }
   }, []);
+
+  // Handle Browser Back Button for Registration
+  React.useEffect(() => {
+    if (isRegistering) {
+      window.history.pushState({ registering: true }, "");
+      const handlePop = () => {
+        setIsRegistering(false);
+      };
+      window.addEventListener("popstate", handlePop);
+      return () => window.removeEventListener("popstate", handlePop);
+    }
+  }, [isRegistering]);
 
   if (loading) {
     return (
@@ -276,7 +308,7 @@ const App: React.FC = () => {
 
   // --- STARTUP FLOW ---
   if (showIntro) {
-    return <Intro onEnter={() => setShowIntro(false)} />;
+    return <BrandIntro onEnter={() => setShowIntro(false)} />;
   }
 
   if (!session && !isDemoMode) {
@@ -292,12 +324,24 @@ const App: React.FC = () => {
     }
     return (
       <Login
-        onDemoEnter={() => setIsDemoMode(true)}
+        onDemoEnter={() => {
+          setIsDemoMode(true);
+          setShowFirstLogon(true);
+        }}
         onDevEnter={() => {
           setInitialRole(UserRole.DEVELOPER);
           setIsDemoMode(true);
         }}
         onRegisterClick={() => setIsRegistering(true)}
+        onFirstLogon={(member) => {
+          setInitialRole(member.role);
+          setSetupUser({
+            fullName: member.full_name,
+            email: member.username + "@sase.mx",
+          });
+          setIsDemoMode(true);
+          setShowFirstLogon(true);
+        }}
       />
     );
   }
@@ -305,8 +349,19 @@ const App: React.FC = () => {
   return (
     <AppProvider initialRole={initialRole}>
       <div className="global-scan-line" />
+      <GlobalModals />
       <DocumentRenderer />
       <Toaster position="top-center" reverseOrder={false} />
+
+      {/* DEMO: Mostrar el Onboarding al logear por primera vez */}
+      {showFirstLogon && (
+        <FirstLogonSetup
+          userFullName={setupUser?.fullName || "DOCENTE ASIGNADO"}
+          userEmail={setupUser?.email || "docente@sase.mx"}
+          onComplete={() => setShowFirstLogon(false)}
+        />
+      )}
+
       <ErrorBoundary>
         <Layout>
           <MainContent />

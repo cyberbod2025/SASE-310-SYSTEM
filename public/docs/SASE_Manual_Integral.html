@@ -1106,7 +1106,19 @@
     <div class="scroll-progress" id="scrollProgress"></div>
 
     <!-- RETURN BUTTON -->
-    <a href="/" class="btn-back-floating fade-up">
+    <a
+      href="javascript:void(0)"
+      onclick="
+        if (window.opener) {
+          window.close();
+        } else if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '/';
+        }
+      "
+      class="btn-back-floating fade-up"
+    >
       <span class="material-symbols-outlined">arrow_back</span>
       Volver al Sistema
     </a>
@@ -1626,6 +1638,11 @@
         return results ? results[1] : null;
       }
 
+      function scrollToId(id) {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }
+
       function renderRolContent(rolKey) {
         const rol = rolesData[rolKey.toLowerCase()];
         if (!rol) return;
@@ -1714,6 +1731,17 @@
             `;
           }
 
+          // --- SECCIÓN 5: Acceso al Sistema ---
+          grid.innerHTML += `
+            <div class="permiso-card system-link fade-up delay-4" style="border: 2px solid var(--accent); background: rgba(245, 158, 11, 0.05);">
+              <h4><span class="material-symbols-outlined">rocket_launch</span> Acceso Directo</h4>
+              <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px;">Acceder ahora al entorno operativo de SASE para tu función.</p>
+              <a href="/" style="display: block; width: 100%; padding: 12px; background: var(--accent); color: var(--darker); text-decoration: none; border-radius: 12px; text-align: center; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 10px 20px rgba(245, 158, 11, 0.3)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+                Ingresar al Sistema
+              </a>
+            </div>
+          `;
+
           // Mostrar con animación
           contentSection.style.opacity = "1";
           contentSection.style.transform = "translateY(0)";
@@ -1723,6 +1751,12 @@
           setTimeout(() => {
             contentSection.querySelectorAll(".fade-up").forEach((el) => {
               el.classList.add("visible");
+            });
+
+            // Auto-scroll al contenido cargado para mejorar UX en móviles
+            contentSection.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
             });
           }, 100);
         }, 300);
@@ -1742,7 +1776,7 @@
           // Scroll to guide
           setTimeout(() => {
             document
-              .getElementById("guia-roles")
+              .getElementById("selector-rol")
               .scrollIntoView({ behavior: "smooth" });
           }, 500);
         } else {
@@ -1760,6 +1794,13 @@
               .forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
             renderRolContent(btn.dataset.rol);
+
+            // Scroll automático al contenido del rol seleccionado
+            setTimeout(() => {
+              document
+                .getElementById("contenido-rol")
+                .scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 400);
           });
         });
       });

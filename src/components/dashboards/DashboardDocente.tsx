@@ -4,6 +4,8 @@ import { useApp } from "../../store";
 import { UserRole, AppModule, IncidentType, CaseState } from "../../types";
 import toast from "react-hot-toast";
 import { useAuth } from "../AuthProvider";
+import { startProductTour } from "../TourGuide";
+import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
 
 export const DashboardDocente = () => {
   const {
@@ -135,129 +137,137 @@ export const DashboardDocente = () => {
           </div>
         </div>
 
-        {/* Central IA Identity Nucleus */}
-        <div className="relative z-20 text-center flex flex-col items-center group mb-4">
-          <div className="size-32 md:size-44 bg-blue-600/10 rounded-full blur-3xl absolute animate-pulse"></div>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="size-20 md:size-28 flex items-center justify-center relative overflow-hidden cursor-pointer"
-          >
-            <div className="absolute inset-0 bg-blue-500/5 rounded-full blur-xl animate-pulse"></div>
+        {/* ORB LAYOUT WRAPPER - Fixes mobile overlapping by reserving space */}
+        <div
+          id="docente-tabs"
+          className="relative flex items-center justify-center w-full min-h-[320px] md:min-h-[380px] mb-8"
+        >
+          {/* Central IA Identity Nucleus */}
+          <div className="relative z-20 text-center flex flex-col items-center group">
+            <div className="size-32 md:size-44 bg-blue-600/10 rounded-full blur-3xl absolute animate-pulse"></div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="size-20 md:size-28 flex items-center justify-center relative overflow-hidden cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-blue-500/5 rounded-full blur-xl animate-pulse"></div>
 
-            {/* Central Identity Text - MORE HARMONIOUS */}
-            <div className="relative z-20 flex flex-col items-center justify-center">
-              <span className="text-[7px] font-black text-blue-400 tracking-[0.3em] leading-none mb-0.5 opacity-60 uppercase">
-                AI_UNIT
+              {/* Inner scanning ring */}
+              <div className="absolute inset-2 border border-blue-400/10 rounded-full animate-spin-slow opacity-20"></div>
+            </motion.div>
+
+            {/* Central Identity Text - MOVED BELOW ORB FOR CLARITY */}
+            <div className="relative mt-4 flex flex-col items-center justify-center">
+              <span className="text-[7px] font-black text-blue-400 tracking-[0.3em] leading-none mb-1 opacity-50 uppercase">
+                AI_NUCLEUS_OPERATIVE
               </span>
-              <span className="text-2xl font-black text-white italic tracking-tighter leading-none pulse-glow">
+              <span className="text-lg font-black text-white italic tracking-tighter leading-none pulse-glow">
                 SASE-310
               </span>
             </div>
 
-            {/* Inner scanning ring */}
-            <div className="absolute inset-2 border border-blue-400/10 rounded-full animate-spin-slow opacity-20"></div>
-          </motion.div>
-          <div className="mt-4">
-            <h2 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase leading-none mb-1">
-              COMMAND <span className="text-blue-500">CENTER</span>
-            </h2>
-            <div className="flex items-center gap-2 justify-center opacity-30">
-              <span className="h-px w-4 bg-white/20"></span>
-              <span className="text-[7px] font-black text-slate-500 uppercase tracking-[0.3em] italic leading-tight">
-                DOCENTE_COMMAND_CENTRAL
-              </span>
-              <span className="h-px w-4 bg-white/20"></span>
+            <div className="mt-6" id="docente-dashboard-title">
+              <h2 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase leading-none mb-1">
+                COMMAND <span className="text-blue-500">CENTER</span>
+              </h2>
+              <div className="flex items-center gap-2 justify-center opacity-30">
+                <span className="h-px w-4 bg-white/20"></span>
+                <span className="text-[7px] font-black text-slate-500 uppercase tracking-[0.3em] italic leading-tight">
+                  DOCENTE_COMMAND_CENTRAL
+                </span>
+                <span className="h-px w-4 bg-white/20"></span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Rotating Orbital Tabs Container */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="absolute size-[360px] flex items-center justify-center pointer-events-none"
-        >
-          {[
-            {
-              id: "GENERAL",
-              label: "Vista General",
-              icon: "dashboard",
-              color: "text-blue-400",
-            },
-            {
-              id: "ASISTENCIA",
-              label: "Pase de Lista",
-              icon: "fact_check",
-              color: "text-emerald-400",
-            },
-            {
-              id: "CALIFICACIONES",
-              label: "Evaluación",
-              icon: "history_edu",
-              color: "text-amber-400",
-            },
-          ].map((tab, index, arr) => {
-            const angle = (index * (360 / arr.length) - 90) * (Math.PI / 180);
-            const radius = 180;
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-            const isActive = activeTab === tab.id;
+          {/* Rotating Orbital Tabs Container */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+            className="absolute size-[300px] md:size-[360px] flex items-center justify-center pointer-events-none"
+          >
+            {[
+              {
+                id: "GENERAL",
+                label: "Vista General",
+                icon: "dashboard",
+                color: "text-blue-400",
+              },
+              {
+                id: "ASISTENCIA",
+                label: "Pase de Lista",
+                icon: "fact_check",
+                color: "text-emerald-400",
+              },
+              {
+                id: "CALIFICACIONES",
+                label: "Evaluación",
+                icon: "history_edu",
+                color: "text-amber-400",
+              },
+              {
+                id: "TOUR",
+                label: "Inducción",
+                icon: "auto_awesome",
+                color: "text-blue-400",
+                action: () => startProductTour(),
+              },
+            ].map((tab, index, arr) => {
+              const angle = (index * (360 / arr.length) - 90) * (Math.PI / 180);
+              const isMobile =
+                typeof window !== "undefined" && window.innerWidth < 768;
+              const radius = isMobile ? 100 : 130;
+              const x = Math.cos(angle) * radius;
+              const y = Math.sin(angle) * radius;
+              const isActive = activeTab === tab.id;
 
-            return (
-              <motion.div
-                key={tab.id}
-                className="absolute pointer-events-auto"
-                style={{
-                  left: "50%",
-                  top: "50%",
-                  marginLeft: -40,
-                  marginTop: -40,
-                  x,
-                  y,
-                }}
-              >
-                <motion.button
-                  animate={{ rotate: -360 }}
-                  transition={{
-                    duration: 60,
-                    repeat: Infinity,
-                    ease: "linear",
+              return (
+                <motion.div
+                  key={tab.id}
+                  className="absolute pointer-events-auto"
+                  style={{
+                    left: "50%",
+                    top: "50%",
+                    marginLeft: -40,
+                    marginTop: -40,
+                    x,
+                    y,
                   }}
-                  whileHover={{ scale: 1.5, zIndex: 50 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className="group flex flex-col items-center"
                 >
-                  <div
-                    className={`
-                      size-14 md:size-16 rounded-xl flex flex-col items-center justify-center transition-all duration-500 bg-transparent
+                  <motion.button
+                    animate={{ rotate: -360 }}
+                    transition={{
+                      duration: 60,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    whileHover={{ scale: 1.5, zIndex: 50 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={tab.action || (() => setActiveTab(tab.id as any))}
+                    className="group flex flex-col items-center"
+                  >
+                    <div
+                      className={`
+                      size-6 md:size-7 rounded-full flex flex-col items-center justify-center transition-all duration-500 bg-transparent
                       ${isActive ? "text-blue-400" : "text-white/20 group-hover:text-white/70"}
                     `}
-                  >
-                    <span
-                      className={`material-symbols-outlined text-xl md:text-2xl transition-transform duration-300 group-hover:scale-110`}
                     >
-                      {tab.icon}
-                    </span>
-                    <span
-                      className={`text-[7px] font-black uppercase tracking-[0.1em] text-center px-1 mt-1 transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-                    >
-                      {tab.label}
-                    </span>
-
-                    {/* Active HUD Marker */}
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeGlow"
-                        className="absolute inset-0 bg-blue-500/5 blur-xl rounded-full"
-                      />
-                    )}
-                  </div>
-                </motion.button>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                      <span
+                        className={`material-symbols-outlined text-base transition-transform duration-300 group-hover:scale-110`}
+                      >
+                        {tab.icon}
+                      </span>
+                      <span
+                        className={`text-[5px] font-black uppercase tracking-[0.1em] text-center px-1 mt-0.5 transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                      >
+                        {tab.label}
+                      </span>
+                    </div>
+                  </motion.button>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
       </div>
 
       {/* CONTENIDO PRINCIPAL */}
@@ -461,6 +471,7 @@ export const DashboardDocente = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 }}
+                id="risk-semaphore"
                 className="card-sase p-4 flex flex-col items-center text-center group cursor-pointer hover:border-amber-500/20 hover:bg-white/[0.04] transition-all relative overflow-hidden"
               >
                 <motion.div
@@ -1116,6 +1127,96 @@ export const DashboardDocente = () => {
           </div>
         </div>
       )}
+
+      {/* MODAL DETALLE DE ALUMNO (StudentAdvancedPanel) */}
+      {selectedStudent && (
+        <StudentAdvancedPanel
+          student={selectedStudent}
+          onClose={() => setSelectedStudent(null)}
+        />
+      )}
+
+      {/* MODAL REPORTE MASIVO */}
+      <AnimatePresence>
+        {isQuickReportOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsQuickReportOpen(false)}
+              className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-[#0f172a] border border-blue-500/20 rounded-3xl shadow-2xl p-6 md:p-8 overflow-hidden"
+            >
+              {/* Premium Header */}
+              <div className="flex justify-between items-start mb-6">
+                <div className="flex gap-4">
+                  <div className="size-12 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center border border-rose-500/30">
+                    <span className="material-symbols-outlined text-2xl">
+                      gavel
+                    </span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-white uppercase tracking-tight">
+                      Reporte Grupal
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-black">
+                      {selectedStudentIds.size} ALUMNOS SELECCIONADOS
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsQuickReportOpen(false)}
+                  className="text-slate-500 hover:text-white transition-colors"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Comentarios Rápidos */}
+                <div>
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 block">
+                    Motivos Frecuentes
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {quickComments.map((comment, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() =>
+                          handleBulkReport(comment.type, comment.label)
+                        }
+                        className="px-4 py-2 rounded-xl border border-white/5 bg-white/[0.02] text-white text-xs font-bold hover:bg-white/[0.08] hover:border-blue-500/30 hover:text-blue-400 transition-all text-left flex items-center gap-2"
+                      >
+                        <span className="material-symbols-outlined text-sm opacity-50">
+                          {comment.type === IncidentType.CONDUCTA
+                            ? "sports_kabaddi"
+                            : comment.type === IncidentType.ACADEMICO
+                              ? "menu_book"
+                              : "assignment_late"}
+                        </span>
+                        {comment.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/5">
+                  <p className="text-[10px] text-slate-500 text-center uppercase tracking-widest font-black">
+                    El reporte se aplicará a todos los alumnos seleccionados al
+                    hacer clic en el motivo.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

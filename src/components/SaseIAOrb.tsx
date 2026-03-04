@@ -110,21 +110,21 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({ state, className }) => {
           >
             {/* Animación local de parpadeo individual en los ojos - CSS directo */}
             <rect
-              x="36"
-              y="44"
-              width="6"
-              height="12"
-              rx="3"
+              x="38.5"
+              y="47.5"
+              width="2.5"
+              height="5"
+              rx="1.25"
               fill="#ffffff"
               className="opacity-95 animate-[orb-blink_5s_infinite]"
               style={{ transformOrigin: "40px 50px" }}
             />
             <rect
-              x="58"
-              y="44"
-              width="6"
-              height="12"
-              rx="3"
+              x="59"
+              y="47.5"
+              width="2.5"
+              height="5"
+              rx="1.25"
               fill="#ffffff"
               className="opacity-95 animate-[orb-blink_5s_infinite]"
               style={{ transformOrigin: "60px 50px" }}

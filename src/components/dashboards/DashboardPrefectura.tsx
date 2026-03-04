@@ -287,7 +287,10 @@ export const DashboardPrefectura = () => {
 
       <div className="relative z-10 max-w-[1600px] mx-auto space-y-8">
         {/* TACTICAL HEADER */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 animate-fade-in-up">
+        <div
+          id="pref-header"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-8 animate-fade-in-up"
+        >
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <span className="h-[2px] w-12 bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)]"></span>
@@ -295,7 +298,7 @@ export const DashboardPrefectura = () => {
                 CONTROL OPERATIVO // PREFECTURA_UNIT
               </p>
             </div>
-            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
+            <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
               FIELD{" "}
               <span className="text-amber-500 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
                 COMMAND
@@ -319,9 +322,11 @@ export const DashboardPrefectura = () => {
                   `<h1>Reporte Prefectura ${todayDisplay}</h1>`,
                 )
               }
-              className="px-6 py-3 bg-white/[0.03] border border-white/10 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-white/[0.08] hover:text-white hover:border-white/20 transition-all flex items-center gap-3"
+              className="px-4 md:px-6 py-2 md:py-3 bg-white/[0.03] border border-white/10 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-white/[0.08] hover:text-white hover:border-white/20 transition-all flex items-center gap-2 md:gap-3"
             >
-              <span className="material-symbols-outlined text-lg">print</span>
+              <span className="material-symbols-outlined text-base md:text-lg">
+                print
+              </span>
               Exportar
             </button>
           </div>
@@ -348,8 +353,8 @@ export const DashboardPrefectura = () => {
                   setMatriculaInput(e.target.value);
                   if (selectedStudentId) setSelectedStudentId(null);
                 }}
-                placeholder="MATRÍCULA // SCAN..."
-                className="flex-1 h-12 rounded-xl border border-white/10 bg-white/[0.03] px-4 font-mono text-lg font-black text-white focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10 outline-none transition-all placeholder:text-slate-600 uppercase tracking-widest"
+                placeholder="MATRÍCULA..."
+                className="flex-1 h-10 md:h-12 rounded-xl border border-white/10 bg-white/[0.03] px-3 md:px-4 font-mono text-sm md:text-lg font-black text-white focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10 outline-none transition-all placeholder:text-slate-600 uppercase tracking-widest"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const s = students.find(
@@ -383,7 +388,10 @@ export const DashboardPrefectura = () => {
         </div>
 
         {/* KPI GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div
+          id="pref-kpi-grid"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
           <HolographicKPI
             icon="group"
             value={dailyStats.attendanceCount.toString()}
@@ -420,7 +428,10 @@ export const DashboardPrefectura = () => {
           {/* LEFT: ACTIONS + DATA (8 cols) */}
           <div className="lg:col-span-8 space-y-6">
             {/* QUICK ACTION CARD */}
-            <div className="card-sase p-6 border-amber-500/20 bg-amber-500/[0.02] relative overflow-hidden">
+            <div
+              id="pref-quick-register"
+              className="card-sase p-6 border-amber-500/20 bg-amber-500/[0.02] relative overflow-hidden"
+            >
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
                 transition={{

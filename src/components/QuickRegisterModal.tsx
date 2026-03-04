@@ -136,8 +136,10 @@ export const QuickRegisterModal: React.FC = () => {
   if (!quickRegisterOpen) return null;
 
   // Extract unique grades and groups from students
-  const allGroups = [...new Set(students.map((s) => s.group))].sort();
-  const grados = [...new Set(allGroups.map((g) => g.charAt(0)))].sort();
+  const allGroups = [
+    ...new Set(students.map((s) => s.group as string)),
+  ] as string[];
+  const grados = [...new Set(allGroups.map((g) => g.charAt(0)))] as string[];
   const gruposForGrado = selectedGrado
     ? allGroups.filter((g) => g.startsWith(selectedGrado))
     : [];

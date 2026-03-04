@@ -16,7 +16,7 @@ export interface PermisosSASE {
 }
 
 export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
-  direccion: {
+  directivo: {
     can_view_names: true,
     can_register: true,
     can_edit: true,
@@ -52,7 +52,7 @@ export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
     can_view_sensitive: false,
     can_manage_system: false,
   },
-  tutor: {
+  docente_tutor: {
     can_view_names: false,
     can_register: true,
     can_edit: true,
@@ -112,7 +112,7 @@ export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
     can_view_sensitive: true,
     can_manage_system: false,
   },
-  promotoria_lectura: {
+  promotora: {
     can_view_names: false,
     can_register: true,
     can_edit: true,
@@ -160,7 +160,7 @@ export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
     can_view_sensitive: false,
     can_manage_system: false,
   },
-  directivo: {
+  developer: {
     can_view_names: true,
     can_register: true,
     can_edit: true,
@@ -205,7 +205,7 @@ export function combinarPermisos(roles: string[]): PermisosSASE {
 
 export function tienePermiso(
   alcances: PermisosSASE | null,
-  permiso: keyof PermisosSASE
+  permiso: keyof PermisosSASE,
 ): boolean {
   if (!alcances) return false;
   return alcances[permiso] === true;

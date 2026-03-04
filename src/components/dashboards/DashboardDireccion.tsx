@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
 import { CaseState, AppModule } from "../../types";
 import { supabase } from "../../supabase/client";
+import { startProductTour } from "../TourGuide";
 import { printContent } from "../PrintButtons";
 import { PrintPreviewModal } from "../PrintPreviewModal";
 
@@ -305,7 +306,10 @@ export const DashboardDireccion = () => {
 
       <div className="relative z-10 max-w-[1600px] mx-auto space-y-8">
         {/* TACTICAL HEADER - REFINED */}
-        <div className="relative min-h-[300px] flex flex-col md:flex-row items-center justify-between gap-12 py-4 overflow-hidden">
+        <div
+          id="dashboard-header"
+          className="relative min-h-[200px] md:min-h-[300px] flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 py-4 md:py-8 overflow-hidden"
+        >
           {/* Left: Strategic Title */}
           <div className="relative z-10 space-y-3 text-center md:text-left">
             <div className="flex items-center gap-3 justify-center md:justify-start">
@@ -331,20 +335,20 @@ export const DashboardDireccion = () => {
           </div>
 
           {/* Right: Orbital Action Nucleus */}
-          <div className="relative flex items-center justify-center w-full md:w-[450px] h-[300px]">
+          <div className="relative flex items-center justify-center w-full md:w-[450px] h-[250px] md:h-[300px]">
             {/* IA Nucleus for Direction */}
-            <div className="relative z-20 size-20 md:size-28 flex items-center justify-center">
+            <div className="relative z-20 size-16 md:size-28 flex items-center justify-center">
               <div className="absolute inset-0 bg-indigo-500/5 rounded-full blur-2xl animate-pulse"></div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
-                className="size-full flex items-center justify-center relative overflow-hidden group cursor-pointer"
+                className="size-full flex items-center justify-center relative overflow-visible group cursor-pointer"
               >
-                {/* Central Identity Text */}
-                <div className="relative z-20 flex flex-col items-center justify-center">
+                {/* Central Identity Text - Moved Below Orb Effect */}
+                <div className="absolute top-[120%] flex flex-col items-center justify-center w-max">
                   <span className="text-[6px] font-black text-indigo-400 tracking-[0.2em] leading-none mb-0.5 opacity-50 uppercase">
                     AI_UNIT
                   </span>
-                  <span className="text-xl font-black text-white italic tracking-tighter leading-none pulse-glow">
+                  <span className="text-sm font-black text-white italic tracking-tighter leading-none pulse-glow">
                     SASE-310
                   </span>
                 </div>
@@ -357,7 +361,7 @@ export const DashboardDireccion = () => {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-              className="absolute size-[350px] flex items-center justify-center pointer-events-none"
+              className="absolute size-[280px] md:size-[350px] flex items-center justify-center pointer-events-none"
             >
               {[
                 {
@@ -378,17 +382,22 @@ export const DashboardDireccion = () => {
                   bg: "bg-indigo-600",
                 },
                 {
+                  id: "GUIDE",
+                  label: "Inducción",
+                  icon: "auto_awesome",
+                  action: () => startProductTour(),
+                  color: "text-blue-400",
+                },
+                {
                   id: "METRICS",
                   label: "Protocolos",
                   icon: "policy",
                   action: () => {},
-                  color: "text-amber-400",
-                  bg: "bg-white/[0.03]",
                 },
               ].map((act, index, arr) => {
                 const angle =
                   (index * (360 / arr.length) - 90) * (Math.PI / 180);
-                const radius = 130;
+                const radius = 100;
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
 
@@ -418,23 +427,20 @@ export const DashboardDireccion = () => {
                       className="group flex flex-col items-center"
                     >
                       <div
+                        id={act.id === "PRINT" ? "export-btn" : undefined}
                         className={`
-                        size-14 md:size-16 rounded-xl flex flex-col items-center justify-center transition-all duration-500 bg-transparent
+                        size-6 md:size-7 rounded-full flex flex-col items-center justify-center transition-all duration-500 bg-transparent
                         ${act.id === "APPROVE" ? "text-white" : "text-white/20 group-hover:text-white/70"}
                       `}
                       >
                         <span
-                          className={`material-symbols-outlined text-xl md:text-2xl transition-transform duration-300 group-hover:scale-110`}
+                          className={`material-symbols-outlined text-base transition-transform duration-300 group-hover:scale-110`}
                         >
                           {act.icon}
                         </span>
-                        <span className="text-[7px] md:text-[8px] font-black uppercase tracking-tight text-center px-1 opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+                        <span className="text-[4px] font-black uppercase tracking-tight text-center px-1 opacity-0 group-hover:opacity-100 transition-opacity mt-0.5">
                           {act.label}
                         </span>
-
-                        {act.id === "APPROVE" && (
-                          <div className="absolute inset-0 bg-indigo-500/5 blur-xl rounded-full -z-10" />
-                        )}
                       </div>
                     </motion.button>
                   </motion.div>
@@ -443,15 +449,18 @@ export const DashboardDireccion = () => {
             </motion.div>
 
             {/* Tactical Rings */}
-            <div className="absolute size-[220px] border border-indigo-500/10 rounded-full animate-spin-slow opacity-20"></div>
-            <div className="absolute size-[300px] border border-white/[0.03] rounded-full animate-spin-reverse-slow opacity-10"></div>
+            <div className="absolute size-[180px] md:size-[220px] border border-indigo-500/10 rounded-full animate-spin-slow opacity-20"></div>
+            <div className="absolute size-[250px] md:size-[300px] border border-white/[0.03] rounded-full animate-spin-reverse-slow opacity-10"></div>
           </div>
         </div>
 
         {/* MAIN BENTO GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* AREA: STABILITY & KPIs (Left) */}
-          <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div
+            id="kpi-risk"
+            className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             <div className="md:col-span-2">
               <SystemStabilityRadar
                 status={status}
@@ -636,7 +645,10 @@ export const DashboardDireccion = () => {
           </div>
 
           {/* AREA: DECISION MATRIX (Bottom Right) */}
-          <div className="lg:col-span-5 card-sase p-8 border-indigo-500/20 bg-indigo-500/[0.02] relative overflow-hidden group">
+          <div
+            id="panel-risk-groups"
+            className="lg:col-span-5 card-sase p-8 border-indigo-500/20 bg-indigo-500/[0.02] relative overflow-hidden group"
+          >
             {/* Scanning Line */}
             <motion.div
               animate={{ top: ["-10%", "110%"] }}

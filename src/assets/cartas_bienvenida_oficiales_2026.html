@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartas de Bienvenida SASE 2026</title>
+    <style>
+      :root {
+        --primary: #0ea5e9;
+        --secondary: #1e293b;
+        --accent: #f59e0b;
+        --text-main: #0f172a;
+      }
+      body {
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #f1f5f9;
+        margin: 0;
+        padding: 20px;
+      }
+      .page-break {
+        page-break-after: always;
+      }
+      .letter-container {
+        max-width: 800px;
+        margin: 0 auto 40px;
+        background: white;
+        padding: 50px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        position: relative;
+        overflow: hidden;
+        border-top: 5px solid var(--primary);
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+      }
+      .logo-box {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .logo-box img {
+        width: 50px;
+        height: 50px;
+      }
+      .logo-text h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 900;
+        color: var(--secondary);
+        letter-spacing: -0.02em;
+      }
+      .logo-text p {
+        margin: 0;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+      }
+      .date {
+        font-size: 12px;
+        color: #64748b;
+        text-align: right;
+      }
+      .content {
+        line-height: 1.6;
+        color: var(--text-main);
+      }
+      .welcome-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: var(--secondary);
+      }
+      .user-name {
+        color: var(--primary);
+        font-weight: 800;
+      }
+      .credentials-box {
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        padding: 20px;
+        border-radius: 12px;
+        margin: 25px 0;
+      }
+      .credential-item {
+        margin-bottom: 10px;
+        display: flex;
+        gap: 10px;
+      }
+      .label {
+        font-weight: 700;
+        width: 150px;
+        text-transform: uppercase;
+        font-size: 11px;
+        color: #64748b;
+      }
+      .value {
+        font-family: "Courier New", Courier, monospace;
+        font-weight: 800;
+        color: var(--secondary);
+        font-size: 14px;
+      }
+      .instructions {
+        background: #fffbeb;
+        border-left: 4px solid var(--accent);
+        padding: 15px;
+        font-size: 13px;
+        margin: 20px 0;
+      }
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+        font-size: 11px;
+        color: #94a3b8;
+        text-align: center;
+      }
+      .qr-placeholder {
+        width: 100px;
+        height: 100px;
+        background: #eee;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #ccc;
+        border: 1px solid #ddd;
+      }
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+        .letter-container {
+          box-shadow: none;
+          margin: 0;
+          border: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- GENERATED CARDS START -->
+
+    <!-- Template for Docente -->
+    <div class="letter-container">
+      <div class="header">
+        <div class="logo-box">
+          <div
+            style="
+              width: 50px;
+              height: 50px;
+              background: #0ea5e9;
+              border-radius: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-weight: 900;
+              font-size: 24px;
+            "
+          >
+            S
+          </div>
+          <div class="logo-text">
+            <h1>SASE</h1>
+            <p>Sistema de Acompañamiento Escolar</p>
+          </div>
+        </div>
+        <div class="date">Escuela Secundaria Técnica 310<br />Marzo 2026</div>
+      </div>
+
+      <div class="content">
+        <div class="welcome-title">ORDEN DE ACCESO INSTITUCIONAL</div>
+        <p>Estimado(a) miembro del personal educativo:</p>
+        <p>
+          Nos complace darle la bienvenida a la nueva plataforma
+          <span class="user-name">SASE 310</span>. Este ecosistema digital ha
+          sido diseñado para facilitar sus labores administrativas, el
+          seguimiento de sus grupos y la gestión de incidencias en tiempo real.
+        </p>
+
+        <p>
+          A continuación se presentan sus credenciales de acceso iniciales. Por
+          favor, mantenga esta información bajo estricta confidencialidad.
+        </p>
+
+        <div class="credentials-box">
+          <div class="credential-item">
+            <span class="label">Nombre oficial:</span>
+            <span class="value" id="user-display-name"
+              >MIGUEL ANGEL MORALES SANDOVAL</span
+            >
+          </div>
+          <div class="credential-item">
+            <span class="label">Usuario:</span>
+            <span class="value" id="user-username">miguel.morales</span>
+          </div>
+          <div class="credential-item">
+            <span class="label">Clave Provisional:</span>
+            <span class="value" id="user-password">SASE.DIRECTIVO.2026</span>
+          </div>
+          <div class="credential-item">
+            <span class="label">Función Asignada:</span>
+            <span class="value" id="user-role">DIRECTIVO</span>
+          </div>
+        </div>
+
+        <div class="instructions">
+          <strong>PRIMER INGRESO (Protocolo de Activación):</strong>
+          <ol>
+            <li>Descargue la App o entre vía web (sase310.mx).</li>
+            <li>
+              Ingrese con su <strong>Usuario</strong> y
+              <strong>Clave Provisional</strong>.
+            </li>
+            <li>
+              El sistema solicitará automáticamente el
+              <strong>Cambio de Contraseña</strong>.
+            </li>
+            <li>
+              Deberá configurar <strong>3 preguntas de seguridad</strong> para
+              recuperación.
+            </li>
+            <li>
+              Complete sus datos faltantes (CURP y Teléfono) para finalizar el
+              alta.
+            </li>
+          </ol>
+        </div>
+
+        <p>
+          <strong>Nota:</strong> Como docente, usted tendrá acceso directo a sus
+          <strong>Grupos Asignados</strong> y podrá emitir reportes de
+          incidencias, justificantes y consultar el historial médico de sus
+          alumnos de forma segura.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>
+          EST 310 - Dirección de Innovación Tecnológica<br />Este documento es
+          personal e intransferible.
+        </p>
+        <div class="qr-placeholder">CÓDIGO DE INSTALACIÓN</div>
+      </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Más cartas se generarían aquí dinámicamente o por lotes según el personal -->
+    <!-- Por el momento genero esta principal como muestra fiel del sistema actualizado -->
+  </body>
+</html>

@@ -12,6 +12,8 @@ import { AIDocumentGenerator } from "./ai/AIDocumentGenerator";
 import "./StudentProfile.css"; // Usa el nuevo CSS "Institutional Light"
 import toast from "react-hot-toast";
 
+import { PrintPreviewModal } from "./PrintPreviewModal";
+
 interface StudentAdvancedPanelProps {
   student: Student;
   onClose: () => void;

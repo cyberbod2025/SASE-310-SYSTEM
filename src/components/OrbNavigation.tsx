@@ -416,16 +416,6 @@ export const OrbNavigation = () => {
               >
                 <SaseIAOrb state={saseState} className="w-full h-full" />
 
-                {/* Central IA SASE Identity Text Overlay */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none drop-shadow-2xl">
-                  <span className="text-[12px] md:text-[14px] font-black text-white tracking-[0.4em] leading-none mb-1 opacity-90 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                    IA
-                  </span>
-                  <span className="text-2xl md:text-4xl font-black text-white italic tracking-tighter leading-none pulse-glow drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-                    SASE
-                  </span>
-                </div>
-
                 <div className="absolute inset-0 rounded-full border border-white/10 group-hover:border-white/30 transition-all duration-700 pointer-events-none" />
               </button>
             </motion.div>
@@ -439,7 +429,9 @@ export const OrbNavigation = () => {
               {menuItems.map((item, index) => {
                 const angle =
                   (index * (360 / menuItems.length) - 90) * (Math.PI / 180);
-                const radius = 240;
+                const isMobile =
+                  typeof window !== "undefined" && window.innerWidth < 768;
+                const radius = isMobile ? 140 : 240;
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
 
@@ -491,8 +483,8 @@ export const OrbNavigation = () => {
             </motion.div>
 
             {/* Tactical Ring Backgrounds */}
-            <div className="absolute size-[480px] border border-white/5 rounded-full pointer-events-none animate-spin-slow"></div>
-            <div className="absolute size-[580px] border border-white/[0.02] rounded-full pointer-events-none animate-spin-reverse-slow"></div>
+            <div className="absolute size-[300px] md:size-[480px] border border-white/5 rounded-full pointer-events-none animate-spin-slow"></div>
+            <div className="absolute size-[400px] md:size-[580px] border border-white/[0.02] rounded-full pointer-events-none animate-spin-reverse-slow"></div>
           </div>
 
           <div className="mt-24 text-center animate-fade-in relative z-10 w-full">

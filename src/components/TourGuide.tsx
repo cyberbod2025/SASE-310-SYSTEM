@@ -22,12 +22,11 @@ export const startProductTour = (
     {
       // Pantalla de Bienvenida (Sin elemento = Modal Centrado)
       popover: {
-        title: `¡Bienvenido a SASE-310, ${userName}! 🚀`,
+        title: `NÚCLEO SASE-310: Hola, ${userName} 👋`,
         description:
-          "<img src='/branding/sase_logo_small.png' style='height: 60px; margin: 0 auto 10px; display: block;' />" +
-          "Has ingresado al <b>Sistema Automatizado de Seguimiento Escolar</b>.<br><br>" +
-          "Esta plataforma centraliza la vida académica, conductual y administrativa del plantel. " +
-          "Déjanos guiarte brevemente por tu entorno de trabajo actual.",
+          "<div style='margin-bottom: 20px; display: flex; justify-content: center;'><div style='width: 60px; height: 60px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.3);'><span class='material-symbols-outlined' style='color: #60a5fa; font-size: 32px;'>smart_toy</span></div></div>" +
+          "Soy la <b>IA de SASE-310</b>. Mi objetivo es optimizar tu gestión escolar.<br><br>" +
+          "He configurado tu entorno de trabajo. Permíteme mostrarte los módulos clave para tu operación diaria.",
         side: "center",
         align: "center",
       },
@@ -222,11 +221,12 @@ export const startProductTour = (
     showProgress: true,
     animate: true,
     allowClose: true,
-    stagePadding: 4,
-    doneBtnText: "¡Empezar a trabajar!",
-    nextBtnText: "Siguiente ➡",
-    prevBtnText: "⬅ Atrás",
-    progressText: "Paso {{current}} de {{total}}",
+    stagePadding: 6,
+    popoverClass: "sase-tour-popover", // NUEVA CLASE PREMIUM
+    doneBtnText: "FINALIZAR INDUCCIÓN",
+    nextBtnText: "SIGUIENTE FASE ➔",
+    prevBtnText: "⬅ PROTOCOLO ANTERIOR",
+    progressText: "ETAPA {{current}} DE {{total}}",
     steps: steps,
     onDestroyStarted: () => {
       // Cleanup cleanup

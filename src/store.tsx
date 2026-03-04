@@ -47,6 +47,8 @@ interface AppContextType {
   setAssistantStatus: any;
   activePrintJob: any;
   printDocument: any;
+  printModal: any;
+  setPrintModal: any;
 
   // Notifications & Notices
   notifications: any;

@@ -59,12 +59,23 @@ const IntelligenceKPI = ({
 };
 
 export const Reportes: React.FC = () => {
-  const { students, currentUserRole, setCurrentModule } = useApp();
+  const {
+    students,
+    currentUserRole,
+    setCurrentModule,
+    setPrintModal,
+    printModal,
+  } = useApp();
   const [selectedReport, setSelectedReport] =
     useState<ReportType>("incidencias");
 
   // --- SECURITY ENFORCEMENT ---
-  if (currentUserRole === UserRole.SECRETARIA) {
+  if (
+    currentUserRole === UserRole.SECRETARIA ||
+    currentUserRole === UserRole.UDEII
+  ) {
+    const roleName =
+      currentUserRole === UserRole.SECRETARIA ? "Secretaría" : "UDEII";
     return (
       <div className="flex flex-col items-center justify-center h-full p-20 text-center animate-fade-in">
         <div className="size-24 bg-rose-500/10 border border-rose-500/20 rounded-full flex items-center justify-center text-rose-500 mb-8 shadow-2xl shadow-rose-500/10">
@@ -74,7 +85,7 @@ export const Reportes: React.FC = () => {
           Acceso Restringido
         </h2>
         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest max-w-md leading-relaxed">
-          Su rol (Secretaría) no tiene autorizada la generación de reportes de
+          Su rol ({roleName}) no tiene autorizada la generación de reportes de
           asistencia o incidencias por protocolos de privacidad institucional.
         </p>
         <button
@@ -437,7 +448,11 @@ export const Reportes: React.FC = () => {
         htmlContent = "<p>Seleccione un tipo de reporte.</p>";
     }
 
-    printContent(title, htmlContent);
+    setPrintModal({
+      isOpen: true,
+      title,
+      html: htmlContent,
+    });
   };
 
   const reportOptions = [

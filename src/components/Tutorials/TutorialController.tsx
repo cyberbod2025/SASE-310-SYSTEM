@@ -345,6 +345,8 @@ export const TutorialController: React.FC = () => {
     if (steps && !hasSeenTutorial) {
       const driverObj = driver({
         showProgress: true,
+        popoverClass: "sase-tour-popover", // Enable custom SASE styles
+        animate: true, // Force animation
         steps: steps,
         nextBtnText: "Siguiente",
         prevBtnText: "Atrás",
@@ -369,7 +371,7 @@ export const TutorialController: React.FC = () => {
                         <div className="absolute inset-0.5 rounded-full bg-black/90 flex items-center justify-center">
                           <img
                             className="h-8 w-8 object-contain"
-                            src="/assets/branding/IA-SASE.png"
+                            src="/assets/branding/SASE_ICON.png"
                             alt="IA SASE"
                           />
                         </div>

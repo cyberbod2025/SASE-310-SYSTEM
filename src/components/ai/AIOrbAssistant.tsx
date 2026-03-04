@@ -34,6 +34,109 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
   const [chatInput, setChatInput] = useState("");
 
   // Logic from AssistantBanner - Unified in AI Orb
+  // Role-specific background activity simulation
+  const getIAActivities = () => {
+    switch (currentUserRole) {
+      case UserRole.DOCENTE:
+      case UserRole.DOCENTE_TUTOR:
+        return [
+          {
+            icon: "analytics",
+            label: "Analizando patrones de conducta en el grupo",
+          },
+          { icon: "schedule", label: "Optimización de agenda de evaluaciones" },
+          {
+            icon: "check_circle",
+            label: "Sincronización de asistencias en tiempo real",
+          },
+        ];
+      case UserRole.DIRECTIVO:
+      case UserRole.SUBDIRECCION:
+        return [
+          {
+            icon: "verified_user",
+            label: "Auditoría de integridad RLS activa",
+          },
+          {
+            icon: "query_stats",
+            label: "Generando reportes KPI institucionales",
+          },
+          {
+            icon: "security",
+            label: "Monitoreo de protocolos de seguridad crítica",
+          },
+        ];
+      case UserRole.SECRETARIA:
+        return [
+          {
+            icon: "assignment_ind",
+            label: "Validación de expedientes digitales",
+          },
+          { icon: "cloud_sync", label: "Sincronización de bases de datos SEP" },
+        ];
+      case UserRole.UDEII:
+        return [
+          { icon: "psychology", label: "Rastreo de Ajustes Razonables" },
+          {
+            icon: "diversity_1",
+            label: "Análisis de barreras para el aprendizaje",
+          },
+        ];
+      case UserRole.PREFECTURA:
+        return [
+          { icon: "fact_check", label: "Validación de asistencias por aula" },
+          {
+            icon: "security_update_good",
+            label: "Vigilancia de zonas de riesgo activa",
+          },
+          { icon: "history", label: "Consolidando reportes de disciplina" },
+        ];
+      case UserRole.ORIENTACION:
+      case UserRole.TRABAJO_SOCIAL:
+        return [
+          { icon: "psychology", label: "Evaluación de clima de convivencia" },
+          {
+            icon: "family_restroom",
+            label: "Seguimiento de entornos familiares",
+          },
+          {
+            icon: "volunteer_activism",
+            label: "Detección de necesidades socioemocionales",
+          },
+        ];
+      case UserRole.ENFERMERIA:
+        return [
+          { icon: "medical_services", label: "Monitoreo de alertas de salud" },
+          {
+            icon: "inventory",
+            label: "Control de insumos de primeros auxilios",
+          },
+        ];
+      case UserRole.PROMOTORA:
+        return [
+          { icon: "menu_book", label: "Analizando indices de lectura" },
+          { icon: "event_note", label: "Planeación de círculos de lectura" },
+        ];
+      case UserRole.DEVELOPER:
+        return [
+          {
+            icon: "bug_report",
+            label: "Escaneo de vulnerabilidades en código",
+          },
+          { icon: "speed", label: "Monitoreo de latencia de API" },
+          { icon: "history", label: "Limpieza de historial Git (Seguridad)" },
+        ];
+      default:
+        return [
+          { icon: "monitoring", label: "Monitoreo de integridad del sistema" },
+          {
+            icon: "settings_suggest",
+            label: "Optimizando experiencia de usuario",
+          },
+        ];
+    }
+  };
+
   const getPendingActions = () => {
     const actions: any[] = [];
     const patternAlerts = students.filter(
@@ -63,6 +166,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
       });
     }
 
+    // Role-specific alerts
     if (currentUserRole === UserRole.SECRETARIA) {
       actions.push({
         id: "inscripciones",
@@ -72,12 +176,22 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
         priority: "info",
         icon: "app_registration",
       });
+    } else if (currentUserRole === UserRole.DIRECTIVO) {
+      actions.push({
+        id: "aprobaciones",
+        title: "Personal Pendiente",
+        description: "Validación de nuevos registros",
+        module: AppModule.APROBACIONES_PERSONAL,
+        priority: "urgent",
+        icon: "admin_panel_settings",
+      });
     }
 
     return actions;
   };
 
   const pendingActions = getPendingActions();
+  const iaActivities = getIAActivities();
 
   const orbVariants: Variants = {
     idle: {
@@ -102,6 +216,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
     const baseActions = [];
     switch (currentUserRole) {
       case UserRole.DOCENTE:
+      case UserRole.DOCENTE_TUTOR:
         baseActions.push(
           {
             icon: "add",
@@ -130,6 +245,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
         );
         break;
       case UserRole.DIRECTIVO:
+      case UserRole.SUBDIRECCION:
         baseActions.push(
           {
             icon: "analytics",
@@ -140,6 +256,96 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
             icon: "history_edu",
             label: "Auditoría",
             action: () => setCurrentModule(AppModule.BITACORA),
+          },
+          {
+            icon: "admin_panel_settings",
+            label: "Control Personal",
+            action: () => setCurrentModule(AppModule.APROBACIONES_PERSONAL),
+          },
+        );
+        break;
+      case UserRole.SECRETARIA:
+        baseActions.push(
+          {
+            icon: "app_registration",
+            label: "Inscripciones",
+            action: () => setCurrentModule(AppModule.INSCRIPCIONES),
+          },
+          {
+            icon: "folder_shared",
+            label: "Expedientes",
+            action: () => setCurrentModule(AppModule.REPORTES),
+          },
+        );
+        break;
+      case UserRole.TRABAJO_SOCIAL:
+      case UserRole.ORIENTACION:
+        baseActions.push(
+          {
+            icon: "psychology",
+            label: "Seguimiento Caso",
+            action: () => setCurrentModule(AppModule.REPORTES),
+          },
+          {
+            icon: "home_health",
+            label: "Visita Domicilio",
+            action: () => setQuickRegisterOpen(true),
+          },
+        );
+        break;
+      case UserRole.ENFERMERIA:
+        baseActions.push(
+          {
+            icon: "medical_services",
+            label: "Atención Médica",
+            action: () => setQuickRegisterOpen(true),
+          },
+          {
+            icon: "inventory",
+            label: "Stock Médico",
+            action: () => toast("Módulo de inventivo en desarrollo"),
+          },
+        );
+        break;
+      case UserRole.UDEII:
+        baseActions.push(
+          {
+            icon: "inclusive",
+            label: "Ajuste Razonable",
+            action: () => setQuickRegisterOpen(true),
+          },
+          {
+            icon: "diversity_3",
+            label: "Alumnos BAP",
+            action: () => setCurrentModule(AppModule.REPORTES),
+          },
+        );
+        break;
+      case UserRole.PROMOTORA:
+        baseActions.push(
+          {
+            icon: "book",
+            label: "Círculo Lectura",
+            action: () => setCurrentModule(AppModule.AGENDA),
+          },
+          {
+            icon: "auto_stories",
+            label: "Bitácora Libros",
+            action: () => setQuickRegisterOpen(true),
+          },
+        );
+        break;
+      case UserRole.DEVELOPER:
+        baseActions.push(
+          {
+            icon: "terminal",
+            label: "Root Console",
+            action: () => setCurrentModule(AppModule.DASHBOARD),
+          },
+          {
+            icon: "database",
+            label: "SQL Explorer",
+            action: () => toast("Acceso a Supabase Dashboard"),
           },
         );
         break;
@@ -182,7 +388,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
     <>
       {/* ── Botón de Sugerencias & Feedback — SIEMPRE VISIBLE en todas las pantallas ── */}
       {!isAssistantOpen && (
-        <div className="fixed bottom-24 left-8 z-[2000]">
+        <div className="fixed bottom-24 left-4 sm:left-8 z-[2000] scale-75 sm:scale-100 origin-bottom-left">
           <motion.button
             className="cursor-pointer group flex flex-col items-center gap-1.5 bg-transparent border-none appearance-none outline-none"
             initial={{ x: -80, opacity: 0 }}
@@ -230,7 +436,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
 
       {/* ── Orbe Flotante IA SASE — se oculta solo en OrbNavigation (ya está en el centro) ── */}
       {!isAssistantOpen && !hideFloating && (
-        <div className="fixed bottom-8 right-8 z-[2000]">
+        <div className="fixed bottom-6 right-4 sm:right-6 z-[2000] scale-[0.65] sm:scale-75 origin-bottom-right opacity-60 hover:opacity-100 transition-opacity">
           <motion.button
             className="cursor-pointer group flex flex-col items-end bg-transparent border-none appearance-none outline-none"
             initial={{ x: 100, opacity: 0 }}
@@ -242,7 +448,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
             title="Activar Asistente de IA SASE"
             aria-label="Abrir núcleo operativo de IA"
           >
-            <div className="relative w-28 h-28 rounded-full overflow-hidden shadow-[0_0_80px_rgba(59,130,246,0.5)] border border-blue-500/30 bg-[#05070a]">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden shadow-[0_0_60px_rgba(59,130,246,0.5)] border border-blue-500/30 bg-[#05070a]">
               {/* Immersive Plasma Fluid */}
               <motion.div
                 className="absolute inset-0 opacity-90 blur-xl"
@@ -260,39 +466,30 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
                     "radial-gradient(circle at 30% 30%, #3b82f6 0%, #00f2ff 40%, #8b5cf6 70%, #05070a 100%)",
                 }}
               />
-              {/* Glass reflections */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20" />
-              {/* Center Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <motion.div
-                  animate={{ opacity: [1, 0.5, 1] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  <span className="text-[14px] font-black text-white tracking-[0.4em] drop-shadow-[0_0_20px_rgba(59,130,246,1)]">
-                    SASE
-                  </span>
-                </motion.div>
-                <span className="text-[7px] font-black text-cyan-400 uppercase tracking-widest mt-1 opacity-70">
-                  CORE IA
-                </span>
-              </div>
-              {/* Neural Pulse */}
-              <motion.div
-                className="absolute inset-2 border-t-2 border-blue-400/20 rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              />
-              {/* Internal Scanline */}
-              <div className="absolute inset-0 opacity-10 overflow-hidden">
-                <div className="w-full h-1 bg-white animate-scan" />
+              {/* Center Content - Face Icon */}
+              <div className="absolute inset-2 flex items-center justify-center pointer-events-none overflow-hidden rounded-full">
+                <motion.img
+                  src="/SASE_ICON.png"
+                  alt="SASE Face"
+                  className="w-full h-full object-cover scale-110"
+                  animate={{
+                    scale: [1.1, 1.2, 1.1],
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
               </div>
             </div>
-            <div className="mt-3 flex flex-col items-end gap-1 px-4 py-2 bg-blue-600/10 border border-blue-500/20 rounded-xl backdrop-blur-md shadow-[0_0_20px_rgba(59,130,246,0.1)]">
-              <span className="text-[9px] font-black text-blue-400 uppercase tracking-[0.3em]">
-                STATUS: ACTIVE
+            <div className="mt-2 flex flex-col items-end gap-0.5 px-3 py-1.5 bg-blue-600/10 border border-blue-500/20 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.1)] group-hover:bg-blue-600/20 transition-colors">
+              <span className="text-[7px] font-black text-blue-400 uppercase tracking-[0.3em]">
+                IA ACTIVE
               </span>
-              <span className="text-[11px] font-black text-white uppercase tracking-[0.2em] italic">
-                SASE IA NUCLEUS
+              <span className="text-[9px] font-black text-white uppercase tracking-[0.2em] italic">
+                NUCLEUS SASE
               </span>
             </div>
           </motion.button>
@@ -322,9 +519,9 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
                 >
                   <div className="absolute inset-0 bg-[#020406]"></div>
 
-                  {/* Neural Web Effect (Simulated with rotating gradients) */}
+                  {/* Neural Web Effect - Background Layer */}
                   <motion.div
-                    className="absolute inset-[-50%] opacity-40 blur-[80px]"
+                    className="absolute inset-[-50%] opacity-30 blur-[80px]"
                     animate={{ rotate: 360 }}
                     transition={{
                       duration: 25,
@@ -337,32 +534,42 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
                     }}
                   />
 
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                    <motion.span
-                      className="text-6xl font-black text-white tracking-[0.5em] ml-6 drop-shadow-[0_0_40px_rgba(59,130,246,1)]"
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                    >
-                      SASE
-                    </motion.span>
-                    <div className="flex flex-col items-center">
-                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.8em] ml-4">
-                        NUCLEUS v3.0
-                      </span>
-                      <div className="h-0.5 w-16 bg-blue-500/30 mt-2 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-blue-400"
-                          animate={{ x: ["-100%", "100%"] }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
-                        />
-                      </div>
-                    </div>
+                  {/* SASE FACE ICON - Expanded */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <img
+                      src="/SASE_ICON.png"
+                      alt="SASE Core"
+                      className="size-48 object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]"
+                    />
                   </div>
                 </motion.div>
+
+                {/* SASE Identity - MOVED BELOW ORB */}
+                <div className="mt-8 flex flex-col items-center gap-2">
+                  <motion.span
+                    className="text-6xl font-black text-white tracking-[0.4em] drop-shadow-[0_0_40px_rgba(59,130,246,1)]"
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  >
+                    SASE
+                  </motion.span>
+                  <div className="flex flex-col items-center">
+                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.8em]">
+                      NUCLEUS v3.0
+                    </span>
+                    <div className="h-0.5 w-16 bg-blue-500/30 mt-2 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-blue-400"
+                        animate={{ x: ["-100%", "100%"] }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
 
                 {/* Floating Orbitals */}
                 {[0, 120, 240].map((rot) => (
@@ -471,6 +678,45 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
                     </div>
                   </div>
                 )}
+
+                {/* IA ACTIVITIES MONITORING */}
+                <div className="mb-8 animate-fade-in delay-100">
+                  <h5 className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] mb-4 flex items-center gap-2 italic">
+                    <span className="material-symbols-outlined text-blue-400 text-xs translate-y-[-1px]">
+                      monitoring
+                    </span>
+                    Procesos de Jules en Curso
+                  </h5>
+                  <div className="grid grid-cols-1 gap-2">
+                    {iaActivities.map((activity, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 px-4 py-3 bg-blue-500/5 border border-blue-500/10 rounded-xl group/activity hover:border-blue-500/30 transition-all"
+                      >
+                        <span className="material-symbols-outlined text-[16px] text-blue-400 animate-pulse">
+                          {activity.icon}
+                        </span>
+                        <span className="text-[10px] font-bold text-white/70 uppercase tracking-tight truncate">
+                          {activity.label}
+                        </span>
+                        <div className="ml-auto flex gap-1 items-center">
+                          <div
+                            className="size-1 bg-blue-500/40 rounded-full animate-bounce"
+                            style={{ animationDelay: "0ms" }}
+                          ></div>
+                          <div
+                            className="size-1 bg-blue-500/60 rounded-full animate-bounce"
+                            style={{ animationDelay: "200ms" }}
+                          ></div>
+                          <div
+                            className="size-1 bg-blue-500/80 rounded-full animate-bounce"
+                            style={{ animationDelay: "400ms" }}
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
                 {/* ROLE QUICK ACTIONS */}
                 <div className="mb-8">

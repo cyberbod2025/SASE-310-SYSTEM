@@ -66,14 +66,25 @@ Actualmente, SASE-310 tiene integrados los siguientes protocolos oficiales que s
 | **Barreras (BAP)**  | Expediente         | Muestra los ajustes razonables necesarios.     | Adaptar el examen para un alumno con discapacidad visual.   |
 | **Resumen Médico**  | Ficha Clínica      | Muestra alergias o alertas vitales.            | Antes de salir a una excursión o clase de Educación Física. |
 
+### E. UDEII (Inclusión)
+
+**Foco:** Garantizar la equidad y eliminación de barreras para el aprendizaje (BAP).
+
+| Botón / Función         | Ubicación            | Qué hace                                         | Caso de Uso (Ejemplo)                                   |
+| :---------------------- | :------------------- | :----------------------------------------------- | :------------------------------------------------------ |
+| **Monitor de BAP**      | Dashboard UDEII      | Visualiza alumnos con barreras de aprendizaje.   | Seguimiento de alumnos con necesidades especiales.      |
+| **Ficha de Apoyo**      | Expediente Alumno    | Registra ajustes razonables y estrategias.       | Definir adecuación curricular para un alumno con TDAH.  |
+| **Vínculo con Docente** | Panel de Orientación | Comparte estrategias pedagógicas con el titular. | Sugerir cambios en la dinámica de clase para inclusión. |
+| **Seguimiento Externo** | Bitácora UDEII       | Registra canalizaciones a USAER o especialistas. | Alumno que requiere evaluación por neuropediatría.      |
+
 ---
 
 ## 🚀 3. Flujos de Trabajo Recomendados
 
-1.  **Si un alumno llega sin credencial:** Secretaría usa **Registro Veloz**. SASE verifica si ya está "En Trámite". Si sí, no genera reporte de castigo, solo aviso de información.
-2.  **Si un alumno acumula 3 retardos:** El sistema escala a **Trabajo Social**, quien emite un **Citatorio** automático para platicar con el tutor.
-3.  **Si hay un accidente en el patio:** El docente activa el **Protocolo de Salud**. Enfermería recibe alerta y registra el **Suministro** utilizado (Paracetamol/Gasa).
-4.  **Para el Consejo Técnico:** Dirección echa mano de **Reportes > Análisis de Comunidad** para mostrar cuántos alumnos no tienen internet o viven lejos.
+1. **Si un alumno llega sin credencial:** Secretaría usa **Registro Veloz**. SASE verifica si ya está "En Trámite". Si sí, no genera reporte de castigo, solo aviso de información.
+2. **Si un alumno acumula 3 retardos:** El sistema escala a **Trabajo Social**, quien emite un **Citatorio** automático para platicar con el tutor.
+3. **Si hay un accidente en el patio:** El docente activa el **Protocolo de Salud**. Enfermería recibe alerta y registra el **Suministro** utilizado (Paracetamol/Gasa).
+4. **Para el Consejo Técnico:** Dirección echa mano de **Reportes > Análisis de Comunidad** para mostrar cuántos alumnos no tienen internet o viven lejos.
 
 ---
 

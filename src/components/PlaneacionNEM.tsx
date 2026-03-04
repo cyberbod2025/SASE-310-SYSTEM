@@ -34,7 +34,7 @@ export const PlaneacionNEM = () => {
           <div className="relative w-24 h-24">
             <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
             <img
-              src="/assets/branding/IA-SASE.png"
+              src="/assets/branding/SASE_ICON.png"
               alt="SASE AI"
               className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]"
             />

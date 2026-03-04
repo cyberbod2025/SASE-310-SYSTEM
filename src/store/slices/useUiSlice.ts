@@ -16,14 +16,26 @@ export const useUiSlice = (
     "idle" | "listening" | "thinking"
   >("idle");
   const [activePrintJob, setActivePrintJob] = useState<any>(null);
+  const [printModal, setPrintModal] = useState({
+    isOpen: false,
+    title: "",
+    html: "",
+  });
 
   const openQuickRegister = (type?: any) => {
     if (type) setQuickRegisterType(type);
     setQuickRegisterOpen(true);
   };
 
-  const printDocument = (job: any) => {
+  const printDocument = (job: any, showPreview: boolean = true) => {
     setActivePrintJob(job);
+
+    if (showPreview) {
+      // Si se solicita preview, no imprimimos de inmediato, solo preparamos los datos
+      // La UI (App.tsx o similar) reaccionará abriendo el modal de previsualización
+      return;
+    }
+
     setTimeout(() => {
       window.print();
       setTimeout(() => setActivePrintJob(null), 1000);
@@ -74,5 +86,7 @@ export const useUiSlice = (
     activePrintJob,
     setActivePrintJob,
     printDocument,
+    printModal,
+    setPrintModal,
   };
 };

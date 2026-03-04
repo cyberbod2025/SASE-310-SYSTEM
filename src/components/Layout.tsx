@@ -445,6 +445,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       </div>
 
       <FeedbackWidget />
+      <QuickRegisterModal />
     </div>
   );
 };

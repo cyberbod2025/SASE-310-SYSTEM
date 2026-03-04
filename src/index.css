@@ -357,3 +357,155 @@
   );
   filter: blur(14px);
 }
+@import "driver.js/dist/driver.css";
+/* --- SASE PREMIUM TOUR (DRIVER.JS CUSTOMIZATION) --- */
+.driver-popover.sase-tour-popover {
+  background: rgba(13, 17, 23, 0.85) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 24px !important;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(59, 130, 246, 0.15) !important;
+  color: #fff !important;
+  max-width: 380px !important;
+  padding: 28px !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* SASE Face floating near popover */
+.driver-popover.sase-tour-popover::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 100px;
+  height: 100px;
+  background-image: url("/assets/branding/SASE_ICON.png");
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  box-shadow:
+    0 0 30px rgba(59, 130, 246, 0.6),
+    0 0 60px rgba(59, 130, 246, 0.3);
+  animation: float 3s ease-in-out infinite;
+  z-index: 1000;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.driver-popover.sase-tour-popover .driver-popover-title {
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+  color: #fff !important;
+  margin-bottom: 12px !important;
+  font-style: italic !important;
+  background: linear-gradient(to right, #60a5fa, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.driver-popover.sase-tour-popover .driver-popover-description {
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-weight: 500 !important;
+}
+
+.driver-popover.sase-tour-popover .driver-popover-footer {
+  margin-top: 24px !important;
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.driver-popover.sase-tour-popover .driver-popover-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  text-shadow: none !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.driver-popover.sase-tour-popover .driver-popover-btn:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.driver-popover.sase-tour-popover .driver-popover-next-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+.driver-popover.sase-tour-popover .driver-popover-next-btn:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+
+.driver-popover.sase-tour-popover .driver-popover-progress-text {
+  font-size: 10px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+}
+
+/* Make the highlighted element glow brilliantly with SASE energy */
+.driver-active-element {
+  box-shadow:
+    0 0 40px 15px rgba(0, 242, 255, 0.5),
+    0 0 80px 30px rgba(0, 242, 255, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.4) !important;
+  animation: sase-element-glow 1.5s ease-in-out infinite alternate !important;
+  position: relative !important;
+  z-index: 1000000 !important;
+  border: 4px solid #00f2ff !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Add a floating SASE icon on the highlighted element itself */
+.driver-active-element::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 40px;
+  height: 40px;
+  background-image: url("/assets/branding/SASE_ICON.png");
+  background-size: cover;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #00f2ff;
+  animation: float 2s ease-in-out infinite;
+  z-index: 1000001;
+  pointer-events: none;
+}
+
+@keyframes sase-element-glow {
+  0% {
+    box-shadow:
+      0 0 30px rgba(0, 242, 255, 0.3),
+      0 0 50px rgba(0, 242, 255, 0.1);
+    border-color: rgba(0, 242, 255, 0.6);
+  }
+  100% {
+    box-shadow:
+      0 0 60px rgba(0, 242, 255, 0.7),
+      0 0 100px rgba(0, 242, 255, 0.3);
+    border-color: #00f2ff;
+  }
+}

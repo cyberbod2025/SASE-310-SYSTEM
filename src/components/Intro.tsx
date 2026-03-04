@@ -134,17 +134,17 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
                 }}
               >
                 <div
-                  className={`w-3 sm:w-4 bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,1)] transition-all duration-[3000ms] ease-out animate-[blink_4s_infinite_1s]`}
+                  className={`w-1.5 sm:w-2 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-[3000ms] ease-out animate-[blink_4s_infinite_1s]`}
                   style={{
-                    height: phase >= 2 ? "100px" : "0px",
-                    opacity: phase >= 2 ? 1 : 0,
+                    height: phase >= 2 ? "16px" : "0px",
+                    opacity: phase >= 2 ? 0.9 : 0,
                   }}
                 ></div>
                 <div
-                  className={`w-3 sm:w-4 bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,1)] transition-all duration-[3000ms] ease-out delay-300 animate-[blink_4s_infinite_1s]`}
+                  className={`w-1.5 sm:w-2 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-[3000ms] ease-out delay-300 animate-[blink_4s_infinite_1s]`}
                   style={{
-                    height: phase >= 2 ? "100px" : "0px",
-                    opacity: phase >= 2 ? 1 : 0,
+                    height: phase >= 2 ? "16px" : "0px",
+                    opacity: phase >= 2 ? 0.9 : 0,
                   }}
                 ></div>
               </div>
