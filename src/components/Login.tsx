@@ -412,24 +412,22 @@ export const Login: React.FC<LoginProps> = ({
                 </div>
               </div>
 
-              {/* NEW: Prominent Registration Action */}
-              <div className="w-full pt-4">
+              <div className="grid grid-cols-1 gap-4 w-full">
                 <button
-                  type="button"
-                  onClick={onRegisterClick}
-                  className="w-full py-4 rounded-2xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 transition-all group/reg flex items-center justify-center gap-4 group"
+                  onClick={() => {}} // TODO: Password Recovery Flow
+                  className="w-full p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 transition-all flex items-center gap-4 group"
                 >
-                  <div className="flex flex-col items-start">
-                    <span className="text-[10px] font-black text-white uppercase tracking-[0.2em] group-hover/reg:text-blue-400 transition-colors">
-                      ¿Es nuevo en el plantel?
-                    </span>
-                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">
-                      Solicitud de Alta Personal
+                  <div className="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/20">
+                    <span className="material-symbols-outlined">
+                      lock_reset
                     </span>
                   </div>
-                  <div className="size-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-                    <span className="material-symbols-outlined text-xl">
-                      person_add
+                  <div className="text-left">
+                    <span className="text-xs font-black text-white uppercase tracking-widest block">
+                      ¿Olvidó su contraseña?
+                    </span>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block opacity-60 italic">
+                      Restablecer clave de acceso
                     </span>
                   </div>
                 </button>

@@ -15,25 +15,25 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
     // 1. Color Cycle and Staggered Steps
     const sequence = async () => {
       // Step 0: Initial Orb Breathe
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 2000));
       setOrbColor("rgba(59, 130, 246, 1)"); // Blue
 
       // Step 1: Start showing letters
       setStep(1);
-      await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 3000));
 
       // Step 2: Transition to Legendary Gold
       setOrbColor("rgba(255, 215, 0, 1)"); // Gold
       setStep(2);
-      await new Promise((r) => setTimeout(r, 1000));
+      await new Promise((r) => setTimeout(r, 2000));
 
       // Step 3: Show Subtitle
       setStep(3);
-      await new Promise((r) => setTimeout(r, 2500));
+      await new Promise((r) => setTimeout(r, 4000));
 
       // Step 4: Final Slogan
       setStep(4);
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, 4000));
 
       onComplete();
     };

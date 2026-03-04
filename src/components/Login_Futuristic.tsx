@@ -201,14 +201,6 @@ export const Login: React.FC<LoginProps> = ({
                     "Ingresar al sistema"
                   )}
                 </button>
-
-                <button
-                  type="button"
-                  onClick={onRegisterClick}
-                  className="w-full text-slate-500 hover:text-slate-300 text-xs font-medium py-2 transition-all"
-                >
-                  No tengo cuenta
-                </button>
               </div>
             </form>
           </div>
