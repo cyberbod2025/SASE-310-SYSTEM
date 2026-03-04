@@ -25,16 +25,262 @@ export const InvitationGenerator: React.FC = () => {
   const credentialsMap: Partial<
     Record<UserRole, { user: string; pass: string }>
   > = {
-    [UserRole.DIRECTIVO]: { user: "director@sase.mx", pass: "dir2024" },
-    [UserRole.DOCENTE]: { user: "docente@sase.mx", pass: "prof123" },
-    [UserRole.DOCENTE_TUTOR]: { user: "tutor@sase.mx", pass: "tutor123" },
-    [UserRole.PREFECTURA]: { user: "prefecto@sase.mx", pass: "pref987" },
-    [UserRole.ORIENTACION]: { user: "orientacion@sase.mx", pass: "ori456" },
-    [UserRole.TRABAJO_SOCIAL]: { user: "tsocial@sase.mx", pass: "tsoc321" },
-    [UserRole.ENFERMERIA]: { user: "salud@sase.mx", pass: "med555" },
+    [UserRole.DIRECTIVO]: {
+      user: "director@sase.mx",
+      pass: "SASE.DIRECTIVO.2026",
+    },
+    [UserRole.SUBDIRECCION]: {
+      user: "subdirector@sase.mx",
+      pass: "SASE.SUBDIRECCION.2026",
+    },
+    [UserRole.DOCENTE]: { user: "docente@sase.mx", pass: "SASE.DOCENTE.2026" },
+    [UserRole.DOCENTE_TUTOR]: {
+      user: "tutor@sase.mx",
+      pass: "SASE.TUTOR.2026",
+    },
+    [UserRole.PREFECTURA]: {
+      user: "prefectura@sase.mx",
+      pass: "SASE.PREFECTURA.2026",
+    },
+    [UserRole.ORIENTACION]: {
+      user: "orientacion@sase.mx",
+      pass: "SASE.ORIENTACION.2026",
+    },
+    [UserRole.TRABAJO_SOCIAL]: {
+      user: "tsocial@sase.mx",
+      pass: "SASE.TSOCIAL.2026",
+    },
+    [UserRole.ENFERMERIA]: {
+      user: "enfermeria@sase.mx",
+      pass: "SASE.ENFERMERIA.2026",
+    },
+    [UserRole.SECRETARIA]: {
+      user: "secretaria@sase.mx",
+      pass: "SASE.SECRETARIA.2026",
+    },
+    [UserRole.UDEII]: {
+      user: "udeii@sase.mx",
+      pass: "SASE.UDEII.2026",
+    },
+    [UserRole.PROMOTORA]: {
+      user: "promotora@sase.mx",
+      pass: "SASE.PROMOTORA.2026",
+    },
+    [UserRole.GUEST]: {
+      user: "invitado@sase.mx",
+      pass: "SASE.INVITADO.2026",
+    },
     [UserRole.DEVELOPER]: {
       user: GOD_MODE_CREDENTIALS.email,
       pass: GOD_MODE_CREDENTIALS.password,
+    },
+  };
+
+  const roleDetails: Record<
+    UserRole,
+    { icons: { icon: string; label: string; desc: string }[] }
+  > = {
+    [UserRole.DIRECTIVO]: {
+      icons: [
+        {
+          icon: "terminal",
+          label: "Command Center",
+          desc: "Vista estratégica global del plantel.",
+        },
+        {
+          icon: "monitoring",
+          label: "Radar de Estabilidad",
+          desc: "Monitoreo de clima y casos críticos.",
+        },
+        {
+          icon: "psychology",
+          label: "Matriz de Decisión",
+          desc: "Análisis táctico con IA para protocolos.",
+        },
+        {
+          icon: "verified_user",
+          label: "Aprobaciones",
+          desc: "Validación de personal y movimientos.",
+        },
+      ],
+    },
+    [UserRole.DOCENTE]: {
+      icons: [
+        {
+          icon: "auto_awesome",
+          label: "Planeación NEM",
+          desc: "Diseño de clases con asistencia de IA.",
+        },
+        {
+          icon: "fact_check",
+          label: "Pase de Lista",
+          desc: "Control de asistencia digital en tiempo real.",
+        },
+        {
+          icon: "description",
+          label: "Reportes de Grupo",
+          desc: "Generación de informes de aprovechamiento.",
+        },
+        {
+          icon: "send",
+          label: "Dictado IA",
+          desc: "Registro de incidencias por voz.",
+        },
+      ],
+    },
+    [UserRole.DOCENTE_TUTOR]: {
+      icons: [
+        {
+          icon: "groups",
+          label: "Gestión de Tutoría",
+          desc: "Seguimiento grupal y comunicación con padres.",
+        },
+        {
+          icon: "analytics",
+          label: "Estatus de Riesgo",
+          desc: "Identificación de alumnos vulnerables.",
+        },
+      ],
+    },
+    [UserRole.PREFECTURA]: {
+      icons: [
+        {
+          icon: "qr_code_scanner",
+          label: "Escáner Táctico",
+          desc: "Registro rápido por matrícula.",
+        },
+        {
+          icon: "schedule",
+          label: "Control de Retardos",
+          desc: "Gestión de puntualidad automática.",
+        },
+        {
+          icon: "campaign",
+          label: "Alertas Campo",
+          desc: "Notificación inmediata de incidencias.",
+        },
+      ],
+    },
+    [UserRole.ORIENTACION]: {
+      icons: [
+        {
+          icon: "psychology",
+          label: "Expediente Psicosocial",
+          desc: "Seguimiento conductual y emocional.",
+        },
+        {
+          icon: "handshake",
+          label: "Acuerdos",
+          desc: "Gestión de compromisos con padres.",
+        },
+      ],
+    },
+    [UserRole.TRABAJO_SOCIAL]: {
+      icons: [
+        {
+          icon: "home",
+          label: "Visitas Domiciliarias",
+          desc: "Registro de contexto familiar.",
+        },
+        {
+          icon: "diversity_3",
+          label: "Canalización",
+          desc: "Vinculación con instituciones externas.",
+        },
+      ],
+    },
+    [UserRole.ENFERMERIA]: {
+      icons: [
+        {
+          icon: "medical_services",
+          label: "Expediente Clínico",
+          desc: "Historial de salud y alergias.",
+        },
+        {
+          icon: "inventory_2",
+          label: "Control Insumos",
+          desc: "Gestión de botiquín escolar.",
+        },
+        {
+          icon: "emergency",
+          label: "Emergencias",
+          desc: "Protocolo de atención inmediata.",
+        },
+      ],
+    },
+    [UserRole.DEVELOPER]: {
+      icons: [
+        {
+          icon: "code",
+          label: "Acceso Root",
+          desc: "Control total del sistema y base de datos.",
+        },
+      ],
+    },
+    [UserRole.GUEST]: {
+      icons: [
+        {
+          icon: "visibility",
+          label: "Vista de Invitado",
+          desc: "Acceso limitado a información pública.",
+        },
+      ],
+    },
+    [UserRole.SECRETARIA]: {
+      icons: [
+        {
+          icon: "folder_shared",
+          label: "Archivo Digital",
+          desc: "Gestión de documentos oficiales.",
+        },
+        {
+          icon: "badge",
+          label: "Credencialización",
+          desc: "Generación de identidades SASE.",
+        },
+      ],
+    },
+    [UserRole.SUBDIRECCION]: {
+      icons: [
+        {
+          icon: "account_tree",
+          label: "Organigrama",
+          desc: "Control de mandos y flujos.",
+        },
+        {
+          icon: "task",
+          label: "Seguimiento",
+          desc: "Validación de metas institucionales.",
+        },
+      ],
+    },
+    [UserRole.UDEII]: {
+      icons: [
+        {
+          icon: "psychology_alt",
+          label: "Acompañamiento Especial",
+          desc: "Detección y atención a barreras de aprendizaje.",
+        },
+        {
+          icon: "edit_document",
+          label: "Ajustes Razonables",
+          desc: "Registro de estrategias de inclusión.",
+        },
+      ],
+    },
+    [UserRole.PROMOTORA]: {
+      icons: [
+        {
+          icon: "auto_stories",
+          label: "Plan de Lectura",
+          desc: "Fomento a la lectura y actividades culturales.",
+        },
+        {
+          icon: "military_tech",
+          label: "Logros Lectores",
+          desc: "Seguimiento de metas de comprensión lectora.",
+        },
+      ],
     },
   };
 
@@ -47,12 +293,14 @@ export const InvitationGenerator: React.FC = () => {
       pass: "******",
     };
     const roleLabel = RoleLabels[selectedRole];
+    const details = roleDetails[selectedRole];
 
     const content = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Carta de Acceso SASE-310</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
           body { font-family: 'Montserrat', sans-serif; background: #fff; color: #1e293b; margin: 0; padding: 40px; }
@@ -67,6 +315,15 @@ export const InvitationGenerator: React.FC = () => {
           .cred-label { font-weight: 800; text-transform: uppercase; font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 5px; }
           .cred-value { font-family: 'Courier New', monospace; font-size: 26px; font-weight: 900; color: #0f172a; }
           .role-badge { display: inline-block; padding: 6px 16px; background: #eff6ff; color: #1d4ed8; font-size: 12px; font-weight: 900; border-radius: 100px; text-transform: uppercase; border: 1px solid #dbeafe; }
+          
+          .features-section { margin: 40px 0; padding: 30px; background: #0f172a; border-radius: 24px; color: white; }
+          .features-title { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; color: #3b82f6; margin-bottom: 20px; }
+          .features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+          .feature-item { display: flex; gap: 15px; align-items: flex-start; }
+          .feature-icon { color: #3b82f6; font-size: 24px; }
+          .feature-text h4 { margin: 0; font-size: 13px; font-weight: 900; }
+          .feature-text p { margin: 4px 0 0 0; font-size: 10px; color: #94a3b8; line-height: 1.4; }
+
           .qr-section { text-align: center; margin-top: 50px; }
           .qr-box { display: inline-block; padding: 15px; background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
           .footer { margin-top: 80px; font-size: 9px; text-align: center; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 30px; font-weight: 700; text-transform: uppercase; }
@@ -77,19 +334,18 @@ export const InvitationGenerator: React.FC = () => {
         <div class="container">
           <div class="watermark">INSTITUCIONAL</div>
           <div class="header">
-            <img src="/assets/branding/logo-full.png" alt="SASE Logo" class="logo" onerror="this.src='/assets/branding/SASE_LOGO.png'">
+            <img src="/assets/branding/SASE_LOGO_PILOTO.png" alt="SASE Logo" class="logo" onerror="this.src='/assets/branding/SASE_LOGO.png'">
             <div class="title">Credenciales de Acceso</div>
             <div class="subtitle">Secretaría de Educación Pública • SASE-310</div>
           </div>
 
           <div class="content">
             <p>Estimado(a) <strong>${customName || roleLabel}</strong>,</p>
-            <p>Se formaliza su acceso al ecosistema digital <strong>SASE-310</strong> para el presente periodo académico. Este sistema es el canal oficial para la gestión educativa y operativa de nuestra institución.</p>
-            <p>Sus credenciales son de uso estrictamente confidencial. Se recomienda realizar su primer ingreso desde una conexión segura.</p>
+            <p>Se formaliza su acceso al ecosistema digital <strong>SASE-310</strong>. Este sistema es el centro de operaciones técnicas y pedagógicas de nuestro plantel.</p>
             
             <div class="credentials-box">
               <div class="cred-item">
-                <div class="cred-label">Identificador de Usuario</div>
+                <div class="cred-label">Nombre de Usuario Institucional</div>
                 <div class="cred-value">${creds.user}</div>
               </div>
               <div class="cred-item">
@@ -97,12 +353,31 @@ export const InvitationGenerator: React.FC = () => {
                 <div class="cred-value">${creds.pass}</div>
               </div>
               <div class="cred-item">
-                <div class="cred-label">Responsabilidad Asignada</div>
+                <div class="cred-label">Rol Asignado</div>
                 <div class="role-badge">${roleLabel}</div>
               </div>
             </div>
 
-            <p>Para un acceso ágil, escanee el código QR adjunto o diríjase a la URL institucional indicada.</p>
+            <div class="features-section">
+              <div class="features-title">Herramientas Propias de su Perfil:</div>
+              <div class="features-grid">
+                ${details.icons
+                  .map(
+                    (f) => `
+                  <div class="feature-item">
+                    <span class="material-symbols-outlined feature-icon">${f.icon}</span>
+                    <div class="feature-text">
+                      <h4>${f.label}</h4>
+                      <p>${f.desc}</p>
+                    </div>
+                  </div>
+                `,
+                  )
+                  .join("")}
+              </div>
+            </div>
+
+            <p>Escanee su <strong>Llave de Activación</strong> (Código QR) para acceder instantáneamente al portal institucional.</p>
           </div>
 
           <div class="qr-section">
@@ -111,11 +386,12 @@ export const InvitationGenerator: React.FC = () => {
                 accessLink,
               )}" alt="Acceso QR" width="120" />
             </div>
-            <p style="font-size: 11px; margin-top: 15px; font-weight: 800; color: #64748b;">${accessLink}</p>
+            <div style="font-size: 10px; margin-top: 15px; font-weight: 900; color: #64748b; letter-spacing: 2px;">LLAVE DE ACTIVACIÓN</div>
+            <p style="font-size: 11px; margin-top: 5px; font-weight: 800; color: #3b82f6;">${accessLink}</p>
           </div>
 
           <div class="footer">
-            <p>Documento oficial emitido por el Departamento de Control Escolar SASE-310. © 2024-2025.</p>
+            <p>Documento oficial emitido por el Departamento de Control Escolar SASE-310. © 2024-2026.</p>
           </div>
         </div>
         <script>
@@ -132,7 +408,7 @@ export const InvitationGenerator: React.FC = () => {
   return (
     <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-2xl mx-auto space-y-8 animate-fade-in">
       <div className="flex items-center gap-5">
-        <div className="bg-amber-100/50 p-4 rounded-2xl text-amber-700 border border-amber-200/50">
+        <div className="bg-blue-100/50 p-4 rounded-2xl text-blue-700 border border-blue-200/50">
           <span className="material-symbols-outlined text-3xl">mail_lock</span>
         </div>
         <div>
@@ -140,7 +416,7 @@ export const InvitationGenerator: React.FC = () => {
             Cartas de Acceso
           </h2>
           <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">
-            Generación de credenciales impresas oficiales
+            Generación de credenciales impresas oficiales 2026
           </p>
         </div>
       </div>
@@ -153,7 +429,7 @@ export const InvitationGenerator: React.FC = () => {
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as UserRole)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none uppercase"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none uppercase"
             title="Seleccionar el rol institucional para la carta de acceso"
           >
             {Object.values(UserRole).map((role) => (
@@ -173,7 +449,7 @@ export const InvitationGenerator: React.FC = () => {
             onChange={(e) => setCustomName(e.target.value)}
             placeholder="EJ. PROF. ALEJANDRO RAMÍREZ"
             title="Ingresar el nombre del destinatario de la carta"
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all outline-none uppercase"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none uppercase"
           />
         </div>
       </div>
@@ -185,7 +461,7 @@ export const InvitationGenerator: React.FC = () => {
             Previsualización de Enlace
           </p>
           <p className="text-[11px] font-bold text-slate-500 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-amber-600">
+            <span className="material-symbols-outlined text-[16px] text-blue-600">
               link
             </span>
             {accessLink}
@@ -198,7 +474,7 @@ export const InvitationGenerator: React.FC = () => {
 
       <button
         onClick={handlePrint}
-        className="w-full py-5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-amber-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
+        className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
         title="Generar e imprimir carta de credenciales oficial"
       >
         <span className="material-symbols-outlined text-[20px]">print</span>

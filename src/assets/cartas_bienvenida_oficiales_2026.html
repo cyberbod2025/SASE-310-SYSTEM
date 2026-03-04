@@ -10,6 +10,7 @@
         --secondary: #1e293b;
         --accent: #f59e0b;
         --text-main: #0f172a;
+        --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
       }
       body {
         font-family:
@@ -17,125 +18,324 @@
           system-ui,
           -apple-system,
           sans-serif;
-        background: #f1f5f9;
+        background: var(--bg-gradient);
         margin: 0;
-        padding: 20px;
+        padding: 40px 20px;
+        color: var(--text-main);
       }
       .page-break {
         page-break-after: always;
       }
       .letter-container {
-        max-width: 800px;
-        margin: 0 auto 40px;
+        max-width: 850px;
+        margin: 0 auto 60px;
         background: white;
-        padding: 50px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        padding: 60px;
+        border-radius: 24px;
+        box-shadow:
+          0 20px 25px -5px rgb(0 0 0 / 0.1),
+          0 8px 10px -6px rgb(0 0 0 / 0.1);
         position: relative;
         overflow: hidden;
-        border-top: 5px solid var(--primary);
+        border: 1px solid rgba(14, 165, 233, 0.1);
+      }
+      /* Decorative elements */
+      .letter-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: linear-gradient(90deg, var(--primary), #06b6d4, #8b5cf6);
       }
       .header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 20px;
-        margin-bottom: 30px;
+        align-items: flex-start;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 30px;
+        margin-bottom: 40px;
       }
       .logo-box {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 20px;
       }
-      .logo-box img {
-        width: 50px;
-        height: 50px;
+      .sase-orb-mini {
+        width: 65px;
+        height: 65px;
+        background: #05070a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+        border: 2px solid rgba(14, 165, 233, 0.2);
+        overflow: hidden;
+      }
+      .sase-orb-mini img {
+        width: 110%;
+        height: 110%;
+        object-fit: cover;
       }
       .logo-text h1 {
         margin: 0;
-        font-size: 24px;
+        font-size: 32px;
         font-weight: 900;
         color: var(--secondary);
-        letter-spacing: -0.02em;
+        letter-spacing: -0.04em;
+        line-height: 1;
       }
       .logo-text p {
-        margin: 0;
-        font-size: 10px;
-        font-weight: 700;
+        margin: 4px 0 0 0;
+        font-size: 11px;
+        font-weight: 800;
         color: var(--primary);
         text-transform: uppercase;
+        letter-spacing: 0.15em;
       }
-      .date {
-        font-size: 12px;
-        color: #64748b;
+      .date-box {
         text-align: right;
       }
+      .date-box .school {
+        font-weight: 800;
+        font-size: 14px;
+        color: var(--secondary);
+        margin-bottom: 4px;
+      }
+      .date-box .period {
+        font-size: 12px;
+        color: #64748b;
+        font-weight: 600;
+      }
       .content {
-        line-height: 1.6;
-        color: var(--text-main);
+        line-height: 1.7;
+        font-size: 15px;
       }
       .welcome-title {
-        font-size: 20px;
-        font-weight: 800;
-        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: 900;
+        margin-bottom: 24px;
         color: var(--secondary);
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .welcome-title::after {
+        content: "";
+        flex: 1;
+        height: 2px;
+        background: #f1f5f9;
       }
       .user-name {
         color: var(--primary);
         font-weight: 800;
+        background: rgba(14, 165, 233, 0.05);
+        padding: 0 4px;
+        border-radius: 4px;
       }
       .credentials-box {
         background: #f8fafc;
-        border: 1px dashed #cbd5e1;
-        padding: 20px;
-        border-radius: 12px;
-        margin: 25px 0;
+        border: 1px solid #e2e8f0;
+        padding: 30px;
+        border-radius: 20px;
+        margin: 35px 0;
+        position: relative;
+      }
+      .credentials-box::after {
+        content: "CONFIDENCIAL";
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 10px;
+        font-weight: 900;
+        color: #cbd5e1;
+        letter-spacing: 0.2em;
       }
       .credential-item {
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         display: flex;
-        gap: 10px;
+        align-items: baseline;
+        gap: 15px;
+      }
+      .credential-item:last-child {
+        margin-bottom: 0;
       }
       .label {
-        font-weight: 700;
-        width: 150px;
+        font-weight: 800;
+        width: 180px;
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: 10px;
         color: #64748b;
+        letter-spacing: 0.05em;
       }
       .value {
-        font-family: "Courier New", Courier, monospace;
+        font-family: "JetBrains Mono", "Courier New", monospace;
         font-weight: 800;
         color: var(--secondary);
-        font-size: 14px;
+        font-size: 16px;
       }
-      .instructions {
-        background: #fffbeb;
-        border-left: 4px solid var(--accent);
-        padding: 15px;
-        font-size: 13px;
-        margin: 20px 0;
+      .role-badge {
+        background: #eff6ff;
+        color: #1d4ed8;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 12px;
+        font-weight: 900;
+        border: 1px solid #dbeafe;
       }
-      .footer {
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid #e2e8f0;
-        font-size: 11px;
-        color: #94a3b8;
-        text-align: center;
+      .ia-section {
+        margin: 40px 0;
+        display: flex;
+        gap: 30px;
+        background: #0f172a;
+        color: white;
+        padding: 30px;
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
       }
-      .qr-placeholder {
+      .ia-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle at center,
+          rgba(14, 165, 233, 0.15) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .ia-orb-visual {
+        flex-shrink: 0;
         width: 100px;
-        height: 100px;
-        background: #eee;
-        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      .ia-orb-large {
+        width: 80px;
+        height: 80px;
+        background: #05070a;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        border: 2px solid rgba(59, 130, 246, 0.4);
+      }
+      .ia-orb-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .ia-status {
+        font-size: 8px;
+        font-weight: 900;
+        color: #60a5fa;
+        letter-spacing: 0.2em;
+        text-align: center;
+      }
+      .ia-content h3 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: #f8fafc;
+      }
+      .ia-content p {
+        margin: 0;
+        font-size: 13px;
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+      .ia-features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 15px;
+      }
+      .feature-tag {
         font-size: 10px;
-        color: #ccc;
-        border: 1px solid #ddd;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 6px 10px;
+        border-radius: 8px;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .feature-tag::before {
+        content: "●";
+        color: #3b82f6;
+        font-size: 8px;
+      }
+      .instructions {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        padding: 25px;
+        border-radius: 20px;
+        margin: 30px 0;
+      }
+      .instructions h4 {
+        margin: 0 0 15px 0;
+        font-weight: 900;
+        color: #92400e;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.05em;
+      }
+      .instructions ol {
+        margin: 0;
+        padding-left: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #92400e;
+      }
+      .instructions li {
+        margin-bottom: 8px;
+      }
+      .footer {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 2px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+      .footer-info {
+        font-size: 11px;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+      .footer-info strong {
+        color: var(--secondary);
+      }
+      .qr-container {
+        text-align: center;
+      }
+      .qr-box {
+        width: 100px;
+        height: 100px;
+        background: white;
+        padding: 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        margin-bottom: 8px;
+      }
+      .qr-label {
+        font-size: 9px;
+        font-weight: 900;
+        color: #64748b;
+        letter-spacing: 0.1em;
       }
       @media print {
         body {
@@ -146,6 +346,11 @@
           box-shadow: none;
           margin: 0;
           border: none;
+          padding: 40px;
+        }
+        .ia-section {
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
         }
       }
     </style>
@@ -153,113 +358,169 @@
   <body>
     <!-- GENERATED CARDS START -->
 
-    <!-- Template for Docente -->
-    <div class="letter-container">
+    <div class="letter-container" id="plantilla-carta">
       <div class="header">
         <div class="logo-box">
-          <div
-            style="
-              width: 50px;
-              height: 50px;
-              background: #0ea5e9;
-              border-radius: 12px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: white;
-              font-weight: 900;
-              font-size: 24px;
-            "
-          >
-            S
+          <div class="sase-orb-mini">
+            <img src="/assets/branding/SASE_ICON.png" alt="SASE Core" />
           </div>
           <div class="logo-text">
             <h1>SASE</h1>
             <p>Sistema de Acompañamiento Escolar</p>
           </div>
         </div>
-        <div class="date">Escuela Secundaria Técnica 310<br />Marzo 2026</div>
+        <div class="date-box">
+          <div class="school">EST 310 - VESPERTINO</div>
+          <div class="period">CICLO ESCOLAR 2025-2026</div>
+        </div>
       </div>
 
       <div class="content">
         <div class="welcome-title">ORDEN DE ACCESO INSTITUCIONAL</div>
         <p>Estimado(a) miembro del personal educativo:</p>
         <p>
-          Nos complace darle la bienvenida a la nueva plataforma
+          Es un gusto presentarle la integración oficial a la plataforma
           <span class="user-name">SASE 310</span>. Este ecosistema digital ha
-          sido diseñado para facilitar sus labores administrativas, el
-          seguimiento de sus grupos y la gestión de incidencias en tiempo real.
-        </p>
-
-        <p>
-          A continuación se presentan sus credenciales de acceso iniciales. Por
-          favor, mantenga esta información bajo estricta confidencialidad.
+          sido rediseñado para ser el centro de operaciones técnico-pedagógicas
+          de nuestro plantel, permitiendo un seguimiento puntual del
+          aprovechamiento escolar y la convivencia de nuestros alumnos.
         </p>
 
         <div class="credentials-box">
           <div class="credential-item">
-            <span class="label">Nombre oficial:</span>
-            <span class="value" id="user-display-name"
-              >MIGUEL ANGEL MORALES SANDOVAL</span
-            >
+            <span class="label">Personal Autorizado:</span>
+            <span class="value" id="nombre">NOMBRE_PERSONA</span>
           </div>
           <div class="credential-item">
-            <span class="label">Usuario:</span>
-            <span class="value" id="user-username">miguel.morales</span>
+            <span class="label">Nombre de Usuario Institucional:</span>
+            <span class="value" id="usuario">USUARIO</span>
           </div>
           <div class="credential-item">
-            <span class="label">Clave Provisional:</span>
-            <span class="value" id="user-password">SASE.DIRECTIVO.2026</span>
+            <span class="label">Clave Provisional SASE:</span>
+            <span class="value" id="clave">CLAVE</span>
           </div>
           <div class="credential-item">
-            <span class="label">Función Asignada:</span>
-            <span class="value" id="user-role">DIRECTIVO</span>
+            <span class="label">Rol Estructural:</span>
+            <span class="role-badge" id="rol">ROL</span>
+          </div>
+        </div>
+
+        <div class="ia-section">
+          <div class="ia-orb-visual">
+            <div class="ia-orb-large">
+              <img src="/assets/branding/SASE_ICON.png" alt="IA SASE Core" />
+            </div>
+            <div class="ia-status">NEURAL CORE ACTIVE</div>
+          </div>
+          <div class="ia-content">
+            <h3>ASISTENTE VIRTUAL IA SASE</h3>
+            <p>
+              Usted cuenta con el apoyo de nuestra Inteligencia Artificial
+              integrada. Busque el orbe flotante en el sistema para:
+            </p>
+            <div class="ia-features">
+              <div class="feature-tag">Análisis de Deserción Escolar</div>
+              <div class="feature-tag">Reportes de Grupo con IA</div>
+              <div class="feature-tag">Gestión de Incidencias Diarias</div>
+              <div class="feature-tag">Feedback y Soporte Técnico</div>
+            </div>
           </div>
         </div>
 
         <div class="instructions">
-          <strong>PRIMER INGRESO (Protocolo de Activación):</strong>
+          <h4>PROTOCOLO DE PRIMER INGRESO:</h4>
           <ol>
-            <li>Descargue la App o entre vía web (sase310.mx).</li>
             <li>
-              Ingrese con su <strong>Usuario</strong> y
-              <strong>Clave Provisional</strong>.
+              Acceda vía web en <strong>https://sase310.mx</strong> o abra la
+              aplicación.
             </li>
             <li>
-              El sistema solicitará automáticamente el
-              <strong>Cambio de Contraseña</strong>.
+              Use su <strong>Usuario</strong> y
+              <strong>Clave Provisional</strong> arriba descritos.
             </li>
             <li>
-              Deberá configurar <strong>3 preguntas de seguridad</strong> para
-              recuperación.
+              Complete el <strong>Cambio Obligatorio de Contraseña</strong>.
             </li>
             <li>
-              Complete sus datos faltantes (CURP y Teléfono) para finalizar el
-              alta.
+              Configure sus <strong>3 preguntas de seguridad</strong> de forma
+              personal.
+            </li>
+            <li>
+              Valide su CURP y Teléfono para activar todas las funciones según
+              su cargo.
             </li>
           </ol>
         </div>
-
-        <p>
-          <strong>Nota:</strong> Como docente, usted tendrá acceso directo a sus
-          <strong>Grupos Asignados</strong> y podrá emitir reportes de
-          incidencias, justificantes y consultar el historial médico de sus
-          alumnos de forma segura.
-        </p>
       </div>
 
       <div class="footer">
-        <p>
-          EST 310 - Dirección de Innovación Tecnológica<br />Este documento es
-          personal e intransferible.
-        </p>
-        <div class="qr-placeholder">CÓDIGO DE INSTALACIÓN</div>
+        <div class="footer-info">
+          Dirección de Innovación y Control Escolar<br />
+          <strong>Escuela Secundaria Técnica 310</strong><br />
+          Este documento es confidencial y personal.
+        </div>
+        <div class="qr-container">
+          <div class="qr-box">
+            <img
+              src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://sase310.mx"
+              alt="QR"
+              width="80"
+              height="80"
+            />
+          </div>
+          <div class="qr-label">LLAVE DE ACTIVACIÓN</div>
+        </div>
       </div>
     </div>
 
-    <div class="page-break"></div>
+    <script>
+      const usuarios = [
+        {
+          nombre: "Miguel Ángel Morales Sandoval",
+          usuario: "miguel.morales@sase.mx",
+          clave: "SASE.DIRECTIVO.2026",
+          rol: "DIRECTIVO",
+        },
+        {
+          nombre: "Hugo Sánchez Reséndiz",
+          usuario: "hugo.sanchez@sase.mx",
+          clave: "SASE.DOCENTE.2026",
+          rol: "DOCENTE",
+        },
+        {
+          nombre: "Paula Hernández",
+          usuario: "paula.hernandez@sase.mx",
+          clave: "SASE.PREFECTURA.2026",
+          rol: "PREFECTURA",
+        },
+      ];
 
-    <!-- Más cartas se generarían aquí dinámicamente o por lotes según el personal -->
-    <!-- Por el momento genero esta principal como muestra fiel del sistema actualizado -->
+      const plantilla = document.getElementById("plantilla-carta");
+      const contenedor = document.body;
+
+      usuarios.forEach((u, i) => {
+        let nuevaCarta = plantilla.cloneNode(true);
+        nuevaCarta.id = "carta-" + i;
+        nuevaCarta.querySelector("#nombre").textContent = u.nombre;
+        nuevaCarta.querySelector("#usuario").textContent = u.usuario;
+        nuevaCarta.querySelector("#clave").textContent = u.clave;
+        nuevaCarta.querySelector("#rol").textContent = u.rol;
+
+        contenedor.appendChild(nuevaCarta);
+
+        if (i < usuarios.length - 1) {
+          let salto = document.createElement("div");
+          salto.className = "page-break";
+          contenedor.appendChild(salto);
+        }
+      });
+
+      plantilla.remove();
+
+      // Trigger print after stabilization
+      setTimeout(() => {
+        window.print();
+      }, 1000);
+    </script>
   </body>
 </html>

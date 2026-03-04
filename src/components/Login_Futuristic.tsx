@@ -1,7 +1,6 @@
-// SASE Login - Institutional Portal (Futuristic & Seamless Transition)
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
-import { UserRole } from "../types";
+import { SASEIntroAnimation } from "./SASEIntroAnimation";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -20,15 +19,14 @@ export const Login: React.FC<LoginProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [introFinished, setIntroFinished] = useState(false);
 
   // Safe check for intro seen
   useEffect(() => {
     try {
       const introSeen = sessionStorage.getItem("sase_login_intro_seen");
       if (introSeen) {
-        setVideoEnded(true);
+        setIntroFinished(true);
         setShowForm(true);
       }
     } catch (e) {
@@ -63,99 +61,35 @@ export const Login: React.FC<LoginProps> = ({
     }
   };
 
-  const triggerTransition = () => {
-    if (videoEnded) return; // Prevent double trigger
-
-    if (videoRef.current) {
-      try {
-        videoRef.current.pause();
-      } catch (err) {
-        /* ignore */
-      }
-    }
-
-    setVideoEnded(true);
-    setShowForm(true);
+  const onIntroComplete = () => {
+    setIntroFinished(true);
+    setTimeout(() => setShowForm(true), 100);
     try {
       sessionStorage.setItem("sase_login_intro_seen", "true");
     } catch (e) {}
   };
 
-  const onTimeUpdate = () => {
-    if (!videoRef.current || videoEnded) return;
-
-    const { currentTime, duration } = videoRef.current;
-    // Valid check for duration to prevent issues
-    if (duration && !isNaN(duration) && duration > 0) {
-      if (currentTime > duration - 1.2) {
-        triggerTransition();
-      }
-    }
-  };
-
   const skipIntro = () => {
-    triggerTransition();
+    onIntroComplete();
   };
-
-  // Safety net: If video doesn't play or end within 8s (shortened for testing), force show form
-  useEffect(() => {
-    if (showForm) return;
-
-    const timeout = setTimeout(() => {
-      console.warn("Video timeout - forcing transition (Failsafe triggered)");
-      triggerTransition();
-    }, 8000);
-    return () => clearTimeout(timeout);
-  }, [showForm]);
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[url('/assets/branding/login_background_final.png')] bg-cover bg-center bg-no-repeat overflow-y-auto py-10">
-      {/* 1. SEAMLESS VIDEO BACKGROUND (Intro -> Frozen Frame) */}
-      {!videoEnded ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          playsInline
-          onTimeUpdate={onTimeUpdate}
-          onEnded={triggerTransition}
-          onError={(e) => {
-            console.error("Video load error", e);
-            triggerTransition();
-            e.currentTarget.style.display = "none"; // Hide broken video
-          }}
-          className="absolute inset-0 w-full h-full object-cover z-0"
-        >
-          <source src="/assets/videos/intro_sase_2026.mp4" type="video/mp4" />
-        </video>
-      ) : (
-        /* Frozen Frame Simulation (Using same video source paused or just black bg with overlay if video unmounts) 
-             Actually, keeping the video element in DOM but paused is smoother than unmounting. 
-             If we unmount, we lose the frame. So we keep it.
-          */
-        <video
-          ref={videoRef}
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          style={{ display: "block" }} // Force display
-        >
-          <source src="/assets/videos/intro_sase_2026.mp4" type="video/mp4" />
-        </video>
-      )}
+    <div className="relative min-h-screen w-full flex items-center justify-center font-sans bg-[url('/assets/branding/login_background_final.png')] bg-cover bg-center bg-no-repeat overflow-hidden py-10">
+      {/* 1. LEGENDARY SASE INTRO ANIMATION (Replaces old video) */}
+      {!introFinished && <SASEIntroAnimation onComplete={onIntroComplete} />}
 
       {/* 2. OVERLAY TRANSITION (Dark 70-80% + Blur) */}
       <div
-        className={`absolute inset-0 bg-[#0f1014]/60 backdrop-blur-sm z-10 transition-opacity duration-1000 pointer-events-none ${
+        className={`fixed inset-0 bg-[#0f1014]/60 backdrop-blur-md z-10 transition-opacity duration-1000 pointer-events-none ${
           showForm ? "opacity-100" : "opacity-0"
         }`}
       ></div>
 
       {/* Skip Button Label */}
-      {!showForm && (
+      {!introFinished && (
         <button
           onClick={skipIntro}
-          className="absolute top-8 right-8 z-50 text-white/20 hover:text-white/60 text-[10px] uppercase font-black tracking-[0.3em] transition-all"
+          className="fixed top-8 right-8 z-[200] text-white/20 hover:text-white/60 text-[10px] uppercase font-black tracking-[0.3em] transition-all bg-black/40 px-4 py-2 rounded-full border border-white/5"
         >
           Saltar Intro »
         </button>
