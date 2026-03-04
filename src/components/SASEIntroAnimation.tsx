@@ -11,35 +11,49 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   const [step, setStep] = useState(0); // 0: Orb, 1: Letters, 2: Gold, 3: Subtitle, 4: Out + Slogan
   const [orbColor, setOrbColor] = useState("rgba(14, 165, 233, 1)"); // Start with Cyan
 
+  // --- STEP 0: BREATHE (Wait for user to perceive the orb)
   useEffect(() => {
-    // 1. Color Cycle and Staggered Steps
-    const sequence = async () => {
-      // Step 0: Initial Orb Breathe
-      await new Promise((r) => setTimeout(r, 2000));
+    const timer = setTimeout(() => {
       setOrbColor("rgba(59, 130, 246, 1)"); // Blue
-
-      // Step 1: Start showing letters
       setStep(1);
-      await new Promise((r) => setTimeout(r, 3000));
+    }, 3000); // Increased from 2000
+    return () => clearTimeout(timer);
+  }, []);
 
-      // Step 2: Transition to Legendary Gold
-      setOrbColor("rgba(255, 215, 0, 1)"); // Gold
-      setStep(2);
-      await new Promise((r) => setTimeout(r, 2000));
+  // --- STEP 1: LETTERS (Show S A S E)
+  useEffect(() => {
+    if (step === 1) {
+      const timer = setTimeout(() => {
+        setOrbColor("rgba(255, 215, 0, 1)"); // Gold
+        setStep(2);
+      }, 4000); // Increased from 3000
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
-      // Step 3: Show Subtitle
-      setStep(3);
-      await new Promise((r) => setTimeout(r, 4000));
+  // --- STEP 2: GOLD (Transform to institution colors)
+  useEffect(() => {
+    if (step === 2) {
+      const timer = setTimeout(() => setStep(3), 3000); // Increased from 2000
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
-      // Step 4: Final Slogan
-      setStep(4);
-      await new Promise((r) => setTimeout(r, 4000));
+  // --- STEP 3: SUBTITLE (Show Platform name)
+  useEffect(() => {
+    if (step === 3) {
+      const timer = setTimeout(() => setStep(4), 6000); // Increased from 4000
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
 
-      onComplete();
-    };
-
-    sequence();
-  }, [onComplete]);
+  // --- STEP 4: SLOGAN (Show Final Slogan)
+  useEffect(() => {
+    if (step === 4) {
+      const timer = setTimeout(() => onComplete(), 6000); // Increased from 4000
+      return () => clearTimeout(timer);
+    }
+  }, [step, onComplete]);
 
   const letterVariants: any = {
     hidden: { opacity: 0, y: 20, scale: 0.5 },

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { SASEIntroAnimation } from "./SASEIntroAnimation";
+import { SaseIAOrb } from "./SaseIAOrb";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -120,20 +121,13 @@ export const Login: React.FC<LoginProps> = ({
           </div>
 
           <div className="flex flex-col items-center">
-            {/* Logo */}
-            <div className="w-[28rem] h-64 mb-6 flex items-center justify-center">
-              <img
-                src="/assets/branding/SASE_LOGO_PILOTO.png"
-                alt="SASE Institucional"
-                className="w-full h-full object-contain drop-shadow-[0_0_35px_rgba(255,255,255,0.25)]"
-              />
+            {/* Logo Section */}
+            <div className="flex flex-col items-center mb-8">
+              <SaseIAOrb state="green" className="w-32 h-32 mb-6" />
+              <h1 className="text-6xl font-black text-white tracking-[0.2em] drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+                SASE
+              </h1>
             </div>
-
-            <p className="text-[14px] font-bold text-slate-300 tracking-[0.05em] mb-12 text-center leading-relaxed max-w-[320px]">
-              Sistema de Acompañamiento y<br />
-              Seguimiento Escolar
-            </p>
-
             {/* Form */}
             <form onSubmit={handleLogin} className="w-full space-y-6">
               {error && (

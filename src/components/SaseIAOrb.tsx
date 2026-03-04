@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { OrbState } from "../hooks/useSaseSystemState";
 
 interface SaseIAOrbProps {
@@ -8,158 +9,124 @@ interface SaseIAOrbProps {
 
 const colorMap = {
   green: {
-    hex: "#00C853",
-    shadow: "rgba(0, 200, 83, 0.4)",
-    stroke: "#00E676",
-    stop1: "#00C853",
-    stop2: "#004D40",
+    base: "rgba(0, 200, 83, 1)",
+    glow: "rgba(0, 200, 83, 0.4)",
+    gradient:
+      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(0, 200, 83, 1) 40%, rgba(0, 20, 10, 1) 100%)",
   },
   orange: {
-    hex: "#FF9800",
-    shadow: "rgba(255, 152, 0, 0.4)",
-    stroke: "#FFB74D",
-    stop1: "#FF9800",
-    stop2: "#E65100",
+    base: "rgba(255, 152, 0, 1)",
+    glow: "rgba(255, 152, 0, 0.4)",
+    gradient:
+      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(255, 152, 0, 1) 40%, rgba(30, 15, 0, 1) 100%)",
   },
   red: {
-    hex: "#D32F2F",
-    shadow: "rgba(211, 47, 47, 0.4)",
-    stroke: "#EF5350",
-    stop1: "#D32F2F",
-    stop2: "#B71C1C",
+    base: "rgba(211, 47, 47, 1)",
+    glow: "rgba(211, 47, 47, 0.4)",
+    gradient:
+      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(211, 47, 47, 1) 40%, rgba(20, 0, 0, 1) 100%)",
+  },
+  blue: {
+    base: "rgba(59, 130, 246, 1)",
+    glow: "rgba(59, 130, 246, 0.4)",
+    gradient:
+      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(59, 130, 246, 1) 40%, rgba(0, 10, 30, 1) 100%)",
+  },
+  gold: {
+    base: "rgba(255, 215, 0, 1)",
+    glow: "rgba(255, 215, 0, 0.4)",
+    gradient:
+      "radial-gradient(circle at 35% 35%, #FFFBEB 0%, #F59E0B 45%, #78350F 100%)",
+  },
+  thinking: {
+    base: "rgba(168, 85, 247, 1)",
+    glow: "rgba(168, 85, 247, 0.4)",
+    gradient:
+      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(168, 85, 247, 1) 40%, rgba(20, 0, 30, 1) 100%)",
+  },
+  alert: {
+    base: "rgba(244, 63, 94, 1)",
+    glow: "rgba(244, 63, 94, 0.4)",
+    gradient:
+      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(244, 63, 94, 1) 40%, rgba(30, 0, 10, 1) 100%)",
   },
 };
 
 export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({ state, className }) => {
   const [isChanging, setIsChanging] = useState(false);
-  const color = colorMap[state];
+  // Default to green if state not found
+  const activeColor =
+    colorMap[state as keyof typeof colorMap] || colorMap.green;
 
-  // Micro-interacción: Halo se expande, ojos se enfocan y luego regresa a respiración normal.
   useEffect(() => {
     setIsChanging(true);
     const timeout = setTimeout(() => {
       setIsChanging(false);
-    }, 1500); // 1.5s total duration for the transition effect
+    }, 1000);
     return () => clearTimeout(timeout);
   }, [state]);
 
   return (
     <div
-      className={`relative flex items-center justify-center ${className || "w-24 h-24 sm:w-32 sm:h-32"}`}
+      className={`relative flex items-center justify-center ${className || "w-32 h-32"}`}
     >
-      {/* Halo de micro-interacción de cambio de estado */}
-      <div
-        className="absolute inset-0 rounded-full transition-all duration-[600ms] ease-in-out pointer-events-none"
-        style={{
-          boxShadow: `0 0 30px 10px ${color.shadow}`,
-          transform: isChanging ? "scale(1.2)" : "scale(1)",
-          opacity: isChanging ? 1 : 0,
+      {/* GLOW LAYERS */}
+      <motion.div
+        animate={{
+          boxShadow: [
+            `0 0 20px 5px ${activeColor.glow.replace("0.4)", "0.15)")}`,
+            `0 0 40px 10px ${activeColor.glow.replace("0.4)", "0.3)")}`,
+            `0 0 20px 5px ${activeColor.glow.replace("0.4)", "0.15)")}`,
+          ],
+          scale: [1, 1.05, 1],
         }}
+        transition={{ repeat: Infinity, duration: 4 }}
+        className="absolute inset-0 rounded-full"
+        style={{ backgroundColor: activeColor.base.replace("1)", "0.05)") }}
       />
 
-      {/* Halo principal constante */}
-      <div
-        className="absolute inset-0 rounded-full transition-all duration-[1000ms] ease-in-out pointer-events-none"
-        style={{
-          boxShadow: `0 0 40px 0px ${color.shadow}`,
-          opacity: 0.6,
+      {/* CORE SPHERE */}
+      <motion.div
+        animate={{
+          background: activeColor.gradient,
         }}
-      />
-
-      {/* Orbe SVG */}
-      <div
-        className={`relative flex items-center justify-center w-full h-full transition-all duration-[600ms] ease-in-out`}
+        transition={{ duration: 0.8 }}
+        className="relative w-[85%] h-[85%] rounded-full flex items-center justify-center shadow-[inset_-5px_-5px_10px_rgba(0,0,0,0.6),inset_5px_5px_10px_rgba(255,255,255,0.2)] border border-white/10"
       >
-        <svg
-          viewBox="0 0 100 100"
-          className="w-full h-full animate-[orb-breathe_4s_ease-in-out_infinite]"
-        >
-          {/* Anillo externo fino */}
-          <circle
-            cx="50"
-            cy="50"
-            r="48"
-            fill="none"
-            stroke={color.stroke}
-            strokeWidth="1"
-            className="opacity-50 transition-colors duration-700"
-          />
+        {/* RINGS */}
+        <div className="absolute inset-[-4px] rounded-full border-[1px] border-white/5 border-t-white/20 animate-[spin_4s_linear_infinite]" />
+        <div className="absolute inset-[-8px] rounded-full border-[1.5px] border-white/5 border-r-white/10 animate-[spin_6s_linear_infinite_reverse]" />
 
-          {/* Relleno interno dinámico */}
-          <circle cx="50" cy="50" r="44" fill="url(#dynamicOrbGrad)" />
-
-          {/* Borde interior brillante */}
-          <circle
-            cx="50"
-            cy="50"
-            r="44"
-            fill="none"
-            stroke={color.stroke}
-            strokeWidth="0.5"
-            className="opacity-70 transition-colors duration-700"
-          />
-
-          {/* Ojos minimalistas (animación conjunta) */}
-          <g
-            className="transition-all duration-[600ms] ease-in-out transform origin-center"
-            style={{
-              transform: isChanging
-                ? "scale(1.15) translateY(-2px)"
-                : "scale(1) translateY(0)",
+        {/* EYES */}
+        <div className="flex gap-4">
+          <motion.div
+            animate={{
+              scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
             }}
-          >
-            {/* Animación local de parpadeo individual en los ojos - CSS directo */}
-            <rect
-              x="38.5"
-              y="47.5"
-              width="2.5"
-              height="5"
-              rx="1.25"
-              fill="#ffffff"
-              className="opacity-95 animate-[orb-blink_5s_infinite]"
-              style={{ transformOrigin: "40px 50px" }}
-            />
-            <rect
-              x="59"
-              y="47.5"
-              width="2.5"
-              height="5"
-              rx="1.25"
-              fill="#ffffff"
-              className="opacity-95 animate-[orb-blink_5s_infinite]"
-              style={{ transformOrigin: "60px 50px" }}
-            />
-          </g>
-
-          {/* Definiciones de Gradiente */}
-          <defs>
-            <radialGradient id="dynamicOrbGrad" cx="50%" cy="50%" r="50%">
-              <stop
-                offset="0%"
-                stopColor={color.stop1}
-                stopOpacity="0.8"
-                className="transition-colors duration-700"
-              />
-              <stop
-                offset="100%"
-                stopColor={color.stop2}
-                stopOpacity="1"
-                className="transition-colors duration-700"
-              />
-            </radialGradient>
-          </defs>
-        </svg>
-      </div>
+            transition={{
+              repeat: isChanging ? 0 : Infinity,
+              duration: 4,
+              times: [0, 0.9, 0.92, 0.94, 1],
+            }}
+            className="w-1 h-3 bg-white rounded-full shadow-[0_0_8px_#fff]"
+          />
+          <motion.div
+            animate={{
+              scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
+            }}
+            transition={{
+              repeat: isChanging ? 0 : Infinity,
+              duration: 4,
+              delay: 0.1,
+              times: [0, 0.88, 0.9, 0.92, 1],
+            }}
+            className="w-1 h-3 bg-white rounded-full shadow-[0_0_8px_#fff]"
+          />
+        </div>
+      </motion.div>
 
       <style>{`
-        @keyframes orb-breathe {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.02); }
-        }
-        @keyframes orb-blink {
-          0%, 96%, 100% { transform: scaleY(1); }
-          98% { transform: scaleY(0.1); }
-        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

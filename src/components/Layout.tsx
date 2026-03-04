@@ -305,7 +305,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <span className="material-symbols-outlined">menu</span>
             </button>
 
-            <div className="hidden sm:flex flex-col">
+            <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <SaseIAOrb state={systemState} className="w-8 h-8 mr-1" />
                 <h2 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
