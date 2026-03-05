@@ -11,6 +11,8 @@ import { SASEIntroAnimation } from "./components/SASEIntroAnimation";
 import { FirstLogonSetup } from "./components/FirstLogonSetup";
 import { OfficialDocument } from "./components/OfficialDocument";
 import { PrintPreviewModal } from "./components/PrintPreviewModal";
+import { DashboardHoy } from "./components/DashboardHoy";
+import { IASaseAgent } from "./components/IASaseAgent";
 
 // Dashboards (Lazy Loaded)
 const DashboardDocente = React.lazy(() =>
@@ -178,7 +180,6 @@ const GlobalModals = () => {
   );
 };
 
-// -- MAIN APP SHELL --
 const MainContent = () => {
   const { currentModule, currentUserRole, setCurrentModule } = useApp();
 
@@ -240,6 +241,24 @@ const MainContent = () => {
         }
       })()}
     </React.Suspense>
+  );
+};
+
+// Componente para manejar la lógica de contenido con o sin Layout
+const AppShell = () => {
+  const { currentModule } = useApp();
+
+  return (
+    <ErrorBoundary>
+      <IASaseAgent />
+      {currentModule === AppModule.WELCOME ? (
+        <DashboardHoy />
+      ) : (
+        <Layout>
+          <MainContent />
+        </Layout>
+      )}
+    </ErrorBoundary>
   );
 };
 
@@ -355,11 +374,7 @@ const App: React.FC = () => {
         />
       )}
 
-      <ErrorBoundary>
-        <Layout>
-          <MainContent />
-        </Layout>
-      </ErrorBoundary>
+      <AppShell />
     </AppProvider>
   );
 };

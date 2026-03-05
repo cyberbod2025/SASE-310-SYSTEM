@@ -10,49 +10,66 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
 }) => {
   const [step, setStep] = useState(0); // 0: Orb, 1: Letters, 2: Gold, 3: Subtitle, 4: Out + Slogan
   const [orbColor, setOrbColor] = useState("rgba(59, 130, 246, 1)"); // Blue SASE Official
+  const [isFastPass, setIsFastPass] = useState(false);
+
+  useEffect(() => {
+    // Check if intro was already seen in this session
+    const seen = sessionStorage.getItem("sase_intro_seen");
+    if (seen) {
+      setIsFastPass(true);
+    } else {
+      sessionStorage.setItem("sase_intro_seen", "true");
+    }
+  }, []);
 
   // --- STEP 0: BREATHE (Very fast perception)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setStep(1);
-    }, 200); // Super fast
+    const timer = setTimeout(
+      () => {
+        setStep(1);
+      },
+      isFastPass ? 50 : 200,
+    ); // Super fast
     return () => clearTimeout(timer);
-  }, []);
+  }, [isFastPass]);
 
   // --- STEP 1: LETTERS (Show S A S E)
   useEffect(() => {
     if (step === 1) {
-      const timer = setTimeout(() => {
-        setOrbColor("rgba(255, 215, 0, 1)"); // Gold Institutional
-        setStep(2);
-      }, 500);
+      const timer = setTimeout(
+        () => {
+          setOrbColor("rgba(255, 215, 0, 1)"); // Gold Institutional
+          setStep(2);
+        },
+        isFastPass ? 100 : 500,
+      );
       return () => clearTimeout(timer);
     }
-  }, [step]);
+  }, [step, isFastPass]);
 
   // --- STEP 2: GOLD (Transform to institution colors)
   useEffect(() => {
     if (step === 2) {
-      const timer = setTimeout(() => setStep(3), 400);
+      const timer = setTimeout(() => setStep(3), isFastPass ? 100 : 400);
       return () => clearTimeout(timer);
     }
-  }, [step]);
+  }, [step, isFastPass]);
 
   // --- STEP 3: SUBTITLE (Show Platform name)
   useEffect(() => {
     if (step === 3) {
-      const timer = setTimeout(() => setStep(4), 800);
+      const timer = setTimeout(() => setStep(4), isFastPass ? 300 : 800);
       return () => clearTimeout(timer);
     }
-  }, [step]);
+  }, [step, isFastPass]);
 
   // --- STEP 4: SLOGAN (Show Final Slogan)
   useEffect(() => {
     if (step === 4) {
-      const timer = setTimeout(() => onComplete(), 3500); // Extended for readability
+      const timer = setTimeout(() => onComplete(), isFastPass ? 800 : 3500); // Extended for readability
       return () => clearTimeout(timer);
     }
-  }, [step, onComplete]);
+  }, [step, onComplete, isFastPass]);
 
   const letterVariants: any = {
     hidden: { opacity: 0, y: 30, scale: 0.8 },

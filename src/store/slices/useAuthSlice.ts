@@ -5,7 +5,9 @@ import { useAuth } from "../../components/AuthProvider";
 export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
   const { role } = useAuth();
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(initialRole);
-  const [currentModule, setCurrentModule] = useState<AppModule>(AppModule.HOME);
+  const [currentModule, setCurrentModule] = useState<AppModule>(
+    AppModule.WELCOME,
+  );
   const [isTutorMode, setIsTutorMode] = useState(false);
 
   // Sync role from AuthProvider

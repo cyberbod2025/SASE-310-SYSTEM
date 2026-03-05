@@ -9,9 +9,9 @@ import { FeedbackWidget } from "./FeedbackWidget";
 import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
-import AIOrbAssistant from "./ai/AIOrbAssistant";
 import { SaseIAOrb } from "./SaseIAOrb";
 import { useSaseSystemState } from "../hooks/useSaseSystemState";
+import { IASaseAgent } from "./IASaseAgent";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-red-900 border-none",
@@ -108,14 +108,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div className="flex h-screen text-slate-300 overflow-hidden font-sans select-none bg-transparent">
       <TutorialController />
-
-      <AIOrbAssistant
-        status={assistantStatus}
-        initialPosition={isAssistantOpen ? "central" : "floating"}
-        onActivate={() => setIsAssistantOpen(true)}
-        onDeactivate={() => setIsAssistantOpen(false)}
-        hideFloating={currentModule === AppModule.HOME}
-      />
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (

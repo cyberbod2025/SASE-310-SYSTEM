@@ -273,6 +273,7 @@ export enum AppModule {
   DEVELOPER = "developer",
   NOT_FOUND = "not_found",
   HOME = "home",
+  WELCOME = "welcome",
   REGISTRO_PERSONAL = "registro_personal",
   PLANEACION_NEM = "planeacion_nem",
 }
