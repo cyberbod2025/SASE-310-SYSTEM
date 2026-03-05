@@ -31,4 +31,4 @@ Fecha: 2026-03-05
 
 ---
 
-_SASE - Sistema de Acompañamiento y Seguimiento Escolar_
+SASE - Sistema de Acompañamiento y Seguimiento Escolar
