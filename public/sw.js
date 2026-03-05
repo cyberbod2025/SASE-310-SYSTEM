@@ -3,7 +3,7 @@ const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.json",
-  "/assets/branding/SASE.png",
+  "/assets/branding/SASE_ICON_GOLD.png",
   "/assets/branding/IA-SASE.png",
 ];
 

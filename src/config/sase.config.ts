@@ -92,9 +92,9 @@ export const VERSION = {
 // GRUPOS Y GRADOS
 // ============================
 export const GRUPOS = {
-  primerGrado: ["1°A", "1°B", "1°C", "1°D"],
-  segundoGrado: ["2°A", "2°B", "2°C", "2°D"],
-  tercerGrado: ["3°A", "3°B", "3°C", "3°D"],
+  primerGrado: ["1º A", "1º B", "1º C", "1º D"],
+  segundoGrado: ["2º A", "2º B", "2º C", "2º D"],
+  tercerGrado: ["3º A", "3º B", "3º C", "3º D"],
   todos: function () {
     return [...this.primerGrado, ...this.segundoGrado, ...this.tercerGrado];
   },
