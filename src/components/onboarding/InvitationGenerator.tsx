@@ -50,9 +50,9 @@ export const InvitationGenerator: React.FC = () => {
       user: "tsocial@sase.mx",
       pass: "SASE.TSOCIAL.2026",
     },
-    [UserRole.ENFERMERIA]: {
-      user: "enfermeria@sase.mx",
-      pass: "SASE.ENFERMERIA.2026",
+    [UserRole.MEDICO_ESCOLAR]: {
+      user: "medico@sase.mx",
+      pass: "SASE.MEDICO.2026",
     },
     [UserRole.SECRETARIA]: {
       user: "secretaria@sase.mx",
@@ -62,9 +62,9 @@ export const InvitationGenerator: React.FC = () => {
       user: "udeii@sase.mx",
       pass: "SASE.UDEII.2026",
     },
-    [UserRole.PROMOTORA]: {
-      user: "promotora@sase.mx",
-      pass: "SASE.PROMOTORA.2026",
+    [UserRole.PROMOTORA_LECTURA]: {
+      user: "lectura@sase.mx",
+      pass: "SASE.LECTURA.2026",
     },
     [UserRole.GUEST]: {
       user: "invitado@sase.mx",
@@ -189,7 +189,7 @@ export const InvitationGenerator: React.FC = () => {
         },
       ],
     },
-    [UserRole.ENFERMERIA]: {
+    [UserRole.MEDICO_ESCOLAR]: {
       icons: [
         {
           icon: "medical_services",
@@ -268,7 +268,7 @@ export const InvitationGenerator: React.FC = () => {
         },
       ],
     },
-    [UserRole.PROMOTORA]: {
+    [UserRole.PROMOTORA_LECTURA]: {
       icons: [
         {
           icon: "auto_stories",

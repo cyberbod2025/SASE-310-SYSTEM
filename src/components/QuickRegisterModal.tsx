@@ -365,7 +365,7 @@ export const QuickRegisterModal: React.FC = () => {
 
   // Filter types based on role boundaries
   const availableTypes = Object.values(IncidentType).filter((t) => {
-    if (currentUserRole === UserRole.ENFERMERIA)
+    if (currentUserRole === UserRole.MEDICO_ESCOLAR)
       return t === IncidentType.SALUD;
     if (currentUserRole === UserRole.DOCENTE)
       return [

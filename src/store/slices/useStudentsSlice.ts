@@ -57,6 +57,9 @@ export const useStudentsSlice = (
           ),
           calificaciones (
             id, materia, trimestre1, trimestre2, trimestre3, promedio_final, ciclo_escolar
+          ),
+          estudiantes (
+            total_puntos, escaneos_realizados, nickname
           )
         `);
 
@@ -119,6 +122,13 @@ export const useStudentsSlice = (
           })),
           documentos: [],
           isDistancia: d.is_distancia || false,
+          gamificacion: d.estudiantes?.[0]
+            ? {
+                total_puntos: d.estudiantes[0].total_puntos || 0,
+                escaneos_realizados: d.estudiantes[0].escaneos_realizados || 0,
+                nickname: d.estudiantes[0].nickname,
+              }
+            : undefined,
         }));
         setStudents(mappedStudents);
       }

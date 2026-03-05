@@ -233,6 +233,102 @@ export const OrbNavigation = () => {
             color: "from-rose-600 to-red-500",
           },
         ];
+      case UserRole.PREFECTURA:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.AGENDA,
+            label: "Asistencia",
+            icon: "how_to_reg",
+            color: "from-orange-600 to-amber-500",
+          },
+          {
+            id: AppModule.PROTOCOLOS,
+            label: "Incidencias",
+            icon: "report_medical",
+            color: "from-red-600 to-rose-500",
+          },
+        ];
+      case UserRole.ORIENTACION:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.AGENDA,
+            label: "Citas",
+            icon: "event_available",
+            color: "from-teal-600 to-emerald-500",
+          },
+          {
+            id: AppModule.REPORTES,
+            label: "Seguimiento",
+            icon: "troubleshoot",
+            color: "from-blue-600 to-indigo-500",
+          },
+        ];
+      case UserRole.TRABAJO_SOCIAL:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.TRABAJO_SOCIAL_TRACKER,
+            label: "Casos TS",
+            icon: "diversity_3",
+            color: "from-purple-600 to-indigo-500",
+          },
+          {
+            id: AppModule.AGENDA,
+            label: "Visitas",
+            icon: "home_pin",
+            color: "from-amber-600 to-orange-500",
+          },
+        ];
+      case UserRole.MEDICO_ESCOLAR:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.SALUD,
+            label: "Clínica",
+            icon: "emergency",
+            color: "from-red-600 to-rose-500",
+          },
+          {
+            id: AppModule.REPORTES,
+            label: "Expedientes",
+            icon: "clinical_notes",
+            color: "from-emerald-600 to-teal-500",
+          },
+        ];
+      case UserRole.UDEII:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.UDEII_TRACKER,
+            label: "Inclusión",
+            icon: "accessibility_new",
+            color: "from-indigo-600 to-violet-500",
+          },
+          {
+            id: AppModule.PROTOCOLOS,
+            label: "Ajustes",
+            icon: "psychology",
+            color: "from-blue-600 to-cyan-500",
+          },
+        ];
+      case UserRole.PROMOTORA_LECTURA:
+        return [
+          ...baseItems,
+          {
+            id: AppModule.LECTURA_TRACKER,
+            label: "Lectura",
+            icon: "menu_book",
+            color: "from-pink-600 to-rose-500",
+          },
+          {
+            id: AppModule.AGENDA,
+            label: "Círculos",
+            icon: "auto_stories",
+            color: "from-fuchsia-600 to-purple-500",
+          },
+        ];
       case UserRole.SECRETARIA:
         return [
           ...baseItems,

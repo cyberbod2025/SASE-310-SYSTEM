@@ -16,8 +16,9 @@ export * from "./types";
 
 interface AppContextType {
   // Auth & Roles
-  currentUserRole: any;
-  switchRole: any;
+  currentUserRole: UserRole;
+  currentUserProfile: any | null;
+  switchRole: (role: UserRole) => void;
   currentModule: any;
   setCurrentModule: any;
   isTutorMode: any;
@@ -162,6 +163,7 @@ export const AppProvider: React.FC<{
     <AppContext.Provider
       value={{
         ...auth,
+        currentUserProfile: useAuth().profile,
         ...studentsSlice,
         ...ui,
         ...notificationsSlice,

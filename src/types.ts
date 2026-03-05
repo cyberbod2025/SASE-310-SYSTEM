@@ -1,17 +1,30 @@
 export enum UserRole {
   DIRECTIVO = "directivo",
+  SUBDIRECCION = "subdireccion",
   DOCENTE = "docente",
   DOCENTE_TUTOR = "docente_tutor",
   PREFECTURA = "prefectura",
   ORIENTACION = "orientacion",
   TRABAJO_SOCIAL = "trabajo_social",
-  ENFERMERIA = "enfermeria",
-  SECRETARIA = "secretaria",
+  MEDICO_ESCOLAR = "medico_escolar",
   UDEII = "udeii",
-  PROMOTORA = "promotora", // Promotora de Lectura
-  SUBDIRECCION = "subdireccion",
+  PROMOTORA_LECTURA = "promotora_lectura",
+  SECRETARIA = "secretaria",
   GUEST = "guest",
-  DEVELOPER = "developer", // God Mode
+  DEVELOPER = "developer",
+}
+
+export interface PermisosSASE {
+  can_view_names: boolean;
+  can_register: boolean;
+  can_edit: boolean;
+  can_close: boolean;
+  can_escalate: boolean;
+  can_view_audit: boolean;
+  can_approve_staff: boolean;
+  can_assign_groups: boolean;
+  can_view_sensitive: boolean;
+  can_manage_system: boolean;
 }
 
 export const RoleLabels: Record<UserRole, string> = {
@@ -22,10 +35,10 @@ export const RoleLabels: Record<UserRole, string> = {
   [UserRole.PREFECTURA]: "Prefectura",
   [UserRole.ORIENTACION]: "Orientación",
   [UserRole.TRABAJO_SOCIAL]: "Trabajo Social",
-  [UserRole.ENFERMERIA]: "Enfermería",
+  [UserRole.MEDICO_ESCOLAR]: "Servicio Médico",
   [UserRole.SECRETARIA]: "Secretaría",
   [UserRole.UDEII]: "UDEII",
-  [UserRole.PROMOTORA]: "Enlace de Fomento a la Lectura",
+  [UserRole.PROMOTORA_LECTURA]: "Fomento a la Lectura",
   [UserRole.GUEST]: "Invitado",
   [UserRole.DEVELOPER]: "Desarrollador (Acceso Total)",
 };
@@ -154,6 +167,12 @@ export interface SocioeconomicData {
   housingType: "Propia" | "Rentada" | "Prestada";
 }
 
+export interface GamificacionData {
+  total_puntos: number;
+  escaneos_realizados: number;
+  nickname?: string;
+}
+
 export interface Student {
   id: string;
   matricula: string;
@@ -181,6 +200,7 @@ export interface Student {
   credencialStatus?: CredencialStatus;
   documentationComplete?: boolean;
   socioeconomicData?: SocioeconomicData;
+  gamificacion?: GamificacionData;
 }
 
 export type ProtocolType =
@@ -246,6 +266,10 @@ export enum AppModule {
   DOCUMENTACION = "documentacion",
   MIS_GRUPOS = "mis_grupos",
   SUBDIRECCION = "subdireccion",
+  SALUD = "salud",
+  UDEII_TRACKER = "udeii_tracker",
+  TRABAJO_SOCIAL_TRACKER = "trabajo_social_tracker",
+  LECTURA_TRACKER = "lectura_tracker",
   DEVELOPER = "developer",
   NOT_FOUND = "not_found",
   HOME = "home",

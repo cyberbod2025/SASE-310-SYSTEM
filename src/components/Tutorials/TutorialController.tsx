@@ -204,7 +204,7 @@ export const TutorialController: React.FC = () => {
           },
         },
       ],
-      [UserRole.PROMOTORA]: [
+      [UserRole.PROMOTORA_LECTURA]: [
         ...commonSteps,
         {
           element: "#promotora-header",
@@ -301,7 +301,7 @@ export const TutorialController: React.FC = () => {
           },
         },
       ],
-      [UserRole.ENFERMERIA]: [
+      [UserRole.MEDICO_ESCOLAR]: [
         ...commonSteps,
         {
           element: "#enfermeria-header",

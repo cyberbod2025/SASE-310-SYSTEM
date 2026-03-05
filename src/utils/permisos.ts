@@ -100,7 +100,7 @@ export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
     can_view_sensitive: true,
     can_manage_system: false,
   },
-  enfermeria: {
+  medico_escolar: {
     can_view_names: true,
     can_register: true,
     can_edit: true,
@@ -112,7 +112,7 @@ export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
     can_view_sensitive: true,
     can_manage_system: false,
   },
-  promotora: {
+  promotora_lectura: {
     can_view_names: false,
     can_register: true,
     can_edit: true,

@@ -7,8 +7,9 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   role: UserRole | null;
+  profile: any | null;
   loading: boolean;
-  signIn: () => Promise<void>; // Simple trigger for Supabase Auth UI or redirection
+  signIn: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -20,6 +21,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   // 1. Initial Session Check
@@ -45,6 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         fetchProfile(session.user.id);
       } else {
         setRole(null);
+        setProfile(null);
         setLoading(false);
       }
     });
@@ -55,51 +58,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // 3. Fetch Role from Database & Subscribe to Realtime Changes
   const fetchProfile = async (userId: string) => {
     try {
-      // Initial fetch
+      // Priorizamos siempre la tabla perfiles_usuario que es la estándar del SASE
       const { data, error } = await supabase
-        .from("profiles") // Ensure table name is correct (perfiles_usuario vs profiles in other files?)
-        // In AprobacionesPersonal it was 'perfiles_usuario'. Here it is 'profiles'.
-        // We probably need to check 'perfiles_usuario' if 'profiles' fails or alias it.
-        // Assuming 'perfiles_usuario' is the new standard from my previous reads.
-        .select("role") // Note: Database likely uses 'rol' in Spanish based on INSERTs seen
+        .from("perfiles_usuario")
+        .select("*")
         .eq("id", userId)
         .single();
 
-      // Fallback for different table name schema strategy in pilot
-      let remoteRole = null;
+      let userData: any = data;
 
       if (error || !data) {
-        // Try alternate table 'perfiles_usuario' if 'profiles' not found/empty
-        const { data: data2 } = await supabase
-          .from("perfiles_usuario")
-          .select("rol")
+        // Fallback a profiles por si hay usuarios antiguos
+        const { data: legacyData } = await supabase
+          .from("profiles")
+          .select("*")
           .eq("id", userId)
           .single();
 
-        if (data2) remoteRole = data2.rol;
-      } else {
-        remoteRole = data.role || (data as any).rol; // Handle both cases
+        userData = legacyData;
       }
 
-      if (!remoteRole) {
+      if (!userData) {
         console.warn("Profile not found or error, denying access.");
-        setRole(null); // Secure fallback: Deny access
+        setRole(null);
+        setProfile(null);
       } else {
-        // Validate that the DB role exists in our Frontend Enum
-        const dbRole = remoteRole as UserRole;
+        const dbRole = (userData.rol || userData.role) as UserRole;
         if (Object.values(UserRole).includes(dbRole)) {
           setRole(dbRole);
+          setProfile(userData);
         } else {
           console.warn(`Unknown role "${dbRole}" in DB, denying access.`);
           setRole(null);
+          setProfile(null);
         }
       }
-
-      // Realtime Subscription (Simplified for Pilot Reliability)
-      // Removed complex subscription logic to avoid errors on non-existent tables during demo
     } catch (err) {
       console.error("Unexpected error fetching profile:", err);
       setRole(null);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
@@ -121,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, session, role, loading, signIn, signOut }}
+      value={{ user, session, role, profile, loading, signIn, signOut }}
     >
       {children}
     </AuthContext.Provider>

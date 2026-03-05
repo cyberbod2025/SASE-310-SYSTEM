@@ -6,11 +6,14 @@
     <title>Cartas de Bienvenida SASE 2026</title>
     <style>
       :root {
-        --primary: #0ea5e9;
-        --secondary: #1e293b;
-        --accent: #f59e0b;
+        --primary: #3b82f6;
+        --secondary: #0f172a;
+        --accent: #f59e0b; /* Legendary Gold */
+        --gold-bright: #fbbf24;
+        --gold-dark: #78350f;
         --text-main: #0f172a;
         --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        --sase-dark: #05070a;
       }
       body {
         font-family:
@@ -47,7 +50,15 @@
         left: 0;
         width: 100%;
         height: 8px;
-        background: linear-gradient(90deg, var(--primary), #06b6d4, #8b5cf6);
+        background: linear-gradient(
+          90deg,
+          var(--gold-dark),
+          var(--accent),
+          var(--gold-bright),
+          var(--accent),
+          var(--gold-dark)
+        );
+        box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
       }
       .header {
         display: flex;
@@ -65,14 +76,14 @@
       .sase-orb-mini {
         width: 65px;
         height: 65px;
-        background: #05070a;
+        background: var(--sase-dark);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
-        box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
-        border: 2px solid rgba(14, 165, 233, 0.2);
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        border: 2px solid var(--accent);
         overflow: hidden;
       }
       .sase-orb-mini img {
@@ -92,7 +103,7 @@
         margin: 4px 0 0 0;
         font-size: 11px;
         font-weight: 800;
-        color: var(--primary);
+        color: var(--gold-dark);
         text-transform: uppercase;
         letter-spacing: 0.15em;
       }
@@ -118,7 +129,7 @@
         font-size: 24px;
         font-weight: 900;
         margin-bottom: 24px;
-        color: var(--secondary);
+        color: var(--gold-dark);
         letter-spacing: -0.02em;
         display: flex;
         align-items: center;
@@ -138,12 +149,13 @@
         border-radius: 4px;
       }
       .credentials-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: #fffbeb;
+        border: 2px solid var(--accent);
         padding: 30px;
-        border-radius: 20px;
+        border-radius: 24px;
         margin: 35px 0;
         position: relative;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
       }
       .credentials-box::after {
         content: "CONFIDENCIAL";
@@ -179,24 +191,26 @@
         font-size: 16px;
       }
       .role-badge {
-        background: #eff6ff;
-        color: #1d4ed8;
+        background: #fffbeb;
+        color: var(--gold-dark);
         padding: 4px 12px;
         border-radius: 99px;
         font-size: 12px;
         font-weight: 900;
-        border: 1px solid #dbeafe;
+        border: 1px solid #fde68a;
       }
       .ia-section {
         margin: 40px 0;
         display: flex;
         gap: 30px;
-        background: #0f172a;
+        background: var(--secondary);
         color: white;
-        padding: 30px;
+        padding: 35px;
         border-radius: 24px;
         position: relative;
         overflow: hidden;
+        border: 2px solid var(--accent);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       }
       .ia-section::before {
         content: "";
@@ -239,7 +253,7 @@
       .ia-status {
         font-size: 8px;
         font-weight: 900;
-        color: #60a5fa;
+        color: var(--accent);
         letter-spacing: 0.2em;
         text-align: center;
       }
@@ -275,8 +289,76 @@
       }
       .feature-tag::before {
         content: "●";
-        color: #3b82f6;
+        color: var(--accent);
         font-size: 8px;
+      }
+
+      /* Módulos de Acceso */
+      .modules-section {
+        margin: 30px 0;
+      }
+      .modules-title {
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--gold-dark);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .modules-title::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+      }
+      .button-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .sase-button {
+        background: white;
+        border: 1px solid #e2e8f0;
+        padding: 14px 12px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        position: relative;
+      }
+      .sase-button::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--accent);
+      }
+      .sase-button.exclusive {
+        border: 2px solid var(--accent);
+        background: #fffbeb;
+        color: var(--gold-dark);
+      }
+      .sase-button.common {
+        background: var(--secondary);
+        color: #94a3b8;
+        border-color: #1e293b;
+      }
+      .sase-button.common.active {
+        color: white;
+      }
+      .sase-button.common.active::before {
+        background: #3b82f6;
+        box-shadow: 0 0 8px #3b82f6;
       }
       .instructions {
         background: #fffbeb;
@@ -362,7 +444,40 @@
       <div class="header">
         <div class="logo-box">
           <div class="sase-orb-mini">
-            <img src="/assets/branding/SASE_ICON.png" alt="SASE Core" />
+            <svg viewBox="0 0 100 100" width="100%" height="100%">
+              <defs>
+                <radialGradient id="gradOfficial" cx="35%" cy="35%" r="65%">
+                  <stop
+                    offset="0%"
+                    style="stop-color: #fffbeb; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="45%"
+                    style="stop-color: #f59e0b; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #78350f; stop-opacity: 1"
+                  />
+                </radialGradient>
+              </defs>
+              <!-- Glow exterior -->
+              <circle cx="50" cy="50" r="48" fill="rgba(245, 158, 11, 0.05)" />
+              <!-- Esfera Principal -->
+              <circle
+                cx="50"
+                cy="50"
+                r="44"
+                fill="url(#gradOfficial)"
+                stroke="rgba(255,255,255,0.2)"
+                stroke-width="1"
+              />
+              <!-- Ojos Oficiales (Cápsulas) -->
+              <rect x="42" y="44" width="3" height="10" rx="1.5" fill="white" />
+              <rect x="55" y="44" width="3" height="10" rx="1.5" fill="white" />
+              <!-- Brillo Glass -->
+              <circle cx="35" cy="35" r="15" fill="white" fill-opacity="0.1" />
+            </svg>
           </div>
           <div class="logo-text">
             <h1>SASE</h1>
@@ -405,10 +520,66 @@
           </div>
         </div>
 
+        <div class="modules-section">
+          <div class="modules-title">Módulos de Acceso Prioritario</div>
+          <div class="button-grid" id="botones-rol">
+            <!-- Inyectado por JS -->
+          </div>
+        </div>
+
         <div class="ia-section">
           <div class="ia-orb-visual">
             <div class="ia-orb-large">
-              <img src="/assets/branding/SASE_ICON.png" alt="IA SASE Core" />
+              <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <defs>
+                  <radialGradient
+                    id="gradOfficialLarge"
+                    cx="35%"
+                    cy="35%"
+                    r="65%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #fffbeb; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="45%"
+                      style="stop-color: #f59e0b; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #78350f; stop-opacity: 1"
+                    />
+                  </radialGradient>
+                </defs>
+                <!-- Glow exterior -->
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="48"
+                  fill="rgba(245, 158, 11, 0.15)"
+                />
+                <!-- Esfera Principal -->
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="44"
+                  fill="url(#gradOfficialLarge)"
+                  stroke="rgba(255,255,255,0.3)"
+                  stroke-width="1.5"
+                />
+                <!-- Ojos Oficiales (Cápsulas) -->
+                <rect x="41" y="42" width="4" height="14" rx="2" fill="white" />
+                <rect x="55" y="42" width="4" height="14" rx="2" fill="white" />
+                <!-- Reflejo Glass -->
+                <circle
+                  cx="35"
+                  cy="35"
+                  r="18"
+                  fill="white"
+                  fill-opacity="0.15"
+                />
+              </svg>
             </div>
             <div class="ia-status">NEURAL CORE ACTIVE</div>
           </div>
@@ -484,19 +655,35 @@
           usuario: "miguel.morales@sase.mx",
           clave: "SASE.DIRECTIVO.2026",
           rol: "DIRECTIVO",
+          botones: [
+            "Centro de Estrategia",
+            "Auditoría Global",
+            "Reportería NEM",
+          ],
         },
         {
           nombre: "Hugo Sánchez Reséndiz",
           usuario: "hugo.sanchez@sase.mx",
           clave: "SASE.DOCENTE.2026",
           rol: "DOCENTE",
+          botones: ["Aula Virtual", "Evaluador IA", "Seguimiento Grupal"],
         },
         {
           nombre: "Paula Hernández",
           usuario: "paula.hernandez@sase.mx",
           clave: "SASE.PREFECTURA.2026",
           rol: "PREFECTURA",
+          botones: [
+            "Radar de Convivencia",
+            "Control de Asistencia",
+            "Bitácora Digital",
+          ],
         },
+      ];
+
+      const botonesComunes = [
+        { nombre: "IA SASE", clase: "common active" },
+        { nombre: "Feedback", clase: "common active" },
       ];
 
       const plantilla = document.getElementById("plantilla-carta");
@@ -510,6 +697,24 @@
         nuevaCarta.querySelector("#clave").textContent = u.clave;
         nuevaCarta.querySelector("#rol").textContent = u.rol;
 
+        const contenedorBotones = nuevaCarta.querySelector("#botones-rol");
+
+        // Agregar botones exclusivos
+        u.botones.forEach((btnText) => {
+          const btn = document.createElement("div");
+          btn.className = "sase-button exclusive";
+          btn.textContent = btnText;
+          contenedorBotones.appendChild(btn);
+        });
+
+        // Agregar botones comunes
+        botonesComunes.forEach((b) => {
+          const btn = document.createElement("div");
+          btn.className = `sase-button ${b.clase}`;
+          btn.textContent = b.nombre;
+          contenedorBotones.appendChild(btn);
+        });
+
         contenedor.appendChild(nuevaCarta);
 
         if (i < usuarios.length - 1) {
@@ -519,12 +724,12 @@
         }
       });
 
-      plantilla.remove();
+      // plantilla.remove();
 
       // Trigger print after stabilization
-      setTimeout(() => {
-        window.print();
-      }, 1000);
+      // setTimeout(() => {
+      //   window.print();
+      // }, 1000);
     </script>
   </body>
 </html>

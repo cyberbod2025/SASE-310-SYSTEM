@@ -7,7 +7,7 @@ import { UserRole, AppModule } from "./types";
 import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Login } from "./components/Login";
-import { BrandIntro } from "./components/BrandIntro";
+import { SASEIntroAnimation } from "./components/SASEIntroAnimation";
 import { FirstLogonSetup } from "./components/FirstLogonSetup";
 import { OfficialDocument } from "./components/OfficialDocument";
 import { PrintPreviewModal } from "./components/PrintPreviewModal";
@@ -23,10 +23,8 @@ const DashboardPrefectura = React.lazy(() =>
     default: module.DashboardPrefectura,
   })),
 );
-const DashboardEnfermeria = React.lazy(() =>
-  import("./components/dashboards/DashboardEnfermeria").then((module) => ({
-    default: module.DashboardEnfermeria,
-  })),
+const DashboardMedico = React.lazy(
+  () => import("./components/dashboards/DashboardMedico"),
 );
 const DashboardOrientacion = React.lazy(() =>
   import("./components/dashboards/DashboardOrientacion").then((module) => ({
@@ -58,10 +56,8 @@ const DashboardUDEII = React.lazy(() =>
     default: module.DashboardUDEII,
   })),
 );
-const DashboardPromotora = React.lazy(() =>
-  import("./components/dashboards/DashboardPromotora").then((module) => ({
-    default: module.DashboardPromotora,
-  })),
+const DashboardLectura = React.lazy(
+  () => import("./components/dashboards/DashboardLectura"),
 );
 const DashboardDeveloper = React.lazy(() =>
   import("./components/dashboards/DashboardDeveloper").then((module) => ({
@@ -224,14 +220,12 @@ const MainContent = () => {
             return <DashboardOrientacion />;
           case UserRole.TRABAJO_SOCIAL:
             return <DashboardTrabajoSocial />;
-          case UserRole.ENFERMERIA:
-            return <DashboardEnfermeria />;
-          case UserRole.SECRETARIA:
-            return <DashboardSecretaria />;
+          case UserRole.MEDICO_ESCOLAR:
+            return <DashboardMedico />;
           case UserRole.UDEII:
             return <DashboardUDEII />;
-          case UserRole.PROMOTORA:
-            return <DashboardPromotora />;
+          case UserRole.PROMOTORA_LECTURA:
+            return <DashboardLectura />;
           case UserRole.DEVELOPER:
             return <DashboardDeveloper />;
           default:
@@ -306,9 +300,8 @@ const App: React.FC = () => {
     );
   }
 
-  // --- STARTUP FLOW ---
   if (showIntro) {
-    return <BrandIntro onEnter={() => setShowIntro(false)} />;
+    return <SASEIntroAnimation onComplete={() => setShowIntro(false)} />;
   }
 
   if (!session && !isDemoMode) {

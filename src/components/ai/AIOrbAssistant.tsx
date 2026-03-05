@@ -104,7 +104,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
             label: "Detección de necesidades socioemocionales",
           },
         ];
-      case UserRole.ENFERMERIA:
+      case UserRole.MEDICO_ESCOLAR:
         return [
           { icon: "medical_services", label: "Monitoreo de alertas de salud" },
           {
@@ -112,7 +112,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
             label: "Control de insumos de primeros auxilios",
           },
         ];
-      case UserRole.PROMOTORA:
+      case UserRole.PROMOTORA_LECTURA:
         return [
           { icon: "menu_book", label: "Analizando indices de lectura" },
           { icon: "event_note", label: "Planeación de círculos de lectura" },
@@ -293,7 +293,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
           },
         );
         break;
-      case UserRole.ENFERMERIA:
+      case UserRole.MEDICO_ESCOLAR:
         baseActions.push(
           {
             icon: "medical_services",
@@ -321,7 +321,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
           },
         );
         break;
-      case UserRole.PROMOTORA:
+      case UserRole.PROMOTORA_LECTURA:
         baseActions.push(
           {
             icon: "book",

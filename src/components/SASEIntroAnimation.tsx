@@ -9,14 +9,13 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   onComplete,
 }) => {
   const [step, setStep] = useState(0); // 0: Orb, 1: Letters, 2: Gold, 3: Subtitle, 4: Out + Slogan
-  const [orbColor, setOrbColor] = useState("rgba(14, 165, 233, 1)"); // Start with Cyan
+  const [orbColor, setOrbColor] = useState("rgba(59, 130, 246, 1)"); // Blue SASE Official
 
-  // --- STEP 0: BREATHE (Wait for user to perceive the orb)
+  // --- STEP 0: BREATHE (Very fast perception)
   useEffect(() => {
     const timer = setTimeout(() => {
-      setOrbColor("rgba(59, 130, 246, 1)"); // Blue
       setStep(1);
-    }, 3000); // Increased from 2000
+    }, 200); // Super fast
     return () => clearTimeout(timer);
   }, []);
 
@@ -24,9 +23,9 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   useEffect(() => {
     if (step === 1) {
       const timer = setTimeout(() => {
-        setOrbColor("rgba(255, 215, 0, 1)"); // Gold
+        setOrbColor("rgba(255, 215, 0, 1)"); // Gold Institutional
         setStep(2);
-      }, 4000); // Increased from 3000
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -34,7 +33,7 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   // --- STEP 2: GOLD (Transform to institution colors)
   useEffect(() => {
     if (step === 2) {
-      const timer = setTimeout(() => setStep(3), 3000); // Increased from 2000
+      const timer = setTimeout(() => setStep(3), 400);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -42,7 +41,7 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   // --- STEP 3: SUBTITLE (Show Platform name)
   useEffect(() => {
     if (step === 3) {
-      const timer = setTimeout(() => setStep(4), 6000); // Increased from 4000
+      const timer = setTimeout(() => setStep(4), 800);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -50,95 +49,102 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   // --- STEP 4: SLOGAN (Show Final Slogan)
   useEffect(() => {
     if (step === 4) {
-      const timer = setTimeout(() => onComplete(), 6000); // Increased from 4000
+      const timer = setTimeout(() => onComplete(), 3500); // Extended for readability
       return () => clearTimeout(timer);
     }
   }, [step, onComplete]);
 
   const letterVariants: any = {
-    hidden: { opacity: 0, y: 20, scale: 0.5 },
+    hidden: { opacity: 0, y: 30, scale: 0.8 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
-        delay: i * 0.2,
-        duration: 0.8,
-        ease: [0.33, 1, 0.68, 1],
+        delay: i * 0.12,
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1],
       },
     }),
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#05070a] overflow-hidden">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#05070a] overflow-hidden cursor-pointer"
+      onClick={() => onComplete()}
+    >
       <AnimatePresence mode="wait">
         {step < 4 ? (
           <motion.div
             key="main-intro"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
-            transition={{ duration: 1.5 }}
+            exit={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
+            transition={{ duration: 1.2 }}
             className="flex flex-col items-center gap-12"
           >
-            {/* The Legendary Orb */}
+            {/* The REAL SASE IA Orb */}
             <div className="relative flex items-center justify-center">
-              {/* Glow Layers */}
+              {/* Institutional Glow Pulsing */}
               <motion.div
                 animate={{
                   boxShadow: [
-                    `0 0 40px 10px ${orbColor.replace("1)", "0.2)")}`,
-                    `0 0 80px 20px ${orbColor.replace("1)", "0.4)")}`,
-                    `0 0 40px 10px ${orbColor.replace("1)", "0.2)")}`,
+                    "0 0 50px 10px rgba(59, 130, 246, 0.2)",
+                    "0 0 100px 30px rgba(59, 130, 246, 0.5)",
+                    "0 0 50px 10px rgba(59, 130, 246, 0.2)",
                   ],
                   scale: [1, 1.05, 1],
                 }}
-                transition={{ repeat: Infinity, duration: 4 }}
-                className="absolute inset-0 rounded-full"
-                style={{ backgroundColor: orbColor.replace("1)", "0.1)") }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 3,
+                  ease: "easeInOut",
+                }}
+                className="absolute inset-8 rounded-full bg-blue-500/10 blur-3xl"
               />
 
-              {/* Main Sphere */}
+              {/* Official AI SASE Sphere with Volumetric Movement */}
               <motion.div
+                initial={{ scale: 0.5, opacity: 0, rotate: -15 }}
                 animate={{
-                  background:
-                    step >= 2
-                      ? `radial-gradient(circle at 35% 35%, #FFFBEB 0%, #F59E0B 45%, #78350F 100%)`
-                      : `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, ${orbColor} 40%, rgba(15,23,42,1) 100%)`,
+                  scale: 1,
+                  opacity: 1,
+                  rotate: 0,
+                  y: [0, -10, 0], // Subtle floating
                 }}
-                className="relative w-40 h-40 rounded-full flex items-center justify-center shadow-[inset_-10px_-10px_20px_rgba(0,0,0,0.6),inset_10px_10px_20px_rgba(255,255,255,0.3)] border border-white/10"
+                transition={{
+                  duration: 1.2,
+                  ease: "easeOut",
+                  y: { repeat: Infinity, duration: 4, ease: "easeInOut" },
+                }}
+                className="relative z-10"
               >
-                {/* Rings */}
-                <div className="absolute inset-[-8px] rounded-full border-[2px] border-white/5 border-t-white/30 animate-[spin_4s_linear_infinite]" />
-                <div className="absolute inset-[-15px] rounded-full border-[1px] border-white/5 border-r-white/20 animate-[spin_6s_linear_infinite_reverse]" />
-
-                {/* Eyes */}
-                <div className="flex gap-6">
-                  <motion.div
-                    animate={{ scaleY: [1, 1, 0.1, 1, 1] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 4,
-                      times: [0, 0.9, 0.92, 0.94, 1],
-                    }}
-                    className="w-1.5 h-4 bg-white rounded-full shadow-[0_0_12px_#fff]"
-                  />
-                  <motion.div
-                    animate={{ scaleY: [1, 1, 0.1, 1, 1] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 4,
-                      delay: 0.1,
-                      times: [0, 0.88, 0.9, 0.92, 1],
-                    }}
-                    className="w-1.5 h-4 bg-white rounded-full shadow-[0_0_12px_#fff]"
-                  />
-                </div>
+                <img
+                  src={
+                    step >= 2
+                      ? "/assets/branding/SASE_ICON_GOLD.png"
+                      : "/assets/branding/SASE_ICON.png"
+                  }
+                  alt="IA SASE"
+                  className="w-64 h-64 object-contain drop-shadow-[0_0_35px_rgba(59,130,246,0.6)]"
+                />
               </motion.div>
+
+              {/* Energy Ring Filaments Effect */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                className="absolute inset-[-30px] rounded-full border border-blue-500/10 border-t-blue-500/30 blur-sm"
+              />
+              <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+                className="absolute inset-[-50px] rounded-full border border-amber-500/5 border-b-amber-500/20 blur-[1px]"
+              />
             </div>
 
-            {/* SASE Letters */}
-            <div className="flex gap-4">
+            {/* SASE Letters with Enhanced Glow */}
+            <div className="flex gap-6 mt-4">
               {["S", "A", "S", "E"].map((letter, i) => (
                 <motion.span
                   key={i}
@@ -146,7 +152,11 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
                   variants={letterVariants}
                   initial="hidden"
                   animate={step >= 1 ? "visible" : "hidden"}
-                  className={`text-8xl font-black italic tracking-tighter ${step >= 2 ? "text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]" : "text-white"}`}
+                  className={`text-9xl font-black italic tracking-tighter transition-colors duration-700 ${
+                    step >= 2
+                      ? "text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.6)]"
+                      : "text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                  }`}
                 >
                   {letter}
                 </motion.span>
@@ -172,22 +182,22 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
         ) : (
           <motion.div
             key="slogan"
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, filter: "brightness(2)" }}
+            exit={{ opacity: 0, scale: 1.1 }}
             className="flex flex-col items-center"
           >
             <motion.h2
               animate={{
-                opacity: [0.5, 1, 0.5],
+                opacity: [0.7, 1, 0.7],
                 textShadow: [
-                  "0 0 0px #fff",
-                  "0 0 30px #3b82f6",
-                  "0 0 0px #fff",
+                  "0 0 10px rgba(255,255,255,0.2)",
+                  "0 0 30px rgba(59,130,246,0.6)",
+                  "0 0 10px rgba(255,255,255,0.2)",
                 ],
               }}
               transition={{ repeat: Infinity, duration: 2 }}
-              className="text-5xl font-black italic text-white tracking-[0.2em]"
+              className="text-6xl font-black italic text-white tracking-[0.2em] text-center px-4"
             >
               CONECTAMOS CONTIGO
             </motion.h2>

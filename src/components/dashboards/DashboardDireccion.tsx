@@ -182,6 +182,7 @@ export const DashboardDireccion = () => {
   const [loading, setLoading] = useState(true);
   const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
+  const [riskStudents, setRiskStudents] = useState<any[]>([]);
 
   // --- FETCH REAL DATA ---
   useEffect(() => {
@@ -208,6 +209,15 @@ export const DashboardDireccion = () => {
 
         if (comsError) throw comsError;
         setDbComunicados(comunicados || []);
+
+        // Fetch Risk Alerts
+        const { data: risks, error: risksError } = await supabase
+          .from("alumnos_en_riesgo" as any)
+          .select("*")
+          .order("total_incidencias", { ascending: false })
+          .limit(10);
+
+        if (!risksError) setRiskStudents(risks || []);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
       } finally {
@@ -681,17 +691,22 @@ export const DashboardDireccion = () => {
                   <div className="p-6 bg-white/[0.03] border border-white/10 rounded-3xl mb-8 relative group/card">
                     <div className="flex items-center gap-5">
                       <div className="size-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-black text-3xl italic tracking-tighter shadow-2xl overflow-hidden relative">
-                        {criticalCases
+                        {students
                           .find((c) => c.id === selectedAlertId)
-                          ?.name.charAt(0)}
+                          ?.nombre?.charAt(0) ||
+                          riskStudents
+                            .find((c) => c.alumno_id === selectedAlertId)
+                            ?.nombre?.charAt(0) ||
+                          "U"}
                         <div className="absolute inset-0 bg-white/10 animate-shimmer"></div>
                       </div>
                       <div>
                         <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">
-                          {
-                            criticalCases.find((c) => c.id === selectedAlertId)
-                              ?.name
-                          }
+                          {students.find((c) => c.id === selectedAlertId)
+                            ?.nombre ||
+                            riskStudents.find(
+                              (c) => c.alumno_id === selectedAlertId,
+                            )?.nombre}
                         </h4>
                         <p className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
                           <span className="size-1.5 bg-rose-500 rounded-full animate-ping"></span>
@@ -768,6 +783,117 @@ export const DashboardDireccion = () => {
                   </button>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* AREA: RISK ALERTS SYSTEM (NEW) */}
+          <div className="lg:col-span-12 card-sase p-8 border-rose-500/20 bg-rose-500/[0.01] relative overflow-hidden group">
+            <motion.div
+              animate={{ top: ["-10%", "110%"] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+              className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-rose-500/20 to-transparent pointer-events-none z-0"
+            />
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="size-10 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-center justify-center text-rose-400">
+                  <span className="material-symbols-outlined text-xl">
+                    warning
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-[11px] font-black text-rose-500 uppercase tracking-[0.4em] italic">
+                    SISTEMA_ALERTAS_RIESGO
+                  </h3>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                    Detección Temprana de Vulnerabilidad Escolar
+                  </p>
+                </div>
+              </div>
+              <span className="text-[9px] font-black text-slate-500 uppercase px-3 py-1 bg-white/5 border border-white/5 rounded italic tracking-[0.2em]">
+                Live_Analysis_OFFICIAL
+              </span>
+            </div>
+
+            <div className="overflow-x-auto relative z-10">
+              <table className="w-full text-left border-separate border-spacing-y-2">
+                <thead>
+                  <tr className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                    <th className="px-4 py-2">Alumno</th>
+                    <th className="px-4 py-2">Grupo</th>
+                    <th className="px-4 py-2">Nivel de Alerta</th>
+                    <th className="px-4 py-2 text-right">Incidencias</th>
+                    <th className="px-4 py-2 text-right">Acción</th>
+                  </tr>
+                </thead>
+                <tbody className="text-xs">
+                  {riskStudents.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="py-20 text-center opacity-30 italic font-black uppercase tracking-widest"
+                      >
+                        No se detectan alertas críticas en el periodo actual
+                      </td>
+                    </tr>
+                  ) : (
+                    riskStudents.slice(0, 5).map((risk, idx) => (
+                      <tr
+                        key={idx}
+                        className="group/row bg-white/[0.02] hover:bg-white/[0.05] transition-all border border-white/5"
+                      >
+                        <td className="px-4 py-4 first:rounded-l-2xl last:rounded-r-2xl border-y border-white/5 group-hover/row:border-rose-500/20 border-l group-hover/row:border-l-rose-500/50">
+                          <div className="flex items-center gap-3">
+                            <div className="size-8 rounded-lg bg-slate-800 flex items-center justify-center font-black text-white italic tracking-tighter">
+                              {risk.nombre?.charAt(0) || "U"}
+                            </div>
+                            <span className="font-black text-slate-200 uppercase tracking-tight italic">
+                              {risk.nombre}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 border-y border-white/5 group-hover/row:border-rose-500/20">
+                          <span className="px-2 py-1 bg-white/5 rounded border border-white/5 font-bold text-[10px] text-slate-400 uppercase tracking-widest">
+                            {risk.grupo || "N/A"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 border-y border-white/5 group-hover/row:border-rose-500/20">
+                          <span
+                            className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                              risk.nivel_alerta === "ALERTA_CRITICA"
+                                ? "bg-rose-500/10 text-rose-500 border border-rose-500/20"
+                                : risk.nivel_alerta === "ALERTA_MEDIA"
+                                  ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                                  : "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                            }`}
+                          >
+                            {risk.nivel_alerta?.replace("_", " ") || "NORMAL"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 border-y border-white/5 group-hover/row:border-rose-500/20 text-right">
+                          <span className="text-lg font-black text-white italic tracking-tighter tabular-nums">
+                            {risk.total_incidencias}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 first:rounded-l-2xl last:rounded-r-2xl border-y border-white/5 group-hover/row:border-rose-500/20 border-r group-hover/row:border-r-rose-500/50 text-right">
+                          <button
+                            onClick={() => {
+                              setSelectedAlertId(risk.alumno_id);
+                              document
+                                .getElementById("panel-risk-groups")
+                                ?.scrollIntoView({ behavior: "smooth" });
+                            }}
+                            className="p-2 hover:bg-rose-500/20 rounded-lg text-rose-400 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-sm">
+                              visibility
+                            </span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

@@ -414,7 +414,7 @@ export const DashboardDocente = () => {
           {/* Sidebar Derecho */}
           <div className="col-span-12 xl:col-span-4 space-y-6">
             {/* KPI Cards */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -489,6 +489,34 @@ export const DashboardDocente = () => {
                 </h3>
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
                   PEND.
+                </p>
+                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+                className="card-sase p-4 flex flex-col items-center text-center group cursor-pointer hover:border-blue-500/20 hover:bg-white/[0.04] transition-all relative overflow-hidden"
+              >
+                <motion.div
+                  animate={{ top: ["-10%", "110%"] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+                  className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent pointer-events-none z-0"
+                />
+                <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-500">
+                  <span className="material-symbols-outlined">
+                    auto_awesome
+                  </span>
+                </div>
+                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-lg">
+                  {students.reduce(
+                    (acc, s) => acc + (s.gamificacion?.total_puntos || 0),
+                    0,
+                  )}
+                </h3>
+                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
+                  GAMIFIC.
                 </p>
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
               </motion.div>

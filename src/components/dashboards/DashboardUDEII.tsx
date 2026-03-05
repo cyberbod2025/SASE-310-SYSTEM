@@ -223,3 +223,5 @@ export const DashboardUDEII = () => {
     </div>
   );
 };
+
+export default DashboardUDEII;

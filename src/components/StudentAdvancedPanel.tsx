@@ -90,7 +90,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
 
   const canViewClinical =
     currentUserRole !== UserRole.SECRETARIA &&
-    currentUserRole !== UserRole.PROMOTORA;
+    currentUserRole !== UserRole.PROMOTORA_LECTURA;
 
   const canPrintSensitive =
     currentUserRole !== UserRole.SECRETARIA &&
@@ -400,6 +400,89 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                     );
                   })}
                 </div>
+
+                {/* ISLAS DEL SABER (GAMIFICACIÓN) */}
+                {student.gamificacion && (
+                  <div className="mt-8 p-6 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 rounded-3xl shadow-xl border border-indigo-400/30 overflow-hidden relative group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -translate-y-12 translate-x-12 group-hover:bg-white/20 transition-all duration-700 animate-pulse"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl translate-y-8 -translate-x-8 animate-pulse delay-500"></div>
+
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-start mb-6">
+                        <div className="flex items-center gap-4">
+                          <div className="size-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-white shadow-lg shadow-indigo-500/20">
+                            <span className="material-symbols-outlined text-3xl">
+                              sports_esports
+                            </span>
+                          </div>
+                          <div>
+                            <h4 className="text-white font-black text-sm uppercase tracking-tighter leading-none italic">
+                              Islas del Saber
+                            </h4>
+                            <p className="text-blue-100 text-[10px] font-black uppercase tracking-[0.2em] mt-1 opacity-80">
+                              Módulo de Gamificación
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-white/40 text-[9px] font-black uppercase tracking-widest leading-tight block mb-1">
+                            PLAYER_ID
+                          </span>
+                          <span className="text-white font-mono font-black text-xs bg-black/20 px-3 py-1 rounded-full border border-white/10">
+                            {student.gamificacion.nickname ||
+                              student.name.split(" ")[0]}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 flex flex-col items-center group-hover:bg-white/15 transition-all">
+                          <span className="text-[9px] font-black text-blue-200 uppercase tracking-widest mb-2 opacity-70">
+                            Total Puntos
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-amber-300 text-xl drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]">
+                              stars
+                            </span>
+                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-lg">
+                              {student.gamificacion.total_puntos}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4 flex flex-col items-center group-hover:bg-white/15 transition-all">
+                          <span className="text-[9px] font-black text-cyan-200 uppercase tracking-widest mb-2 opacity-70">
+                            Escaneos
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-cyan-300 text-xl drop-shadow-[0_0_8px_rgba(103,232,249,0.5)]">
+                              qr_code_scanner
+                            </span>
+                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-lg">
+                              {student.gamificacion.escaneos_realizados}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 flex items-center gap-3">
+                        <div className="flex-1 h-3 bg-black/30 rounded-full border border-white/10 p-0.5 overflow-hidden shadow-inner">
+                          <div
+                            className="h-full bg-gradient-to-r from-cyan-400 to-blue-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                            style={{
+                              width: `${Math.min((student.gamificacion.total_puntos / 500) * 100, 100)}%`,
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-[10px] font-black text-white italic tracking-tighter opacity-80 whitespace-nowrap">
+                          NIVEL{" "}
+                          {Math.floor(student.gamificacion.total_puntos / 100) +
+                            1}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

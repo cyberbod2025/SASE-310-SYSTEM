@@ -21,10 +21,10 @@ const roleColors: Record<UserRole, string> = {
   [UserRole.PREFECTURA]: "bg-orange-600 border-none",
   [UserRole.ORIENTACION]: "bg-emerald-600 border-none",
   [UserRole.TRABAJO_SOCIAL]: "bg-purple-600 border-none",
-  [UserRole.ENFERMERIA]: "bg-red-600 border-none",
+  [UserRole.MEDICO_ESCOLAR]: "bg-red-600 border-none",
   [UserRole.SECRETARIA]: "bg-cyan-600 border-none",
   [UserRole.UDEII]: "bg-indigo-600 border-none",
-  [UserRole.PROMOTORA]: "bg-pink-600 border-none",
+  [UserRole.PROMOTORA_LECTURA]: "bg-pink-600 border-none",
   [UserRole.GUEST]: "bg-slate-800 border-none",
   [UserRole.DEVELOPER]: "bg-slate-900 border-none border-r border-white/5",
 };
@@ -44,13 +44,13 @@ const roleImages: Record<UserRole, string> = {
     "https://ui-avatars.com/api/?name=Orientacion&background=d1fae5&color=064e3b",
   [UserRole.TRABAJO_SOCIAL]:
     "https://ui-avatars.com/api/?name=Trabajo+Social&background=f3e8ff&color=581c87",
-  [UserRole.ENFERMERIA]:
-    "https://ui-avatars.com/api/?name=Enfermeria&background=fee2e2&color=991b1b",
+  [UserRole.MEDICO_ESCOLAR]:
+    "https://ui-avatars.com/api/?name=Medico&background=fee2e2&color=991b1b",
   [UserRole.SECRETARIA]:
     "https://ui-avatars.com/api/?name=Secretaria&background=cffafe&color=083344",
   [UserRole.UDEII]:
     "https://ui-avatars.com/api/?name=UDEII&background=e0e7ff&color=312e81",
-  [UserRole.PROMOTORA]:
+  [UserRole.PROMOTORA_LECTURA]:
     "https://ui-avatars.com/api/?name=Promotora&background=fce7f3&color=701a75",
   [UserRole.GUEST]:
     "https://ui-avatars.com/api/?name=Invitado&background=f1f5f9&color=0f172a",
@@ -472,10 +472,10 @@ const NavItem: React.FC<{
     [UserRole.PREFECTURA]: "text-orange-600",
     [UserRole.ORIENTACION]: "text-emerald-600",
     [UserRole.TRABAJO_SOCIAL]: "text-purple-600",
-    [UserRole.ENFERMERIA]: "text-red-600",
+    [UserRole.MEDICO_ESCOLAR]: "text-red-600",
     [UserRole.SECRETARIA]: "text-cyan-600",
     [UserRole.UDEII]: "text-indigo-600",
-    [UserRole.PROMOTORA]: "text-pink-600",
+    [UserRole.PROMOTORA_LECTURA]: "text-pink-600",
     [UserRole.GUEST]: "text-slate-800",
     [UserRole.DEVELOPER]: "text-black",
   };
