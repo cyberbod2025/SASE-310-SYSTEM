@@ -84,7 +84,7 @@ export const Login: React.FC<LoginProps> = ({
     );
 
     if (officialMember) {
-      if (password === officialMember.provisional_password) {
+      if (password === officialMember.temp_access_code) {
         toast.success(
           `Bienvenido ${officialMember.full_name}. Iniciando configuración de cuenta.`,
         );

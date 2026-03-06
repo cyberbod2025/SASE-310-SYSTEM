@@ -6,7 +6,7 @@ export interface OfficialStaffMember {
   role: UserRole;
   is_active: boolean;
   username: string;
-  provisional_password: string;
+  temp_access_code: string;
 }
 
 export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
@@ -17,7 +17,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DIRECTIVO,
     is_active: true,
     username: "miguel.morales",
-    provisional_password: "SASE.DIRECTIVO.2026",
+    temp_access_code: "SASE.DIRECTIVO.2026",
   },
   {
     full_name: "NERIA DIAZ PABLO ISAAC",
@@ -25,7 +25,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SUBDIRECCION,
     is_active: true,
     username: "pablo.neria",
-    provisional_password: "SASE.SUBDIR.2026",
+    temp_access_code: "SASE.SUBDIR.2026",
   },
   {
     full_name: "LOPEZ QUERO JOSE LUIS",
@@ -33,7 +33,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SUBDIRECCION,
     is_active: true,
     username: "jose.lopez",
-    provisional_password: "SASE.SUBDIR.2026",
+    temp_access_code: "SASE.SUBDIR.2026",
   },
   {
     full_name: "JURADO CHAVEZ VICTOR ALEJANDRO",
@@ -41,7 +41,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DIRECTIVO,
     is_active: true,
     username: "victor.jurado",
-    provisional_password: "SASE.DIRECTIVO.2026",
+    temp_access_code: "SASE.DIRECTIVO.2026",
   },
 
   // Apoyo Especializado
@@ -51,7 +51,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.ORIENTACION,
     is_active: true,
     username: "martha.robledo",
-    provisional_password: "SASE.ORIENTA.2026",
+    temp_access_code: "SASE.ORIENTA.2026",
   },
   {
     full_name: "VARGAS ANDRES DIANA ALEXANDRA",
@@ -59,7 +59,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.ORIENTACION,
     is_active: true,
     username: "diana.vargas",
-    provisional_password: "SASE.ORIENTA.2026",
+    temp_access_code: "SASE.ORIENTA.2026",
   },
   {
     full_name: "VILLALOBOS CERVANTES SILVIA Y.",
@@ -67,7 +67,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.TRABAJO_SOCIAL,
     is_active: true,
     username: "silvia.villalobos",
-    provisional_password: "SASE.TSOCIAL.2026",
+    temp_access_code: "SASE.TSOCIAL.2026",
   },
   {
     full_name: "XOLALPA JIMENEZ NORMA LORENA",
@@ -75,7 +75,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.MEDICO_ESCOLAR,
     is_active: true,
     username: "norma.xolalpa",
-    provisional_password: "SASE.SALUD.2026",
+    temp_access_code: "SASE.SALUD.2026",
   },
   {
     full_name: "INGRID GONZALEZ NAVARRETE",
@@ -83,7 +83,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.UDEII,
     is_active: true,
     username: "ingrid.gonzalez",
-    provisional_password: "SASE.UDEII.2026",
+    temp_access_code: "SASE.UDEII.2026",
   },
   {
     full_name: "GUERRERO PEREZ SUSANA",
@@ -91,7 +91,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PROMOTORA_LECTURA,
     is_active: true,
     username: "susana.guerrero",
-    provisional_password: "SASE.PROMOTORA.2026",
+    temp_access_code: "SASE.PROMOTORA.2026",
   },
 
   // Docentes Español
@@ -101,7 +101,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "german.cortes",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "LEGARIA GORDILLO JOSE LUIS",
@@ -109,7 +109,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jose.legaria",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "RAMIREZ TELOXA ANGELES YERALDIN",
@@ -117,7 +117,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "angeles.ramirez",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "VALLERROJO MALLA MA. DEL SOCORRO",
@@ -125,7 +125,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "ma.vallerrojo",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
 
   // Docentes Matemáticas
@@ -135,7 +135,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "marisol.bernal",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "CORTES ROJAS JUAN ANTONIO",
@@ -143,7 +143,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "juan.cortes",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "URBANO LOPEZ HANS EDSON",
@@ -151,7 +151,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "hans.urbano",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "SANCHEZ RESENDIZ HUGO",
@@ -159,7 +159,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "hugo.sanchez",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
 
   // Docentes Historia y Geografía
@@ -169,7 +169,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "baltazar.tabarez",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "ECHEVARRIA GARCIA ELIZABETH",
@@ -177,7 +177,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "elizabeth.echevarria",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "HERNANDEZ MARCOS PEDRO",
@@ -185,7 +185,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "pedro.hernandez",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "CORTES SALMERON JAIRO DAVID",
@@ -193,7 +193,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jairo.cortes",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
 
   // Docentes F. Cívica y Ética
@@ -203,7 +203,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "fermin.cruz",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "ROSAS BELLO JORGE LUIS",
@@ -211,7 +211,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jorge.rosas",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
 
   // Docentes Ciencias
@@ -221,7 +221,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "dulce.pina",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "PEREZ PEREZ KIMBERLY",
@@ -229,7 +229,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "kimberly.perez",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "DIAZ VILLANUEVA BRENDA JOSAHANY",
@@ -237,7 +237,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "brenda.diaz",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "RIVERA GARCIA PABLO MIGUEL",
@@ -245,7 +245,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "pablo.rivera",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "RANGEL BANDY JORGE ANTONIO",
@@ -253,7 +253,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jorge.rangel",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
 
   // Otras Materias y Talleres
@@ -263,7 +263,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "norma.guerrero",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "HURTADO MARIN JUAN JOSE",
@@ -271,7 +271,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "juan.hurtado",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "FLORES LOPEZ VICTOR MANUEL",
@@ -279,7 +279,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "victor.flores",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "GUTIERREZ AVENDANO DIANA BELEM",
@@ -287,7 +287,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "diana.gutierrez",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "ARELLANO SANTOYO MIGUEL",
@@ -295,7 +295,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "miguel.arellano",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "MOTA CANO NOE",
@@ -303,7 +303,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "noe.mota",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "MORALES NAVARRETE RUTH",
@@ -311,7 +311,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "ruth.morales",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "RAMÍREZ SILVA VICENTE",
@@ -319,7 +319,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "vicente.ramirez",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "CONTRERAS MARTINEZ JOSELYN",
@@ -327,7 +327,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "joselyn.contreras",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "ANDRADE GALICIA CLAUDIA",
@@ -335,7 +335,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "claudia.andrade",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "FLORES SILVA JORGE ALBERTO",
@@ -343,7 +343,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jorge.flores",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "CAMPOS VILCHIS EDUARDO",
@@ -351,7 +351,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "eduardo.campos",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "RIVERA CRUZ ORALIA",
@@ -359,7 +359,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "oralia.rivera",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "AZUCENO GIL JUVENTINA ROCIO",
@@ -367,7 +367,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "juventina.azuceno",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
   {
     full_name: "DIAZ NUÑEZ MARIA ELENA",
@@ -375,7 +375,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "maria.diaz",
-    provisional_password: "SASE.DOCENTE.2026",
+    temp_access_code: "SASE.DOCENTE.2026",
   },
 
   // Prefectura y Secretaría
@@ -385,7 +385,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PREFECTURA,
     is_active: true,
     username: "juan.alvarez",
-    provisional_password: "SASE.PREFECTO.2026",
+    temp_access_code: "SASE.PREFECTO.2026",
   },
   {
     full_name: "GARCIA PEÑALOZA MARCELINA PAULA",
@@ -393,7 +393,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PREFECTURA,
     is_active: true,
     username: "paula.garcia",
-    provisional_password: "SASE.PREFECTO.2026",
+    temp_access_code: "SASE.PREFECTO.2026",
   },
   {
     full_name: "MEDINA FRANCO JOSE LUIS",
@@ -401,7 +401,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PREFECTURA,
     is_active: true,
     username: "jose.medina",
-    provisional_password: "SASE.PREFECTO.2026",
+    temp_access_code: "SASE.PREFECTO.2026",
   },
   {
     full_name: "DIAZ RUIZ EDGAR",
@@ -409,7 +409,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "edgar.diaz",
-    provisional_password: "SASE.SEC.2026",
+    temp_access_code: "SASE.SEC.2026",
   },
   {
     full_name: "FLORES CALVILLO GABRIELA",
@@ -417,7 +417,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "gabriela.flores",
-    provisional_password: "SASE.SEC.2026",
+    temp_access_code: "SASE.SEC.2026",
   },
   {
     full_name: "GALINDO ARGUETA DULCE MARIA",
@@ -425,7 +425,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "dulce.galindo",
-    provisional_password: "SASE.SEC.2026",
+    temp_access_code: "SASE.SEC.2026",
   },
   {
     full_name: "RODRIGUEZ MARQUEZ JORGE",
@@ -433,6 +433,6 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "jorge.rodriguez",
-    provisional_password: "SASE.SEC.2026",
+    temp_access_code: "SASE.SEC.2026",
   },
 ];
