@@ -7,20 +7,14 @@ import { UserRole, AppModule } from "./types";
 import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Login } from "./components/Login";
-import { SASEIntroAnimation } from "./components/SASEIntroAnimation";
-import { FirstLogonSetup } from "./components/FirstLogonSetup";
-import { OfficialDocument } from "./components/OfficialDocument";
-import { PrintPreviewModal } from "./components/PrintPreviewModal";
 import { DashboardHoy } from "./components/DashboardHoy";
 import { RadarEscolar } from "./components/RadarEscolar";
-import { IASaseAgent } from "./components/IASaseAgent";
+import { DashboardDocente } from "./components/dashboards/DashboardDocente";
+import { MisGrupos } from "./components/MisGrupos";
+
+// Componentes que se vuelven diferidos: SASEIntroAnimation, FirstLogonSetup, OfficialDocument, PrintPreviewModal, IASaseAgent
 
 // Dashboards (Lazy Loaded)
-const DashboardDocente = React.lazy(() =>
-  import("./components/dashboards/DashboardDocente").then((module) => ({
-    default: module.DashboardDocente,
-  })),
-);
 const DashboardPrefectura = React.lazy(() =>
   import("./components/dashboards/DashboardPrefectura").then((module) => ({
     default: module.DashboardPrefectura,
@@ -135,9 +129,30 @@ const AprobacionesPersonal = React.lazy(() =>
   })),
 );
 
-const MisGrupos = React.lazy(() =>
-  import("./components/MisGrupos").then((module) => ({
-    default: module.MisGrupos,
+// Componentes pesados a Lazy Load
+const SASEIntroAnimation = React.lazy(() =>
+  import("./components/SASEIntroAnimation").then((module) => ({
+    default: module.SASEIntroAnimation,
+  })),
+);
+const FirstLogonSetup = React.lazy(() =>
+  import("./components/FirstLogonSetup").then((module) => ({
+    default: module.FirstLogonSetup,
+  })),
+);
+const OfficialDocument = React.lazy(() =>
+  import("./components/OfficialDocument").then((module) => ({
+    default: module.OfficialDocument,
+  })),
+);
+const PrintPreviewModal = React.lazy(() =>
+  import("./components/PrintPreviewModal").then((module) => ({
+    default: module.PrintPreviewModal,
+  })),
+);
+const IASaseAgent = React.lazy(() =>
+  import("./components/IASaseAgent").then((module) => ({
+    default: module.IASaseAgent,
   })),
 );
 
@@ -160,11 +175,13 @@ const DocumentRenderer = () => {
     : undefined;
 
   return (
-    <OfficialDocument
-      type={activePrintJob.type}
-      student={student}
-      data={activePrintJob.data}
-    />
+    <React.Suspense fallback={<LoadingSpinner />}>
+      <OfficialDocument
+        type={activePrintJob.type}
+        student={student}
+        data={activePrintJob.data}
+      />
+    </React.Suspense>
   );
 };
 
@@ -172,12 +189,14 @@ const GlobalModals = () => {
   const { printModal, setPrintModal } = useApp();
 
   return (
-    <PrintPreviewModal
-      isOpen={printModal.isOpen}
-      onClose={() => setPrintModal({ ...printModal, isOpen: false })}
-      title={printModal.title}
-      initialHtml={printModal.html}
-    />
+    <React.Suspense fallback={<LoadingSpinner />}>
+      <PrintPreviewModal
+        isOpen={printModal.isOpen}
+        onClose={() => setPrintModal({ ...printModal, isOpen: false })}
+        title={printModal.title}
+        initialHtml={printModal.html}
+      />
+    </React.Suspense>
   );
 };
 
@@ -255,7 +274,9 @@ const AppShell = () => {
 
   return (
     <ErrorBoundary>
-      <IASaseAgent />
+      <React.Suspense fallback={<LoadingSpinner />}>
+        <IASaseAgent />
+      </React.Suspense>
       {isWelcome && showRadar ? (
         <RadarEscolar onComplete={() => setShowRadar(false)} />
       ) : isWelcome ? (

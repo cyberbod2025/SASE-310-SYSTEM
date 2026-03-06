@@ -75,7 +75,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     notifications,
     markNotificationRead,
   } = useApp();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { systemState } = useSaseSystemState(currentUserRole, user?.id);
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -104,6 +104,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showNotifications]);
+
+  const displayUserName =
+    profile?.nombre || user?.user_metadata?.full_name || "Usuario SASE";
+  const displayUserRole =
+    profile?.cargo_institucional || profile?.rol || currentUserRole;
 
   return (
     <div className="flex h-screen text-slate-300 overflow-hidden font-sans select-none bg-transparent">
@@ -139,20 +144,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 <img
                   src={roleImages[currentUserRole]}
                   alt={`Perfil de ${currentUserRole}`}
-                  title={`Usuario: ${user?.user_metadata?.full_name || "Personal SASE"}`}
+                  title={`Usuario: ${displayUserName}`}
                   className={`rounded-2xl border border-white/10 shadow-2xl relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
                 />
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex-1 min-w-0 animate-fade-in">
                   <h3 className="text-sm font-black text-white truncate uppercase tracking-tight">
-                    {user?.user_metadata?.full_name || "Usuario SASE"}
+                    {displayUserName}
                   </h3>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <span className="size-1.5 bg-blue-500 rounded-full"></span>
-                    <span className="text-[9px] font-black text-blue-500/70 uppercase tracking-widest truncate">
-                      {currentUserRole}
-                    </span>
+                  <div className="flex flex-col gap-0.5 mt-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="size-1.5 bg-blue-500 rounded-full"></span>
+                      <span className="text-[9px] font-black text-blue-500/70 uppercase tracking-widest truncate">
+                        {displayUserRole}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}

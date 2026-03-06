@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import { useAuditoriaAccesos } from "../hooks/useAuditoriaAccesos";
+import { AvisoUsoResponsable } from "./AvisoUsoResponsable";
 import {
   Student,
   DocumentoInstitucional,
@@ -8,7 +10,17 @@ import {
 } from "../types";
 import { useApp } from "../store";
 import { printContent } from "./PrintButtons";
-import { AIDocumentGenerator } from "./ai/AIDocumentGenerator";
+// Lazy Loading para Módulos Pesados (IA y Generación PDF)
+const GeneradorDocumentos = lazy(() =>
+  import("../modules/documentos").then((m) => ({
+    default: m.GeneradorDocumentos,
+  })),
+);
+const ExpedienteInstitucional = lazy(() =>
+  import("../modules/expedientes").then((m) => ({
+    default: m.ExpedienteInstitucional,
+  })),
+);
 import "./StudentProfile.css"; // Usa el nuevo CSS "Institutional Light"
 import toast from "react-hot-toast";
 
@@ -34,6 +46,54 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
     "ACADEMIC",
   );
   const [showAIGenerator, setShowAIGenerator] = useState(false);
+
+  // --- AUDITORÍA DE ACCESOS SENSIBLES ---
+  const { registrarAcceso } = useAuditoriaAccesos();
+  const [avisoAceptado, setAvisoAceptado] = useState(false);
+
+  // --- MODULO EXPEDIENTES ---
+  const [showExpediente, setShowExpediente] = useState(false);
+
+  // Registrar apertura del panel cuando el usuario acepta
+  useEffect(() => {
+    if (avisoAceptado) {
+      registrarAcceso({
+        accion: "abrir_panel_avanzado",
+        alumno_id: student.id,
+        pantalla: "StudentAdvancedPanel",
+      });
+      // Registrar consulta de expediente automáticamente
+      registrarAcceso({
+        accion: "consultar_expediente",
+        alumno_id: student.id,
+        pantalla: "StudentAdvancedPanel",
+      });
+    }
+  }, [avisoAceptado]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Registrar acceso por pestaña
+  useEffect(() => {
+    if (!avisoAceptado) return;
+    if (activeTab === "CLINICAL") {
+      registrarAcceso({
+        accion: "consultar_alerta_medica",
+        alumno_id: student.id,
+        pantalla: "StudentAdvancedPanel:CLINICAL",
+      });
+      registrarAcceso({
+        accion: "consultar_historial_disciplina",
+        alumno_id: student.id,
+        pantalla: "StudentAdvancedPanel:CLINICAL",
+      });
+    }
+    if (activeTab === "LEGAL") {
+      registrarAcceso({
+        accion: "consultar_trabajo_social",
+        alumno_id: student.id,
+        pantalla: "StudentAdvancedPanel:LEGAL",
+      });
+    }
+  }, [activeTab, avisoAceptado]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Incident Form State
   const [showIncidentForm, setShowIncidentForm] = useState(false);
@@ -162,6 +222,17 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
     // Aquí iría la lógica real de integración con VoIP o Mailto
   };
 
+  // --- MODAL DE AVISO DE USO RESPONSABLE (Bloquea acceso hasta aceptar) ---
+  if (!avisoAceptado) {
+    return (
+      <AvisoUsoResponsable
+        studentName={student.name}
+        onAccept={() => setAvisoAceptado(true)}
+        onReject={onClose}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-md flex items-center justify-center p-0 md:p-4 overflow-hidden animate-fade-in font-['Inter']">
       {/* --- CONTENEDOR PRINCIPAL: Adaptativo --- */}
@@ -251,6 +322,27 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 Activo 2026
               </span>
             </div>
+          </div>
+
+          {/* ACCESO A EXPEDIENTE INSTITUCIONAL */}
+          <div className="w-full px-2 mb-4">
+            <button
+              onClick={() => setShowExpediente(true)}
+              className="w-full py-3 bg-gradient-to-br from-slate-800 to-indigo-900 border-2 border-slate-900 text-white rounded-xl shadow-[0_4px_15px_-3px_rgba(30,58,138,0.4)] hover:shadow-[0_8px_25px_-5px_rgba(30,58,138,0.5)] transition-all flex flex-col items-center justify-center gap-1 group overflow-hidden relative"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <div className="flex items-center gap-2 z-10">
+                <span className="material-symbols-outlined text-xl">
+                  folder_shared
+                </span>
+                <span className="text-[11px] font-black uppercase tracking-widest">
+                  Expediente Institucional
+                </span>
+              </div>
+              <p className="text-[9px] text-blue-100 font-medium z-10">
+                Consultar e Imprimir PDF
+              </p>
+            </button>
           </div>
         </div>
 
@@ -929,6 +1021,28 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 </div>
               </button>
 
+              {/* Imprimir Expediente Integrado */}
+              {canPrintSensitive && (
+                <button
+                  onClick={() => setShowExpediente(true)}
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                >
+                  <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-indigo-100 group-hover:border-indigo-200 group-hover:text-indigo-600 flex items-center justify-center transition-colors">
+                    <span className="material-symbols-outlined text-[18px]">
+                      folder_shared
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider leading-tight">
+                      Expediente Institucional
+                    </p>
+                    <p className="text-[9px] opacity-60 font-medium">
+                      Ver e Imprimir completo
+                    </p>
+                  </div>
+                </button>
+              )}
+
               {/* Generar Reporte */}
               {canPrintSensitive && (
                 <button
@@ -1149,11 +1263,55 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
       )}
 
       {showAIGenerator && (
-        <AIDocumentGenerator
-          studentId={student.id}
-          studentName={student.name}
-          onClose={() => setShowAIGenerator(false)}
-        />
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+              <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 shadow-2xl">
+                <span className="material-symbols-outlined text-indigo-500 animate-spin text-4xl">
+                  progress_activity
+                </span>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
+                  Cargando IA-SASE...
+                </p>
+              </div>
+            </div>
+          }
+        >
+          <GeneradorDocumentos
+            studentId={student.id}
+            studentName={student.name}
+            studentGroup={student.group}
+            onClose={() => setShowAIGenerator(false)}
+          />
+        </Suspense>
+      )}
+
+      {showExpediente && (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
+              <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 shadow-2xl">
+                <span className="material-symbols-outlined text-blue-500 animate-spin text-4xl">
+                  progress_activity
+                </span>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
+                  Cargando Expediente...
+                </p>
+              </div>
+            </div>
+          }
+        >
+          <ExpedienteInstitucional
+            alumno={{
+              id: student.id,
+              nombre: student.name,
+              grado: (student as any).grado || "1",
+              grupo: student.group || "A",
+              turno: (student as any).turno || "MATUTINO",
+            }}
+            onClose={() => setShowExpediente(false)}
+          />
+        </Suspense>
       )}
     </div>
   );

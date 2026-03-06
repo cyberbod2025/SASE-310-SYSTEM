@@ -22,6 +22,7 @@ interface GroupStats {
 export const DashboardSecretaria = () => {
   const {
     students,
+    groups,
     logAccess,
     logAudit,
     addIncident,
@@ -33,7 +34,7 @@ export const DashboardSecretaria = () => {
     resolveSystemNotice,
     printDocument,
   } = useApp();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAdvancedPanel, setShowAdvancedPanel] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -83,10 +84,12 @@ export const DashboardSecretaria = () => {
   };
 
   const activeUserName =
+    profile?.nombre ||
     user?.user_metadata?.full_name ||
     user?.email?.split("@")[0] ||
     "Secretaria/o";
-  const activeUserRole = "Control Escolar";
+  const activeUserRole =
+    profile?.cargo_institucional || profile?.rol || "Control Escolar";
 
   if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
   if (currentModule === AppModule.ARCHIVO) return <Archivo />;
@@ -125,10 +128,10 @@ export const DashboardSecretaria = () => {
   const runDistributionAI = (newStudents: Student[]) => {
     // 1. Get Current Stats
     const currentStats = calculateGroupStats(students);
-    const mockGroups = ["1º A", "1º B", "1º C", "2º A", "2º B", "3º A", "3º B"]; // Available groups context
+    const existingGroups = groups.map((g) => g.nombre || g.name);
 
     // Initialize stats for all groups if not present
-    mockGroups.forEach((g) => {
+    existingGroups.forEach((g) => {
       if (!currentStats.find((s) => s.groupId === g)) {
         currentStats.push({
           groupId: g,
@@ -150,7 +153,7 @@ export const DashboardSecretaria = () => {
       // If AI balance is OFF, respect current group or assign randomly/sequentially if empty
       if (!useAIDistribution) {
         if (!student.group) {
-          student.group = mockGroups[0]; // Default
+          student.group = existingGroups[0] || "1º A"; // Default
         }
       } else {
         // Find best group for this student (AI balanced)
@@ -356,7 +359,7 @@ export const DashboardSecretaria = () => {
                   className="size-1.5 bg-cyan-500 rounded-full shadow-[0_0_8px_rgba(6,182,212,0.8)]"
                 />
                 <span className="text-[8px] font-black text-cyan-500/60 uppercase tracking-[0.3em]">
-                  CORE_SYNC_ACTIVE
+                  {activeUserRole} • CORE_SYNC_ACTIVE
                 </span>
               </div>
             </div>
@@ -609,82 +612,91 @@ export const DashboardSecretaria = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {calculateGroupStats(students).map((g, idx) => (
-                <motion.div
-                  key={g.groupId}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="p-4 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-cyan-500/30 hover:bg-white/[0.03] transition-all group/stat relative overflow-hidden cursor-default"
-                >
-                  {/* Scanning Line */}
+              {(() => {
+                const stats = calculateGroupStats(students);
+                const allGroupNames = groups.map((g) => g.nombre || g.name);
+                
+                // Asegurar que todos los grupos oficiales aparezcan
+                allGroupNames.forEach(name => {
+                  if (!stats.find(s => s.groupId === name)) {
+                    stats.push({
+                      groupId: name,
+                      count: 0,
+                      femaleCount: 0,
+                      maleCount: 0,
+                      totalGpa: 0,
+                      avgGpa: 0
+                    });
+                  }
+                });
+
+                const sortedStats = [...stats].sort((a, b) => a.groupId.localeCompare(b.groupId, undefined, { numeric: true }));
+
+                return sortedStats.map((g, idx) => (
                   <motion.div
-                    animate={{ top: ["-10%", "110%"] }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: idx * 0.4,
-                    }}
-                    className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/15 to-transparent pointer-events-none z-0"
-                  />
-                  <div className="flex justify-between items-center mb-4 relative z-10">
-                    <span className="font-black text-white italic text-lg tracking-tighter tabular-nums group-hover/stat:text-cyan-400 transition-colors">
-                      {g.groupId}
-                    </span>
-                    <div className="text-right">
-                      <p className="text-[22px] font-black text-cyan-400 tabular-nums leading-none tracking-tighter drop-shadow-lg scale-95 group-hover/stat:scale-100 transition-transform duration-500">
-                        {g.count}
-                      </p>
-                      <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
-                        Alumnos
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 relative z-10">
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex gap-0.5">
-                      <svg
-                        width={`${(g.femaleCount / g.count) * 100}%`}
-                        className="h-full transition-all duration-1000"
-                      >
-                        <rect
-                          width="100%"
-                          height="100%"
-                          className="fill-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]"
-                        />
-                      </svg>
-                      <svg
-                        width={`${(g.maleCount / g.count) * 100}%`}
-                        className="h-full transition-all duration-1000"
-                      >
-                        <rect
-                          width="100%"
-                          height="100%"
-                          className="fill-slate-500"
-                        />
-                      </svg>
-                    </div>
-
-                    <div className="flex justify-between text-[9px] font-black uppercase tracking-widest">
-                      <div className="flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
-                        <span className="text-cyan-500">
-                          Fem: {g.femaleCount}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
-                        <span className="text-slate-400">
-                          Mas: {g.maleCount}
-                        </span>
+                    key={g.groupId}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="p-4 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-cyan-500/30 hover:bg-white/[0.03] transition-all group/stat relative overflow-hidden cursor-default"
+                  >
+                    {/* Scanning Line */}
+                    <motion.div
+                      animate={{ top: ["-10%", "110%"] }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "linear",
+                        delay: idx * 0.4,
+                      }}
+                      className="absolute left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/15 to-transparent pointer-events-none z-0"
+                    />
+                    <div className="flex justify-between items-center mb-4 relative z-10">
+                      <span className="font-black text-white italic text-lg tracking-tighter tabular-nums group-hover/stat:text-cyan-400 transition-colors">
+                        {g.groupId}
+                      </span>
+                      <div className="text-right">
+                        <p className="text-[22px] font-black text-cyan-400 tabular-nums leading-none tracking-tighter drop-shadow-lg scale-95 group-hover/stat:scale-100 transition-transform duration-500">
+                          {g.count}
+                        </p>
+                        <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+                          Alumnos
+                        </p>
                       </div>
                     </div>
-                  </div>
-                  {/* Decorative corner accent */}
-                  <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover/stat:opacity-100 transition-opacity"></div>
-                </motion.div>
-              ))}
+
+                    <div className="space-y-3 relative z-10">
+                      <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex gap-0.5">
+                        <div
+                          style={{ width: g.count > 0 ? `${(g.femaleCount / g.count) * 100}%` : "0%" }}
+                          className="h-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all duration-1000"
+                        />
+                        <div
+                          style={{ width: g.count > 0 ? `${(g.maleCount / g.count) * 100}%` : "0%" }}
+                          className="h-full bg-slate-500 transition-all duration-1000"
+                        />
+                      </div>
+
+                      <div className="flex justify-between text-[9px] font-black uppercase tracking-widest">
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-cyan-500"></span>
+                          <span className="text-cyan-500">
+                            Fem: {g.femaleCount}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
+                          <span className="text-slate-400">
+                            Mas: {g.maleCount}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Decorative corner accent */}
+                    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover/stat:opacity-100 transition-opacity"></div>
+                  </motion.div>
+                ));
+              })() as any}
             </div>
           </div>
 

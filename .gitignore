@@ -56,3 +56,9 @@ $RECYCLE.BIN/
 *~
 temp/
 tmp/
+
+# Cleanup Staging (Hygiene Audits)
+.cleanup_staging/
+
+# Diagnostic Scripts Output
+scripts/*.txt

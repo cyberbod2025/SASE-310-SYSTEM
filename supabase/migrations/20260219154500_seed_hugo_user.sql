@@ -26,9 +26,9 @@ VALUES (
     'SARH840603HDFNSG02',
     'hugo.sanchezr@aefcm.gob.mx',
     'Matemáticas',
-    ARRAY['2A', '2B', '2C', '2D', '1D'], -- 2A-D and 1D
+    ARRAY['2º A', '2º B', '2º C', '2º D', '1º D'],
     true,
-    '2B',
+    '2º B',
     'aprobado'
 )
 ON CONFLICT (email) DO UPDATE SET
@@ -36,9 +36,9 @@ ON CONFLICT (email) DO UPDATE SET
     nombre_completo = 'HUGO SANCHEZ RESENDIZ',
     curp = 'SARH840603HDFNSG02',
     materias = 'Matemáticas',
-    grupos = ARRAY['2A', '2B', '2C', '2D', '1D'],
+    grupos = ARRAY['2º A', '2º B', '2º C', '2º D', '1º D'],
     es_tutor = true,
-    grupo_tutor = '2B',
+    grupo_tutor = '2º B',
     estatus = 'aprobado';
 
 -- Also insert into 'solicitudes_alta_personal' as 'APROBADA' to prevent duplicate requests
@@ -61,9 +61,9 @@ INSERT INTO public.solicitudes_alta_personal (
     'SARH840603HDFNSG02',
     'hugo.sanchezr@aefcm.gob.mx',
     ARRAY['DOCENTE'],
-    ARRAY['2A', '2B', '2C', '2D', '1D'],
+    ARRAY['2º A', '2º B', '2º C', '2º D', '1º D'],
     true,
-    '2B',
+    '2º B',
     'APROBADA',
     'Pre-aprobado por sistema (Admin Founder)'
 );

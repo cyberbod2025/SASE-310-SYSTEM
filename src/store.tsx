@@ -24,9 +24,11 @@ interface AppContextType {
   isTutorMode: any;
   toggleTutorMode: any;
 
-  // Students & Incidents
+  // Students, Groups & Incidents
   students: any;
   fetchStudents: any;
+  groups: any[];
+  fetchGroups: any;
   addIncident: any;
   addJustificante: any;
   updateGrades: any;
@@ -167,6 +169,12 @@ export const AppProvider: React.FC<{
         ...studentsSlice,
         ...ui,
         ...notificationsSlice,
+        // Students & Incidents
+        students: studentsSlice.students,
+        fetchStudents: studentsSlice.fetchStudents,
+        groups: studentsSlice.groups,
+        fetchGroups: studentsSlice.fetchGroups,
+        addIncident: studentsSlice.addIncident,
         ...statsSlice,
         ...audit,
         updateStudentAudit,

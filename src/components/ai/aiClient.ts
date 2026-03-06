@@ -1,15 +1,18 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AIRequest, AIResponse } from "./types";
 import { SECURITY_GUARDS } from "./guards";
 
-// Simulación de latencia
-const simulateDelay = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 export class AIClient {
   private static instance: AIClient;
-  public enabled: boolean = false; // Feature Flag
+  public enabled: boolean = true; // Enabled by default now that we have a key
+  private genAI: GoogleGenerativeAI | null = null;
 
-  private constructor() {}
+  private constructor() {
+    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+    if (apiKey) {
+      this.genAI = new GoogleGenerativeAI(apiKey);
+    }
+  }
 
   public static getInstance(): AIClient {
     if (!AIClient.instance) {
@@ -27,19 +30,11 @@ export class AIClient {
   }
 
   public async processRequest(request: AIRequest): Promise<AIResponse> {
-    if (!this.enabled) {
-      // Retorna una respuesta "Draft Mode" simulada si está deshabilitado
-      // Para efectos del piloto, siempre devolvemos algo, pero marcado como simulado.
-      await simulateDelay(1500);
+    if (!this.genAI || !this.enabled) {
       return {
         taskId: request.taskId,
-        status: "success",
-        content: `[MODO_BORRADOR] Respuesta simulada para rol ${
-          request.role
-        }.\nPrompt: "${request.prompt.substring(
-          0,
-          50
-        )}..."\n\n(La IA Generativa está en pausa administrativa. Active el Feature Flag para conectar.)`,
+        status: "error",
+        content: "El núcleo de IA no está configurado o está deshabilitado.",
         metadata: { tokens: 0, latency: 0, riskScore: 0 },
       };
     }
@@ -55,14 +50,41 @@ export class AIClient {
       }
     }
 
-    // 2. Simulación de llamada a LLM Real (Aquí iría fetch a OpenAI/Anthropic)
-    await simulateDelay(2000);
+    try {
+      const startTime = Date.now();
+      const model = this.genAI.getGenerativeModel({
+        model:
+          request.model === "gpt-4o"
+            ? "gemini-pro-latest"
+            : "gemini-flash-latest",
+      });
 
-    return {
-      taskId: request.taskId,
-      status: "success",
-      content: `[IA_GENERATIVA] Análisis completado para ${request.role}.\n\nBasado en el contexto proporcionado, se sugiere:\n1. Revisar los indicadores de riesgo.\n2. Agendar sesión de seguimiento.\n3. Documentar en bitácora oficial.`,
-      metadata: { tokens: 150, latency: 2000, riskScore: 0.1 },
-    };
+      // Construcción del contexto para el prompt
+      const contextPrompt = `Contexto del Sistema Escolar (SASE):\nRol: ${request.role}\n${JSON.stringify(request.context)}\n\nUsuario solicita: ${request.prompt}`;
+
+      const result = await model.generateContent(contextPrompt);
+      const response = await result.response;
+      const text = response.text();
+      const latency = Date.now() - startTime;
+
+      return {
+        taskId: request.taskId,
+        status: "success",
+        content: text,
+        metadata: {
+          tokens: response.usageMetadata?.totalTokenCount || 0,
+          latency,
+          riskScore: 0.05,
+        },
+      };
+    } catch (error: any) {
+      console.error("Error en IA-SASE:", error);
+      return {
+        taskId: request.taskId,
+        status: "error",
+        content: `Error operativo en el Núcleo IA: ${error.message || "Desconocido"}`,
+        metadata: { tokens: 0, latency: 0, riskScore: 1 },
+      };
+    }
   }
 }

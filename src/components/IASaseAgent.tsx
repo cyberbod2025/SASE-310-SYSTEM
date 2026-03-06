@@ -38,6 +38,8 @@ export const IASaseAgent: React.FC = () => {
         return "ACTIVO";
       case "thinking":
         return "PROCESANDO";
+      case "gold":
+        return "INVENCIBLE";
       default:
         return "ESTABLE";
     }

@@ -3,6 +3,7 @@ import { useApp } from "../store";
 import { Student, CaseState } from "../types";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
+import { GRUPOS, CICLO_ESCOLAR } from "../config/sase.config";
 
 export const Inscripciones: React.FC = () => {
   const { importStudents } = useApp();
@@ -250,7 +251,7 @@ export const Inscripciones: React.FC = () => {
             Control de Inscripciones
           </h2>
           <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
-            Control Escolar • Ciclo 2024-2025
+            Control Escolar • {CICLO_ESCOLAR.label}
           </p>
         </div>
       </header>
@@ -353,7 +354,7 @@ export const Inscripciones: React.FC = () => {
                 }
               >
                 <option value="Provisional">Provisional</option>
-                {["1º A", "1º B", "2º A", "2º B", "3º A", "3º B"].map((g) => (
+                {GRUPOS.todos().map((g) => (
                   <option key={g}>{g}</option>
                 ))}
               </select>

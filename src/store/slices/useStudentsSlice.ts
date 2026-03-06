@@ -36,6 +36,30 @@ export const useStudentsSlice = (
   fetchDailyStats: () => Promise<void>,
 ) => {
   const [students, setStudents] = useState<Student[]>([]);
+  const [groups, setGroups] = useState<any[]>([]);
+
+  const fetchGroups = useCallback(async () => {
+    if (!user) {
+      setGroups([]);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("grupos")
+        .select("*")
+        .order("nombre");
+
+      if (error) {
+        console.error("Error fetching groups:", error);
+        return;
+      }
+
+      if (data) setGroups(data);
+    } catch (err) {
+      console.error("Unexpected error fetching groups:", err);
+    }
+  }, [user]);
 
   const fetchStudents = useCallback(async () => {
     if (!user) {
@@ -329,7 +353,7 @@ export const useStudentsSlice = (
     try {
       await supabase
         .from("alumnos")
-        .update({ is_distancia: isDistancia })
+        .update({ estado_caso: isDistancia ? "distancia" : "activo" })
         .eq("id", studentId);
       logAudit(
         "ACTUALIZACION",
@@ -347,8 +371,9 @@ export const useStudentsSlice = (
   };
 
   useEffect(() => {
+    fetchGroups();
     fetchStudents();
-  }, [fetchStudents]);
+  }, [fetchStudents, fetchGroups]);
 
   useEffect(() => {
     if (!user) return;
@@ -373,6 +398,8 @@ export const useStudentsSlice = (
   return {
     students,
     fetchStudents,
+    groups,
+    fetchGroups,
     addIncident,
     addJustificante,
     updateGrades,

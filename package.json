@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@_davideast/stitch-mcp": "^0.3.2",
+    "@google/generative-ai": "^0.24.1",
     "@notionhq/notion-mcp-server": "^2.1.0",
     "@supabase/supabase-js": "^2.89.0",
     "date-fns": "^4.1.0",
@@ -30,10 +31,12 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.23",
+    "dotenv": "^17.3.1",
     "jsdom": "^27.4.0",
     "postcss": "^8.5.6",
     "supabase": "^2.76.15",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "vitest": "^4.0.16"

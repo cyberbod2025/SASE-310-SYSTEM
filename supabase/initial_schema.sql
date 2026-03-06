@@ -140,7 +140,7 @@ declare
   _role app_role;
 begin
   select role into _role from public.profiles where id = auth.uid();
-  return coalesce(_role, 'docente'); -- Fallback defensivo
+  return _role; -- Fail Closed (Returns NULL if profile is missing)
 end;
 $$ language plpgsql security definer;
 

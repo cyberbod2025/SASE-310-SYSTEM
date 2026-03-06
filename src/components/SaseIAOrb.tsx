@@ -98,9 +98,16 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
     return () => clearInterval(interval);
   }, []);
 
+  const isInvincible = state === "gold";
+
   return (
     <div
       className={`relative flex items-center justify-center ${className || "w-32 h-32"}`}
+      style={
+        isInvincible
+          ? { animation: "saseRainbowGlow 0.25s linear infinite" }
+          : undefined
+      }
     >
       {/* SHINE / STAR EFFECT (Only for Gold) */}
       <AnimatePresence>
@@ -219,6 +226,13 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes saseRainbowGlow {
+          0% { filter: hue-rotate(0deg) drop-shadow(0 0 30px rgba(255, 0, 0, 0.8)) saturate(200%) brightness(120%); }
+          25% { filter: hue-rotate(90deg) drop-shadow(0 0 50px rgba(0, 255, 0, 0.8)) saturate(200%) brightness(150%); }
+          50% { filter: hue-rotate(180deg) drop-shadow(0 0 30px rgba(0, 0, 255, 0.8)) saturate(200%) brightness(120%); }
+          75% { filter: hue-rotate(270deg) drop-shadow(0 0 50px rgba(255, 0, 255, 0.8)) saturate(200%) brightness(150%); }
+          100% { filter: hue-rotate(360deg) drop-shadow(0 0 30px rgba(255, 0, 0, 0.8)) saturate(200%) brightness(120%); }
+        }
       `}</style>
     </div>
   );

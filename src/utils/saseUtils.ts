@@ -209,7 +209,7 @@ export const evaluateEscalation = (
       description.includes("sangre");
     return {
       notifyRoles: [
-        UserRole.ENFERMERIA,
+        UserRole.MEDICO_ESCOLAR,
         UserRole.ORIENTACION,
         UserRole.DIRECTIVO,
       ],

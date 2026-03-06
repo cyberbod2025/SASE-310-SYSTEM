@@ -72,7 +72,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
   {
     full_name: "XOLALPA JIMENEZ NORMA LORENA",
     department: "MEDICO ESCOLAR",
-    role: UserRole.ENFERMERIA,
+    role: UserRole.MEDICO_ESCOLAR,
     is_active: true,
     username: "norma.xolalpa",
     provisional_password: "SASE.SALUD.2026",
@@ -88,7 +88,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
   {
     full_name: "GUERRERO PEREZ SUSANA",
     department: "PROMOTORA L.E",
-    role: UserRole.PROMOTORA || UserRole.DOCENTE,
+    role: UserRole.PROMOTORA_LECTURA,
     is_active: true,
     username: "susana.guerrero",
     provisional_password: "SASE.PROMOTORA.2026",

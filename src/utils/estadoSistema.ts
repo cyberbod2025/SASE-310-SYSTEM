@@ -1,6 +1,12 @@
 import { Student, CaseState } from "../types";
 
-export type SystemStatus = "green" | "yellow" | "red" | "blue" | "thinking";
+export type SystemStatus =
+  | "green"
+  | "yellow"
+  | "red"
+  | "blue"
+  | "thinking"
+  | "gold";
 
 /**
  * Calcula el estado del semáforo institucional basado en la salud de la escuela
@@ -38,6 +44,10 @@ export const calcularEstadoSistema = (
 
   if (hasIncidentsToday) return "yellow";
 
-  // 5. Estable (Verde)
+  // 5. Estado Óptimo / IA Activa (Gris/Dorado)
+  const hasAIKey = !!import.meta.env.VITE_GOOGLE_API_KEY;
+  if (hasAIKey) return "gold";
+
+  // 6. Estable (Verde)
   return "green";
 };

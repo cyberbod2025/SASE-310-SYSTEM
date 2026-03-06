@@ -51,7 +51,11 @@ export const useSaseSystemState = (
         // Evaluar gravedad según parámetros
         if (count >= 10) setSystemState("red");
         else if (count >= 3) setSystemState("yellow");
-        else setSystemState("green");
+        else {
+          // Si todo está tranquilo, verificamos si la IA está activa para mostrar estado GOLD
+          const hasAIKey = !!import.meta.env.VITE_GOOGLE_API_KEY;
+          setSystemState(hasAIKey ? "gold" : "green");
+        }
       }
     };
 

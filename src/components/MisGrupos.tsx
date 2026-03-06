@@ -13,7 +13,7 @@ interface Grupo {
 }
 
 export const MisGrupos: React.FC = () => {
-  const { currentUserRole, students } = useApp();
+  const { currentUserRole, students, groups } = useApp();
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [grupoSeleccionado, setGrupoSeleccionado] = useState<string | null>(
     null,
@@ -27,52 +27,67 @@ export const MisGrupos: React.FC = () => {
   const cargarGrupos = () => {
     setLoading(true);
 
-    // Agrupar estudiantes por grupo
+    // Agrupar estudiantes por grupo (solo los que tienen grupo asignado)
     const gruposMap = new Map<string, Student[]>();
-
     students.forEach((student) => {
-      const grupo = student.group || "Sin Grupo";
-      if (!gruposMap.has(grupo)) {
-        gruposMap.set(grupo, []);
+      const grupo = student.group;
+      if (grupo) {
+        if (!gruposMap.has(grupo)) {
+          gruposMap.set(grupo, []);
+        }
+        gruposMap.get(grupo)!.push(student);
       }
-      gruposMap.get(grupo)!.push(student);
     });
 
-    // Convertir a array de Grupos con estadísticas
-    const gruposArray: Grupo[] = Array.from(gruposMap.entries()).map(
-      ([nombre, alumnos]) => {
-        const conIncidencias = alumnos.filter(
-          (a) => a.incidents && a.incidents.length > 0,
-        ).length;
+    // Usar los grupos oficiales como base para asegurar que aparezcan todos
+    const gruposArray: Grupo[] = groups.map((g) => {
+      const nombre = g.nombre || g.name || "Sin Grupo";
+      const alumnos = gruposMap.get(nombre) || [];
 
-        // Calcular promedio general del grupo
-        const alumnosConCalif = alumnos.filter(
-          (a) => a.calificaciones && a.calificaciones.length > 0,
-        );
-        const promedioGeneral =
-          alumnosConCalif.length > 0
-            ? alumnosConCalif.reduce((sum, a) => {
-                const promAlumno =
-                  a.calificaciones!.reduce(
-                    (s, c) => s + (c.promedioFinal || 0),
-                    0,
-                  ) / a.calificaciones!.length;
-                return sum + promAlumno;
-              }, 0) / alumnosConCalif.length
-            : 0;
+      const conIncidencias = alumnos.filter(
+        (a) => a.incidents && a.incidents.length > 0,
+      ).length;
 
-        return {
-          id: nombre,
-          nombre,
-          alumnos,
-          totalAlumnos: alumnos.length,
-          conIncidencias,
-          promedioGeneral: Math.round(promedioGeneral * 10) / 10,
-        };
-      },
-    );
+      // Calcular promedio general del grupo
+      const alumnosConCalif = alumnos.filter(
+        (a) => a.calificaciones && a.calificaciones.length > 0,
+      );
+      const promedioGeneral =
+        alumnosConCalif.length > 0
+          ? alumnosConCalif.reduce((sum, a) => {
+              const promAlumno =
+                a.calificaciones!.reduce(
+                  (s, c) => s + (c.promedioFinal || 0),
+                  0,
+                ) / a.calificaciones!.length;
+              return sum + promAlumno;
+            }, 0) / alumnosConCalif.length
+          : 0;
 
-    setGrupos(gruposArray.sort((a, b) => a.nombre.localeCompare(b.nombre)));
+      return {
+        id: g.id || nombre,
+        nombre,
+        alumnos,
+        totalAlumnos: alumnos.length,
+        conIncidencias,
+        promedioGeneral: Math.round(promedioGeneral * 10) / 10,
+      };
+    });
+
+    // Si hay alumnos "Sin Grupo", agregarlos al final si no están en los oficiales
+    if (gruposMap.has("Sin Grupo") && !groups.find(g => (g.nombre || g.name) === "Sin Grupo")) {
+      const alumnos = gruposMap.get("Sin Grupo")!;
+      gruposArray.push({
+        id: "sin-grupo",
+        nombre: "Sin Grupo",
+        alumnos,
+        totalAlumnos: alumnos.length,
+        conIncidencias: alumnos.filter(a => a.incidents && a.incidents.length > 0).length,
+        promedioGeneral: 0 // Simplificado
+      });
+    }
+
+    setGrupos(gruposArray.sort((a, b) => a.nombre.localeCompare(b.nombre, undefined, { numeric: true })));
     setLoading(false);
   };
 
