@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 
-export type OrbState = "green" | "orange" | "red";
+export type OrbState =
+  | "green"
+  | "yellow"
+  | "red"
+  | "blue"
+  | "gold"
+  | "thinking"
+  | "alert";
 
 /**
  * Lógica SQL Usada:
@@ -43,7 +50,7 @@ export const useSaseSystemState = (
         setIncidentCount(count);
         // Evaluar gravedad según parámetros
         if (count >= 10) setSystemState("red");
-        else if (count >= 3) setSystemState("orange");
+        else if (count >= 3) setSystemState("yellow");
         else setSystemState("green");
       }
     };

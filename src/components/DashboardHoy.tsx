@@ -4,7 +4,8 @@ import { useApp } from "../store";
 import { UserRole, AppModule, IncidentType, CaseState } from "../types";
 
 export const DashboardHoy: React.FC = () => {
-  const { currentUserRole, setCurrentModule, students } = useApp();
+  const { currentUserRole, setCurrentModule, students, openQuickRegister } =
+    useApp();
 
   // Métrica base: Alumnos con incidencias activas
   const activeCases = useMemo(
@@ -263,7 +264,37 @@ export const DashboardHoy: React.FC = () => {
             </div>
           </section>
 
-          {/* 3. ACCIONES RÁPIDAS */}
+          {/* SASE PROMISE: Hook for the user */}
+          <section className="mt-8 rounded-3xl bg-gradient-to-br from-indigo-900/40 via-blue-900/20 to-transparent border border-blue-500/20 p-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="material-symbols-outlined text-6xl text-blue-400 rotate-12">
+                verified_user
+              </span>
+            </div>
+            <div className="relative z-10 flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">
+                  Protocolo SASE Activo
+                </span>
+              </div>
+              <h3 className="text-xl font-black text-white italic lowercase leading-tight tracking-tighter">
+                reporta en <span className="text-blue-400">3 clics</span> y{" "}
+                <br />
+                siéntete{" "}
+                <span className="text-indigo-400 underline decoration-indigo-500/50">
+                  respaldado
+                </span>
+                .
+              </h3>
+              <p className="text-[10px] text-slate-400 max-w-[240px] mt-2 font-medium leading-relaxed">
+                La IA procesa, notifica a directivos y genera el acta oficial al
+                instante. Tu prioridad es el alumno, la nuestra es el proceso.
+              </p>
+            </div>
+          </section>
+
+          {/* 3. ACCIONES INMEDIATAS */}
           <section className="space-y-6">
             <h2 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.5em] flex items-center gap-3">
               <span className="material-symbols-outlined text-sm">
@@ -274,19 +305,26 @@ export const DashboardHoy: React.FC = () => {
 
             <div className="space-y-4">
               <button
-                onClick={() => setCurrentModule(AppModule.PROTOCOLOS)}
+                onClick={() => openQuickRegister()}
                 className="w-full card-sase p-6 bg-blue-600/10 border-blue-500/30 hover:bg-blue-600 hover:border-blue-500 transition-all group relative overflow-hidden text-left"
               >
-                <div className="relative z-10 flex items-center gap-4">
-                  <span className="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform">
-                    report_medical
+                <div className="absolute top-0 right-0 p-3">
+                  <span className="text-[7px] font-black bg-blue-500 text-white px-2 py-0.5 rounded uppercase tracking-widest">
+                    3 Clics
                   </span>
+                </div>
+                <div className="relative z-10 flex items-center gap-4">
+                  <div className="size-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:bg-white group-hover:text-blue-600 transition-all shadow-inner">
+                    <span className="material-symbols-outlined text-3xl">
+                      bolt
+                    </span>
+                  </div>
                   <div>
                     <h3 className="text-sm font-black text-white uppercase italic tracking-tighter">
-                      Registrar Incidencia
+                      Reporte Inmediato
                     </h3>
                     <p className="text-[9px] text-blue-400 group-hover:text-white/60 font-black uppercase tracking-widest">
-                      Activar Protocolos SASE
+                      Activa protocolos en segundos
                     </p>
                   </div>
                 </div>

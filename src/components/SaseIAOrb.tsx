@@ -5,6 +5,7 @@ import { OrbState } from "../hooks/useSaseSystemState";
 interface SaseIAOrbProps {
   state: OrbState;
   className?: string;
+  isIntro?: boolean;
 }
 
 const colorMap = {
@@ -13,69 +14,137 @@ const colorMap = {
     glow: "rgba(0, 200, 83, 0.4)",
     gradient:
       "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(0, 200, 83, 1) 40%, rgba(0, 20, 10, 1) 100%)",
+    mouth: "M 5 2 Q 10 5 15 2", // Zen smile
+    eyeScale: 1,
   },
-  orange: {
-    base: "rgba(255, 152, 0, 1)",
-    glow: "rgba(255, 152, 0, 0.4)",
+  yellow: {
+    base: "rgba(255, 235, 59, 1)", // Bright yellow
+    glow: "rgba(255, 235, 59, 0.4)",
     gradient:
-      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(255, 152, 0, 1) 40%, rgba(30, 15, 0, 1) 100%)",
+      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(255, 235, 59, 1) 40%, rgba(30, 25, 0, 1) 100%)",
+    mouth: "M 5 3 L 15 3", // Flat / Warning
+    eyeScale: 1.1,
   },
   red: {
     base: "rgba(211, 47, 47, 1)",
     glow: "rgba(211, 47, 47, 0.4)",
     gradient:
       "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(211, 47, 47, 1) 40%, rgba(20, 0, 0, 1) 100%)",
+    mouth: "M 5 5 Q 10 2 15 5", // Worried inverted
+    eyeScale: 1.2,
   },
   blue: {
     base: "rgba(59, 130, 246, 1)",
     glow: "rgba(59, 130, 246, 0.4)",
     gradient:
       "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(59, 130, 246, 1) 40%, rgba(0, 10, 30, 1) 100%)",
+    mouth: "M 6 3 L 14 3", // Small flat
+    eyeScale: 1,
   },
   gold: {
     base: "rgba(255, 215, 0, 1)",
     glow: "rgba(255, 215, 0, 0.4)",
     gradient:
       "radial-gradient(circle at 35% 35%, #FFFBEB 0%, #F59E0B 45%, #78350F 100%)",
+    mouth: "M 4 2 Q 10 8 16 2", // Big happy
+    eyeScale: 1.1,
   },
   thinking: {
     base: "rgba(168, 85, 247, 1)",
     glow: "rgba(168, 85, 247, 0.4)",
     gradient:
       "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(168, 85, 247, 1) 40%, rgba(20, 0, 30, 1) 100%)",
+    mouth: "M 8 3 A 2 2 0 1 0 12 3 A 2 2 0 1 0 8 3", // Small O
+    eyeScale: 1,
   },
   alert: {
     base: "rgba(244, 63, 94, 1)",
     glow: "rgba(244, 63, 94, 0.4)",
     gradient:
       "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(244, 63, 94, 1) 40%, rgba(30, 0, 10, 1) 100%)",
+    mouth: "M 5 5 L 15 5",
+    eyeScale: 1.2,
   },
 };
 
-export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({ state, className }) => {
+export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
+  state,
+  className,
+  isIntro,
+}) => {
   const [isChanging, setIsChanging] = useState(false);
-  // Default to green if state not found
+  const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
+
   const activeColor =
     colorMap[state as keyof typeof colorMap] || colorMap.green;
 
   useEffect(() => {
     setIsChanging(true);
-    const timeout = setTimeout(() => {
-      setIsChanging(false);
-    }, 1000);
+    const timeout = setTimeout(() => setIsChanging(false), 1000);
     return () => clearTimeout(timeout);
   }, [state]);
+
+  // Eye movement simulation for intro or idle
+  useEffect(() => {
+    const moveEyes = () => {
+      if (Math.random() > 0.7) {
+        setEyePos({
+          x: (Math.random() - 0.5) * 8,
+          y: (Math.random() - 0.5) * 4,
+        });
+      }
+    };
+    const interval = setInterval(moveEyes, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div
       className={`relative flex items-center justify-center ${className || "w-32 h-32"}`}
     >
+      {/* SHINE / STAR EFFECT (Only for Gold) */}
+      <AnimatePresence>
+        {state === "gold" && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1.5 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 pointer-events-none"
+          >
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{
+                  scale: [0, 1.2, 0],
+                  rotate: [0, 360],
+                  opacity: [0, 1, 0],
+                  y: [-20, -60],
+                  x: [(i - 6) * 10, (i - 6) * 15],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 2,
+                  delay: i * 0.15,
+                }}
+                className="absolute w-3 h-3 bg-yellow-100 blur-[0.5px]"
+                style={{
+                  top: "50%",
+                  left: "48%",
+                  clipPath:
+                    "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
+                }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* GLOW LAYERS */}
       <motion.div
         animate={{
           boxShadow: [
             `0 0 20px 5px ${activeColor.glow.replace("0.4)", "0.15)")}`,
-            `0 0 40px 10px ${activeColor.glow.replace("0.4)", "0.3)")}`,
+            `0 0 50px 15px ${activeColor.glow.replace("0.4)", "0.4)")}`,
             `0 0 20px 5px ${activeColor.glow.replace("0.4)", "0.15)")}`,
           ],
           scale: [1, 1.05, 1],
@@ -87,42 +156,65 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({ state, className }) => {
 
       {/* CORE SPHERE */}
       <motion.div
-        animate={{
-          background: activeColor.gradient,
-        }}
+        animate={{ background: activeColor.gradient }}
         transition={{ duration: 0.8 }}
-        className="relative w-[85%] h-[85%] rounded-full flex items-center justify-center shadow-[inset_-5px_-5px_10px_rgba(0,0,0,0.6),inset_5px_5px_10px_rgba(255,255,255,0.2)] border border-white/10"
+        className="relative w-[85%] h-[85%] rounded-full flex flex-col items-center justify-center shadow-[inset_-5px_-5px_10px_rgba(0,0,0,0.6),inset_5px_5px_10px_rgba(255,255,255,0.2)] border border-white/10 overflow-hidden"
       >
         {/* RINGS */}
         <div className="absolute inset-[-4px] rounded-full border-[1px] border-white/5 border-t-white/20 animate-[spin_4s_linear_infinite]" />
-        <div className="absolute inset-[-8px] rounded-full border-[1.5px] border-white/5 border-r-white/10 animate-[spin_6s_linear_infinite_reverse]" />
 
-        {/* EYES */}
-        <div className="flex gap-4">
-          <motion.div
-            animate={{
-              scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
-            }}
-            transition={{
-              repeat: isChanging ? 0 : Infinity,
-              duration: 4,
-              times: [0, 0.9, 0.92, 0.94, 1],
-            }}
-            className="w-1 h-3 bg-white rounded-full shadow-[0_0_8px_#fff]"
-          />
-          <motion.div
-            animate={{
-              scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
-            }}
-            transition={{
-              repeat: isChanging ? 0 : Infinity,
-              duration: 4,
-              delay: 0.1,
-              times: [0, 0.88, 0.9, 0.92, 1],
-            }}
-            className="w-1 h-3 bg-white rounded-full shadow-[0_0_8px_#fff]"
-          />
-        </div>
+        {/* FACE CONTAINER */}
+        <motion.div
+          animate={{ x: eyePos.x, y: eyePos.y }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          className="flex flex-col items-center gap-3"
+        >
+          {/* EYES */}
+          <div className="flex gap-4">
+            <motion.div
+              animate={{
+                scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
+                scale: activeColor.eyeScale,
+              }}
+              transition={{
+                repeat: isChanging ? 0 : Infinity,
+                duration: 4,
+                times: [0, 0.9, 0.92, 0.94, 1],
+              }}
+              className="w-1.5 h-3 bg-white rounded-full shadow-[0_0_8px_#fff]"
+            />
+            <motion.div
+              animate={{
+                scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
+                scale: activeColor.eyeScale,
+              }}
+              transition={{
+                repeat: isChanging ? 0 : Infinity,
+                duration: 4,
+                delay: 0.1,
+                times: [0, 0.88, 0.9, 0.92, 1],
+              }}
+              className="w-1.5 h-3 bg-white rounded-full shadow-[0_0_8px_#fff]"
+            />
+          </div>
+
+          {/* MOUTH */}
+          <svg
+            width="20"
+            height="10"
+            viewBox="0 0 20 10"
+            className="opacity-80"
+          >
+            <motion.path
+              animate={{ d: activeColor.mouth }}
+              transition={{ duration: 0.5 }}
+              fill="none"
+              stroke="white"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </motion.div>
       </motion.div>
 
       <style>{`

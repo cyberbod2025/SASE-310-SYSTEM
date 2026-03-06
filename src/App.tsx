@@ -12,6 +12,7 @@ import { FirstLogonSetup } from "./components/FirstLogonSetup";
 import { OfficialDocument } from "./components/OfficialDocument";
 import { PrintPreviewModal } from "./components/PrintPreviewModal";
 import { DashboardHoy } from "./components/DashboardHoy";
+import { RadarEscolar } from "./components/RadarEscolar";
 import { IASaseAgent } from "./components/IASaseAgent";
 
 // Dashboards (Lazy Loaded)
@@ -247,11 +248,17 @@ const MainContent = () => {
 // Componente para manejar la lógica de contenido con o sin Layout
 const AppShell = () => {
   const { currentModule } = useApp();
+  const [showRadar, setShowRadar] = React.useState(true);
+
+  // El Radar solo se muestra en el módulo de bienvenida (post-login inmediato)
+  const isWelcome = currentModule === AppModule.WELCOME;
 
   return (
     <ErrorBoundary>
       <IASaseAgent />
-      {currentModule === AppModule.WELCOME ? (
+      {isWelcome && showRadar ? (
+        <RadarEscolar onComplete={() => setShowRadar(false)} />
+      ) : isWelcome ? (
         <DashboardHoy />
       ) : (
         <Layout>

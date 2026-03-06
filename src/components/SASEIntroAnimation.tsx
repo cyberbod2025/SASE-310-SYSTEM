@@ -1,230 +1,212 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SaseIAOrb } from "./SaseIAOrb";
+import { OrbState } from "../hooks/useSaseSystemState";
 
 interface SASEIntroAnimationProps {
   onComplete: () => void;
 }
 
+/**
+ * SASE Intro Animation - "The Awakening of IA-SASE"
+ * Dynamic color cycling, facial expressions, and high-impact institutional branding.
+ */
 export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   onComplete,
 }) => {
-  const [step, setStep] = useState(0); // 0: Orb, 1: Letters, 2: Gold, 3: Subtitle, 4: Out + Slogan
-  const [orbColor, setOrbColor] = useState("rgba(59, 130, 246, 1)"); // Blue SASE Official
+  const [step, setStep] = useState(0);
+  const [orbState, setOrbState] = useState<OrbState>("blue");
   const [isFastPass, setIsFastPass] = useState(false);
 
   useEffect(() => {
-    // Check if intro was already seen in this session
     const seen = sessionStorage.getItem("sase_intro_seen");
-    if (seen) {
-      setIsFastPass(true);
-    } else {
-      sessionStorage.setItem("sase_intro_seen", "true");
-    }
+    if (seen) setIsFastPass(true);
+    else sessionStorage.setItem("sase_intro_seen", "true");
   }, []);
 
-  // --- STEP 0: BREATHE (Very fast perception)
   useEffect(() => {
-    const timer = setTimeout(
-      () => {
-        setStep(1);
-      },
-      isFastPass ? 50 : 200,
-    ); // Super fast
-    return () => clearTimeout(timer);
-  }, [isFastPass]);
+    const sequence = async () => {
+      const wait = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+      const delay = (base: number) =>
+        isFastPass ? Math.max(50, base / 3) : base;
 
-  // --- STEP 1: LETTERS (Show S A S E)
-  useEffect(() => {
-    if (step === 1) {
-      const timer = setTimeout(
-        () => {
-          setOrbColor("rgba(255, 215, 0, 1)"); // Gold Institutional
-          setStep(2);
-        },
-        isFastPass ? 100 : 500,
-      );
-      return () => clearTimeout(timer);
+      // STEP 0: LATENT/BLUE - Appearance
+      setOrbState("blue");
+      await wait(delay(2500));
+
+      // STEP 1: ALERT/RED - "Protección"
+      setStep(1);
+      setOrbState("red");
+      await wait(delay(2000));
+
+      // STEP 2: WARNING/YELLOW - "Cuidado"
+      setStep(2);
+      setOrbState("yellow");
+      await wait(delay(2000));
+
+      // STEP 3: ZEN/GREEN - "Calma"
+      setStep(3);
+      setOrbState("green");
+      await wait(delay(2000));
+
+      // STEP 4: POWER/GOLD - "Bienvenida"
+      setStep(4);
+      setOrbState("gold");
+      await wait(delay(4500));
+
+      onComplete();
+    };
+
+    sequence();
+  }, [isFastPass, onComplete]);
+
+  // Map step to text color
+  const getTextColor = () => {
+    switch (orbState) {
+      case "red":
+        return "text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]";
+      case "yellow":
+        return "text-yellow-400 shadow-[0_0_20px_rgba(253,224,71,0.5)]";
+      case "green":
+        return "text-green-400 shadow-[0_0_20px_rgba(74,222,128,0.5)]";
+      case "gold":
+        return "text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)]";
+      default:
+        return "text-white";
     }
-  }, [step, isFastPass]);
-
-  // --- STEP 2: GOLD (Transform to institution colors)
-  useEffect(() => {
-    if (step === 2) {
-      const timer = setTimeout(() => setStep(3), isFastPass ? 100 : 400);
-      return () => clearTimeout(timer);
-    }
-  }, [step, isFastPass]);
-
-  // --- STEP 3: SUBTITLE (Show Platform name)
-  useEffect(() => {
-    if (step === 3) {
-      const timer = setTimeout(() => setStep(4), isFastPass ? 300 : 800);
-      return () => clearTimeout(timer);
-    }
-  }, [step, isFastPass]);
-
-  // --- STEP 4: SLOGAN (Show Final Slogan)
-  useEffect(() => {
-    if (step === 4) {
-      const timer = setTimeout(() => onComplete(), isFastPass ? 800 : 3500); // Extended for readability
-      return () => clearTimeout(timer);
-    }
-  }, [step, onComplete, isFastPass]);
-
-  const letterVariants: any = {
-    hidden: { opacity: 0, y: 30, scale: 0.8 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        delay: i * 0.12,
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    }),
   };
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#05070a] overflow-hidden cursor-pointer"
+      className="fixed inset-0 z-[9999] bg-[#020408] flex items-center justify-center overflow-hidden touch-none"
       onClick={() => onComplete()}
     >
+      <div className="absolute inset-0 pointer-events-none opacity-20 [background-image:radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.05)_1px,transparent_0)] [background-size:30px_30px]"></div>
+
       <AnimatePresence mode="wait">
-        {step < 4 ? (
+        <motion.div
+          key="intro-container"
+          className="relative max-w-sm px-10 flex flex-col items-center text-center gap-10 sm:gap-14"
+        >
+          {/* THE ORB CORE */}
           <motion.div
-            key="main-intro"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.9, filter: "blur(20px)" }}
-            transition={{ duration: 1.2 }}
-            className="flex flex-col items-center gap-12"
+            initial={{ scale: 0.2, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            className="relative"
           >
-            {/* The REAL SASE IA Orb */}
-            <div className="relative flex items-center justify-center">
-              {/* Institutional Glow Pulsing */}
-              <motion.div
-                animate={{
-                  boxShadow: [
-                    "0 0 50px 10px rgba(59, 130, 246, 0.2)",
-                    "0 0 100px 30px rgba(59, 130, 246, 0.5)",
-                    "0 0 50px 10px rgba(59, 130, 246, 0.2)",
-                  ],
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 3,
-                  ease: "easeInOut",
-                }}
-                className="absolute inset-8 rounded-full bg-blue-500/10 blur-3xl"
-              />
+            <SaseIAOrb
+              state={orbState}
+              className="w-44 h-44 sm:w-64 sm:h-64 transition-all duration-1000"
+            />
 
-              {/* Official AI SASE Sphere with Volumetric Movement */}
-              <motion.div
-                initial={{ scale: 0.5, opacity: 0, rotate: -15 }}
-                animate={{
-                  scale: 1,
-                  opacity: 1,
-                  rotate: 0,
-                  y: [0, -10, 0], // Subtle floating
-                }}
-                transition={{
-                  duration: 1.2,
-                  ease: "easeOut",
-                  y: { repeat: Infinity, duration: 4, ease: "easeInOut" },
-                }}
-                className="relative z-10"
-              >
-                <img
-                  src={
-                    step >= 2
-                      ? "/assets/branding/SASE_ICON_GOLD.png"
-                      : "/assets/branding/SASE_ICON.png"
-                  }
-                  alt="IA SASE"
-                  className="w-64 h-64 object-contain drop-shadow-[0_0_35px_rgba(59,130,246,0.6)]"
+            {/* POWER SHOCKWAVE (Only on Gold transition) */}
+            <AnimatePresence>
+              {orbState === "gold" && (
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 1 }}
+                  animate={{ scale: 3, opacity: 0 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="absolute inset-0 border-4 border-amber-400 rounded-full"
                 />
-              </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
-              {/* Energy Ring Filaments Effect */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-                className="absolute inset-[-30px] rounded-full border border-blue-500/10 border-t-blue-500/30 blur-sm"
-              />
-              <motion.div
-                animate={{ rotate: -360 }}
-                transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
-                className="absolute inset-[-50px] rounded-full border border-amber-500/5 border-b-amber-500/20 blur-[1px]"
-              />
-            </div>
-
-            {/* SASE Letters with Enhanced Glow */}
-            <div className="flex gap-6 mt-4">
-              {["S", "A", "S", "E"].map((letter, i) => (
+          {/* SASE IDENTITY REVEAL */}
+          <div className="space-y-6">
+            <div className="flex justify-center gap-3 sm:gap-5">
+              {["S", "A", "S", "E"].map((char, i) => (
                 <motion.span
                   key={i}
-                  custom={i}
-                  variants={letterVariants}
-                  initial="hidden"
-                  animate={step >= 1 ? "visible" : "hidden"}
-                  className={`text-9xl font-black italic tracking-tighter transition-colors duration-700 ${
-                    step >= 2
-                      ? "text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.6)]"
-                      : "text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                  }`}
+                  initial={{ opacity: 0, scale: 0.5, y: 30 }}
+                  animate={step >= 1 ? { opacity: 1, scale: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.1, duration: 0.8, type: "spring" }}
+                  className={`text-6xl sm:text-9xl font-black italic transition-all duration-1000 ${getTextColor()}`}
                 >
-                  {letter}
+                  {char}
                 </motion.span>
               ))}
             </div>
 
-            {/* Subtitle */}
-            <div className="h-8 overflow-hidden">
-              <AnimatePresence>
-                {step >= 3 && (
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="text-slate-400 font-bold uppercase tracking-[0.4em] text-xs text-center"
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={step >= 1 ? { opacity: 1 } : {}}
+              className="space-y-3 min-h-[60px]"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={orbState}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="flex flex-col items-center"
+                >
+                  <h3
+                    className={`text-[11px] font-black tracking-[0.4em] uppercase transition-colors duration-1000 ${
+                      orbState === "red"
+                        ? "text-red-400"
+                        : orbState === "yellow"
+                          ? "text-yellow-400"
+                          : orbState === "green"
+                            ? "text-green-400"
+                            : "text-blue-500"
+                    }`}
                   >
-                    Sistema de Acompañamiento y Seguimiento Escolar
-                  </motion.p>
-                )}
+                    {orbState === "red" && "Analizando Riesgos..."}
+                    {orbState === "yellow" && "Atención Prioritaria"}
+                    {orbState === "green" && "Entorno Protegido"}
+                    {orbState === "gold" && "Bienvenido al SASE Core"}
+                    {orbState === "blue" && "Iniciando Protocolos"}
+                  </h3>
+
+                  <div
+                    className={`h-[2px] w-24 mx-auto my-3 transition-colors duration-1000 ${
+                      orbState === "red"
+                        ? "bg-red-500/30"
+                        : orbState === "yellow"
+                          ? "bg-yellow-500/30"
+                          : orbState === "green"
+                            ? "bg-green-500/30"
+                            : "bg-blue-500/30"
+                    }`}
+                  />
+
+                  <p className="text-[14px] font-bold text-slate-300 tracking-[0.1em] uppercase max-w-[300px] leading-relaxed">
+                    {orbState === "red" && "Identificando incidencias críticas"}
+                    {orbState === "yellow" &&
+                      "Verificando alertas de seguridad"}
+                    {orbState === "green" && "Sincronización en tiempo real"}
+                    {orbState === "gold" &&
+                      "Protección, Protocolos y Convivencia"}
+                    {orbState === "blue" && "Cargando base de datos escolar"}
+                  </p>
+                </motion.div>
               </AnimatePresence>
+            </motion.div>
+          </div>
+
+          {/* FINAL HOOK */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={step >= 4 ? { opacity: 1, y: 0 } : {}}
+            className="w-full flex flex-col items-center"
+          >
+            <div
+              className={`px-8 py-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl transition-all duration-1000 ${
+                orbState === "gold"
+                  ? "border-amber-400/30 bg-amber-400/5 shadow-amber-400/10"
+                  : ""
+              }`}
+            >
+              <span className="text-[12px] font-black text-amber-400 tracking-[0.2em] uppercase">
+                ACOMPAÑAMIENTO EN 3 CLICS
+              </span>
             </div>
           </motion.div>
-        ) : (
-          <motion.div
-            key="slogan"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            className="flex flex-col items-center"
-          >
-            <motion.h2
-              animate={{
-                opacity: [0.7, 1, 0.7],
-                textShadow: [
-                  "0 0 10px rgba(255,255,255,0.2)",
-                  "0 0 30px rgba(59,130,246,0.6)",
-                  "0 0 10px rgba(255,255,255,0.2)",
-                ],
-              }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="text-6xl font-black italic text-white tracking-[0.2em] text-center px-4"
-            >
-              CONECTAMOS CONTIGO
-            </motion.h2>
-          </motion.div>
-        )}
+        </motion.div>
       </AnimatePresence>
-
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
     </div>
   );
 };

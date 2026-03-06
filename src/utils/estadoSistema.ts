@@ -1,6 +1,6 @@
 import { Student, CaseState } from "../types";
 
-export type SystemStatus = "green" | "orange" | "red" | "blue" | "thinking";
+export type SystemStatus = "green" | "yellow" | "red" | "blue" | "thinking";
 
 /**
  * Calcula el estado del semáforo institucional basado en la salud de la escuela
@@ -30,13 +30,13 @@ export const calcularEstadoSistema = (
 
   if (hasCriticalCases || hasMedicalAlerts) return "red";
 
-  // 4. Incidencias del Día (Naranja/Amarillo)
+  // 4. Incidencias del Día (Amarillo)
   const today = new Date().toISOString().split("T")[0];
   const hasIncidentsToday = students.some((s) =>
     s.incidents?.some((i) => i.date.startsWith(today)),
   );
 
-  if (hasIncidentsToday) return "orange";
+  if (hasIncidentsToday) return "yellow";
 
   // 5. Estable (Verde)
   return "green";

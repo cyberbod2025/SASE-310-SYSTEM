@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { InteractiveBrandOrb } from "./InteractiveBrandOrb";
+import { SaseIAOrb } from "./SaseIAOrb";
 import {
   OFFICIAL_STAFF_LIST,
   OfficialStaffMember,
@@ -218,7 +218,10 @@ export const Login: React.FC<LoginProps> = ({
                 className="cursor-pointer group flex flex-col items-center select-none"
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
-                  <InteractiveBrandOrb size={110} />
+                  <SaseIAOrb
+                    state="blue"
+                    className="w-24 h-24 sm:w-32 sm:h-32"
+                  />
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
                     SASE
                   </h1>
@@ -412,26 +415,7 @@ export const Login: React.FC<LoginProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 w-full">
-                <button
-                  onClick={() => {}} // TODO: Password Recovery Flow
-                  className="w-full p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-white/20 transition-all flex items-center gap-4 group"
-                >
-                  <div className="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 group-hover:bg-amber-500/20">
-                    <span className="material-symbols-outlined">
-                      lock_reset
-                    </span>
-                  </div>
-                  <div className="text-left">
-                    <span className="text-xs font-black text-white uppercase tracking-widest block">
-                      ¿Olvidó su contraseña?
-                    </span>
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block opacity-60 italic">
-                      Restablecer clave de acceso
-                    </span>
-                  </div>
-                </button>
-              </div>
+              <div className="grid grid-cols-1 gap-4 w-full"></div>
             </motion.div>
           </div>
         </div>

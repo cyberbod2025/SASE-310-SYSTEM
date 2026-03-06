@@ -32,7 +32,7 @@ export const IASaseAgent: React.FC = () => {
     switch (systemState) {
       case "red":
         return "CRÍTICO";
-      case "orange":
+      case "yellow":
         return "ALERTA";
       case "blue":
         return "ACTIVO";
@@ -151,12 +151,12 @@ export const IASaseAgent: React.FC = () => {
         />
 
         {/* Pulsing Ring for critical states */}
-        {(systemState === "red" || systemState === "orange") && (
+        {(systemState === "red" || systemState === "yellow") && (
           <motion.div
             animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
             className={`absolute inset-0 rounded-full border-2 ${
-              systemState === "red" ? "border-red-500" : "border-amber-500"
+              systemState === "red" ? "border-red-500" : "border-yellow-500"
             } pointer-events-none`}
           />
         )}
