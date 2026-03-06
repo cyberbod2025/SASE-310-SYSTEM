@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
 import { SaseIAOrb } from "./SaseIAOrb";
 import { UserRole, AppModule, CaseState } from "../types";
+import { calcularEstadoSistema } from "../utils/estadoSistema";
 
 /**
  * IA-SASE Agent Component
@@ -20,41 +21,11 @@ export const IASaseAgent: React.FC = () => {
     currentUserRole,
   } = useApp();
 
-  // Lógica de Semáforo Institucional Dinámico
-  const systemState = useMemo(() => {
-    // 1. Interacción con el usuario (Azul)
-    if (isAssistantOpen) return "blue";
-
-    // 2. IA Procesando (Morado - 'thinking' en SaseIAOrb)
-    if (assistantStatus === "thinking") return "thinking";
-
-    // 3. Caso Crítico (Rojo)
-    const criticalCases = students.filter(
-      (s) =>
-        s.caseState === CaseState.INTERVENCION ||
-        s.caseState === CaseState.PATRON_DETECTADO,
-    ).length;
-
-    // Alertas Médicas Críticas
-    const medicalAlerts = students.filter(
-      (s) => s.medicalAlerts && s.medicalAlerts.length > 0,
-    ).length;
-
-    if (criticalCases > 0 || medicalAlerts > 0) return "red";
-
-    // 4. Incidencias del Día (Amarillo - 'orange' en SaseIAOrb)
-    const today = new Date().toISOString().split("T")[0];
-    const incidentsToday = students.reduce((acc, s) => {
-      return (
-        acc + (s.incidents?.filter((i) => i.date.startsWith(today)).length || 0)
-      );
-    }, 0);
-
-    if (incidentsToday > 0) return "orange";
-
-    // 5. Escuela Estable (Verde)
-    return "green";
-  }, [students, isAssistantOpen, assistantStatus]);
+  // Semáforo Institucional Dinámico (Lógica Centralizada)
+  const systemState = useMemo(
+    () => calcularEstadoSistema(students, isAssistantOpen, assistantStatus),
+    [students, isAssistantOpen, assistantStatus],
+  );
 
   // Texto descriptivo del estado para accesibilidad/clima
   const stateLabel = useMemo(() => {

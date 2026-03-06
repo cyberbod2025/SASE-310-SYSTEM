@@ -1,3 +1,4 @@
+@import "driver.js/dist/driver.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -357,7 +358,7 @@
   );
   filter: blur(14px);
 }
-@import "driver.js/dist/driver.css";
+
 /* --- SASE PREMIUM TOUR (DRIVER.JS CUSTOMIZATION) --- */
 .driver-popover.sase-tour-popover {
   background: rgba(13, 17, 23, 0.85) !important;

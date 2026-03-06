@@ -1,0 +1,43 @@
+import { Student, CaseState } from "../types";
+
+export type SystemStatus = "green" | "orange" | "red" | "blue" | "thinking";
+
+/**
+ * Calcula el estado del semáforo institucional basado en la salud de la escuela
+ * y la actividad de la IA.
+ */
+export const calcularEstadoSistema = (
+  students: Student[],
+  isAssistantOpen: boolean,
+  assistantStatus: string,
+): SystemStatus => {
+  // 1. Interacción activa (Azul)
+  if (isAssistantOpen) return "blue";
+
+  // 2. IA Procesando (Procesando)
+  if (assistantStatus === "thinking") return "thinking";
+
+  // 3. Casos Críticos (Rojo)
+  const hasCriticalCases = students.some(
+    (s) =>
+      s.caseState === CaseState.INTERVENCION ||
+      s.caseState === CaseState.PATRON_DETECTADO,
+  );
+
+  const hasMedicalAlerts = students.some(
+    (s) => s.medicalAlerts && s.medicalAlerts.length > 0,
+  );
+
+  if (hasCriticalCases || hasMedicalAlerts) return "red";
+
+  // 4. Incidencias del Día (Naranja/Amarillo)
+  const today = new Date().toISOString().split("T")[0];
+  const hasIncidentsToday = students.some((s) =>
+    s.incidents?.some((i) => i.date.startsWith(today)),
+  );
+
+  if (hasIncidentsToday) return "orange";
+
+  // 5. Estable (Verde)
+  return "green";
+};
