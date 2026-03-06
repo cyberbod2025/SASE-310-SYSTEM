@@ -1,4 +1,4 @@
-import React from "react";
+import { VERSION, INSTITUCION } from "../config/sase.config";
 
 interface AvisoUsoResponsableProps {
   onAccept: () => void;
@@ -19,12 +19,18 @@ export const AvisoUsoResponsable: React.FC<AvisoUsoResponsableProps> = ({
   return (
     <div className="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in font-['Inter']">
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden">
-        {/* Header con ícono de seguridad */}
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100 px-8 py-6 flex items-center gap-4">
-          <div className="size-14 bg-amber-100 rounded-2xl flex items-center justify-center border border-amber-200 shadow-sm flex-shrink-0">
-            <span className="material-symbols-outlined text-amber-600 text-3xl">
-              shield_lock
-            </span>
+        {/* Header con ícono de seguridad y Branding Institucional */}
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100 px-8 py-6">
+          <div className="flex justify-between items-start mb-4">
+             <div className="size-14 bg-amber-100 rounded-2xl flex items-center justify-center border border-amber-200 shadow-sm flex-shrink-0">
+              <span className="material-symbols-outlined text-amber-600 text-3xl">
+                shield_lock
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">CCT {INSTITUCION.cct}</span>
+              <span className="text-[8px] font-black text-amber-600 uppercase tracking-widest block">v{VERSION.numero}</span>
+            </div>
           </div>
           <div>
             <h2 className="text-sm font-black text-slate-800 uppercase tracking-wide">
