@@ -1,6 +1,6 @@
 import { Student, CaseState } from "../types";
 
-export type SystemStatus =
+export type OrbState =
   | "green"
   | "yellow"
   | "red"
@@ -16,7 +16,7 @@ export const calcularEstadoSistema = (
   students: Student[],
   isAssistantOpen: boolean,
   assistantStatus: string,
-): SystemStatus => {
+): OrbState => {
   // 1. Interacción activa (Dorado Institucional)
   if (isAssistantOpen) return "gold";
 

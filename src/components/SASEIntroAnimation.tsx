@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SaseIAOrb } from "./SaseIAOrb";
-import { OrbState } from "../hooks/useSaseSystemState";
+import { OrbState } from "../utils/estadoSistema";
 
 interface SASEIntroAnimationProps {
   onComplete: () => void;

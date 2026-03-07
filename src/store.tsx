@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from "react";
 import { useAuth } from "./components/AuthProvider";
 import { UserRole, AuditActionType } from "./types";
+import { OrbState } from "./utils/estadoSistema";
 import toast from "react-hot-toast";
 
 // Import Slices
@@ -48,6 +49,7 @@ interface AppContextType {
   setIsFeedbackOpen: any;
   assistantStatus: any;
   setAssistantStatus: any;
+  systemState: OrbState;
   activePrintJob: any;
   printDocument: any;
   printModal: any;

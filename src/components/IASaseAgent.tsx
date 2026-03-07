@@ -16,16 +16,11 @@ export const IASaseAgent: React.FC = () => {
     isAssistantOpen,
     setIsAssistantOpen,
     assistantStatus,
+    systemState,
     setCurrentModule,
     openQuickRegister,
     currentUserRole,
   } = useApp();
-
-  // Semáforo Institucional Dinámico (Lógica Centralizada)
-  const systemState = useMemo(
-    () => calcularEstadoSistema(students, isAssistantOpen, assistantStatus),
-    [students, isAssistantOpen, assistantStatus],
-  );
 
   // Texto descriptivo del estado para accesibilidad/clima
   const stateLabel = useMemo(() => {

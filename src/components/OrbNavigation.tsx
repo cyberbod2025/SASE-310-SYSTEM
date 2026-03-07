@@ -4,7 +4,6 @@ import { AppModule, UserRole } from "../types";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SaseIAOrb } from "./SaseIAOrb";
-import { useSaseSystemState } from "../hooks/useSaseSystemState";
 
 // Internal component for Secure Admin Login
 const AdminLoginModal = ({
@@ -156,14 +155,15 @@ import { useAuth } from "../components/AuthProvider";
 // ... (Rest of AdminLoginModal stays the same)
 
 export const OrbNavigation = () => {
-  const { setCurrentModule, currentUserRole, setIsAssistantOpen } = useApp();
+  const {
+    setCurrentModule,
+    currentUserRole,
+    setIsAssistantOpen,
+    systemState: saseState,
+  } = useApp();
   const { user } = useAuth();
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const { systemState: saseState } = useSaseSystemState(
-    currentUserRole,
-    user?.id,
-  );
 
   const getMenuItems = () => {
     const baseItems = [

@@ -10,7 +10,6 @@ import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
 import { SaseIAOrb } from "./SaseIAOrb";
-import { useSaseSystemState } from "../hooks/useSaseSystemState";
 import { IASaseAgent } from "./IASaseAgent";
 
 const roleColors: Record<UserRole, string> = {
@@ -70,13 +69,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     isAssistantOpen,
     setIsAssistantOpen,
     assistantStatus,
+    systemState,
     currentModule,
     setCurrentModule,
     notifications,
     markNotificationRead,
   } = useApp();
   const { user, profile } = useAuth();
-  const { systemState } = useSaseSystemState(currentUserRole, user?.id);
 
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);

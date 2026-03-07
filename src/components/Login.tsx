@@ -218,7 +218,7 @@ export const Login: React.FC<LoginProps> = ({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                onDoubleClick={handleAdminBypass}
+                onClick={handleAdminBypass}
                 className="cursor-pointer group flex flex-col items-center select-none"
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
@@ -279,6 +279,7 @@ export const Login: React.FC<LoginProps> = ({
                     className="input-sase pl-12 h-14 !bg-white/[0.02] !border-white/5 focus:!border-blue-500/40 text-sm"
                     placeholder="USUARIO"
                     title="Ingrese su usuario o correo"
+                    autoComplete="username"
                     required
                   />
                 </div>
@@ -316,6 +317,7 @@ export const Login: React.FC<LoginProps> = ({
                     className="input-sase pl-12 pr-12 h-14 !bg-white/[0.02] !border-white/5 focus:!border-blue-500/40 text-sm"
                     placeholder="••••••••"
                     title="Ingrese su clave de seguridad"
+                    autoComplete="current-password"
                     required
                   />
                   <button

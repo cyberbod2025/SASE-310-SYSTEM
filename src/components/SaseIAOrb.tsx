@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { OrbState } from "../hooks/useSaseSystemState";
+import { OrbState } from "../utils/estadoSistema";
 
 interface SaseIAOrbProps {
   state: OrbState;
@@ -10,65 +10,65 @@ interface SaseIAOrbProps {
 
 const colorMap = {
   green: {
-    base: "rgba(0, 200, 83, 1)",
-    glow: "rgba(0, 200, 83, 0.4)",
-    glowHex: "#00C853",
+    base: "rgba(16, 185, 129, 1)", // Emerald 500
+    glow: "rgba(16, 185, 129, 0.4)",
+    glowHex: "#10B981",
     gradient:
-      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(0, 200, 83, 1) 40%, rgba(0, 20, 10, 1) 100%)",
-    mouth: "M 5 2 Q 10 5 15 2", // Zen smile
+      "radial-gradient(circle at 35% 35%, rgba(209, 250, 229, 0.9) 0%, rgba(16, 185, 129, 1) 45%, rgba(6, 78, 59, 1) 100%)",
+    mouth: "M 5 2 Q 10 5 15 2",
     eyeScale: 2.5,
   },
   yellow: {
-    base: "rgba(255, 235, 59, 1)", // Bright yellow
-    glow: "rgba(255, 235, 59, 0.4)",
-    glowHex: "#FFEB3B",
+    base: "rgba(245, 158, 11, 1)", // Amber 500
+    glow: "rgba(245, 158, 11, 0.4)",
+    glowHex: "#F59E0B",
     gradient:
-      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(255, 235, 59, 1) 40%, rgba(30, 25, 0, 1) 100%)",
-    mouth: "M 5 3 L 15 3", // Flat / Warning
+      "radial-gradient(circle at 35% 35%, rgba(254, 243, 199, 0.9) 0%, rgba(245, 158, 11, 1) 45%, rgba(120, 53, 15, 1) 100%)",
+    mouth: "M 5 3 L 15 3",
     eyeScale: 2.8,
   },
   red: {
-    base: "rgba(211, 47, 47, 1)",
-    glow: "rgba(211, 47, 47, 0.4)",
-    glowHex: "#D32F2F",
+    base: "rgba(220, 38, 38, 1)", // Red 600
+    glow: "rgba(220, 38, 38, 0.4)",
+    glowHex: "#DC2626",
     gradient:
-      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(211, 47, 47, 1) 40%, rgba(20, 0, 0, 1) 100%)",
-    mouth: "M 5 5 Q 10 2 15 5", // Worried inverted
+      "radial-gradient(circle at 35% 35%, rgba(254, 226, 226, 0.9) 0%, rgba(220, 38, 38, 1) 45%, rgba(127, 29, 29, 1) 100%)",
+    mouth: "M 5 5 Q 10 2 15 5",
     eyeScale: 3.0,
   },
   blue: {
-    base: "rgba(59, 130, 246, 1)",
-    glow: "rgba(59, 130, 246, 0.4)",
-    glowHex: "#3B82F6",
+    base: "rgba(37, 99, 235, 1)", // Blue 600
+    glow: "rgba(37, 99, 235, 0.4)",
+    glowHex: "#2563EB",
     gradient:
-      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(59, 130, 246, 1) 40%, rgba(0, 10, 30, 1) 100%)",
-    mouth: "M 6 3 L 14 3", // Small flat
+      "radial-gradient(circle at 35% 35%, rgba(219, 234, 254, 0.9) 0%, rgba(37, 99, 235, 1) 45%, rgba(30, 58, 138, 1) 100%)",
+    mouth: "M 6 3 L 14 3",
     eyeScale: 2.5,
   },
   gold: {
-    base: "rgba(255, 215, 0, 1)",
-    glow: "rgba(255, 215, 0, 0.4)",
-    glowHex: "#FFD700",
+    base: "rgba(217, 119, 6, 1)", // Amber 600 (Gold)
+    glow: "rgba(217, 119, 6, 0.4)",
+    glowHex: "#D97706",
     gradient:
       "radial-gradient(circle at 35% 35%, #FFFBEB 0%, #F59E0B 45%, #78350F 100%)",
-    mouth: "M 4 2 Q 10 8 16 2", // Big happy
+    mouth: "M 4 2 Q 10 8 16 2",
     eyeScale: 2.8,
   },
   thinking: {
-    base: "rgba(168, 85, 247, 1)",
-    glow: "rgba(168, 85, 247, 0.4)",
-    glowHex: "#A855F7",
+    base: "rgba(124, 58, 237, 1)", // Violet 600
+    glow: "rgba(124, 58, 237, 0.4)",
+    glowHex: "#7C3AED",
     gradient:
-      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(168, 85, 247, 1) 40%, rgba(20, 0, 30, 1) 100%)",
-    mouth: "M 8 3 A 2 2 0 1 0 12 3 A 2 2 0 1 0 8 3", // Small O
+      "radial-gradient(circle at 35% 35%, rgba(237, 233, 254, 0.9) 0%, rgba(124, 58, 237, 1) 45%, rgba(76, 29, 149, 1) 100%)",
+    mouth: "M 8 3 A 2 2 0 1 0 12 3 A 2 2 0 1 0 8 3",
     eyeScale: 2.5,
   },
   alert: {
-    base: "rgba(244, 63, 94, 1)",
-    glow: "rgba(244, 63, 94, 0.4)",
-    glowHex: "#F43F5E",
+    base: "rgba(225, 29, 72, 1)", // Rose 600
+    glow: "rgba(225, 29, 72, 0.4)",
+    glowHex: "#E11D48",
     gradient:
-      "radial-gradient(circle at 35% 35%, rgba(255,255,255,0.85) 0%, rgba(244, 63, 94, 1) 40%, rgba(30, 0, 10, 1) 100%)",
+      "radial-gradient(circle at 35% 35%, #FFF1F2 0%, #E11D48 45%, #881337 100%)",
     mouth: "M 5 5 L 15 5",
     eyeScale: 3.0,
   },
@@ -110,11 +110,6 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
   return (
     <div
       className={`relative flex items-center justify-center ${className || "w-32 h-32"}`}
-      style={
-        isInvincible
-          ? { animation: "saseRainbowGlow 0.25s linear infinite" }
-          : undefined
-      }
     >
 
 
@@ -149,7 +144,7 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
           className="flex flex-col items-center gap-3"
         >
           {/* EYES */}
-          <div className="flex gap-8">
+          <div className="flex gap-12">
             <motion.div
               animate={{
                 scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
@@ -181,11 +176,6 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes saseRainbowGlow {
-          0% { filter: hue-rotate(0deg) brightness(110%); }
-          50% { filter: hue-rotate(180deg) brightness(130%); }
-          100% { filter: hue-rotate(360deg) brightness(110%); }
-        }
       `}</style>
     </div>
   );

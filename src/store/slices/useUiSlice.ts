@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { UserRole, Student, CaseState, RoleLabels } from "../../types";
 import { getSaludo as getSaludoConfig } from "../../config/sase.config";
+import { calcularEstadoSistema, OrbState } from "../../utils/estadoSistema";
 
 export const useUiSlice = (
   user: any,
@@ -21,6 +22,12 @@ export const useUiSlice = (
     title: "",
     html: "",
   });
+
+  // Estado del Orbe Global
+  const systemState = useMemo(
+    () => calcularEstadoSistema(students, isAssistantOpen, assistantStatus),
+    [students, isAssistantOpen, assistantStatus],
+  );
 
   const openQuickRegister = (type?: any) => {
     if (type) setQuickRegisterType(type);
@@ -83,6 +90,7 @@ export const useUiSlice = (
     setIsFeedbackOpen,
     assistantStatus,
     setAssistantStatus,
+    systemState,
     activePrintJob,
     setActivePrintJob,
     printDocument,

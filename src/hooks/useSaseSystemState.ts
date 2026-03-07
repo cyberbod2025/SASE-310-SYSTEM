@@ -22,7 +22,7 @@ export const useSaseSystemState = (
   role: string | undefined,
   userId?: string,
 ) => {
-  const [systemState, setSystemState] = useState<OrbState>("green");
+  const [systemState, setSystemState] = useState<OrbState>("gold");
   const [incidentCount, setIncidentCount] = useState(0);
 
   useEffect(() => {
@@ -52,9 +52,8 @@ export const useSaseSystemState = (
         if (count >= 10) setSystemState("red");
         else if (count >= 3) setSystemState("yellow");
         else {
-          // Si todo está tranquilo, verificamos si la IA está activa para mostrar estado GOLD
-          const hasAIKey = !!import.meta.env.VITE_GOOGLE_API_KEY;
-          setSystemState(hasAIKey ? "gold" : "green");
+          // Si todo está tranquilo, mostramos estado GOLD institucional
+          setSystemState("gold");
         }
       }
     };
