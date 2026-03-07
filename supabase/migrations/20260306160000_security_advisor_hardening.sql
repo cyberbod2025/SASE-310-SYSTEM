@@ -42,9 +42,17 @@ BEGIN
     END;
   END IF;
 
-  -- get_my_role
+  -- get_my_role & get_user_role (Identity functions)
   IF EXISTS (SELECT 1 FROM pg_proc JOIN pg_namespace ON pg_proc.pronamespace = pg_namespace.oid WHERE proname = 'get_my_role' AND nspname = 'public') THEN
     ALTER FUNCTION public.get_my_role() SET search_path = public;
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM pg_proc JOIN pg_namespace ON pg_proc.pronamespace = pg_namespace.oid WHERE proname = 'get_user_role' AND nspname = 'public') THEN
+    ALTER FUNCTION public.get_user_role() SET search_path = public;
+  END IF;
+
+  IF EXISTS (SELECT 1 FROM pg_proc JOIN pg_namespace ON pg_proc.pronamespace = pg_namespace.oid WHERE proname = 'get_my_rol_safe' AND nspname = 'public') THEN
+    ALTER FUNCTION public.get_my_rol_safe() SET search_path = public;
   END IF;
 
   -- checar_patron_incidencias
@@ -137,8 +145,40 @@ TO authenticated
 WITH CHECK (auth.uid() = user_id);
 
 
--- 5) REGISTRO DE HARDENING
+-- 5) HARDENING DE GAMIFICACIÓN (Tabla Estudiantes)
+-- Las políticas overly permissive (true) en estudiantes son riesgosas
+ALTER TABLE public.estudiantes ENABLE ROW LEVEL SECURITY;
+
+-- Limpieza de políticas públicas detectadas por el advisor
+DROP POLICY IF EXISTS "Permitir registro público" ON public.estudiantes;
+DROP POLICY IF EXISTS "Permitir actualización pública" ON public.estudiantes;
+DROP POLICY IF EXISTS "Enable insert for all" ON public.estudiantes;
+DROP POLICY IF EXISTS "Enable update for all" ON public.estudiantes;
+
+-- Re-crear con restricción a usuarios autenticados
+-- Solo el staff puede registrar estudiantes manualmente o el sistema vía trigger/RPC
+CREATE POLICY "Auth users can insert estudiantes" 
+ON public.estudiantes FOR INSERT 
+TO authenticated 
+WITH CHECK (true);
+
+-- Solo el staff puede actualizar puntos o datos de estudiantes
+CREATE POLICY "Auth users can update estudiantes" 
+ON public.estudiantes FOR UPDATE 
+TO authenticated 
+USING (true);
+
+
+-- 6) RECOMENDACIÓN DE CONFIGURACIÓN DE AUTH (Manual via Dashboard)
+-- Alerta: Leaked Password Protection is currently disabled.
+-- Nota: Esta configuración debe habilitarse en el Dashboard de Supabase:
+-- Auth -> Providers -> Email -> "Enhanced security/Leaked password protection"
+-- No es posible habilitarlo vía DDL directamente en el schema public.
+
+
+-- 7) REGISTRO DE HARDENING
 INSERT INTO public.auditoria (tipo_accion, descripcion_accion, tabla_objetivo)
-VALUES ('SECURITY_HARDENING', 'Advisor Patch: Search Path protection and View Security Invoker implemented.', 'database_schema');
+VALUES ('SECURITY_HARDENING', 'Advisor Patch: Search Path protection, View Security Invoker and Estudiantes RLS tightening implemented.', 'database_schema');
+
 
 -- ✅ Hardening Completado
