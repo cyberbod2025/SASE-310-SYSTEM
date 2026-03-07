@@ -49,7 +49,14 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
 
   // --- AUDITORÍA DE ACCESOS SENSIBLES ---
   const { registrarAcceso } = useAuditoriaAccesos();
-  const [avisoAceptado, setAvisoAceptado] = useState(false);
+  const [avisoAceptado, setAvisoAceptado] = useState(() => {
+    return sessionStorage.getItem("sase_aviso_sensible_aceptado") === "true";
+  });
+
+  const handleAceptarAviso = () => {
+    sessionStorage.setItem("sase_aviso_sensible_aceptado", "true");
+    setAvisoAceptado(true);
+  };
 
   // --- MODULO EXPEDIENTES ---
   const [showExpediente, setShowExpediente] = useState(false);
@@ -227,7 +234,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
     return (
       <AvisoUsoResponsable
         studentName={student.name}
-        onAccept={() => setAvisoAceptado(true)}
+        onAccept={handleAceptarAviso}
         onReject={onClose}
       />
     );

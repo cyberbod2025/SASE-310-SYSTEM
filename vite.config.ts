@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: "0.0.0.0",
+      open: false,
     },
     plugins: [react()],
     define: {},
@@ -19,12 +20,32 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            "staff-data": ["./src/data/officialStaff.ts"],
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) {
+                return "vendor-react";
+              }
+              if (id.includes("@supabase")) {
+                return "vendor-supabase";
+              }
+              if (id.includes("framer-motion")) {
+                return "vendor-framer";
+              }
+              if (id.includes("@google/generative-ai")) {
+                return "vendor-ai";
+              }
+              if (id.includes("date-fns")) {
+                return "vendor-utils";
+              }
+              return "vendor";
+            }
+            if (id.includes("src/data/officialStaff.ts")) {
+              return "staff-data";
+            }
           },
         },
       },
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 800,
     },
   };
 });

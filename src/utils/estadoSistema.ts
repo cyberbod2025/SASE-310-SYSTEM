@@ -17,8 +17,8 @@ export const calcularEstadoSistema = (
   isAssistantOpen: boolean,
   assistantStatus: string,
 ): SystemStatus => {
-  // 1. Interacción activa (Azul)
-  if (isAssistantOpen) return "blue";
+  // 1. Interacción activa (Dorado Institucional)
+  if (isAssistantOpen) return "gold";
 
   // 2. IA Procesando (Procesando)
   if (assistantStatus === "thinking") return "thinking";
@@ -48,6 +48,6 @@ export const calcularEstadoSistema = (
   const hasAIKey = !!import.meta.env.VITE_GOOGLE_API_KEY;
   if (hasAIKey) return "gold";
 
-  // 6. Estable (Verde)
-  return "green";
+  // 6. Estable (Dorado por defecto)
+  return "gold";
 };

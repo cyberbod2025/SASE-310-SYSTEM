@@ -223,7 +223,7 @@ export const Login: React.FC<LoginProps> = ({
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
                   <SaseIAOrb
-                    state="blue"
+                    state="gold"
                     className="w-24 h-24 sm:w-32 sm:h-32"
                   />
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">

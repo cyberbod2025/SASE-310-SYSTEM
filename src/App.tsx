@@ -6,11 +6,11 @@ import { SplashScreen } from "./components/SplashScreen";
 import { UserRole, AppModule } from "./types";
 import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { Login } from "./components/Login";
-import { DashboardHoy } from "./components/DashboardHoy";
-import { RadarEscolar } from "./components/RadarEscolar";
-import { DashboardDocente } from "./components/dashboards/DashboardDocente";
-import { MisGrupos } from "./components/MisGrupos";
+const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
+const DashboardHoy = React.lazy(() => import("./components/DashboardHoy").then(m => ({ default: m.DashboardHoy })));
+const RadarEscolar = React.lazy(() => import("./components/RadarEscolar").then(m => ({ default: m.RadarEscolar })));
+const DashboardDocente = React.lazy(() => import("./components/dashboards/DashboardDocente").then(m => ({ default: m.DashboardDocente })));
+const MisGrupos = React.lazy(() => import("./components/MisGrupos").then(m => ({ default: m.MisGrupos })));
 
 // Componentes que se vuelven diferidos: SASEIntroAnimation, FirstLogonSetup, OfficialDocument, PrintPreviewModal, IASaseAgent
 
@@ -277,15 +277,17 @@ const AppShell = () => {
       <React.Suspense fallback={<LoadingSpinner />}>
         <IASaseAgent />
       </React.Suspense>
-      {isWelcome && showRadar ? (
-        <RadarEscolar onComplete={() => setShowRadar(false)} />
-      ) : isWelcome ? (
-        <DashboardHoy />
-      ) : (
-        <Layout>
-          <MainContent />
-        </Layout>
-      )}
+      <React.Suspense fallback={<LoadingSpinner />}>
+        {isWelcome && showRadar ? (
+          <RadarEscolar onComplete={() => setShowRadar(false)} />
+        ) : isWelcome ? (
+          <DashboardHoy />
+        ) : (
+          <Layout>
+            <MainContent />
+          </Layout>
+        )}
+      </React.Suspense>
     </ErrorBoundary>
   );
 };
@@ -363,26 +365,28 @@ const App: React.FC = () => {
       );
     }
     return (
-      <Login
-        onDemoEnter={() => {
-          setIsDemoMode(true);
-          setShowFirstLogon(true);
-        }}
-        onDevEnter={() => {
-          setInitialRole(UserRole.DEVELOPER);
-          setIsDemoMode(true);
-        }}
-        onRegisterClick={() => setIsRegistering(true)}
-        onFirstLogon={(member) => {
-          setInitialRole(member.role);
-          setSetupUser({
-            fullName: member.full_name,
-            email: member.username + "@sase.mx",
-          });
-          setIsDemoMode(true);
-          setShowFirstLogon(true);
-        }}
-      />
+      <React.Suspense fallback={<LoadingSpinner />}>
+        <Login
+          onDemoEnter={() => {
+            setIsDemoMode(true);
+            setShowFirstLogon(true);
+          }}
+          onDevEnter={() => {
+            setInitialRole(UserRole.DEVELOPER);
+            setIsDemoMode(true);
+          }}
+          onRegisterClick={() => setIsRegistering(true)}
+          onFirstLogon={(member) => {
+            setInitialRole(member.role);
+            setSetupUser({
+              fullName: member.full_name,
+              email: member.username + "@sase.mx",
+            });
+            setIsDemoMode(true);
+            setShowFirstLogon(true);
+          }}
+        />
+      </React.Suspense>
     );
   }
 
