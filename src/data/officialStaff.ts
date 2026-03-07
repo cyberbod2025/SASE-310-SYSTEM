@@ -17,7 +17,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DIRECTIVO,
     is_active: true,
     username: "miguel.morales",
-    temp_access_code: "U0FTRS5ESVJFQ1RJVk8uMjAyNg==",
+    temp_access_code: "[TOKEN_SASE_DIRECTIVO_REDACTED]",
   },
   {
     full_name: "NERIA DIAZ PABLO ISAAC",
@@ -25,7 +25,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SUBDIRECCION,
     is_active: true,
     username: "pablo.neria",
-    temp_access_code: "SASE.SUBDIR.2026",
+    temp_access_code: "[TOKEN_SASE_SUBDIRECTOR_REDACTED]",
   },
   {
     full_name: "LOPEZ QUERO JOSE LUIS",
@@ -33,7 +33,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SUBDIRECCION,
     is_active: true,
     username: "jose.lopez",
-    temp_access_code: "SASE.SUBDIR.2026",
+    temp_access_code: "[TOKEN_SASE_SUBDIRECTOR_REDACTED]",
   },
   {
     full_name: "JURADO CHAVEZ VICTOR ALEJANDRO",
@@ -41,7 +41,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DIRECTIVO,
     is_active: true,
     username: "victor.jurado",
-    temp_access_code: "U0FTRS5ESVJFQ1RJVk8uMjAyNg==",
+    temp_access_code: "[TOKEN_SASE_DIRECTIVO_REDACTED]",
   },
 
   // Apoyo Especializado
@@ -51,7 +51,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.ORIENTACION,
     is_active: true,
     username: "martha.robledo",
-    temp_access_code: "SASE.ORIENTA.2026",
+    temp_access_code: "[TOKEN_SASE_ORIENTADOR_REDACTED]",
   },
   {
     full_name: "VARGAS ANDRES DIANA ALEXANDRA",
@@ -59,7 +59,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.ORIENTACION,
     is_active: true,
     username: "diana.vargas",
-    temp_access_code: "SASE.ORIENTA.2026",
+    temp_access_code: "[TOKEN_SASE_ORIENTADOR_REDACTED]",
   },
   {
     full_name: "VILLALOBOS CERVANTES SILVIA Y.",
@@ -67,7 +67,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.TRABAJO_SOCIAL,
     is_active: true,
     username: "silvia.villalobos",
-    temp_access_code: "SASE.TSOCIAL.2026",
+    temp_access_code: "[TOKEN_SASE_TRABAJO_SOCIAL_REDACTED]",
   },
   {
     full_name: "XOLALPA JIMENEZ NORMA LORENA",
@@ -75,7 +75,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.MEDICO_ESCOLAR,
     is_active: true,
     username: "norma.xolalpa",
-    temp_access_code: "SASE.SALUD.2026",
+    temp_access_code: "[TOKEN_SASE_SALUD_REDACTED]",
   },
   {
     full_name: "INGRID GONZALEZ NAVARRETE",
@@ -83,7 +83,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.UDEII,
     is_active: true,
     username: "ingrid.gonzalez",
-    temp_access_code: "SASE.UDEII.2026",
+    temp_access_code: "[TOKEN_SASE_UDEII_REDACTED]",
   },
   {
     full_name: "GUERRERO PEREZ SUSANA",
@@ -91,7 +91,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PROMOTORA_LECTURA,
     is_active: true,
     username: "susana.guerrero",
-    temp_access_code: "SASE.PROMOTORA.2026",
+    temp_access_code: "[TOKEN_SASE_PROMOTORA_REDACTED]",
   },
 
   // Docentes Español
@@ -101,7 +101,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "german.cortes",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "LEGARIA GORDILLO JOSE LUIS",
@@ -109,7 +109,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jose.legaria",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "RAMIREZ TELOXA ANGELES YERALDIN",
@@ -117,7 +117,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "angeles.ramirez",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "VALLERROJO MALLA MA. DEL SOCORRO",
@@ -125,7 +125,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "ma.vallerrojo",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
 
   // Docentes Matemáticas
@@ -135,7 +135,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "marisol.bernal",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "CORTES ROJAS JUAN ANTONIO",
@@ -143,7 +143,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "juan.cortes",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "URBANO LOPEZ HANS EDSON",
@@ -151,7 +151,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "hans.urbano",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "SANCHEZ RESENDIZ HUGO",
@@ -159,7 +159,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "hugo.sanchez",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
 
   // Docentes Historia y Geografía
@@ -169,7 +169,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "baltazar.tabarez",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "ECHEVARRIA GARCIA ELIZABETH",
@@ -177,7 +177,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "elizabeth.echevarria",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "HERNANDEZ MARCOS PEDRO",
@@ -185,7 +185,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "pedro.hernandez",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "CORTES SALMERON JAIRO DAVID",
@@ -193,7 +193,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jairo.cortes",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
 
   // Docentes F. Cívica y Ética
@@ -203,7 +203,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "fermin.cruz",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "ROSAS BELLO JORGE LUIS",
@@ -211,7 +211,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jorge.rosas",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
 
   // Docentes Ciencias
@@ -221,7 +221,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "dulce.pina",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "PEREZ PEREZ KIMBERLY",
@@ -229,7 +229,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "kimberly.perez",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "DIAZ VILLANUEVA BRENDA JOSAHANY",
@@ -237,7 +237,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "brenda.diaz",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "RIVERA GARCIA PABLO MIGUEL",
@@ -245,7 +245,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "pablo.rivera",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "RANGEL BANDY JORGE ANTONIO",
@@ -253,7 +253,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jorge.rangel",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
 
   // Otras Materias y Talleres
@@ -263,7 +263,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "norma.guerrero",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "HURTADO MARIN JUAN JOSE",
@@ -271,7 +271,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "juan.hurtado",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "FLORES LOPEZ VICTOR MANUEL",
@@ -279,7 +279,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "victor.flores",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "GUTIERREZ AVENDANO DIANA BELEM",
@@ -287,7 +287,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "diana.gutierrez",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "ARELLANO SANTOYO MIGUEL",
@@ -295,7 +295,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "miguel.arellano",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "MOTA CANO NOE",
@@ -303,7 +303,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "noe.mota",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "MORALES NAVARRETE RUTH",
@@ -311,7 +311,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "ruth.morales",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "RAMÍREZ SILVA VICENTE",
@@ -319,7 +319,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "vicente.ramirez",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "CONTRERAS MARTINEZ JOSELYN",
@@ -327,7 +327,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "joselyn.contreras",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "ANDRADE GALICIA CLAUDIA",
@@ -335,7 +335,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "claudia.andrade",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "FLORES SILVA JORGE ALBERTO",
@@ -343,7 +343,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "jorge.flores",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "CAMPOS VILCHIS EDUARDO",
@@ -351,7 +351,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "eduardo.campos",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "RIVERA CRUZ ORALIA",
@@ -359,7 +359,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "oralia.rivera",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "AZUCENO GIL JUVENTINA ROCIO",
@@ -367,7 +367,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "juventina.azuceno",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
   {
     full_name: "DIAZ NUÑEZ MARIA ELENA",
@@ -375,7 +375,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.DOCENTE,
     is_active: true,
     username: "maria.diaz",
-    temp_access_code: "U0FTRS5ET0NFTlRFLjIwMjY=",
+    temp_access_code: "[TOKEN_SASE_DOCENTE_REDACTED]",
   },
 
   // Prefectura y Secretaría
@@ -385,7 +385,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PREFECTURA,
     is_active: true,
     username: "juan.alvarez",
-    temp_access_code: "U0FTRS5QUkVGRUNUTy4yMDI2",
+    temp_access_code: "[TOKEN_SASE_PREFECTO_REDACTED]",
   },
   {
     full_name: "GARCIA PEÑALOZA MARCELINA PAULA",
@@ -393,7 +393,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PREFECTURA,
     is_active: true,
     username: "paula.garcia",
-    temp_access_code: "U0FTRS5QUkVGRUNUTy4yMDI2",
+    temp_access_code: "[TOKEN_SASE_PREFECTO_REDACTED]",
   },
   {
     full_name: "MEDINA FRANCO JOSE LUIS",
@@ -401,7 +401,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.PREFECTURA,
     is_active: true,
     username: "jose.medina",
-    temp_access_code: "U0FTRS5QUkVGRUNUTy4yMDI2",
+    temp_access_code: "[TOKEN_SASE_PREFECTO_REDACTED]",
   },
   {
     full_name: "DIAZ RUIZ EDGAR",
@@ -409,7 +409,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "edgar.diaz",
-    temp_access_code: "U0FTRS5TRUMuMjAyNg==",
+    temp_access_code: "[TOKEN_SASE_SECRETARIA_REDACTED]",
   },
   {
     full_name: "FLORES CALVILLO GABRIELA",
@@ -417,7 +417,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "gabriela.flores",
-    temp_access_code: "U0FTRS5TRUMuMjAyNg==",
+    temp_access_code: "[TOKEN_SASE_SECRETARIA_REDACTED]",
   },
   {
     full_name: "GALINDO ARGUETA DULCE MARIA",
@@ -425,7 +425,7 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "dulce.galindo",
-    temp_access_code: "U0FTRS5TRUMuMjAyNg==",
+    temp_access_code: "[TOKEN_SASE_SECRETARIA_REDACTED]",
   },
   {
     full_name: "RODRIGUEZ MARQUEZ JORGE",
@@ -433,6 +433,6 @@ export const OFFICIAL_STAFF_LIST: OfficialStaffMember[] = [
     role: UserRole.SECRETARIA,
     is_active: true,
     username: "jorge.rodriguez",
-    temp_access_code: "U0FTRS5TRUMuMjAyNg==",
+    temp_access_code: "[TOKEN_SASE_SECRETARIA_REDACTED]",
   },
 ];
