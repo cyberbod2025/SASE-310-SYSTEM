@@ -8,6 +8,7 @@ import {
   OFFICIAL_STAFF_LIST,
   OfficialStaffMember,
 } from "../data/officialStaff";
+import { generateTempCode } from "../utils/security/generateTempCode";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -84,7 +85,10 @@ export const Login: React.FC<LoginProps> = ({
     );
 
     if (officialMember) {
-      if (password === officialMember.temp_access_code) {
+      // Protocolo de acceso temporal dinámico para modo Pilot
+      const effectiveCode = officialMember.temporary_code || generateTempCode(); 
+      
+      if (password === effectiveCode) {
         toast.success(
           `Bienvenido ${officialMember.full_name}. Iniciando configuración de cuenta.`,
         );

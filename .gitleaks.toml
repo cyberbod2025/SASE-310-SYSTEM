@@ -1,0 +1,7 @@
+title = "SASE Security Rules"
+
+[allowlist]
+description = "Ignore demo temporary codes"
+regexes = [
+  '''temporary_code'''
+]

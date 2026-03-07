@@ -27,6 +27,7 @@ backups/
 # Security
 chrome_profile_notebooklm/
 .env.local
+.env.production
 .env
 
 # --- ENHANCED SECURITY RULES (Added by Antigravity) ---

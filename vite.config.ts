@@ -16,5 +16,15 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            "staff-data": ["./src/data/officialStaff.ts"],
+          },
+        },
+      },
+      chunkSizeWarningLimit: 1000,
+    },
   };
 });
