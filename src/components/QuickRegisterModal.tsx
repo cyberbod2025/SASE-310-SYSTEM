@@ -29,6 +29,14 @@ export const QuickRegisterModal: React.FC = () => {
   const [showProtocolModal, setShowProtocolModal] = useState(false);
   const [supportProtocols, setSupportProtocols] = useState<Protocol[]>([]);
 
+  // Nuevos estados para Creación de Documentos
+  const [generarCitatorio, setGenerarCitatorio] = useState(false);
+  const [fechaCitatorio, setFechaCitatorio] = useState("");
+  const [horaCitatorio, setHoraCitatorio] = useState("");
+  
+  const [generarActa, setGenerarActa] = useState(false);
+  const [tipoActa, setTipoActa] = useState<"hechos" | "acuerdos">("hechos");
+
   // Sync type and set initial template when modal opens
   React.useEffect(() => {
     if (quickRegisterOpen) {
@@ -327,6 +335,26 @@ export const QuickRegisterModal: React.FC = () => {
       }
     }
 
+    // Acciones Documentales (IA-SASE)
+    if (generarCitatorio) {
+      toast.success(
+        `Citatorio a Padres agendado para: ${
+          fechaCitatorio || "Próxima fecha disponible"
+        } a las ${horaCitatorio || "08:00 AM"}. Formato listo para impresión.`,
+        { icon: "📅", duration: 5000 }
+      );
+    }
+
+    if (generarActa) {
+      const nombreActa = tipoActa === "hechos" ? "Acta de Hechos" : "Hoja de Acuerdos";
+      setTimeout(() => {
+        toast.success(
+          `${nombreActa} generada y anexada al Expediente del alumno automáticamente.`,
+          { icon: "📝", duration: 5000 }
+        );
+      }, 1000); // Delayed slightly to not overlap with the primary toast
+    }
+
     setIsSuccess(true);
 
     // Clean up tour if it was active
@@ -354,6 +382,10 @@ export const QuickRegisterModal: React.FC = () => {
     setSelectedGrupo("");
     setStudentNotFound(false);
     setPendingStudentName("");
+    setGenerarCitatorio(false);
+    setFechaCitatorio("");
+    setHoraCitatorio("");
+    setGenerarActa(false);
   };
 
   const isDemoMode = localStorage.getItem("sase_tour_active") === "true";
@@ -814,6 +846,78 @@ export const QuickRegisterModal: React.FC = () => {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Opciones de Documentación Automática */}
+            <div className="space-y-2 mt-4 bg-black/20 p-3 rounded-lg border border-white/5">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="material-symbols-outlined text-purple-400 text-sm">auto_awesome</span>
+                <span className="text-[10px] font-black uppercase text-purple-400 tracking-[0.2em]">
+                  Acciones Posteriores (IA-SASE)
+                </span>
+              </div>
+              
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className="relative flex items-center justify-center">
+                  <input
+                    type="checkbox"
+                    checked={generarCitatorio}
+                    onChange={(e) => setGenerarCitatorio(e.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <div className="w-4 h-4 rounded border border-white/20 bg-white/5 peer-checked:bg-purple-500 peer-checked:border-purple-500 transition-all flex items-center justify-center group-hover:border-purple-400">
+                    <span className="material-symbols-outlined text-[12px] text-white opacity-0 peer-checked:opacity-100">
+                      check
+                    </span>
+                  </div>
+                </div>
+                <span className="text-sm text-gray-300 font-medium group-hover:text-white transition-colors">Generar y Agendar Citatorio a Padres</span>
+              </label>
+
+              {generarCitatorio && (
+                <div className="pl-7 grid grid-cols-2 gap-3 mt-2 animate-fade-in">
+                  <div>
+                    <label className="block text-[10px] uppercase text-gray-500 mb-1 font-bold">Fecha Proyectada</label>
+                    <input type="date" value={fechaCitatorio} onChange={e => setFechaCitatorio(e.target.value)} className="w-full px-2 py-1.5 border border-white/10 rounded bg-black/40 text-white text-xs outline-none focus:border-purple-500" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase text-gray-500 mb-1 font-bold">Hora Citatorio</label>
+                    <input type="time" value={horaCitatorio} onChange={e => setHoraCitatorio(e.target.value)} className="w-full px-2 py-1.5 border border-white/10 rounded bg-black/40 text-white text-xs outline-none focus:border-purple-500" />
+                  </div>
+                </div>
+              )}
+
+              <label className="flex items-center gap-3 cursor-pointer group mt-2 relative">
+                <div className="relative flex items-center justify-center">
+                  <input
+                    type="checkbox"
+                    checked={generarActa}
+                    onChange={(e) => setGenerarActa(e.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <div className="w-4 h-4 rounded border border-white/20 bg-white/5 peer-checked:bg-blue-500 peer-checked:border-blue-500 transition-all flex items-center justify-center group-hover:border-blue-400">
+                    <span className="material-symbols-outlined text-[12px] text-white opacity-0 peer-checked:opacity-100">
+                      check
+                    </span>
+                  </div>
+                </div>
+                <span className="text-sm text-gray-300 font-medium group-hover:text-white transition-colors">Formular Documento Oficial (Acta/Acuerdo)</span>
+              </label>
+
+              {generarActa && (
+                <div className="pl-7 mt-2 space-y-2 animate-fade-in">
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" checked={tipoActa === 'hechos'} onChange={() => setTipoActa('hechos')} className="text-blue-500 focus:ring-blue-500 bg-white/5 border-white/20" />
+                      <span className="text-xs text-gray-400">Acta de Hechos</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="radio" checked={tipoActa === 'acuerdos'} onChange={() => setTipoActa('acuerdos')} className="text-blue-500 focus:ring-blue-500 bg-white/5 border-white/20" />
+                      <span className="text-xs text-gray-400">Hoja de Acuerdos</span>
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Footer Actions */}

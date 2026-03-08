@@ -139,27 +139,37 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
         {/* RINGS */}
         <div className="absolute inset-[-4px] rounded-full border-[1px] border-white/5 border-t-white/20 animate-[spin_4s_linear_infinite]" />
 
-            {/* OJOS LINEALES - ESTILO MODERNO FRONTAL */}
+            {/* CARA FRONTAL AMISTOSA IA-SASE */}
             <motion.div
               initial={{ y: 0 }}
               animate={{
-                y: [0, -2, 0],
+                y: [0, -3, 0],
               }}
               transition={{
                 duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
-              className="flex gap-16" // Ojos más separados para mirada frontal
+              className="flex flex-col items-center gap-2"
             >
-              {/* Ojo Izquierdo */}
-              <div
-                className="w-3.5 h-16 bg-white rounded-full blur-[1px] shadow-[0_0_20px_white]"
-              />
-              {/* Ojo Derecho */}
-              <div
-                className="w-3.5 h-16 bg-white rounded-full blur-[1px] shadow-[0_0_20px_white]"
-              />
+              {/* Ojos */}
+              <div className="flex gap-8 relative z-10">
+                {/* Ojo Izquierdo */}
+                <motion.div
+                  animate={{ scaleY: [1, 1, 0.1, 1] }}
+                  transition={{ duration: 4, repeat: Infinity, times: [0, 0.9, 0.95, 1], ease: "easeInOut" }}
+                  className="w-5 h-8 bg-white/90 rounded-full blur-[1px] shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                />
+                {/* Ojo Derecho */}
+                <motion.div
+                  animate={{ scaleY: [1, 1, 0.1, 1] }}
+                  transition={{ duration: 4, repeat: Infinity, times: [0, 0.9, 0.95, 1], ease: "easeInOut" }}
+                  className="w-5 h-8 bg-white/90 rounded-full blur-[1px] shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                />
+              </div>
+              
+              {/* Boca (Sonrisa sutil) */}
+              <div className="w-6 h-2 border-b-2 border-white/50 rounded-b-full opacity-80 mt-1 blur-[0.5px]"></div>
             </motion.div>
       </motion.div>
 

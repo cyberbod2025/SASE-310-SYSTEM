@@ -20,6 +20,7 @@ const HolographicKPI = ({
   trend,
   color = "indigo",
   delay = 0,
+  id,
 }: {
   icon: string;
   label: string;
@@ -27,6 +28,7 @@ const HolographicKPI = ({
   trend?: string;
   color?: "indigo" | "amber" | "emerald" | "rose";
   delay?: number;
+  id?: string;
 }) => {
   const colors = {
     indigo:
@@ -40,6 +42,7 @@ const HolographicKPI = ({
 
   return (
     <motion.div
+      id={id}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay * 0.1 }}
@@ -487,6 +490,7 @@ export const DashboardDireccion = () => {
               delay={1}
             />
             <HolographicKPI
+              id="kpi-assist"
               icon="monitoring"
               label="ASISTENCIA GLOBAL"
               value="98.2%"

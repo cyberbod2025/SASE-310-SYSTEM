@@ -144,10 +144,28 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     setFolio(nuevoFolio);
 
     try {
-      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+      const prompt = generarPromptDocumento(tipoDoc, datos);
+      const response = await fetch("/api/ai/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt, model: "gemini-2.0-flash" }),
+      });
 
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData?.error || response.statusText);
+      }
+
+      const data = await response.json();
+      const texto = (data?.text || "").trim();
+
+      setContenidoIA(texto);
+      setContenidoEditado(texto);
+      setFase("revision");
+      toast.success("Borrador generado por IA-SASE");
+    } catch (proxyError: any) {
+      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
       if (!apiKey) {
-        // Fallback sin IA
         const fallback = generarTextoFallback(tipoDoc, datos);
         setContenidoIA(fallback);
         setContenidoEditado(fallback);
@@ -156,26 +174,26 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         return;
       }
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      try {
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const prompt = generarPromptDocumento(tipoDoc, datos);
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const texto = response.text();
 
-      const prompt = generarPromptDocumento(tipoDoc, datos);
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const texto = response.text();
-
-      setContenidoIA(texto);
-      setContenidoEditado(texto);
-      setFase("revision");
-      toast.success("Borrador generado por IA-SASE");
-    } catch (err: any) {
-      console.error("[DOC_GEN] Error Gemini:", err);
-      // Fallback sin IA
-      const fallback = generarTextoFallback(tipoDoc, datos);
-      setContenidoIA(fallback);
-      setContenidoEditado(fallback);
-      setFase("revision");
-      toast("Documento generado sin IA (error de conexión)", { icon: "⚠️" });
+        setContenidoIA(texto);
+        setContenidoEditado(texto);
+        setFase("revision");
+        toast.success("Borrador generado por IA-SASE");
+      } catch (err: any) {
+        console.error("[DOC_GEN] Error Gemini:", err);
+        const fallback = generarTextoFallback(tipoDoc, datos);
+        setContenidoIA(fallback);
+        setContenidoEditado(fallback);
+        setFase("revision");
+        toast("Documento generado sin IA (error de conexión)", { icon: "⚠️" });
+      }
     }
   };
 

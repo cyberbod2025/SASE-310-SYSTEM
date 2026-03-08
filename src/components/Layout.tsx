@@ -135,6 +135,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           {/* Profile Section */}
           <div
+            id="sidebar-logo"
             className={`p-6 border-b border-white/5 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
           >
             <div className="flex items-center gap-4">
@@ -166,7 +167,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </div>
 
           {/* Nav Section */}
-          <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar relative z-10">
+          <nav
+            id="sidebar-nav"
+            className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar relative z-10"
+          >
             {!isSidebarCollapsed && (
               <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-4">
                 Operatividad
@@ -174,6 +178,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             )}
 
             <NavItem
+              id="nav-dashboard"
               icon="dashboard"
               label="Dashboard"
               active={currentModule === AppModule.DASHBOARD}
@@ -186,6 +191,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             />
 
             <NavItem
+              id="nav-agenda"
               icon="calendar_month"
               label="Agenda"
               active={currentModule === AppModule.AGENDA}
@@ -198,6 +204,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             />
 
             <NavItem
+              id="nav-expedientes"
               icon="folder_shared"
               label="Expedientes"
               active={currentModule === AppModule.EXPEDIENTES}
@@ -212,6 +219,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             {currentUserRole !== UserRole.SECRETARIA && (
               <>
                 <NavItem
+                  id="nav-reportes"
                   icon="analytics"
                   label="Reportes"
                   active={currentModule === AppModule.REPORTES}
@@ -224,6 +232,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 />
 
                 <NavItem
+                  id="nav-protocolos"
                   icon="policy"
                   label="Protocolos"
                   active={currentModule === AppModule.PROTOCOLOS}
@@ -280,6 +289,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </button>
 
             <button
+              id="sidebar-feedback"
               onClick={() => setIsFeedbackOpen(true)}
               title="Enviar comentarios, sugerencias o reportar errores"
               className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-xl transition-all group"
@@ -347,6 +357,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <div className="flex items-center gap-3">
             {/* Quick Report Button */}
             <button
+              id="quick-register-btn"
               onClick={() => openQuickRegister(IncidentType.CONDUCTA)}
               title="Generar un reporte de incidencia inmediato"
               aria-label="Generar reporte rápido"

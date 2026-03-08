@@ -594,7 +594,10 @@ export const DashboardPrefectura = () => {
             </div>
 
             {/* RECENT ACTIVITY STREAM */}
-            <div className="card-sase p-6 border-white/5 bg-white/[0.01] relative overflow-hidden min-h-[300px] flex flex-col">
+            <div
+              id="pref-recent-activity"
+              className="card-sase p-6 border-white/5 bg-white/[0.01] relative overflow-hidden min-h-[300px] flex flex-col"
+            >
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
@@ -679,7 +682,10 @@ export const DashboardPrefectura = () => {
           {/* RIGHT: CONTEXT + ALERTS (4 cols) */}
           <div className="lg:col-span-4 space-y-6">
             {/* CRITICAL ALERTS */}
-            <div className="card-sase p-6 border-rose-500/20 bg-rose-500/[0.02] relative overflow-hidden">
+            <div
+              id="pref-daily-alerts"
+              className="card-sase p-6 border-rose-500/20 bg-rose-500/[0.02] relative overflow-hidden"
+            >
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}

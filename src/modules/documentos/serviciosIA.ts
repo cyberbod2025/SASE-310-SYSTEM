@@ -1,5 +1,31 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+async function callGeminiProxy(prompt: string, model: string): Promise<string> {
+  const response = await fetch("/api/ai/gemini", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, model }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData?.error || response.statusText);
+  }
+
+  const data = await response.json();
+  return (data?.text || "").trim();
+}
+
+async function callGeminiDirect(prompt: string, model: string): Promise<string> {
+  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+  if (!apiKey) throw new Error("Missing VITE_GOOGLE_API_KEY");
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const geminiModel = genAI.getGenerativeModel({ model });
+  const result = await geminiModel.generateContent(prompt);
+  const response = await result.response;
+  return response.text().trim();
+}
+
 /**
  * Servicio de mejora de redacción institucional con IA.
  * Toma el texto del docente y lo mejora manteniendo la objetividad
@@ -8,15 +34,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 export async function mejorarRedaccionInstitucional(
   textoOriginal: string,
 ): Promise<{ textoMejorado: string; cambiosRealizados: string[] }> {
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-
-  if (!apiKey) {
-    return {
-      textoMejorado: textoOriginal,
-      cambiosRealizados: ["Sin conexión IA — texto sin cambios."],
-    };
-  }
-
   const prompt = `Eres el sistema IA-SASE de una escuela secundaria oficial en la Ciudad de México.
 Tu tarea es MEJORAR la redacción del siguiente texto para hacerlo institucional y formal, 
 manteniendo estricta adherencia al "Marco para la Convivencia Escolar en las Escuelas de Educación Básica del Distrito Federal".
@@ -39,11 +56,7 @@ ${textoOriginal}
 TEXTO MEJORADO:`;
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const texto = response.text();
+    const texto = await callGeminiProxy(prompt, "gemini-flash-latest");
 
     // Separar texto mejorado de la lista de cambios
     const partes = texto.split("CAMBIOS:");
@@ -55,12 +68,25 @@ TEXTO MEJORADO:`;
       .filter(Boolean);
 
     return { textoMejorado, cambiosRealizados };
-  } catch (err) {
-    console.error("[MEJORAR_REDACCION] Error:", err);
-    return {
-      textoMejorado: textoOriginal,
-      cambiosRealizados: ["Error de conexión con IA — texto sin cambios."],
-    };
+  } catch (proxyError) {
+    try {
+      const texto = await callGeminiDirect(prompt, "gemini-flash-latest");
+      const partes = texto.split("CAMBIOS:");
+      const textoMejorado = partes[0].trim();
+      const cambiosStr = partes[1]?.trim() || "";
+      const cambiosRealizados = cambiosStr
+        .split("|")
+        .map((c) => c.trim())
+        .filter(Boolean);
+
+      return { textoMejorado, cambiosRealizados };
+    } catch (err) {
+      console.error("[MEJORAR_REDACCION] Error:", err);
+      return {
+        textoMejorado: textoOriginal,
+        cambiosRealizados: ["Error de conexión con IA — texto sin cambios."],
+      };
+    }
   }
 }
 
@@ -102,21 +128,15 @@ async function ejecutarAccionIA(
   prompt: string,
   textoOriginal: string,
 ): Promise<string> {
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-
-  if (!apiKey) {
-    return textoOriginal;
-  }
-
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text().trim();
-  } catch (err) {
-    console.error("[ACCION_IA] Error:", err);
-    return textoOriginal;
+    return await callGeminiProxy(prompt, "gemini-flash-latest");
+  } catch (proxyError) {
+    try {
+      return await callGeminiDirect(prompt, "gemini-flash-latest");
+    } catch (err) {
+      console.error("[ACCION_IA] Error:", err);
+      return textoOriginal;
+    }
   }
 }
 

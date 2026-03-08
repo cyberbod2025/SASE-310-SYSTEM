@@ -83,7 +83,7 @@ export const DashboardHoy: React.FC = () => {
         className="max-w-7xl mx-auto relative z-10"
       >
         {/* Header */}
-        <header className="mb-12 border-l-4 border-blue-600 pl-6 py-2">
+        <header id="dashboard-header" className="mb-12 border-l-4 border-blue-600 pl-6 py-2">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase italic leading-none">
@@ -131,7 +131,7 @@ export const DashboardHoy: React.FC = () => {
 
             <div className="space-y-4">
               {/* Incidencias Abiertas */}
-              <div className="card-sase p-5 border-rose-500/20 bg-rose-500/[0.02] group hover:bg-rose-500/[0.05] transition-all cursor-pointer">
+              <div id="kpi-risk" className="card-sase p-5 border-rose-500/20 bg-rose-500/[0.02] group hover:bg-rose-500/[0.05] transition-all cursor-pointer">
                 <div className="flex justify-between items-start">
                   <span className="material-symbols-outlined text-rose-500">
                     warning
@@ -149,7 +149,7 @@ export const DashboardHoy: React.FC = () => {
               </div>
 
               {/* Alertas Médicas */}
-              <div className="card-sase p-5 border-blue-500/20 bg-blue-500/[0.02] group hover:bg-blue-500/[0.05] transition-all cursor-pointer">
+              <div id="kpi-assist" className="card-sase p-5 border-blue-500/20 bg-blue-500/[0.02] group hover:bg-blue-500/[0.05] transition-all cursor-pointer">
                 <div className="flex justify-between items-start">
                   <span className="material-symbols-outlined text-blue-500">
                     medical_services
@@ -305,6 +305,7 @@ export const DashboardHoy: React.FC = () => {
 
             <div className="space-y-4">
               <button
+                id="quick-register-btn"
                 onClick={() => openQuickRegister()}
                 className="w-full card-sase p-6 bg-blue-600/10 border-blue-500/30 hover:bg-blue-600 hover:border-blue-500 transition-all group relative overflow-hidden text-left"
               >

@@ -139,12 +139,6 @@ export async function generarAnalisisIA(
   incidencias: IncidenciaExpediente[],
   documentos: DocumentoExpediente[],
 ): Promise<string> {
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-
-  if (!apiKey) {
-    return "Análisis no disponible — sin conexión con IA-SASE.";
-  }
-
   const resumenIncidencias = incidencias
     .slice(0, 10)
     .map((i) => `- ${i.fecha}: ${i.tipo} — ${i.descripcion.substring(0, 80)}`)
@@ -180,14 +174,35 @@ INSTRUCCIONES:
 ANÁLISIS INSTITUCIONAL:`;
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text().trim();
-  } catch (err) {
-    console.error("[EXPEDIENTE] Error IA:", err);
-    return "Error al generar análisis con IA. Intente nuevamente.";
+    const response = await fetch("/api/ai/gemini", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, model: "gemini-2.0-flash" }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData?.error || response.statusText);
+    }
+
+    const data = await response.json();
+    return (data?.text || "").trim();
+  } catch (proxyError) {
+    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
+    if (!apiKey) {
+      return "Análisis no disponible — sin conexión con IA-SASE.";
+    }
+
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text().trim();
+    } catch (err) {
+      console.error("[EXPEDIENTE] Error IA:", err);
+      return "Error al generar análisis con IA. Intente nuevamente.";
+    }
   }
 }
 

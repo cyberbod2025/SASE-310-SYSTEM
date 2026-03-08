@@ -25,8 +25,8 @@ export const startProductTour = (
         title: `NÚCLEO SASE-310: Hola, ${userName} 👋`,
         description:
           "<div style='margin-bottom: 20px; display: flex; justify-content: center;'><div style='width: 60px; height: 60px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.3);'><span class='material-symbols-outlined' style='color: #60a5fa; font-size: 32px;'>smart_toy</span></div></div>" +
-          "Soy la <b>IA de SASE-310</b>. Mi objetivo es optimizar tu gestión escolar.<br><br>" +
-          "He configurado tu entorno de trabajo. Permíteme mostrarte los módulos clave para tu operación diaria.",
+          "Soy la <b>IA de SASE-310</b>. Mi núcleo de procesamiento está listo para optimizar tu gestión escolar.<br><br>" +
+          "He calibrado tu entorno de trabajo. Permíteme guiarte por los protocolos clave de tu operación institucional.",
         side: "center",
         align: "center",
       },
@@ -34,10 +34,10 @@ export const startProductTour = (
     {
       element: "#sidebar-logo",
       popover: {
-        title: "Tu Identidad Profesional 🛡️",
+        title: "Identidad & Rango Institucional 🛡️",
         description:
-          `El sistema ha detectado tu perfil de <b>${role}</b>. ` +
-          "Todas las herramientas, permisos y accesos directos se han configurado automáticamente para ti.",
+          `Protocolos de seguridad verificados para: <b>${role}</b>. ` +
+          "He desplegado automáticamente las facultades, accesos y herramientas que corresponden a tu rango en la estructura educativa.",
         side: "right",
         align: "start",
       },
@@ -45,9 +45,19 @@ export const startProductTour = (
     {
       element: "#sidebar-nav",
       popover: {
-        title: "Navegación Principal 🧭",
+        title: "Consola de Navegación 🧭",
         description:
-          "Aquí encontrarás los módulos esenciales para tu rol. Desde reportes hasta gestión de expedientes.",
+          "Aquí residen los módulos de inteligencia: Expedientes, Agendas y Metadatos. Todo está interconectado para que la información fluya sin fricciones.",
+        side: "right",
+        align: "center",
+      },
+    },
+    {
+      element: "#sidebar-feedback",
+      popover: {
+        title: "Sincronización de Mejoras 🗣️",
+        description:
+          "Mi red neuronal aprende de tu experiencia. Si detectas una anomalía o tienes una sugerencia de mejora, este es el portal directo hacia mis desarrolladores.",
         side: "right",
         align: "center",
       },
@@ -61,9 +71,9 @@ export const startProductTour = (
         {
           element: "#dashboard-header",
           popover: {
-            title: "Tablero de Dirección 🏛️",
+            title: "Centro de Comando Institucional 🏛️",
             description:
-              "Este es tu centro de comando. Visualiza el estado actual de la escuela con datos en tiempo real.",
+              "Esta es tu vista satelital. Desde aquí supervisas el pulso vital de la escuela con datos procesados en tiempo real.",
             side: "bottom",
             align: "start",
           },
@@ -71,9 +81,9 @@ export const startProductTour = (
         {
           element: "#kpi-assist",
           popover: {
-            title: "Termómetro de Asistencia 📈",
+            title: "Métricas de Presencia 📈",
             description:
-              "Monitoreamos la asistencia global. Un indicador clave para la retención escolar.",
+              "Monitoreo constante de asistencia. La IA detecta automáticamente desviaciones que podrían indicar riesgos de deserción.",
             side: "top",
             align: "center",
           },
@@ -81,9 +91,9 @@ export const startProductTour = (
         {
           element: "#kpi-risk",
           popover: {
-            title: "Radar de Riesgo 🚨",
+            title: "Radar de Riesgo Crítico 🚨",
             description:
-              "<b>¡Crítico!</b> Aquí verás el número de estudiantes que requieren intervención inmediata por patrones de conducta o ausentismo.",
+              "<b>Prioridad Máxima.</b> Estas son las alertas rojas que requieren tu intervención directa o delegación inmediata a protocolos de seguimiento.",
             side: "top",
             align: "center",
           },
@@ -91,9 +101,9 @@ export const startProductTour = (
         {
           element: "#panel-risk-groups",
           popover: {
-            title: "Focalización de Grupos 🎯",
+            title: "Focalización Estratégica 🎯",
             description:
-              "Identifica rápidamente qué salones necesitan mayor apoyo o supervisión de prefectura y orientación.",
+              "He identificado los grupos con mayores índices de conflicto. Dirige los recursos de Orientación y Prefectura hacia estos nodos críticos.",
             side: "right",
             align: "start",
           },
@@ -101,9 +111,9 @@ export const startProductTour = (
         {
           element: "#export-btn",
           popover: {
-            title: "Informes Ejecutivos 🖨️",
+            title: "Inteligencia Documental 🖨️",
             description:
-              "¿Junta urgente? Descarga un resumen ejecutivo con todas las métricas actuales en un clic.",
+              "Transformo los datos en reportes ejecutivos listos para imprimir. Eficacia administrativa para tus juntas de consejo.",
             side: "left",
             align: "center",
           },
@@ -116,9 +126,9 @@ export const startProductTour = (
         {
           element: "#pref-header",
           popover: {
-            title: "Control de Disciplina",
+            title: "Unidad de Control Operativo",
             description:
-              "Bienvenido al módulo de prefectura. Aquí gestionas la operación diaria del plantel.",
+              "Bienvenido, Prefecto. Tu consola está configurada para el monitoreo táctico de la convivencia diaria.",
             side: "bottom",
             align: "start",
           },
@@ -126,9 +136,9 @@ export const startProductTour = (
         {
           element: "#pref-quick-register",
           popover: {
-            title: "Registro de Incidencias ⚡",
+            title: "Ingreso de Datos Táctico ⚡",
             description:
-              "Esta es tu herramienta principal. Registra retardos, falta de uniforme o uso de celulares en segundos usando solo la matrícula.",
+              "Registra anomalías (retardos, uniforme, conducta) en menos de 5 segundos. Mi sistema se encarga del resto del papeleo legal.",
             side: "right",
             align: "center",
           },
@@ -136,9 +146,9 @@ export const startProductTour = (
         {
           element: "#pref-kpi-grid",
           popover: {
-            title: "Métricas del Día 📊",
+            title: "Análisis del Flujo Escolar 📊",
             description:
-              "Un vistazo rápido a cómo va el día: retardos acumulados y alumnos con incidencias de uniforme.",
+              "Métricas vivas sobre retardos y cumplimiento normativo. Si los números suben, es hora de un patrullaje intensivo.",
             side: "top",
             align: "center",
           },
@@ -146,9 +156,9 @@ export const startProductTour = (
         {
           element: "#pref-recent-activity",
           popover: {
-            title: "Bitácora en Vivo 🕒",
+            title: "Historial de Eventos 🕒",
             description:
-              "Aquí aparecerán todas las acciones registradas por tu equipo en tiempo real.",
+              "Seguimiento segundo a segundo de todas las incidencias en el plantel. Nada escapa al registro institucional.",
             side: "top",
             align: "center",
           },
@@ -156,9 +166,9 @@ export const startProductTour = (
         {
           element: "#pref-daily-alerts",
           popover: {
-            title: "Alertas Automáticas ⚠️",
+            title: "Detección de Patrones ⚠️",
             description:
-              "El sistema te avisará si detecta patrones preocupantes (ej. alumnos con 3 retardos seguidos).",
+              "Mis algoritmos te alertarán sobre alumnos recurrentes automáticamente. Actúa antes de que la falta se vuelva hábito.",
             side: "left",
             align: "center",
           },
@@ -169,21 +179,21 @@ export const startProductTour = (
     case UserRole.SECRETARIA:
       steps.push(
         {
-          element: "#nav-inscripciones",
+          element: "#nav-expedientes",
           popover: {
-            title: "Gestión de Matrícula 📝",
+            title: "Célula Administrativa 📝",
             description:
-              "Aquí podrás dar de alta nuevos ingresos, gestionar bajas y cambios de turno.",
+              "Gestión de expedientes e integridad de la base de datos de los alumnos. Actualizaciones de estatus en un entorno confiable.",
             side: "right",
             align: "center",
           },
         },
         {
-          element: "#nav-reportes",
+          element: "#nav-agenda",
           popover: {
-            title: "Listas Oficiales 📋",
+            title: "Coordinación de Citas y Eventos 📅",
             description:
-              "Genera listas de asistencia, concentrados de calificaciones y estadística 911.",
+              "Módulo central de agendamiento. Lleva el control de citas de área, reuniones de directivos y eventos institucionales con eficiencia.",
             side: "right",
             align: "center",
           },
@@ -196,9 +206,9 @@ export const startProductTour = (
       steps.push({
         element: "#quick-register-btn",
         popover: {
-          title: "⚡ Acción Principal: Registro Rápido",
+          title: "⚡ Protocolo de Registro Rápido",
           description:
-            "La función más importante: reportar incidencias al momento. <br>Úsalo para registrar faltas, retardos, conductas o temas de salud.",
+            "Esta es la herramienta más poderosa: <b>Reporta en solo 3 clics</b>. <br>Yo proceso la narrativa, notifico a tus superiores y genero el acta oficial. Tú solo enfócate en educar.",
           side: "bottom",
           align: "center",
         },
@@ -206,16 +216,28 @@ export const startProductTour = (
       break;
   }
 
-  // 3. Cierre
+  // 3. Feedback Global y Cierre
+  steps.push({
+    element: "#sidebar-feedback",
+    popover: {
+      title: "Voz Activa del Usuario 🗣️",
+      description:
+        "Utiliza este panel en cualquier momento para enviar tus <b>comentarios, sugerencias o reportar errores</b> directamente al equipo de Ingeniería.",
+      side: "right",
+      align: "end",
+    },
+  });
+
   steps.push({
     popover: {
-      title: "¡Estás listo! 🌟",
+      title: "Protocolo de Inducción Finalizado 🌟",
       description:
-        "Ahora tienes el control. Explora SASE-310 y transforma tu gestión escolar.<br><br><i>Si necesitas ayuda, el asistente virtual siempre estará disponible.</i>",
+        "Has sido sincronizado satisfactoriamente con el núcleo SASE-310. Explora con confianza, estás respaldado por inteligencia institucional.<br><br><i>Tu éxito es la paz de nuestra escuela.</i>",
       side: "center",
       align: "center",
     },
   });
+
 
   const driverObj = driver({
     showProgress: true,

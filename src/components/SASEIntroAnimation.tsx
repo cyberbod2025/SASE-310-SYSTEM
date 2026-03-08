@@ -29,31 +29,31 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
       const wait = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms));
       const delay = (base: number) =>
-        isFastPass ? Math.max(50, base / 3) : base;
+        isFastPass ? base * 0.7 : base; // Much slower fastpass
 
-      // STEP 0: LATENT/BLUE - Appearance
+      // STEP 0: LATENT/BLUE - Appearance (Base de Datos)
       setOrbState("blue");
-      await wait(delay(2500));
+      await wait(delay(6000));
 
       // STEP 1: ALERT/RED - "Protección"
       setStep(1);
       setOrbState("red");
-      await wait(delay(2000));
+      await wait(delay(6000));
 
       // STEP 2: WARNING/YELLOW - "Cuidado"
       setStep(2);
       setOrbState("yellow");
-      await wait(delay(2000));
+      await wait(delay(6000));
 
       // STEP 3: ZEN/GREEN - "Calma"
       setStep(3);
       setOrbState("green");
-      await wait(delay(2000));
+      await wait(delay(6000));
 
       // STEP 4: POWER/GOLD - "Bienvenida"
       setStep(4);
       setOrbState("gold");
-      await wait(delay(4500));
+      await wait(delay(6000));
 
       onComplete();
     };
@@ -73,16 +73,23 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
       case "gold":
         return "text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)]";
       default:
-        return "text-white";
+        return "text-white/80 transition-colors duration-1000";
     }
   };
 
   return (
     <div
-      className="fixed inset-0 z-[9999] bg-[#020408] flex items-center justify-center overflow-hidden touch-none"
-      onClick={() => onComplete()}
+      className="fixed inset-0 z-[9999] bg-[#020408] flex items-center justify-center overflow-hidden"
     >
-      <div className="absolute inset-0 pointer-events-none opacity-20 [background-image:radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.05)_1px,transparent_0)] [background-size:30px_30px]"></div>
+      <div className="absolute inset-0 pointer-events-none opacity-20 [background-image:radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.05)_1px,transparent_0)] [background-size:30px_30px]" onClick={() => onComplete()}></div>
+      
+      {/* SKIP BUTTON */}
+      <button 
+        onClick={() => onComplete()}
+        className="absolute top-8 right-8 z-50 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black tracking-widest uppercase text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+      >
+        Omitir Intro →
+      </button>
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -151,14 +158,16 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
                           ? "text-yellow-400"
                           : orbState === "green"
                             ? "text-green-400"
-                            : "text-blue-500"
+                            : orbState === "gold"
+                              ? "text-amber-400"
+                              : "text-blue-500"
                     }`}
                   >
-                    {orbState === "red" && "Analizando Riesgos..."}
-                    {orbState === "yellow" && "Atención Prioritaria"}
-                    {orbState === "green" && "Entorno Protegido"}
-                    {orbState === "gold" && "Bienvenido al SASE Core"}
-                    {orbState === "blue" && "Iniciando Protocolos"}
+                    {orbState === "red" && "Analizando Riesgos (Nivel Crítico)"}
+                    {orbState === "yellow" && "Atención Prioritaria (Seguimiento)"}
+                    {orbState === "green" && "Entorno Protegido (Paz Escolar)"}
+                    {orbState === "gold" && "Bienvenido al SASE Core (Excelencia)"}
+                    {orbState === "blue" && "Iniciando Protocolos (Estructura)"}
                   </h3>
 
                   <div
@@ -169,18 +178,20 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
                           ? "bg-yellow-500/30"
                           : orbState === "green"
                             ? "bg-green-500/30"
-                            : "bg-blue-500/30"
+                            : orbState === "gold"
+                              ? "bg-amber-500/30"
+                              : "bg-blue-500/30"
                     }`}
                   />
 
                   <p className="text-[14px] font-bold text-slate-300 tracking-[0.1em] uppercase max-w-[300px] leading-relaxed">
-                    {orbState === "red" && "Identificando incidencias críticas"}
+                    {orbState === "red" && "ROJO: ALERTAS CRÍTICAS Y PROTECCIÓN"}
                     {orbState === "yellow" &&
-                      "Verificando alertas de seguridad"}
-                    {orbState === "green" && "Sincronización en tiempo real"}
+                      "AMARILLO: ATENCIÓN PRIORITARIA Y SEGUIMIENTO"}
+                    {orbState === "green" && "VERDE: ENTORNO SEGURO Y PAZ INSTITUCIONAL"}
                     {orbState === "gold" &&
-                      "Protección, Protocolos y Convivencia"}
-                    {orbState === "blue" && "Cargando base de datos escolar"}
+                      "DORADO: EXCELENCIA, PROTOCOLOS Y CONVIVENCIA SASE"}
+                    {orbState === "blue" && "AZUL: BASE DE DATOS ESTÁTICA Y PROTOCOLOS"}
                   </p>
                 </motion.div>
               </AnimatePresence>
