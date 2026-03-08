@@ -180,6 +180,12 @@ export const OrbNavigation = () => {
         return [
           ...baseItems,
           {
+            id: AppModule.EXPEDIENTES,
+            label: "Expedientes",
+            icon: "folder_shared",
+            color: "from-blue-600 to-cyan-500",
+          },
+          {
             id: AppModule.APROBACIONES_PERSONAL,
             label: "Aprobaciones",
             icon: "group_add",
@@ -208,6 +214,12 @@ export const OrbNavigation = () => {
       case UserRole.DOCENTE_TUTOR:
         return [
           ...baseItems,
+          {
+            id: AppModule.EXPEDIENTES,
+            label: "Expedientes",
+            icon: "folder_shared",
+            color: "from-blue-600 to-cyan-500",
+          },
           {
             id: AppModule.AGENDA,
             label: "Agenda",
@@ -252,6 +264,12 @@ export const OrbNavigation = () => {
       case UserRole.ORIENTACION:
         return [
           ...baseItems,
+          {
+            id: AppModule.EXPEDIENTES,
+            label: "Expedientes",
+            icon: "folder_shared",
+            color: "from-blue-600 to-cyan-500",
+          },
           {
             id: AppModule.AGENDA,
             label: "Citas",
@@ -355,6 +373,12 @@ export const OrbNavigation = () => {
         return [
           ...baseItems,
           {
+            id: AppModule.EXPEDIENTES,
+            label: "Expedientes",
+            icon: "folder_shared",
+            color: "from-blue-600 to-cyan-500",
+          },
+          {
             id: AppModule.APROBACIONES_PERSONAL,
             label: "Aprobaciones",
             icon: "group_add",
@@ -382,6 +406,12 @@ export const OrbNavigation = () => {
       case UserRole.DIRECTIVO:
         return [
           ...baseItems,
+          {
+            id: AppModule.EXPEDIENTES,
+            label: "Expedientes",
+            icon: "folder_shared",
+            color: "from-blue-600 to-cyan-500",
+          },
           {
             id: AppModule.APROBACIONES_PERSONAL,
             label: "Aprobaciones",

@@ -91,7 +91,8 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
     return () => clearTimeout(timeout);
   }, [state]);
 
-  // Eye movement simulation for intro or idle
+  // Eye movement simulation disabled as per user request to "look straight"
+  /*
   useEffect(() => {
     const moveEyes = () => {
       if (Math.random() > 0.7) {
@@ -104,6 +105,7 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
     const interval = setInterval(moveEyes, 2000);
     return () => clearInterval(interval);
   }, []);
+  */
 
   const isInvincible = state === "gold";
 
@@ -137,41 +139,28 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
         {/* RINGS */}
         <div className="absolute inset-[-4px] rounded-full border-[1px] border-white/5 border-t-white/20 animate-[spin_4s_linear_infinite]" />
 
-        {/* FACE CONTAINER */}
-        <motion.div
-          animate={{ x: eyePos.x, y: eyePos.y }}
-          transition={{ type: "spring", stiffness: 100, damping: 20 }}
-          className="flex flex-col items-center gap-3"
-        >
-          {/* EYES */}
-          <div className="flex gap-12">
+            {/* OJOS LINEALES - ESTILO MODERNO FRONTAL */}
             <motion.div
+              initial={{ y: 0 }}
               animate={{
-                scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
+                y: [0, -2, 0],
               }}
               transition={{
-                repeat: isChanging ? 0 : Infinity,
                 duration: 4,
-                times: [0, 0.9, 0.92, 0.94, 1],
+                repeat: Infinity,
+                ease: "easeInOut"
               }}
-              className="w-2 h-7 bg-white rounded-sm shadow-[0_0_20px_rgba(255,255,255,0.9)]"
-            />
-            <motion.div
-              animate={{
-                scaleY: isChanging ? [1, 0.1, 1] : [1, 1, 0.1, 1, 1],
-              }}
-              transition={{
-                repeat: isChanging ? 0 : Infinity,
-                duration: 4,
-                delay: 0.1,
-                times: [0, 0.88, 0.9, 0.92, 1],
-              }}
-              className="w-2 h-7 bg-white rounded-sm shadow-[0_0_20px_rgba(255,255,255,0.9)]"
-            />
-          </div>
-
-
-        </motion.div>
+              className="flex gap-16" // Ojos más separados para mirada frontal
+            >
+              {/* Ojo Izquierdo */}
+              <div
+                className="w-3.5 h-16 bg-white rounded-full blur-[1px] shadow-[0_0_20px_white]"
+              />
+              {/* Ojo Derecho */}
+              <div
+                className="w-3.5 h-16 bg-white rounded-full blur-[1px] shadow-[0_0_20px_white]"
+              />
+            </motion.div>
       </motion.div>
 
       <style>{`

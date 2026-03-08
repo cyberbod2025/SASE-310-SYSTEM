@@ -197,6 +197,18 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               collapsed={isSidebarCollapsed}
             />
 
+            <NavItem
+              icon="folder_shared"
+              label="Expedientes"
+              active={currentModule === AppModule.EXPEDIENTES}
+              onClick={() => {
+                setCurrentModule(AppModule.EXPEDIENTES);
+                setIsSidebarOpen(false);
+              }}
+              color={currentUserRole}
+              collapsed={isSidebarCollapsed}
+            />
+
             {currentUserRole !== UserRole.SECRETARIA && (
               <>
                 <NavItem
@@ -265,6 +277,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   ? "side_navigation"
                   : "keyboard_double_arrow_left"}
               </span>
+            </button>
+
+            <button
+              onClick={() => setIsFeedbackOpen(true)}
+              title="Enviar comentarios, sugerencias o reportar errores"
+              className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-xl transition-all group"
+            >
+              <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">
+                feedback
+              </span>
+              {!isSidebarCollapsed && (
+                <span className="ml-3 text-[10px] font-black uppercase tracking-widest">
+                  Sugerencias
+                </span>
+              )}
             </button>
 
             <button

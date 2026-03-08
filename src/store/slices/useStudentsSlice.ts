@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabase/client";
+import { User } from "@supabase/supabase-js";
 import {
   Student,
   Incident,
@@ -21,7 +22,7 @@ import toast from "react-hot-toast";
 const INITIAL_STUDENTS: Student[] = [];
 
 export const useStudentsSlice = (
-  user: any,
+  user: User | null,
   currentUserRole: UserRole,
   addNotification: (notif: any) => void,
   logAudit: (
@@ -30,10 +31,9 @@ export const useStudentsSlice = (
     table: string,
     id: string,
     name?: string,
-    old?: any,
-    newVal?: any,
   ) => Promise<void>,
   fetchDailyStats: () => Promise<void>,
+  profile?: any,
 ) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
@@ -71,7 +71,7 @@ export const useStudentsSlice = (
       const { data, error } = await supabase.from("alumnos").select(`
           *,
           incidencias (
-            id, tipo, descripcion, creado_en, reportado_por
+            id, tipo, descripcion, creado_en, reportado_por, fecha, estado, reporta, clasificacion
           ),
           justificantes (
             id, folio, fecha_inicio, fecha_fin, motivo, descripcion, creado_en, emitido_por
@@ -169,6 +169,8 @@ export const useStudentsSlice = (
     evidence?: string[],
   ) => {
     const tempId = Math.random().toString(36).substr(2, 9);
+    const reporterName = profile?.nombre_completo || profile?.nombres || user?.email || "SASE-System";
+    
     const newIncidentLocal: Incident = {
       id: tempId,
       studentId,
@@ -177,6 +179,7 @@ export const useStudentsSlice = (
       date: new Date().toISOString(),
       reportedBy: currentUserRole,
       evidence,
+      reporta: reporterName, // Use profile name
     };
 
     let escalationResult: any = null;
@@ -241,12 +244,15 @@ export const useStudentsSlice = (
           tipo: type,
           descripcion: description,
           reportado_por: user?.id,
+          reporta: reporterName,
           fecha: new Date().toISOString(),
+          estado: "Nuevo",
+          clasificacion: "Institucional",
           evidencia: evidence,
         },
       ]);
       if (error) throw error;
-      toast.success("Incidencia registrada");
+      toast.success("Incidencia registrada institucionalmente");
     } catch (err: any) {
       console.error(err);
       toast.error("Error al guardar incidencia");

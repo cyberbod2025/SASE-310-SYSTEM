@@ -102,6 +102,8 @@ export const AppProvider: React.FC<{
   // 4. Inventory & Stats Slice
   const statsSlice = useInventoryStatsSlice(user);
 
+  const userProfile = auth.currentUserProfile;
+
   // 5. Students & Incidents Slice (The heavy one)
   const studentsSlice = useStudentsSlice(
     user,
@@ -109,6 +111,7 @@ export const AppProvider: React.FC<{
     notificationsSlice.addNotification,
     audit.logAudit,
     statsSlice.fetchDailyStats,
+    userProfile,
   );
 
   // 6. UI State Slice

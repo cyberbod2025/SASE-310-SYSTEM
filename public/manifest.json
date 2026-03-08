@@ -1,11 +1,15 @@
 {
   "name": "SASE | Sistema de Acompañamiento y Seguimiento Escolar",
   "short_name": "SASE",
-  "description": "Sistema de Acompañamiento y Seguimiento Escolar - ESD 310",
+  "description": "SASE - Sistema de Acompañamiento y Seguimiento Escolar",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#020617",
+  "orientation": "portrait",
+  "scope": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#fbbf24",
+  "dir": "ltr",
+  "lang": "es-MX",
   "icons": [
     {
       "src": "/assets/branding/SASE_ICON_GOLD.png",

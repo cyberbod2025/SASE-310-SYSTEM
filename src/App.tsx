@@ -71,6 +71,11 @@ const Reportes = React.lazy(() =>
     default: module.Reportes,
   })),
 );
+const Expedientes = React.lazy(() =>
+  import("./components/Expedientes").then((module) => ({
+    default: module.Expedientes,
+  })),
+);
 const BitacoraAuditoria = React.lazy(() =>
   import("./components/BitacoraAuditoria").then((module) => ({
     default: module.BitacoraAuditoria,
@@ -208,6 +213,7 @@ const MainContent = () => {
       {(() => {
         if (currentModule === AppModule.AGENDA) return <Agenda />;
         if (currentModule === AppModule.REPORTES) return <Reportes />;
+        if (currentModule === AppModule.EXPEDIENTES) return <Expedientes />;
         if (currentModule === AppModule.BITACORA) return <BitacoraAuditoria />;
         if (currentModule === AppModule.SOLICITUDES)
           return <PanelSolicitudes />;

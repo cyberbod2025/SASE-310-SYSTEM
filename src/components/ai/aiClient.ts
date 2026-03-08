@@ -1,17 +1,13 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AIRequest, AIResponse } from "./types";
 import { SECURITY_GUARDS } from "./guards";
+import { routeAI } from "./aiRouter";
 
 export class AIClient {
   private static instance: AIClient;
   public enabled: boolean = true; // Enabled by default now that we have a key
-  private genAI: GoogleGenerativeAI | null = null;
 
   private constructor() {
-    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-    if (apiKey) {
-      this.genAI = new GoogleGenerativeAI(apiKey);
-    }
+    // Inicialización administrada en aiRouter.ts
   }
 
   public static getInstance(): AIClient {
@@ -30,7 +26,7 @@ export class AIClient {
   }
 
   public async processRequest(request: AIRequest): Promise<AIResponse> {
-    if (!this.genAI || !this.enabled) {
+    if (!this.enabled) {
       return {
         taskId: request.taskId,
         status: "error",
@@ -52,27 +48,20 @@ export class AIClient {
 
     try {
       const startTime = Date.now();
-      const model = this.genAI.getGenerativeModel({
-        model:
-          request.model === "gpt-4o"
-            ? "gemini-pro-latest"
-            : "gemini-flash-latest",
-      });
 
       // Construcción del contexto para el prompt
       const contextPrompt = `Contexto del Sistema Escolar (SASE):\nRol: ${request.role}\n${JSON.stringify(request.context)}\n\nUsuario solicita: ${request.prompt}`;
 
-      const result = await model.generateContent(contextPrompt);
-      const response = await result.response;
-      const text = response.text();
+      // Llamada al router centralizado en lugar de generación directa
+      const response = await routeAI(contextPrompt, request.model);
       const latency = Date.now() - startTime;
 
       return {
         taskId: request.taskId,
         status: "success",
-        content: text,
+        content: response.text,
         metadata: {
-          tokens: response.usageMetadata?.totalTokenCount || 0,
+          tokens: response.tokens || 0,
           latency,
           riskScore: 0.05,
         },

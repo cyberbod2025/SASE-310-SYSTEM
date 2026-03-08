@@ -99,6 +99,10 @@ export interface Incident {
   subject?: string; // Optional: Academic subject
   comments?: string; // Optional: Additional supervisor comments
   evidence?: string[]; // Optional: URLs to images/docs
+  reporta?: string; // Institutional reporter name
+  estado?: string;
+  clasificacion?: string;
+  fecha?: string;
 }
 
 export interface Justificante {
@@ -271,6 +275,7 @@ export enum AppModule {
   TRABAJO_SOCIAL_TRACKER = "trabajo_social_tracker",
   LECTURA_TRACKER = "lectura_tracker",
   DEVELOPER = "developer",
+  EXPEDIENTES = "expedientes",
   NOT_FOUND = "not_found",
   HOME = "home",
   WELCOME = "welcome",

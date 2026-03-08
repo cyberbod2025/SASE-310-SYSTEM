@@ -3,19 +3,23 @@ import { UserRole, AppModule } from "../../types";
 import { useAuth } from "../../components/AuthProvider";
 
 export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
-  const { role } = useAuth();
+  const { role, profile } = useAuth();
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(initialRole);
+  const [currentUserProfile, setCurrentUserProfile] = useState<any>(null);
   const [currentModule, setCurrentModule] = useState<AppModule>(
     AppModule.WELCOME,
   );
   const [isTutorMode, setIsTutorMode] = useState(false);
 
-  // Sync role from AuthProvider
+  // Sync role and profile from AuthProvider
   useEffect(() => {
     if (role) {
       setCurrentUserRole(role as UserRole);
     }
-  }, [role]);
+    if (profile) {
+      setCurrentUserProfile(profile);
+    }
+  }, [role, profile]);
 
   const switchRole = (newRole: UserRole) => {
     setCurrentUserRole(newRole);
@@ -30,6 +34,8 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
   return {
     currentUserRole,
     setCurrentUserRole,
+    currentUserProfile,
+    setCurrentUserProfile,
     currentModule,
     setCurrentModule,
     isTutorMode,

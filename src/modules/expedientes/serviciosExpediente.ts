@@ -6,6 +6,7 @@ import type {
   EventoLinea,
   ExpedienteCompleto,
 } from "./types";
+import { generarQRDataUrl } from "../documentos/trazabilidad";
 
 /**
  * Recopila incidencias del alumno desde Supabase.
@@ -204,7 +205,6 @@ export function generarFolioExpediente(grupo: string): string {
  * Genera la plantilla HTML del expediente institucional completo.
  */
 export function generarHTMLExpediente(exp: ExpedienteCompleto): string {
-  const { generarQRDataUrl } = require("../documentos/trazabilidad");
   const qrUrl = generarQRDataUrl(exp.folio);
 
   const incidenciasHTML =
