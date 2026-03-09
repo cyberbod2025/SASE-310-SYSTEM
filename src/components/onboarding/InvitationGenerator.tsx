@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { UserRole, RoleLabels } from "../../types";
-import { GOD_MODE_CREDENTIALS } from "../../utils/saseUtils";
 
 const QRCodeSVG = ({ url }: { url: string }) => {
   return (
@@ -71,8 +70,8 @@ export const InvitationGenerator: React.FC = () => {
       pass: "SASE.INVITADO.2026",
     },
     [UserRole.DEVELOPER]: {
-      user: GOD_MODE_CREDENTIALS.email,
-      pass: GOD_MODE_CREDENTIALS.password,
+      user: "",
+      pass: "",
     },
   };
 

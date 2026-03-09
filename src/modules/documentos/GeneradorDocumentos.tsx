@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
 import { useAuth } from "../../components/AuthProvider";
@@ -164,36 +163,12 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
       setFase("revision");
       toast.success("Borrador generado por IA-SASE");
     } catch (proxyError: any) {
-      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-      if (!apiKey) {
-        const fallback = generarTextoFallback(tipoDoc, datos);
-        setContenidoIA(fallback);
-        setContenidoEditado(fallback);
-        setFase("revision");
-        toast("Documento generado (modo local — sin IA)", { icon: "📄" });
-        return;
-      }
-
-      try {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const prompt = generarPromptDocumento(tipoDoc, datos);
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const texto = response.text();
-
-        setContenidoIA(texto);
-        setContenidoEditado(texto);
-        setFase("revision");
-        toast.success("Borrador generado por IA-SASE");
-      } catch (err: any) {
-        console.error("[DOC_GEN] Error Gemini:", err);
-        const fallback = generarTextoFallback(tipoDoc, datos);
-        setContenidoIA(fallback);
-        setContenidoEditado(fallback);
-        setFase("revision");
-        toast("Documento generado sin IA (error de conexión)", { icon: "⚠️" });
-      }
+      console.error("[DOC_GEN] Error Gemini:", proxyError);
+      const fallback = generarTextoFallback(tipoDoc, datos);
+      setContenidoIA(fallback);
+      setContenidoEditado(fallback);
+      setFase("revision");
+      toast("Documento generado sin IA (error de conexión)", { icon: "⚠️" });
     }
   };
 

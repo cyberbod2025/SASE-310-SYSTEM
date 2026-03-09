@@ -1,4 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type {
   DatosAlumnoExpediente,
   IncidenciaExpediente,
@@ -188,21 +187,8 @@ ANÁLISIS INSTITUCIONAL:`;
     const data = await response.json();
     return (data?.text || "").trim();
   } catch (proxyError) {
-    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-    if (!apiKey) {
-      return "Análisis no disponible — sin conexión con IA-SASE.";
-    }
-
-    try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return response.text().trim();
-    } catch (err) {
-      console.error("[EXPEDIENTE] Error IA:", err);
-      return "Error al generar análisis con IA. Intente nuevamente.";
-    }
+    console.error("[EXPEDIENTE] Error IA:", proxyError);
+    return "Análisis no disponible — sin conexión con IA-SASE.";
   }
 }
 

@@ -15,16 +15,10 @@ const AdminLoginModal = ({
 }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin !== "31416") {
-      toast.error("PIN de Seguridad Inválido");
-      return;
-    }
-
     setLoading(true);
     // 1. Authenticate with Supabase
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -120,21 +114,6 @@ const AdminLoginModal = ({
               title="Ingrese su contraseña institucional"
             />
           </div>
-          <div>
-            <label className="block text-amber-500 text-xs uppercase font-bold mb-1">
-              PIN de Seguridad (Token)
-            </label>
-            <input
-              type="password"
-              value={pin}
-              title="PIN de seguridad (Token)"
-              onChange={(e) => setPin(e.target.value)}
-              className="w-full bg-slate-800 border border-amber-500/50 rounded p-2 text-white outline-none focus:border-amber-500 text-center tracking-[0.5em] font-mono"
-              maxLength={5}
-              placeholder="•••••"
-            />
-          </div>
-
           <button
             type="submit"
             disabled={loading}

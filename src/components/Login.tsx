@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { SaseIAOrb } from "./SaseIAOrb";
+import { SaseOrb } from "./SaseOrb";
 import {
   OFFICIAL_STAFF_LIST,
   OfficialStaffMember,
@@ -218,12 +218,11 @@ export const Login: React.FC<LoginProps> = ({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                onClick={handleAdminBypass}
-                className="cursor-pointer group flex flex-col items-center select-none"
+                className="group flex flex-col items-center select-none"
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
-                  <SaseIAOrb
-                    state="gold"
+                  <SaseOrb
+                    state="normal"
                     className="w-24 h-24 sm:w-32 sm:h-32"
                   />
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">

@@ -3,11 +3,6 @@ import { UserRole, Incident, IncidentType, ProtocolType } from "../types";
 // ==========================================
 // 1. GOD MODE & AUTH
 // ==========================================
-export const GOD_MODE_CREDENTIALS = {
-  email: import.meta.env.VITE_DEV_EMAIL || "",
-  password: import.meta.env.VITE_DEV_PASSWORD || "",
-};
-
 export const isGodMode = (role: UserRole): boolean => {
   return role === UserRole.DEVELOPER;
 };

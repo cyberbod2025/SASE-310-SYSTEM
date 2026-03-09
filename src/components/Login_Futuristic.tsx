@@ -53,14 +53,6 @@ export const Login: React.FC<LoginProps> = ({
     }
   };
 
-  const handleAdminBypass = () => {
-    const pin = prompt("Protocolo de Acceso Administrativo (S.A.S.E.)");
-    if (pin === "31416") {
-      alert(
-        "SASE PILOTO: Acceso de Super Admin.\n\nPor favor inicie sesión utilizando el formulario principal con sus credenciales institucionales.",
-      );
-    }
-  };
 
   const onIntroComplete = () => {
     setIntroFinished(true);
@@ -111,11 +103,6 @@ export const Login: React.FC<LoginProps> = ({
           {/* Pi Symbol */}
           <div
             className="absolute top-6 right-8 text-white/5 hover:text-white/40 cursor-pointer select-none transition-all text-[14px] font-bold z-30 p-2"
-            onClick={(e) => {
-              if (e.ctrlKey || e.detail >= 3) {
-                handleAdminBypass();
-              }
-            }}
           >
             π
           </div>

@@ -1,5 +1,3 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 async function callGeminiProxy(prompt: string, model: string): Promise<string> {
   const response = await fetch("/api/ai/gemini", {
     method: "POST",
@@ -14,16 +12,6 @@ async function callGeminiProxy(prompt: string, model: string): Promise<string> {
 
   const data = await response.json();
   return (data?.text || "").trim();
-}
-
-async function callGeminiDirect(prompt: string, model: string): Promise<string> {
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-  if (!apiKey) throw new Error("Missing VITE_GOOGLE_API_KEY");
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const geminiModel = genAI.getGenerativeModel({ model });
-  const result = await geminiModel.generateContent(prompt);
-  const response = await result.response;
-  return response.text().trim();
 }
 
 /**
@@ -69,24 +57,11 @@ TEXTO MEJORADO:`;
 
     return { textoMejorado, cambiosRealizados };
   } catch (proxyError) {
-    try {
-      const texto = await callGeminiDirect(prompt, "gemini-flash-latest");
-      const partes = texto.split("CAMBIOS:");
-      const textoMejorado = partes[0].trim();
-      const cambiosStr = partes[1]?.trim() || "";
-      const cambiosRealizados = cambiosStr
-        .split("|")
-        .map((c) => c.trim())
-        .filter(Boolean);
-
-      return { textoMejorado, cambiosRealizados };
-    } catch (err) {
-      console.error("[MEJORAR_REDACCION] Error:", err);
-      return {
-        textoMejorado: textoOriginal,
-        cambiosRealizados: ["Error de conexión con IA — texto sin cambios."],
-      };
-    }
+    console.error("[MEJORAR_REDACCION] Error:", proxyError);
+    return {
+      textoMejorado: textoOriginal,
+      cambiosRealizados: ["Error de conexión con IA — texto sin cambios."],
+    };
   }
 }
 
@@ -131,12 +106,8 @@ async function ejecutarAccionIA(
   try {
     return await callGeminiProxy(prompt, "gemini-flash-latest");
   } catch (proxyError) {
-    try {
-      return await callGeminiDirect(prompt, "gemini-flash-latest");
-    } catch (err) {
-      console.error("[ACCION_IA] Error:", err);
-      return textoOriginal;
-    }
+    console.error("[ACCION_IA] Error:", proxyError);
+    return textoOriginal;
   }
 }
 

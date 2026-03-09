@@ -44,10 +44,6 @@ export const calcularEstadoSistema = (
 
   if (hasIncidentsToday) return "yellow";
 
-  // 5. Estado Óptimo / IA Activa (Gris/Dorado)
-  const hasAIKey = !!import.meta.env.VITE_GOOGLE_API_KEY;
-  if (hasAIKey) return "gold";
-
-  // 6. Estable (Dorado por defecto)
+  // 5. Estable (Dorado por defecto)
   return "gold";
 };

@@ -32,35 +32,6 @@ export async function routeAI(
     const data = await response.json();
     return { text: data.text || "", tokens: data.tokens || 0 };
   } catch (proxyError: any) {
-    const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-    if (!apiKey) {
-      throw new Error(proxyError?.message || "OpenRouter proxy error");
-    }
-
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": window.location.origin,
-        "X-Title": "SASE Institucional",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: modelId,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        `OpenRouter Error: ${errorData.error?.message || response.statusText}`,
-      );
-    }
-
-    const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "";
-    const tokens = data.usage?.total_tokens || 0;
-    return { text, tokens };
+    throw new Error(proxyError?.message || "OpenRouter proxy error");
   }
 }
