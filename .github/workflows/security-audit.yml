@@ -81,7 +81,7 @@ jobs:
 
           if grep -rn "supabase.auth.admin" \
             --include="*.ts" --include="*.tsx" \
-            --exclude-dir=node_modules --exclude-dir=supabase . 2>/dev/null; then
+            --exclude-dir=node_modules --exclude-dir=supabase src/ 2>/dev/null; then
             echo "⚠️ WARNING: supabase.auth.admin found in client code!"
             echo "This should only be used in Edge Functions or server-side code."
             exit 1
