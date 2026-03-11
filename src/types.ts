@@ -12,6 +12,7 @@ export enum UserRole {
   SECRETARIA = "secretaria",
   GUEST = "guest",
   DEVELOPER = "developer",
+  SYSTEM_ADMIN = "system_admin",
 }
 
 export interface PermisosSASE {
@@ -41,6 +42,7 @@ export const RoleLabels: Record<UserRole, string> = {
   [UserRole.PROMOTORA_LECTURA]: "Fomento a la Lectura",
   [UserRole.GUEST]: "Invitado",
   [UserRole.DEVELOPER]: "Desarrollador (Acceso Total)",
+  [UserRole.SYSTEM_ADMIN]: "Soporte Nivel 3 (Root)",
 };
 
 export enum CaseState {
@@ -58,6 +60,7 @@ export enum IncidentType {
   CONDUCTA = "Observación de Convivencia", // Marco para la Convivencia (Faltas leves/graves)
   ACADEMICO = "Observación Académica",
   SALUD = "Atención Médica", // Incluye: Prevención de Adicciones / Si te drogas te dañas
+  SOCIOEMOCIONAL = "Atención Socioemocional",
   UNIFORME = "Falta de Uniforme",
 }
 
@@ -103,6 +106,10 @@ export interface Incident {
   estado?: string;
   clasificacion?: string;
   fecha?: string;
+  reportadoPorDocente?: string;
+  prefectoAsignado?: string;
+  grupoId?: string;
+  gravedad?: "leve" | "media" | "grave" | "critica"; // Impacto semáforo
 }
 
 export interface Justificante {
@@ -197,6 +204,18 @@ export interface Student {
   lastModifiedAt?: string; // ISO Date
   bapInfo?: BAPInfo;
   justificantes: Justificante[];
+  
+  // Risk Semaphore Institucional
+  puntajeRiesgo?: number;
+  estadoSemaforo?: string;
+  fechaCalculoRiesgo?: string;
+  
+  // Dimensiones de Riesgo Institucional
+  riesgoDisciplina?: number;
+  riesgoAsistencia?: number;
+  riesgoAcademico?: number;
+  riesgoSocioemocional?: number;
+
   // New: Advanced Management
   calificaciones?: Calificacion[];
   documentos?: DocumentoInstitucional[];
@@ -246,13 +265,7 @@ export interface ProtocolActivation {
   paso_actual?: number;
 }
 
-// Helper to determine state based on incident count
-export const calculateState = (incidents: Incident[]): CaseState => {
-  const recentCount = incidents.length;
-  if (recentCount === 0) return CaseState.CERRADO;
-  if (recentCount < 3) return CaseState.OBSERVADO;
-  return CaseState.PATRON_DETECTADO;
-};
+
 
 export enum AppModule {
   DASHBOARD = "dashboard",

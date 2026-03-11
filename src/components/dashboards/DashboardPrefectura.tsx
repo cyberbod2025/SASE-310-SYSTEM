@@ -5,7 +5,6 @@ import { useApp } from "../../store";
 import {
   IncidentType,
   AppModule,
-  calculateState,
   CaseState,
 } from "../../types";
 import { printContent } from "../PrintButtons";
@@ -203,28 +202,27 @@ export const DashboardPrefectura = () => {
 
   const activeAlerts = useMemo(() => {
     return students
-      .filter((s) => calculateState(s.incidents) === CaseState.PATRON_DETECTADO)
-      .slice(0, 3);
+      .filter((s) => s.caseState === CaseState.INTERVENCION || s.caseState === CaseState.EN_ANALISIS)
+      .slice(0, 5);
   }, [students]);
 
   // Pattern Data: Top Groups with Retardos
+  // Pattern Data: Top Groups by Risk
   const groupsWithDelays = useMemo(() => {
     const counts: Record<string, number> = {};
-    allIncidents
-      .filter((i) => i.type === IncidentType.RETARDO)
-      .forEach((i) => {
-        counts[i.group] = (counts[i.group] || 0) + 1;
-      });
+    students.forEach((s) => {
+      counts[s.group] = (counts[s.group] || 0) + (s.puntajeRiesgo || 0);
+    });
     return Object.entries(counts)
-      .map(([label, value]) => ({ label, value }))
+      .map(([label, value]) => ({ label, value: Math.round(value) }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 4);
-  }, [allIncidents]);
+  }, [students]);
 
-  // Pattern Data: Top Students with Incidents
+  // Pattern Data: Top Students by Risk Score
   const studentsWithIncidents = useMemo(() => {
     return [...students]
-      .map((s) => ({ label: s.name.split(" ")[0], value: s.incidents.length }))
+      .map((s) => ({ label: s.name.split(" ")[0], value: Math.round(s.puntajeRiesgo || 0) }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 4);
   }, [students]);
@@ -560,7 +558,7 @@ export const DashboardPrefectura = () => {
                 />
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
                 <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] italic mb-4 relative z-10">
-                  PATTERN // RETARDOS_POR_GRUPO
+                  PATTERN // RIESGO_POR_GRUPO
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
@@ -582,7 +580,7 @@ export const DashboardPrefectura = () => {
                 />
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
                 <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] italic mb-4 relative z-10">
-                  PATTERN // TOP_INCIDENCIAS
+                  PATTERN // TOP_RIESGOS_ACTIVOS
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
@@ -791,7 +789,7 @@ export const DashboardPrefectura = () => {
                         Estado
                       </p>
                       <p className="text-[10px] font-black text-amber-400 uppercase mt-2">
-                        {calculateState(selectedStudent.incidents)}
+                        {selectedStudent.caseState || CaseState.CERRADO}
                       </p>
                     </div>
                   </div>

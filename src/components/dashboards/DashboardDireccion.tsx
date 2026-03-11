@@ -213,14 +213,7 @@ export const DashboardDireccion = () => {
         if (comsError) throw comsError;
         setDbComunicados(comunicados || []);
 
-        // Fetch Risk Alerts
-        const { data: risks, error: risksError } = await supabase
-          .from("alumnos_en_riesgo" as any)
-          .select("*")
-          .order("total_incidencias", { ascending: false })
-          .limit(10);
-
-        if (!risksError) setRiskStudents(risks || []);
+          // Eliminar request de riesgos anterior
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
       } finally {
@@ -236,10 +229,23 @@ export const DashboardDireccion = () => {
     () =>
       students.filter(
         (s) =>
-          s.caseState === CaseState.PATRON_DETECTADO ||
           s.caseState === CaseState.INTERVENCION,
       ),
     [students],
+  );
+
+  const warningCases = useMemo(
+    () =>
+      students.filter(
+        (s) =>
+          s.caseState === CaseState.EN_ANALISIS || s.caseState === CaseState.PATRON_DETECTADO,
+      ),
+    [students],
+  );
+
+  const combinedAlerts = useMemo(
+    () => [...criticalCases, ...warningCases].sort((a,b) => (b.puntajeRiesgo || 0) - (a.puntajeRiesgo || 0)),
+    [criticalCases, warningCases]
   );
 
   const status: "nominal" | "warning" | "critical" =
@@ -697,20 +703,13 @@ export const DashboardDireccion = () => {
                       <div className="size-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-black text-3xl italic tracking-tighter shadow-2xl overflow-hidden relative">
                         {students
                           .find((c) => c.id === selectedAlertId)
-                          ?.nombre?.charAt(0) ||
-                          riskStudents
-                            .find((c) => c.alumno_id === selectedAlertId)
-                            ?.nombre?.charAt(0) ||
-                          "U"}
+                          ?.name?.charAt(0) || "U"}
                         <div className="absolute inset-0 bg-white/10 animate-shimmer"></div>
                       </div>
                       <div>
                         <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">
                           {students.find((c) => c.id === selectedAlertId)
-                            ?.nombre ||
-                            riskStudents.find(
-                              (c) => c.alumno_id === selectedAlertId,
-                            )?.nombre}
+                            ?.name}
                         </h4>
                         <p className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
                           <span className="size-1.5 bg-rose-500 rounded-full animate-ping"></span>
@@ -830,7 +829,7 @@ export const DashboardDireccion = () => {
                   </tr>
                 </thead>
                 <tbody className="text-xs">
-                  {riskStudents.length === 0 ? (
+                  {combinedAlerts.length === 0 ? (
                     <tr>
                       <td
                         colSpan={5}
@@ -840,7 +839,7 @@ export const DashboardDireccion = () => {
                       </td>
                     </tr>
                   ) : (
-                    riskStudents.slice(0, 5).map((risk, idx) => (
+                    combinedAlerts.slice(0, 10).map((risk, idx) => (
                       <tr
                         key={idx}
                         className="group/row bg-white/[0.02] hover:bg-white/[0.05] transition-all border border-white/5"
@@ -848,40 +847,40 @@ export const DashboardDireccion = () => {
                         <td className="px-4 py-4 first:rounded-l-2xl last:rounded-r-2xl border-y border-white/5 group-hover/row:border-rose-500/20 border-l group-hover/row:border-l-rose-500/50">
                           <div className="flex items-center gap-3">
                             <div className="size-8 rounded-lg bg-slate-800 flex items-center justify-center font-black text-white italic tracking-tighter">
-                              {risk.nombre?.charAt(0) || "U"}
+                              {risk.name?.charAt(0) || "U"}
                             </div>
                             <span className="font-black text-slate-200 uppercase tracking-tight italic">
-                              {risk.nombre}
+                              {risk.name}
                             </span>
                           </div>
                         </td>
                         <td className="px-4 py-4 border-y border-white/5 group-hover/row:border-rose-500/20">
                           <span className="px-2 py-1 bg-white/5 rounded border border-white/5 font-bold text-[10px] text-slate-400 uppercase tracking-widest">
-                            {risk.grupo || "N/A"}
+                            {risk.group || "N/A"}
                           </span>
                         </td>
                         <td className="px-4 py-4 border-y border-white/5 group-hover/row:border-rose-500/20">
                           <span
                             className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                              risk.nivel_alerta === "ALERTA_CRITICA"
+                              risk.caseState === CaseState.INTERVENCION
                                 ? "bg-rose-500/10 text-rose-500 border border-rose-500/20"
-                                : risk.nivel_alerta === "ALERTA_MEDIA"
+                                : risk.caseState === CaseState.EN_ANALISIS || risk.caseState === CaseState.PATRON_DETECTADO
                                   ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                                   : "bg-blue-500/10 text-blue-500 border border-blue-500/20"
                             }`}
                           >
-                            {risk.nivel_alerta?.replace("_", " ") || "NORMAL"}
+                            {risk.caseState} {risk.puntajeRiesgo ? `(${risk.puntajeRiesgo} PTS)` : ''}
                           </span>
                         </td>
                         <td className="px-4 py-4 border-y border-white/5 group-hover/row:border-rose-500/20 text-right">
                           <span className="text-lg font-black text-white italic tracking-tighter tabular-nums">
-                            {risk.total_incidencias}
+                            {risk.incidents.length}
                           </span>
                         </td>
                         <td className="px-4 py-4 first:rounded-l-2xl last:rounded-r-2xl border-y border-white/5 group-hover/row:border-rose-500/20 border-r group-hover/row:border-r-rose-500/50 text-right">
                           <button
                             onClick={() => {
-                              setSelectedAlertId(risk.alumno_id);
+                              setSelectedAlertId(risk.id);
                               document
                                 .getElementById("panel-risk-groups")
                                 ?.scrollIntoView({ behavior: "smooth" });

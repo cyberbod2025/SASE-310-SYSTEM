@@ -248,7 +248,10 @@ const MainContent = () => {
             return <DashboardUDEII />;
           case UserRole.PROMOTORA_LECTURA:
             return <DashboardLectura />;
+          case UserRole.SECRETARIA:
+            return <DashboardSecretaria />;
           case UserRole.DEVELOPER:
+          case UserRole.SYSTEM_ADMIN:
             return <DashboardDeveloper />;
           default:
             if (currentModule === (AppModule.REGISTRO_PERSONAL as any)) {
@@ -293,7 +296,6 @@ const AppShell = () => {
 const App: React.FC = () => {
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [isDemoMode, setIsDemoMode] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [showFirstLogon, setShowFirstLogon] = useState(false);
   const [setupUser, setSetupUser] = useState<{
@@ -351,7 +353,7 @@ const App: React.FC = () => {
     return <SASEIntroAnimation onComplete={() => setShowIntro(false)} />;
   }
 
-    if (!session && !isDemoMode) {
+    if (!session) {
       if (isRegistering) {
       return (
         <>
@@ -362,19 +364,9 @@ const App: React.FC = () => {
         </>
       );
       }
-      const allowDevBypass =
-        import.meta.env.DEV && import.meta.env.VITE_ALLOW_DEV_BYPASS === "true";
       return (
         <React.Suspense fallback={<LoadingSpinner />}>
           <Login
-            onDemoEnter={
-              allowDevBypass
-                ? () => {
-                    setIsDemoMode(true);
-                    setShowFirstLogon(true);
-                  }
-                : undefined
-            }
             onRegisterClick={() => setIsRegistering(true)}
           />
         </React.Suspense>

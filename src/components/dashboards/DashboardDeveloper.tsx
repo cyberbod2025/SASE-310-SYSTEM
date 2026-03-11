@@ -41,7 +41,7 @@ const SystemStat = ({
 // --- MAIN DASHBOARD ---
 
 export const DashboardDeveloper = () => {
-  const { students, currentUserRole, switchRole } = useApp();
+  const { students, currentUserRole } = useApp();
   const [logs, setLogs] = useState<string[]>([
     "Kernel initialized",
     "Auth context linked",
@@ -99,19 +99,6 @@ export const DashboardDeveloper = () => {
             <span className="material-symbols-outlined text-sm">security</span>
             Audit RLS
           </button>
-          <div className="h-10 w-px bg-white/10"></div>
-          <select
-            className="bg-slate-800 border-none rounded-xl text-[10px] font-black uppercase px-4 cursor-pointer focus:ring-2 ring-indigo-500"
-            value={currentUserRole}
-            title="Cambiar rol de usuario (Simulación)"
-            onChange={(e) => switchRole(e.target.value as UserRole)}
-          >
-            {Object.values(UserRole).map((role) => (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
 

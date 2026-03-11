@@ -10,7 +10,6 @@ import {
   Calificacion,
   DocumentoInstitucional,
   BAPInfo,
-  calculateState,
   AppModule,
   UserRole,
   AuditActionType,
@@ -75,7 +74,7 @@ export const useStudentsSlice = (
       const { data, error } = await supabase.from("alumnos").select(`
           *,
           incidencias (
-            id, tipo, descripcion, creado_en, reportado_por, fecha, estado, reporta, clasificacion
+            id, tipo, descripcion, creado_en, reportado_por, fecha, estado, reporta, clasificacion, gravedad
           ),
           justificantes (
             id, folio, fecha_inicio, fecha_fin, motivo, descripcion, creado_en, emitido_por
@@ -106,13 +105,23 @@ export const useStudentsSlice = (
           name: d.nombre_completo,
           group: d.grupo,
           avatar: d.avatar_url || "https://i.pravatar.cc/150",
-          caseState: calculateState(d.incidencias || []),
+          caseState: (d.estado_semaforo as CaseState) || CaseState.CERRADO,
+          puntajeRiesgo: d.puntaje_riesgo,
+          estadoSemaforo: d.estado_semaforo,
+          fechaCalculoRiesgo: d.fecha_calculo_riesgo,
+          riesgoDisciplina: d.riesgo_disciplina,
+          riesgoAsistencia: d.riesgo_asistencia,
+          riesgoAcademico: d.riesgo_academico,
+          riesgoSocioemocional: d.riesgo_socioemocional,
           incidents: (d.incidencias || []).map((i: any) => ({
             id: i.id,
             type: i.tipo,
             description: i.descripcion,
             date: i.fecha || i.creado_en,
             reportedBy: i.reportado_por,
+            gravedad: i.gravedad,
+            estado: i.estado,
+            clasificacion: i.clasificacion,
           })),
           justificantes: (d.justificantes || []).map((j: any) => ({
             id: j.id,

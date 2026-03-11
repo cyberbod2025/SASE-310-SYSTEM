@@ -377,7 +377,7 @@ export const QuickRegisterModal: React.FC = () => {
     setGenerarActa(false);
   };
 
-  const isDemoMode = localStorage.getItem("sase_tour_active") === "true";
+  const isTourActive = localStorage.getItem("sase_tour_active") === "true";
 
   const handleVoiceInput = (text: string) => {
     setDescription((prev) => (prev ? `${prev} ${text}` : text));
@@ -539,7 +539,7 @@ export const QuickRegisterModal: React.FC = () => {
                 </div>
               )}
 
-              {isDemoMode && (
+              {isTourActive && (
                 <div className="mt-6 flex gap-2 justify-center">
                   <span className="text-2xl animate-pulse">🎉</span>
                   <span className="text-2xl animate-pulse delay-100">⭐</span>
