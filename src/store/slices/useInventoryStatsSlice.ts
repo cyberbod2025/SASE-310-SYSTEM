@@ -30,7 +30,9 @@ export const useInventoryStatsSlice = (user: any) => {
         );
       }
     } catch (err) {
-      console.error("Error fetching suministros:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Error fetching suministros");
+      }
     }
   };
 
@@ -55,7 +57,9 @@ export const useInventoryStatsSlice = (user: any) => {
         .eq("id", id);
       if (error) throw error;
     } catch (err) {
-      console.error("Error updating stock:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Error updating stock");
+      }
       fetchSuministros();
     }
   };
@@ -80,7 +84,9 @@ export const useInventoryStatsSlice = (user: any) => {
         setDailyStats({ attendanceCount, lateCount });
       }
     } catch (err) {
-      console.error("Error fetching daily stats:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Error fetching daily stats");
+      }
     }
   };
 
@@ -107,7 +113,9 @@ export const useInventoryStatsSlice = (user: any) => {
         fetchDailyStats();
       }
     } catch (err) {
-      console.error("Error registering attendance:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Error registering attendance");
+      }
       toast.error("Error en registro de asistencia");
     }
   };

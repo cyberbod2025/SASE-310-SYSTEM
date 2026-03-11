@@ -8,10 +8,12 @@ import { join } from "path";
 dotenv.config({ path: ".env.local" });
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error("Error: Falta VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en .env.local");
+  console.error(
+    "Error: Falta VITE_SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en .env.local",
+  );
   process.exit(1);
 }
 

@@ -56,8 +56,6 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
           prompt = details;
       }
 
-      console.log("AI Prompt:", prompt);
-
       // Simulate AI Latency
       await new Promise((resolve) => setTimeout(resolve, 2000));
 

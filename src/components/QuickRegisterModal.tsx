@@ -189,17 +189,6 @@ export const QuickRegisterModal: React.FC = () => {
 
     // Handle pending student (not found in database)
     if (studentNotFound && pendingStudentName) {
-      // Log this as a pending assignment issue
-      console.log("[PENDING STUDENT]", {
-        reportedName: pendingStudentName,
-        grado: selectedGrado,
-        grupo: selectedGrupo,
-        type,
-        description,
-        reportedBy: currentUserRole,
-        timestamp: new Date().toISOString(),
-      });
-
       // Notify Secretaría and Dirección
       toast.success(
         `Incidencia registrada como PENDIENTE. Se notificará a Secretaría y Dirección para asignar alumno: "${pendingStudentName}"`,

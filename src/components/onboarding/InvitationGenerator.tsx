@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { UserRole, RoleLabels } from "../../types";
+import { useAuth } from "../AuthProvider";
 
 const QRCodeSVG = ({ url }: { url: string }) => {
   return (
@@ -16,63 +18,54 @@ const QRCodeSVG = ({ url }: { url: string }) => {
 };
 
 export const InvitationGenerator: React.FC = () => {
+  const { session } = useAuth();
   const [selectedRole, setSelectedRole] = useState<UserRole>(UserRole.DOCENTE);
   const [customName, setCustomName] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [isInviting, setIsInviting] = useState(false);
 
   const accessLink = window.location.origin;
 
-  const credentialsMap: Partial<
-    Record<UserRole, { user: string; pass: string }>
-  > = {
-    [UserRole.DIRECTIVO]: {
-      user: "director@sase.mx",
-      pass: "SASE.DIRECTIVO.2026",
-    },
-    [UserRole.SUBDIRECCION]: {
-      user: "subdirector@sase.mx",
-      pass: "SASE.SUBDIRECCION.2026",
-    },
-    [UserRole.DOCENTE]: { user: "docente@sase.mx", pass: "SASE.DOCENTE.2026" },
-    [UserRole.DOCENTE_TUTOR]: {
-      user: "tutor@sase.mx",
-      pass: "SASE.TUTOR.2026",
-    },
-    [UserRole.PREFECTURA]: {
-      user: "prefectura@sase.mx",
-      pass: "SASE.PREFECTURA.2026",
-    },
-    [UserRole.ORIENTACION]: {
-      user: "orientacion@sase.mx",
-      pass: "SASE.ORIENTACION.2026",
-    },
-    [UserRole.TRABAJO_SOCIAL]: {
-      user: "tsocial@sase.mx",
-      pass: "SASE.TSOCIAL.2026",
-    },
-    [UserRole.MEDICO_ESCOLAR]: {
-      user: "medico@sase.mx",
-      pass: "SASE.MEDICO.2026",
-    },
-    [UserRole.SECRETARIA]: {
-      user: "secretaria@sase.mx",
-      pass: "SASE.SECRETARIA.2026",
-    },
-    [UserRole.UDEII]: {
-      user: "udeii@sase.mx",
-      pass: "SASE.UDEII.2026",
-    },
-    [UserRole.PROMOTORA_LECTURA]: {
-      user: "lectura@sase.mx",
-      pass: "SASE.LECTURA.2026",
-    },
-    [UserRole.GUEST]: {
-      user: "invitado@sase.mx",
-      pass: "SASE.INVITADO.2026",
-    },
-    [UserRole.DEVELOPER]: {
-      user: "",
-      pass: "",
-    },
+  const emailRegex = /^[a-z]+\.[a-z]+@sase\.mx$/;
+
+  const handleInvite = async () => {
+    const email = inviteEmail.trim().toLowerCase();
+    if (!emailRegex.test(email)) {
+      toast.error("Correo institucional inválido. Use nombre.apellido@sase.mx");
+      return;
+    }
+
+    if (!session?.access_token) {
+      toast.error("Debe iniciar sesión para enviar invitaciones.");
+      return;
+    }
+
+    setIsInviting(true);
+    try {
+      const response = await fetch("/api/auth/invite-staff", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          email,
+          role: selectedRole,
+          fullName: customName.trim() || undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData?.error || "No se pudo enviar la invitación");
+      }
+
+      toast.success("Invitación enviada al correo institucional");
+    } catch (error: any) {
+      toast.error(error?.message || "Error al enviar la invitación");
+    } finally {
+      setIsInviting(false);
+    }
   };
 
   const roleDetails: Record<
@@ -287,10 +280,7 @@ export const InvitationGenerator: React.FC = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
-    const creds = credentialsMap[selectedRole] || {
-      user: "usuario@sase.mx",
-      pass: "******",
-    };
+    const emailValue = inviteEmail.trim().toLowerCase() || "usuario@sase.mx";
     const roleLabel = RoleLabels[selectedRole];
     const details = roleDetails[selectedRole];
 
@@ -343,19 +333,19 @@ export const InvitationGenerator: React.FC = () => {
             <p>Se formaliza su acceso al ecosistema digital <strong>SASE-310</strong>. Este sistema es el centro de operaciones técnicas y pedagógicas de nuestro plantel.</p>
             
             <div class="credentials-box">
+               <div class="cred-item">
+                 <div class="cred-label">Correo Institucional</div>
+                 <div class="cred-value">${emailValue}</div>
+               </div>
+               <div class="cred-item">
+                 <div class="cred-label">Enlace de Activación</div>
+                 <div class="cred-value">Se envía por correo</div>
+               </div>
               <div class="cred-item">
-                <div class="cred-label">Nombre de Usuario Institucional</div>
-                <div class="cred-value">${creds.user}</div>
-              </div>
-              <div class="cred-item">
-                <div class="cred-label">Clave Temporal de Acceso</div>
-                <div class="cred-value">${creds.pass}</div>
-              </div>
-              <div class="cred-item">
-                <div class="cred-label">Rol Asignado</div>
-                <div class="role-badge">${roleLabel}</div>
-              </div>
-            </div>
+               <div class="cred-label">Rol Asignado</div>
+               <div class="role-badge">${roleLabel}</div>
+             </div>
+           </div>
 
             <div class="features-section">
               <div class="features-title">Herramientas Propias de su Perfil:</div>
@@ -376,8 +366,8 @@ export const InvitationGenerator: React.FC = () => {
               </div>
             </div>
 
-            <p>Escanee su <strong>Llave de Activación</strong> (Código QR) para acceder instantáneamente al portal institucional.</p>
-          </div>
+           <p>Use el enlace de activación enviado a su correo institucional para acceder al portal.</p>
+         </div>
 
           <div class="qr-section">
             <div class="qr-box">
@@ -420,11 +410,11 @@ export const InvitationGenerator: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
-            Rol Institucional
-          </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+              Rol Institucional
+            </label>
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as UserRole)}
@@ -438,10 +428,10 @@ export const InvitationGenerator: React.FC = () => {
             ))}
           </select>
         </div>
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
-            Nombre del Destinatario
-          </label>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+              Nombre del Destinatario
+            </label>
           <input
             type="text"
             value={customName}
@@ -450,8 +440,21 @@ export const InvitationGenerator: React.FC = () => {
             title="Ingresar el nombre del destinatario de la carta"
             className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none uppercase"
           />
+          </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+              Correo Institucional
+            </label>
+            <input
+              type="email"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              placeholder="nombre.apellido@sase.mx"
+              title="Ingrese el correo institucional del personal"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none"
+            />
+          </div>
         </div>
-      </div>
 
       <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex gap-6 items-center shadow-inner">
         <QRCodeSVG url={accessLink} />
@@ -471,14 +474,25 @@ export const InvitationGenerator: React.FC = () => {
         </div>
       </div>
 
-      <button
-        onClick={handlePrint}
-        className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
-        title="Generar e imprimir carta de credenciales oficial"
-      >
-        <span className="material-symbols-outlined text-[20px]">print</span>
-        Imprimir Carta de Credenciales
-      </button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button
+          onClick={handleInvite}
+          disabled={isInviting}
+          className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-emerald-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98] disabled:opacity-60"
+          title="Enviar invitación segura por correo institucional"
+        >
+          <span className="material-symbols-outlined text-[20px]">mark_email_read</span>
+          {isInviting ? "Enviando Invitación" : "Enviar Invitación"}
+        </button>
+        <button
+          onClick={handlePrint}
+          className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
+          title="Generar e imprimir carta de credenciales oficial"
+        >
+          <span className="material-symbols-outlined text-[20px]">print</span>
+          Imprimir Carta
+        </button>
+      </div>
     </div>
   );
 };

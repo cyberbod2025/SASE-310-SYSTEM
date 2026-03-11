@@ -173,9 +173,11 @@ INSTRUCCIONES:
 ANÁLISIS INSTITUCIONAL:`;
 
   try {
+    const { buildAuthHeaders } = await import("../../components/ai/aiAuth");
+    const authHeaders = await buildAuthHeaders();
     const response = await fetch("/api/ai/gemini", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({ prompt, model: "gemini-2.0-flash" }),
     });
 
@@ -187,7 +189,9 @@ ANÁLISIS INSTITUCIONAL:`;
     const data = await response.json();
     return (data?.text || "").trim();
   } catch (proxyError) {
-    console.error("[EXPEDIENTE] Error IA:", proxyError);
+    if (import.meta.env.DEV) {
+      console.warn("[EXPEDIENTE] Error IA");
+    }
     return "Análisis no disponible — sin conexión con IA-SASE.";
   }
 }

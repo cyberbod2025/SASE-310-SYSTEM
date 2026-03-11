@@ -1,91 +1,112 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import "@testing-library/jest-dom/vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { DashboardDireccion } from "../components/dashboards/DashboardDireccion";
+import { DashboardDireccion } from "../src/components/dashboards/DashboardDireccion";
+import { AppModule, CaseState } from "../src/types";
 
 // -- HOISTED MOCKS --
 const mocks = vi.hoisted(() => ({
   printContent: vi.fn(),
+  setCurrentModule: vi.fn(),
 }));
 
 // -- MOCK STORE --
-vi.mock("../store", () => ({
+vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
       {
         id: "1",
         name: "Student One",
         incidents: [{}, {}], // 2 Incidents
-        caseState: "Patrón Detectado", // Risk case
+        caseState: CaseState.PATRON_DETECTADO,
       },
       {
         id: "2",
         name: "Student Two",
         incidents: [], // 0 Incidents
-        caseState: "Cerrado",
+        caseState: CaseState.CERRADO,
       },
     ],
+    setCurrentModule: mocks.setCurrentModule,
   }),
 }));
 
 // -- MOCK PRINT MODULE --
-vi.mock("../components/PrintButtons", () => ({
+vi.mock("../src/components/PrintButtons", () => ({
   printContent: mocks.printContent,
 }));
+
+const supabaseMocks = vi.hoisted(() => ({
+  from: vi.fn(),
+  select: vi.fn(),
+  gte: vi.fn(),
+  order: vi.fn(),
+  limit: vi.fn(),
+}));
+
+vi.mock("../src/supabase/client", () => {
+  supabaseMocks.gte.mockReturnValue({ order: supabaseMocks.order });
+  supabaseMocks.order.mockReturnValue({ limit: supabaseMocks.limit });
+  supabaseMocks.limit.mockResolvedValue({ data: [], error: null });
+  supabaseMocks.select.mockReturnValue({
+    gte: supabaseMocks.gte,
+    order: supabaseMocks.order,
+  });
+  supabaseMocks.from.mockReturnValue({ select: supabaseMocks.select });
+
+  return {
+    supabase: {
+      from: supabaseMocks.from,
+    },
+  };
+});
 
 describe("Dashboard Direccion Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders Header correctly", () => {
+  it("renders Header correctly", async () => {
     render(<DashboardDireccion />);
-
-    expect(screen.getByText(/Dirección Escolar/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tablero de Mando/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/COMMAND/i)).toBeInTheDocument();
+      expect(screen.getByText(/CENTER/i)).toBeInTheDocument();
+    });
   });
 
-  it("KPIs calculate correctly based on Store data", () => {
+  it("KPIs calculate correctly based on Store data", async () => {
     render(<DashboardDireccion />);
+    await waitFor(() => {
+      const totalCard = screen.getByText(/POBLACIÓN TOTAL/i).closest("div");
+      expect(totalCard).toHaveTextContent("2");
 
-    // Total Incidents: 2 (from Student 1)
-    // Finding text "2" within the KPI card for Incidents
-    const incidentsCard = screen
-      .getByText(/Incidencias del Mes/i)
-      .closest("div");
-    expect(incidentsCard).toHaveTextContent("2");
-
-    // Risk Cases: 1 (Student 1)
-    const riskCard = screen.getByText(/Casos en Riesgo/i).closest("div");
-    expect(riskCard).toHaveTextContent("1");
+      const protocolsCard = screen
+        .getByText(/PROTOCOLOS ACTIVOS/i)
+        .closest("div");
+      expect(protocolsCard).toHaveTextContent("1");
+    });
   });
 
-  it("Institutional Checklist toggles state", () => {
+  it("Aprobaciones button routes correctly", async () => {
     render(<DashboardDireccion />);
-
-    const checkbox = screen
-      .getByText(/Firmar actas/i)
-      .closest("li")
-      ?.querySelector("input");
-    expect(checkbox).not.toBeChecked(); // Initial false
-
-    if (checkbox) {
-      fireEvent.click(checkbox);
-      expect(checkbox).toBeChecked(); // State updated
-    } else {
-      throw new Error("Checkbox not found");
-    }
+    const approveBtn = screen.getByText(/Aprobaciones/i);
+    fireEvent.click(approveBtn);
+    await waitFor(() => {
+      expect(mocks.setCurrentModule).toHaveBeenCalledWith(
+        AppModule.APROBACIONES_PERSONAL,
+      );
+    });
   });
 
-  it("Export Report triggers print function", () => {
+  it("Export Report opens preview", async () => {
     render(<DashboardDireccion />);
 
-    const exportBtn = screen.getByText(/Exportar Informe/i);
+    const exportBtn = screen.getByText(/Exportar Log/i);
     fireEvent.click(exportBtn);
 
-    expect(mocks.printContent).toHaveBeenCalledWith(
-      expect.stringContaining("Resumen Dirección"),
-      expect.stringContaining("Resumen Ejecutivo")
-    );
+    expect(
+      await screen.findByText(/RESUMEN EJECUTIVO DE OPERACIÓN INSTITUCIONAL/i),
+    ).toBeInTheDocument();
   });
 });

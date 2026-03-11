@@ -5,15 +5,41 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.0.0";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+const getAllowedOrigins = (): string[] => {
+  const allowed = Deno.env.get("ALLOWED_ORIGINS") ?? "";
+  return allowed
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+};
+
+const buildCorsHeaders = (origin: string | null): HeadersInit => {
+  return {
+    "Access-Control-Allow-Origin": origin ?? "",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
+    Vary: "Origin",
+  };
 };
 
 serve(async (req: Request) => {
+  const origin = req.headers.get("Origin");
+  const allowedOrigins = getAllowedOrigins();
+  const isAllowedOrigin = origin ? allowedOrigins.includes(origin) : false;
+
+  if (!isAllowedOrigin) {
+    return new Response(JSON.stringify({ error: "Forbidden origin" }), {
+      headers: { "Content-Type": "application/json" },
+      status: 403,
+    });
+  }
+
+  const corsHeaders = buildCorsHeaders(origin);
+
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders, status: 204 });
   }
 
   try {

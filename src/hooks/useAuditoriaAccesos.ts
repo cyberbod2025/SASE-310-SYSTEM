@@ -35,9 +35,9 @@ export const useAuditoriaAccesos = () => {
       pantalla = "StudentAdvancedPanel",
     }: RegistroAcceso) => {
       if (!user) {
-        console.warn(
-          "[AUDIT_ACCESOS] No hay usuario autenticado, omitiendo registro.",
-        );
+        if (import.meta.env.DEV) {
+          console.warn("[AUDIT_ACCESOS] Registro omitido: sin usuario.");
+        }
         return;
       }
 
@@ -60,16 +60,13 @@ export const useAuditoriaAccesos = () => {
             },
           ]);
 
-        if (error) {
-          console.warn("[AUDIT_ACCESOS] Error al registrar:", error.message);
-        } else {
-          console.log(
-            `%c[AUDIT_ACCESOS] ${accion} → Alumno: ${alumno_id} | ${fecha} ${hora}`,
-            "color: #f59e0b; font-weight: bold;",
-          );
+        if (error && import.meta.env.DEV) {
+          console.warn("[AUDIT_ACCESOS] Error al registrar.");
         }
       } catch (err) {
-        console.warn("[AUDIT_ACCESOS] Fallo inesperado:", err);
+        if (import.meta.env.DEV) {
+          console.warn("[AUDIT_ACCESOS] Fallo inesperado.");
+        }
       }
     },
     [user, currentUserRole],

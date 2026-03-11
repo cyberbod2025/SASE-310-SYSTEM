@@ -1,7 +1,9 @@
 async function callGeminiProxy(prompt: string, model: string): Promise<string> {
+  const { buildAuthHeaders } = await import("../../components/ai/aiAuth");
+  const authHeaders = await buildAuthHeaders();
   const response = await fetch("/api/ai/gemini", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders },
     body: JSON.stringify({ prompt, model }),
   });
 
@@ -57,7 +59,9 @@ TEXTO MEJORADO:`;
 
     return { textoMejorado, cambiosRealizados };
   } catch (proxyError) {
-    console.error("[MEJORAR_REDACCION] Error:", proxyError);
+    if (import.meta.env.DEV) {
+      console.warn("[MEJORAR_REDACCION] Error");
+    }
     return {
       textoMejorado: textoOriginal,
       cambiosRealizados: ["Error de conexión con IA — texto sin cambios."],
@@ -106,7 +110,9 @@ async function ejecutarAccionIA(
   try {
     return await callGeminiProxy(prompt, "gemini-flash-latest");
   } catch (proxyError) {
-    console.error("[ACCION_IA] Error:", proxyError);
+    if (import.meta.env.DEV) {
+      console.warn("[ACCION_IA] Error");
+    }
     return textoOriginal;
   }
 }

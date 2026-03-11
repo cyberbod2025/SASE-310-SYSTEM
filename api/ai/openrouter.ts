@@ -1,3 +1,6 @@
+import { createClient } from "@supabase/supabase-js";
+import { getRateLimitKey, isRateLimited } from "./rateLimit";
+
 type VercelRequest = any;
 type VercelResponse = any;
 
@@ -10,8 +13,8 @@ const ALLOWED_MODELS = new Set([
 
 function isAllowedOrigin(origin: string | undefined): boolean {
   const allowed = process.env.ALLOWED_ORIGINS;
-  if (!allowed) return true;
-  if (!origin) return true;
+  if (!allowed) return false;
+  if (!origin) return false;
   return allowed
     .split(",")
     .map((o) => o.trim())
@@ -19,22 +22,21 @@ function isAllowedOrigin(origin: string | undefined): boolean {
     .includes(origin);
 }
 
-// TODO: Replace with a shared store (Upstash/Redis) for multi-instance rate limiting.
-const rateLimitState = new Map<string, { count: number; resetAt: number }>();
-function isRateLimited(key: string, limit = 60, windowMs = 60_000): boolean {
-  const now = Date.now();
-  const entry = rateLimitState.get(key);
-  if (!entry || entry.resetAt <= now) {
-    rateLimitState.set(key, { count: 1, resetAt: now + windowMs });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > limit;
+function setCorsHeaders(res: VercelResponse, origin: string | undefined) {
+  if (!origin) return;
+  res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization",
+  );
+  res.setHeader("Access-Control-Max-Age", "86400");
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed" });
+  if (!process.env.ALLOWED_ORIGINS) {
+    res.status(500).json({ error: "CORS origins not configured" });
     return;
   }
 
@@ -44,8 +46,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const rateKey = (req.headers["x-forwarded-for"] as string) || "unknown";
-  if (isRateLimited(rateKey)) {
+  setCorsHeaders(res, origin);
+
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method Not Allowed" });
+    return;
+  }
+
+  const authHeader =
+    req.headers.authorization || (req.headers.Authorization as string | undefined);
+  if (!authHeader || typeof authHeader !== "string") {
+    res.status(401).json({ error: "Missing authorization" });
+    return;
+  }
+
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.slice(7).trim()
+    : "";
+  if (!token) {
+    res.status(401).json({ error: "Invalid authorization" });
+    return;
+  }
+
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  const supabaseAnonKey =
+    process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    res.status(500).json({ error: "Missing Supabase credentials" });
+    return;
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const { data: authData, error: authError } = await supabase.auth.getUser(token);
+  if (authError || !authData?.user) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const rateKey = getRateLimitKey(req);
+  if (await isRateLimited(rateKey)) {
     res.status(429).json({ error: "Rate limit exceeded" });
     return;
   }

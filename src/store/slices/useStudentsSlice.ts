@@ -51,13 +51,17 @@ export const useStudentsSlice = (
         .order("nombre");
 
       if (error) {
-        console.error("Error fetching groups:", error);
+        if (import.meta.env.DEV) {
+          console.warn("Error fetching groups");
+        }
         return;
       }
 
       if (data) setGroups(data);
     } catch (err) {
-      console.error("Unexpected error fetching groups:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Unexpected error fetching groups");
+      }
     }
   }, [user]);
 
@@ -88,7 +92,9 @@ export const useStudentsSlice = (
         `);
 
       if (error) {
-        console.error("Error fetching students:", error);
+        if (import.meta.env.DEV) {
+          console.warn("Error fetching students");
+        }
         return;
       }
 
@@ -157,7 +163,9 @@ export const useStudentsSlice = (
         setStudents(mappedStudents);
       }
     } catch (err: any) {
-      console.error("Unexpected error:", err);
+      if (import.meta.env.DEV) {
+        console.warn("Unexpected error fetching students");
+      }
       toast.error("Error de conexión: " + (err.message || "Desconocido"));
     }
   }, [user]);
@@ -254,7 +262,9 @@ export const useStudentsSlice = (
       if (error) throw error;
       toast.success("Incidencia registrada institucionalmente");
     } catch (err: any) {
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.warn("Error al guardar incidencia");
+      }
       toast.error("Error al guardar incidencia");
     }
   };
@@ -300,7 +310,9 @@ export const useStudentsSlice = (
           .eq("id", studentId);
       }
     } catch (err) {
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.warn("Error al guardar justificante");
+      }
     }
   };
 
@@ -328,7 +340,9 @@ export const useStudentsSlice = (
         studentId,
       );
     } catch (err) {
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.warn("Error al actualizar calificaciones");
+      }
     }
   };
 
@@ -345,7 +359,9 @@ export const useStudentsSlice = (
         .eq("id", studentId);
       toast.success("Información UDEII actualizada");
     } catch (err) {
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.warn("Error al actualizar informacion UDEII");
+      }
     }
   };
 
@@ -368,7 +384,9 @@ export const useStudentsSlice = (
         studentId,
       );
     } catch (err) {
-      console.error(err);
+      if (import.meta.env.DEV) {
+        console.warn("Error al actualizar estado de distancia");
+      }
     }
   };
 

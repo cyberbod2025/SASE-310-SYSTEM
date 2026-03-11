@@ -91,7 +91,6 @@ export const AprobacionesPersonal: React.FC = () => {
         .select("*")
         .order("created_at", { ascending: false });
 
-      console.log("SASE Debug: Solicitudes recuperadas de DB:", data);
       if (error) throw error;
       setSolicitudes((data as unknown as Solicitud[]) || []);
     } catch (error: any) {

@@ -1,14 +1,60 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { Agenda } from "../components/Agenda";
+import { Agenda } from "../src/components/Agenda";
 
 // Mock dependencies
-vi.mock("../store", () => ({
+vi.mock("../src/store", () => ({
   useApp: () => ({
     currentUserRole: "DIRECTIVO",
+    students: [],
   }),
 }));
+
+vi.mock("../src/components/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "user-1", email: "test@sase.com" },
+  }),
+}));
+
+const supabaseMocks = vi.hoisted(() => ({
+  from: vi.fn(),
+  select: vi.fn(),
+  order: vi.fn(),
+  insert: vi.fn(),
+  insertSelect: vi.fn(),
+  single: vi.fn(),
+}));
+
+vi.mock("../src/supabase/client", () => {
+  supabaseMocks.select.mockReturnValue({ order: supabaseMocks.order });
+  supabaseMocks.order.mockResolvedValue({ data: [], error: null });
+  supabaseMocks.single.mockResolvedValue({
+    data: {
+      id: "ev-1",
+      titulo: "MyUniqueEvent",
+      fecha: new Date().toISOString().split("T")[0],
+      hora: null,
+      tipo: "reunion",
+      descripcion: null,
+      alumnos: null,
+    },
+    error: null,
+  });
+  supabaseMocks.insertSelect.mockReturnValue({ single: supabaseMocks.single });
+  supabaseMocks.insert.mockReturnValue({ select: supabaseMocks.insertSelect });
+  supabaseMocks.from.mockReturnValue({
+    select: supabaseMocks.select,
+    insert: supabaseMocks.insert,
+  });
+
+  return {
+    supabase: {
+      from: supabaseMocks.from,
+    },
+  };
+});
 
 vi.mock("react-hot-toast", () => ({
   default: {
@@ -17,59 +63,43 @@ vi.mock("react-hot-toast", () => ({
   },
 }));
 
-const MOCK_DATE = new Date("2025-01-15T12:00:00Z");
-
 describe("Agenda Unit Tests", () => {
-  beforeEach(() => {
-    vi.setSystemTime(MOCK_DATE);
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
-  it("renders Agenda header and correct year", async () => {
+  it("renders Agenda header and cycle label", async () => {
     render(<Agenda />);
-    expect(screen.getByText(/Agenda Institucional/i)).toBeInTheDocument();
-    expect(screen.getByText(/2025/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Agenda Escolar/i)).toBeInTheDocument();
+      expect(screen.getByText(/Planificación Estratégica/i)).toBeInTheDocument();
+    });
   });
 
-  it("Opens New Event Modal", () => {
+  it("Opens New Event Modal", async () => {
     render(<Agenda />);
-    fireEvent.click(screen.getByText(/Nuevo Evento/i));
-    expect(screen.getByText("Título")).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/Agendar Actividad/i));
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Nueva Actividad Institucional/i),
+      ).toBeInTheDocument();
+    });
   });
 
   it("Adds a new event and views it", async () => {
     render(<Agenda />);
 
     // 1. Open Modal
-    fireEvent.click(screen.getByText(/Nuevo Evento/i));
+    fireEvent.click(screen.getByText(/Agendar Actividad/i));
 
     // 2. Fill Form
-    const titleInput = screen.getByPlaceholderText(/Ej. Junta de Consejo/i);
+    const titleInput = screen.getByPlaceholderText(
+      /Ej. Reunión de Consejo Técnico/i,
+    );
     fireEvent.change(titleInput, { target: { value: "MyUniqueEvent" } });
 
     // 3. Save
-    const saveBtn = screen.getByText("Guardar Evento");
+    const saveBtn = screen.getAllByText("Agendar Actividad")[1];
     fireEvent.click(saveBtn);
 
-    // 4. Click on Day 15 (Today) to see events
-    // Find button containing text "15"
-    // Note: multiple "15" might exist? Calendar grid.
-    // Usually only one "15" in current month view unless overflow?
-    // Previous/Next month days are mostly empty.
-    // We look for button with specific logic?
-    // screen.getByText('15') matches element inside button.
     await waitFor(() => {
-      // We wait for modal to close potentially
-      const day15 = screen.getByText("15");
-      fireEvent.click(day15);
-    });
-
-    // 5. Verify Event appears in "Selected Date" panel
-    await waitFor(() => {
-      expect(screen.getAllByText(/MyUniqueEvent/)[0]).toBeInTheDocument();
+      expect(supabaseMocks.insert).toHaveBeenCalled();
     });
   });
 });

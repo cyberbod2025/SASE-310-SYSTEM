@@ -67,7 +67,9 @@ export class AIClient {
         },
       };
     } catch (error: any) {
-      console.error("Error en IA-SASE:", error);
+      if (import.meta.env.DEV) {
+        console.warn("Error en IA-SASE");
+      }
       return {
         taskId: request.taskId,
         status: "error",

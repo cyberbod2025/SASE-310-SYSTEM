@@ -18,9 +18,12 @@ export async function routeAI(
   }
 
   try {
+    const authHeaders = await import("./aiAuth").then((mod) =>
+      mod.buildAuthHeaders(),
+    );
     const response = await fetch("/api/ai/openrouter", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders },
       body: JSON.stringify({ prompt, model: modelId }),
     });
 
