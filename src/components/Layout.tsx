@@ -25,6 +25,7 @@ const roleColors: Record<UserRole, string> = {
   [UserRole.PROMOTORA_LECTURA]: "bg-pink-600 border-none",
   [UserRole.GUEST]: "bg-slate-800 border-none",
   [UserRole.DEVELOPER]: "bg-slate-900 border-none border-r border-white/5",
+  [UserRole.SYSTEM_ADMIN]: "bg-indigo-950 border-none",
 };
 
 const roleImages: Record<UserRole, string> = {
@@ -54,6 +55,8 @@ const roleImages: Record<UserRole, string> = {
     "https://ui-avatars.com/api/?name=Invitado&background=f1f5f9&color=0f172a",
   [UserRole.DEVELOPER]:
     "https://ui-avatars.com/api/?name=Admin&background=000&color=fff",
+  [UserRole.SYSTEM_ADMIN]:
+    "https://ui-avatars.com/api/?name=SysAdmin&background=1e1b4b&color=a5b4fc",
 };
 
 
@@ -556,6 +559,7 @@ const NavItem: React.FC<{
     [UserRole.PROMOTORA_LECTURA]: "text-pink-600",
     [UserRole.GUEST]: "text-slate-800",
     [UserRole.DEVELOPER]: "text-black",
+    [UserRole.SYSTEM_ADMIN]: "text-indigo-900",
   };
 
   const activeTextClass = textColors[color as UserRole] || "text-slate-800";

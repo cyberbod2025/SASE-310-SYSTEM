@@ -3,6 +3,7 @@
 Este documento define las reglas obligatorias para cualquier agente de IA que modifique este repositorio.
 
 Incluye:
+
 - Arquitectura real del sistema
 - Restricciones de seguridad
 - Reglas institucionales
@@ -16,6 +17,7 @@ El sistema se utiliza en una escuela real, por lo tanto la **estabilidad y traza
 Todo el dominio institucional debe mantenerse en **español**.
 
 Esto incluye:
+
 - nombres de campos
 - lógica institucional
 - etiquetas de UI
@@ -55,6 +57,7 @@ Los proveedores de IA nunca deben ser llamados directamente desde el navegador.
 SASE gestiona incidencias institucionales de estudiantes.
 
 Tipos principales:
+
 - conducta
 - asistencia
 - académico
@@ -66,7 +69,9 @@ Cada incidencia forma parte del expediente institucional del alumno.
 ### Flujo de Incidencias
 
 #### Creación
+
 Pueden crear incidencias:
+
 - docente
 - docente_tutor
 - prefectura
@@ -75,11 +80,14 @@ Pueden crear incidencias:
 - directivo
 
 #### Cierre de incidencias
+
 El docente puede cerrar una incidencia solo si:
+
 - él la creó
 - no fue escalada
 
 Si la incidencia fue escalada, pueden cerrarla:
+
 - orientacion
 - trabajo_social
 - subdireccion
@@ -87,9 +95,11 @@ Si la incidencia fue escalada, pueden cerrarla:
 - system_admin
 
 #### Rol de Prefectura
+
 Prefectura es el operador central del sistema de incidencias.
 
 Funciones:
+
 - acompañamiento al docente
 - registro de incidencias
 - seguimiento de casos
@@ -103,6 +113,7 @@ Funciones:
 SASE incluye un sistema predictivo de riesgo estudiantil.
 
 Dimensiones evaluadas:
+
 - disciplina
 - asistencia
 - académico
@@ -111,6 +122,7 @@ Dimensiones evaluadas:
 Cada incidencia contribuye a un puntaje de riesgo.
 
 ### Fuente de Verdad del Semáforo
+
 El cálculo del semáforo se realiza exclusivamente en PostgreSQL.
 
 **Regla obligatoria:**
@@ -119,6 +131,7 @@ La base de datos es la única fuente de verdad del riesgo. El frontend NO debe r
 ### Algoritmo de Riesgo
 
 Pesos por gravedad:
+
 | Gravedad | Puntos |
 |---|---|
 | leve | 1 |
@@ -127,6 +140,7 @@ Pesos por gravedad:
 | critica | 8 |
 
 Decaimiento temporal:
+
 | Edad Incidencia | Peso |
 |---|---|
 | 0-30 días | 100% |
@@ -136,13 +150,16 @@ Decaimiento temporal:
 Las incidencias no se eliminan, solo dejan de afectar el riesgo (Amnistía por tiempo).
 
 ### Regla de Reincidencia
+
 Tres incidencias graves en la misma dimensión dentro de 60 días provocan:
 `INTERVENCION` (independientemente del puntaje acumulado).
 
 ### Protección de Asistencia
+
 Incidencias menores de asistencia (retardos, uniforme) tienen límite de impacto dinámico. Un alumno no puede llegar a INTERVENCIÓN solo por retardos si no hay incidencias graves.
 
 ### Estados del Semáforo
+
 | Estado Técnico | Lenguaje Institucional UI |
 |---|---|
 | CERRADO | Acompañamiento concluido |
@@ -158,6 +175,7 @@ Incidencias menores de asistencia (retardos, uniforme) tienen límite de impacto
 Toda acción relevante queda registrada mediante Triggers inmutables.
 
 Eventos auditados:
+
 - creación de incidencias
 - cambios de estado
 - escalamiento
@@ -170,7 +188,8 @@ El registro se implementa con triggers en PostgreSQL. El historial no puede modi
 
 ## Roles del Sistema
 
-### Roles institucionales:
+### Roles institucionales
+
 - docente
 - docente_tutor
 - prefectura
@@ -183,7 +202,7 @@ El registro se implementa con triggers en PostgreSQL. El historial no puede modi
 - directivo
 - subdireccion
 
-### Roles Técnicos:
+### Roles Técnicos
 
 - **developer**: Rol de desarrollo. Puede acceder a dashboards técnicos y herramientas de depuración. No debe usarse en producción institucional.
 - **system_admin**: Rol de recuperación del sistema (Root Level). Capacidades: bypass completo de RLS, acceso total a tablas, recuperación de registros, cierre de incidencias huérfanas, mantenimiento del sistema. No debe aparecer en interfaces institucionales para otros roles.
@@ -200,6 +219,7 @@ Seguridad implementada en tres capas.
 3. **Database**: Row Level Security (RLS), políticas por rol, triggers de auditoría.
 
 **Regla Crítica de Permisos:** Los permisos nunca deben modificarse solo en frontend. Cambios de permisos requieren actualizar:
+
 - políticas RLS
 - permisos.ts
 - tipos en types.ts
@@ -207,16 +227,19 @@ Seguridad implementada en tres capas.
 ### Variables de Entorno
 
 Frontend (Acceso mediante `import.meta.env`):
+
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 
 Backend (Acceso mediante `process.env`):
+
 - `SUPABASE_SERVICE_ROLE_KEY`
 - claves de IA
 
 **Nunca exponer:** service_role, claves de IA en frontend.
 
 ### Llamadas a IA
+
 Las llamadas a IA deben realizarse únicamente mediante `api/ai/openrouter.ts` o `api/ai/gemini.ts`. Nunca llamar IA directamente desde el navegador.
 
 ---
@@ -224,13 +247,16 @@ Las llamadas a IA deben realizarse únicamente mediante `api/ai/openrouter.ts` o
 ## Reglas de Estabilidad Institucional
 
 El sistema opera en un entorno escolar real. Por lo tanto:
+
 - no eliminar columnas sin migración
 - no renombrar campos sin migración
 - no modificar roles sin revisar RLS
 - no alterar la estructura de incidencias sin revisión
 
 ### Reglas para Agentes de IA
+
 Cuando modifiques el sistema:
+
 1. mantener terminología institucional en español
 2. no recalcular el semáforo en frontend
 3. no cambiar permisos sin revisar RLS
@@ -238,7 +264,9 @@ Cuando modifiques el sistema:
 5. validar inputs en backend
 
 ### Prevención de Errores Comunes
+
 Agentes no deben:
+
 - exponer claves en frontend
 - permitir cambio de rol desde UI
 - recalcular riesgo en React
@@ -249,6 +277,7 @@ Agentes no deben:
 ## Estado del Proyecto
 
 Infraestructura actual:
+
 - React + Vite
 - Supabase PostgreSQL
 - Vercel Serverless
@@ -260,6 +289,7 @@ Versión activa aproximada: v4
 ---
 
 ## Nota Final
+
 SASE-310 es un sistema institucional real, no un proyecto experimental. Las modificaciones deben preservar: integridad de datos, trazabilidad institucional, seguridad del sistema.
 
 ### Cosas que conviene prevenir desde ahora (Advertencias a futuro)

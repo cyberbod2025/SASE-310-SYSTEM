@@ -494,16 +494,16 @@ export const QuickRegisterModal: React.FC = () => {
             <div className="p-12 flex flex-col items-center justify-center text-center">
               <div className="w-20 h-20 bg-gradient-to-tr from-green-400 to-emerald-600 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg shadow-green-500/30">
                 <span className="material-symbols-outlined text-white text-5xl">
-                  {isDemoMode ? "military_tech" : "check"}
+                  {isTourActive ? "military_tech" : "check"}
                 </span>
               </div>
               <h4 className="text-2xl font-bold text-white mb-2">
-                {isDemoMode
+                {isTourActive
                   ? "¡Misión Completada! 🚀"
                   : "Registrado Correctamente"}
               </h4>
               <p className="text-gray-300 mb-6">
-                {isDemoMode
+                {isTourActive
                   ? "Has dominado el registro rápido. ¡Tu campus está bajo control!"
                   : "La incidencia se ha guardado en el expediente."}
               </p>

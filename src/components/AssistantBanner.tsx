@@ -32,6 +32,8 @@ const roleImages: Record<UserRole, string> = {
     "https://ui-avatars.com/api/?name=Invitado&background=f1f5f9&color=0f172a",
   [UserRole.DEVELOPER]:
     "https://ui-avatars.com/api/?name=Admin&background=000&color=fff",
+  [UserRole.SYSTEM_ADMIN]:
+    "https://ui-avatars.com/api/?name=SysAdmin&background=1e1b4b&color=a5b4fc",
 };
 
 interface PendingAction {

@@ -274,6 +274,15 @@ export const InvitationGenerator: React.FC = () => {
         },
       ],
     },
+    [UserRole.SYSTEM_ADMIN]: {
+      icons: [
+        {
+          icon: "admin_panel_settings",
+          label: "Administración del Sistema",
+          desc: "Acceso total, bypass RLS, recuperación y mantenimiento.",
+        },
+      ],
+    },
   };
 
   const handlePrint = () => {
