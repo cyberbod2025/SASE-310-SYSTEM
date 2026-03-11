@@ -12,7 +12,7 @@ const RadarEscolar = React.lazy(() => import("./components/RadarEscolar").then(m
 const DashboardDocente = React.lazy(() => import("./components/dashboards/DashboardDocente").then(m => ({ default: m.DashboardDocente })));
 const MisGrupos = React.lazy(() => import("./components/MisGrupos").then(m => ({ default: m.MisGrupos })));
 
-// Componentes que se vuelven diferidos: SASEIntroAnimation, FirstLogonSetup, OfficialDocument, PrintPreviewModal, IASaseAgent
+// Componentes que se vuelven diferidos: SASEIntroAnimation, FirstLogonSetup, OfficialDocument, PrintPreviewModal
 
 // Dashboards (Lazy Loaded)
 const DashboardPrefectura = React.lazy(() =>
@@ -155,11 +155,6 @@ const PrintPreviewModal = React.lazy(() =>
     default: module.PrintPreviewModal,
   })),
 );
-const IASaseAgent = React.lazy(() =>
-  import("./components/IASaseAgent").then((module) => ({
-    default: module.IASaseAgent,
-  })),
-);
 
 // Loading Component
 const LoadingSpinner = () => (
@@ -281,9 +276,6 @@ const AppShell = () => {
   return (
     <ErrorBoundary>
       <React.Suspense fallback={<LoadingSpinner />}>
-        <IASaseAgent />
-      </React.Suspense>
-      <React.Suspense fallback={<LoadingSpinner />}>
         {isWelcome && showRadar ? (
           <RadarEscolar onComplete={() => setShowRadar(false)} />
         ) : isWelcome ? (
@@ -359,8 +351,8 @@ const App: React.FC = () => {
     return <SASEIntroAnimation onComplete={() => setShowIntro(false)} />;
   }
 
-  if (!session && !isDemoMode) {
-    if (isRegistering) {
+    if (!session && !isDemoMode) {
+      if (isRegistering) {
       return (
         <>
           <Toaster position="top-center" reverseOrder={false} />
@@ -369,32 +361,25 @@ const App: React.FC = () => {
           </React.Suspense>
         </>
       );
+      }
+      const allowDevBypass =
+        import.meta.env.DEV && import.meta.env.VITE_ALLOW_DEV_BYPASS === "true";
+      return (
+        <React.Suspense fallback={<LoadingSpinner />}>
+          <Login
+            onDemoEnter={
+              allowDevBypass
+                ? () => {
+                    setIsDemoMode(true);
+                    setShowFirstLogon(true);
+                  }
+                : undefined
+            }
+            onRegisterClick={() => setIsRegistering(true)}
+          />
+        </React.Suspense>
+      );
     }
-    return (
-      <React.Suspense fallback={<LoadingSpinner />}>
-        <Login
-          onDemoEnter={() => {
-            setIsDemoMode(true);
-            setShowFirstLogon(true);
-          }}
-          onDevEnter={() => {
-            setInitialRole(UserRole.DEVELOPER);
-            setIsDemoMode(true);
-          }}
-          onRegisterClick={() => setIsRegistering(true)}
-          onFirstLogon={(member) => {
-            setInitialRole(member.role);
-            setSetupUser({
-              fullName: member.full_name,
-              email: member.username + "@sase.mx",
-            });
-            setIsDemoMode(true);
-            setShowFirstLogon(true);
-          }}
-        />
-      </React.Suspense>
-    );
-  }
 
   return (
     <AppProvider initialRole={initialRole}>

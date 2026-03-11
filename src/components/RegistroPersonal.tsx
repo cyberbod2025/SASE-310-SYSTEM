@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { OFFICIAL_STAFF_LIST } from "../data/officialStaff";
 import { normalizeString, cleanCURP } from "../utils/stringUtils";
 import { useRef } from "react";
 
@@ -294,20 +293,30 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
       `${formData.nombres} ${formData.apellidoPaterno} ${formData.apellidoMaterno}`,
     ).replace(/\s+/g, " ");
 
-    const officialMatch = OFFICIAL_STAFF_LIST.find(
-      (staff) =>
-        normalizeString(staff.full_name).replace(/\s+/g, " ") ===
-        fullNameNormalized,
-    );
+    let verifiedRole: string | null = null;
+    try {
+      const verifyResponse = await fetch("/api/auth/verify-staff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName: fullNameNormalized }),
+      });
 
-    if (!officialMatch) {
-      return toast.error(
-        "Su nombre no coincide exactamente con la nómina oficial del plantel 310. Por favor, asegúrese de escribir sus apellidos tal como aparecen en sus talones de pago o acuda a Dirección.",
-      );
+      if (!verifyResponse.ok) {
+        throw new Error("No se pudo validar la nómina oficial");
+      }
+
+      const verifyData = await verifyResponse.json();
+      if (!verifyData?.match) {
+        return toast.error(
+          "Su nombre no coincide con la nómina oficial del plantel 310. Verifique sus apellidos o acuda a Dirección.",
+        );
+      }
+
+      verifiedRole = verifyData.role || null;
+    } catch (verifyError) {
+      console.error(verifyError);
+      return toast.error("Error al validar la nómina oficial");
     }
-
-    // Auto-assign role from official list if user didn't select one or if we want to enforce it
-    const finalRole = officialMatch.role;
 
     if (
       !formData.preguntaSeguridad1 ||
@@ -325,10 +334,11 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
       const randomNum = Math.floor(Math.random() * 1000);
       const folio = `REQ-${new Date().getFullYear()}-${String(randomNum).padStart(4, "0")}`;
 
+      const roleToRequest = verifiedRole || formData.rol;
       const { error } = await supabase
         .from("solicitudes_alta_personal")
         .insert({
-          rol_solicitado: [formData.rol],
+          rol_solicitado: [roleToRequest],
           turno: formData.turno,
           nombres: formData.nombres.toUpperCase(),
           apellido_paterno: formData.apellidoPaterno.toUpperCase(),

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import DOMPurify from "dompurify";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
 import { useAuth } from "../../components/AuthProvider";
@@ -721,7 +722,9 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-inner max-h-[50vh] overflow-y-auto">
                 <div
                   className="p-8"
-                  dangerouslySetInnerHTML={{ __html: htmlFinal }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(htmlFinal),
+                  }}
                 />
               </div>
             </div>

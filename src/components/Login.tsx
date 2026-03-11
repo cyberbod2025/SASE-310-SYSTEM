@@ -1,35 +1,23 @@
 // SASE Login - Institutional Portal (Liquid Glass Identity 2026)
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SaseOrb } from "./SaseOrb";
-import {
-  OFFICIAL_STAFF_LIST,
-  OfficialStaffMember,
-} from "../data/officialStaff";
-import { generateTempCode } from "../utils/security/generateTempCode";
 
 interface LoginProps {
   onDemoEnter?: () => void;
-  onDevEnter?: () => void;
   onRegisterClick?: () => void;
-  onFirstLogon?: (member: OfficialStaffMember) => void;
-  onPilotLogin?: (member: OfficialStaffMember) => void;
 }
 
 export const Login: React.FC<LoginProps> = ({
   onDemoEnter,
-  onDevEnter,
   onRegisterClick,
-  onFirstLogon,
-  onPilotLogin,
 }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showAdminPortal, setShowAdminPortal] = useState(false);
 
   // Recovery State
   const [showRecovery, setShowRecovery] = useState(false);
@@ -48,68 +36,27 @@ export const Login: React.FC<LoginProps> = ({
     q2: "¿Título de su libro favorito?",
   });
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.altKey &&
-        (e.key.toLowerCase() === "s" || e.key.toLowerCase() === "π")
-      ) {
-        setShowAdminPortal((prev) => !prev);
-        toast.success("Accesos Especiales Activados", {
-          icon: "🛡️",
-          style: {
-            background: "#0f172a",
-            color: "#fff",
-            border: "1px solid rgba(59, 130, 246, 0.2)",
-            fontSize: "10px",
-            fontWeight: "900",
-            textTransform: "uppercase",
-          },
-        });
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // 1. Check against Official Staff List (Pilot Mode)
-    const officialMember = OFFICIAL_STAFF_LIST.find(
-      (m) => m.username.toLowerCase() === username.toLowerCase(),
-    );
+    const normalizedEmail = username.includes("@")
+      ? username.trim().toLowerCase()
+      : `${username.trim().toLowerCase()}@sase.mx`;
+    const emailRegex = /^[a-z]+\.[a-z]+@sase\.mx$/;
 
-    if (officialMember) {
-      // Protocolo de acceso temporal dinámico para modo Pilot
-      const effectiveCode = officialMember.temporary_code || generateTempCode(); 
-      
-      if (password === effectiveCode) {
-        toast.success(
-          `Bienvenido ${officialMember.full_name}. Iniciando configuración de cuenta.`,
-        );
-        if (onFirstLogon) onFirstLogon(officialMember);
-        setLoading(false);
-        return;
-      }
-      // If it's a known user but password doesn't match provisional, it might be their custom one.
-      // For the pilot, we assume if they exist and pass matches PROVISIONAL, it's first time.
-      // If password is NOT provisional, we might need a real DB check.
+    if (!emailRegex.test(normalizedEmail)) {
+      toast.error("Correo institucional inválido. Use nombre.apellido@sase.mx");
+      setLoading(false);
+      return;
     }
 
-    // 2. Fallback to Supabase Auth (for emails)
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: username.includes("@") ? username : `${username}@sase.mx`, // Auto-alias for pilot
+    const { error } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
       password,
     });
 
     if (error) {
-      // Si falló Supabase pero es Pilot, podemos simular el éxito para el demo si el password es el provisional
-      // Pero mejor ser estrictos.
       toast.error("Protocolo Rechazado: Credenciales no válidas", {
         style: {
           background: "#1e1b4b",
@@ -120,32 +67,13 @@ export const Login: React.FC<LoginProps> = ({
         },
       });
       setLoading(false);
-    } else if (onDemoEnter) {
-      // Logged in with Supabase
+      return;
+    }
+
+    if (onDemoEnter) {
       onDemoEnter();
     }
-  };
-
-  const [bypassClicks, setBypassClicks] = useState(0);
-
-  const handleAdminBypass = (e: React.MouseEvent) => {
-    // Blindaje de acceso: Triple Click + Shift + Alt activa el prompt
-    if (e.altKey && e.shiftKey) {
-      const newClicks = bypassClicks + 1;
-      setBypassClicks(newClicks);
-
-      if (newClicks >= 3) {
-        const pin = prompt(
-          "SASE Security Protocol - Enter Authorization Level 5",
-        );
-        if (pin === "31416") {
-          if (onDevEnter) onDevEnter();
-        }
-        setBypassClicks(0);
-      }
-    } else {
-      setBypassClicks(0);
-    }
+    setLoading(false);
   };
 
   return (
@@ -298,11 +226,9 @@ export const Login: React.FC<LoginProps> = ({
                   >
                     CONTRASEÑA
                   </label>
-                  {showAdminPortal && (
-                    <span className="text-blue-500 animate-pulse text-[8px] font-black uppercase tracking-widest">
-                      Override Activo
-                    </span>
-                  )}
+                  <span className="text-blue-500/70 text-[8px] font-black uppercase tracking-widest">
+                    Acceso institucional
+                  </span>
                 </div>
                 <div className="relative group/input">
                   <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-blue-500 transition-colors text-xl">

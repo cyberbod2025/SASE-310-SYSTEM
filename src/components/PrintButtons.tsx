@@ -1,4 +1,5 @@
 import React from "react";
+import DOMPurify from "dompurify";
 
 interface PrintButtonsProps {
   compact?: boolean;
@@ -31,6 +32,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
 
       const printWindow = window.open("", "_blank");
       if (printWindow) {
+        const sanitizedContent = DOMPurify.sanitize(content.innerHTML);
         printWindow.document.write(`
           <!DOCTYPE html>
           <html>
@@ -84,7 +86,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
                 },
               )}</div>
             </div>
-            ${content.innerHTML}
+            ${sanitizedContent}
             <div class="footer">
               Sistema de Administración Escolar SASE-310 • Documento generado automáticamente • Propiedad de la institución
             </div>
@@ -143,6 +145,7 @@ export const printContent = (title: string, htmlContent: string) => {
   const leftLogo = `${window.location.origin}/assets/branding/SASE.png`;
   const rightLogo = `${window.location.origin}/assets/branding/PILOTO.png`;
   if (printWindow) {
+    const sanitizedContent = DOMPurify.sanitize(htmlContent);
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -277,7 +280,7 @@ export const printContent = (title: string, htmlContent: string) => {
         
         <div class="report-title">${title}</div>
         
-        ${htmlContent}
+        ${sanitizedContent}
         
         <div class="footer">
           <div class="footer-system">Sistema de Administración Escolar SASE-310</div>

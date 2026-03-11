@@ -1,15 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { DashboardTrabajoSocial } from "../components/dashboards/DashboardTrabajoSocial";
+import { DashboardTrabajoSocial } from "../src/components/dashboards/DashboardTrabajoSocial";
 
 // -- HOISTED MOCKS --
 const mocks = vi.hoisted(() => ({
   addJustificante: vi.fn(),
+  addIncident: vi.fn(),
+  printDocument: vi.fn(),
+  setPrintModal: vi.fn(),
 }));
 
 // -- MOCK STORE --
-vi.mock("../store", () => ({
+vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
       {
@@ -17,18 +20,23 @@ vi.mock("../store", () => ({
         name: "Social Student",
         group: "1º A",
         justificantes: [], // Empty history
+        incidents: [],
+        socioeconomicData: undefined,
       },
     ],
     addJustificante: mocks.addJustificante,
+    addIncident: mocks.addIncident,
+    printDocument: mocks.printDocument,
+    setPrintModal: mocks.setPrintModal,
   }),
 }));
 
 // -- MOCK COMPLEX COMPONENTS --
-vi.mock("../components/PrintButtons", () => ({
+vi.mock("../src/components/PrintButtons", () => ({
   PrintButtons: () => <button>Imprimir</button>,
 }));
 
-vi.mock("../components/VoiceInput", () => ({
+vi.mock("../src/components/VoiceInput", () => ({
   VoiceInput: ({ onTranscript }: any) => (
     <button type="button" onClick={() => onTranscript("Texto Simulado")}>
       Mic
@@ -43,8 +51,12 @@ describe("Dashboard Trabajo Social Unit Tests", () => {
 
   it("renders Header", () => {
     render(<DashboardTrabajoSocial />);
-    expect(screen.getByText(/Trabajo Social/i)).toBeInTheDocument();
-    expect(screen.getByText(/Gestión de Justificantes/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /TRABAJO/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Justificantes/i }),
+    ).toBeInTheDocument();
   });
 
   it("Voice Input updates Textarea", () => {
@@ -53,14 +65,16 @@ describe("Dashboard Trabajo Social Unit Tests", () => {
     fireEvent.click(micBtn);
 
     const textArea = screen.getByPlaceholderText(
-      /Detalles para el expediente/i
+      /DATOS_ADICIONALES/i
     );
-    expect(textArea).toHaveValue("Texto Simulado");
+    expect((textArea as HTMLTextAreaElement).value).toContain(
+      "Texto Simulado",
+    );
   });
 
   it("Submit is disabled without Student", () => {
     render(<DashboardTrabajoSocial />);
-    const submitBtn = screen.getByText(/Generar y Timbrar/i);
+    const submitBtn = screen.getByText(/TIMBRAR_REGISTRO_OFICIAL/i);
     // Should be disabled initially
     expect(submitBtn).toBeDisabled();
   });

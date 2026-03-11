@@ -1,14 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { DashboardEnfermeria } from "../components/dashboards/DashboardEnfermeria";
+import { DashboardEnfermeria } from "../src/components/dashboards/DashboardEnfermeria";
 
 const mocks = vi.hoisted(() => ({
   setQuickRegisterOpen: vi.fn(),
   setCurrentModule: vi.fn(),
+  updateSuministroStock: vi.fn(),
+  addIncident: vi.fn(),
 }));
 
-vi.mock("../store", () => ({
+vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
       {
@@ -22,8 +24,33 @@ vi.mock("../store", () => ({
     ],
     setQuickRegisterOpen: mocks.setQuickRegisterOpen,
     setCurrentModule: mocks.setCurrentModule,
+    updateSuministroStock: mocks.updateSuministroStock,
+    addIncident: mocks.addIncident,
+    suministros: [
+      { id: "med-1", nombre: "Paracetamol", cantidad: 2, cantidadMaxima: 10 },
+    ],
   }),
 }));
+
+const supabaseMocks = vi.hoisted(() => ({
+  from: vi.fn(),
+  select: vi.fn(),
+  ilike: vi.fn(),
+  single: vi.fn(),
+}));
+
+vi.mock("../src/supabase/client", () => {
+  supabaseMocks.ilike.mockReturnValue({ single: supabaseMocks.single });
+  supabaseMocks.single.mockResolvedValue({ data: null, error: null });
+  supabaseMocks.select.mockReturnValue({ ilike: supabaseMocks.ilike });
+  supabaseMocks.from.mockReturnValue({ select: supabaseMocks.select });
+
+  return {
+    supabase: {
+      from: supabaseMocks.from,
+    },
+  };
+});
 
 vi.mock("react-hot-toast", () => ({
   default: {
@@ -39,30 +66,24 @@ describe("Dashboard Enfermeria Unit Tests", () => {
 
   it("renders Header correctly", () => {
     render(<DashboardEnfermeria />);
-    expect(screen.getByText(/Enfermería/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /MEDICAL/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/SISTEMA TÁCTICO DE SALUD INSTITUCIONAL/i),
+    ).toBeInTheDocument();
   });
 
   it("Opens Quick Consultation modal", () => {
     render(<DashboardEnfermeria />);
 
-    // Find New Consultation card
-    const newConsultCard = screen.getByText("Nueva Consulta").closest("div");
-    if (newConsultCard) {
-      // Click the card (or parent of text)
-      // The code has onClick on the card container
-      // We can click the text too as events bubble
-      fireEvent.click(screen.getByText("Nueva Consulta"));
-      expect(mocks.setQuickRegisterOpen).toHaveBeenCalledWith(true);
-    } else {
-      throw new Error("Card not found");
-    }
+    fireEvent.click(screen.getByText(/REGISTRAR TRIAGE/i));
+    expect(mocks.setQuickRegisterOpen).toHaveBeenCalledWith(true);
   });
 
   it("Counts Active Alerts correctly", () => {
     render(<DashboardEnfermeria />);
-    // Text contains: "Urgente: 1 estudiantes"
-    // Regex /Urgente:\s*1/i
-    const alertLabel = screen.getByText(/Urgente:/i);
+    const alertLabel = screen.getByText(/ALERTAS/i);
     expect(alertLabel.closest("p")).toHaveTextContent(/1/);
   });
 });

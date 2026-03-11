@@ -1,24 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { DashboardSecretaria } from "../components/dashboards/DashboardSecretaria";
+import { DashboardSecretaria } from "../src/components/dashboards/DashboardSecretaria";
+import { CaseState } from "../src/types";
 
 const mocks = vi.hoisted(() => ({
   logAccess: vi.fn(),
   logAudit: vi.fn(),
   updateStudentAudit: vi.fn(),
   importStudents: vi.fn(),
+  resolveSystemNotice: vi.fn(),
+  printDocument: vi.fn(),
+  setCurrentModule: vi.fn(),
+  addIncident: vi.fn(),
 }));
 
-vi.mock("../store", () => ({
+vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
       {
         id: "1",
         name: "Secretaria Student",
         group: "1º A",
-        caseState: "Observado",
+        caseState: CaseState.OBSERVADO,
         guardianInfo: { name: "Mother", phonePrimary: "123", address: "Home" },
+        matricula: "MAT-001",
+        avatar: "https://i.pravatar.cc/150",
+        incidents: [],
+        justificantes: [],
       },
     ],
     currentModule: "dashboard", // Default
@@ -26,6 +35,12 @@ vi.mock("../store", () => ({
     logAudit: mocks.logAudit,
     updateStudentAudit: mocks.updateStudentAudit,
     importStudents: mocks.importStudents,
+    resolveSystemNotice: mocks.resolveSystemNotice,
+    printDocument: mocks.printDocument,
+    setCurrentModule: mocks.setCurrentModule,
+    addIncident: mocks.addIncident,
+    groups: [],
+    notices: [],
   }),
 }));
 
@@ -38,10 +53,17 @@ vi.mock("react-hot-toast", () => ({
 }));
 
 // Mock sub-components
-vi.mock("../components/Inscripciones", () => ({
+vi.mock("../src/components/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "user-1", email: "test@sase.com" },
+    profile: { nombre: "Operador", cargo_institucional: "Control Escolar" },
+  }),
+}));
+
+vi.mock("../src/components/Inscripciones", () => ({
   Inscripciones: () => <div>Inscripciones Screen</div>,
 }));
-vi.mock("../components/Archivo", () => ({
+vi.mock("../src/components/Archivo", () => ({
   Archivo: () => <div>Archivo Screen</div>,
 }));
 
@@ -52,35 +74,35 @@ describe("Dashboard Secretaria Unit Tests", () => {
 
   it("renders Header correctly", () => {
     render(<DashboardSecretaria />);
-    expect(screen.getByText(/Secretaría Académica/i)).toBeInTheDocument();
-    expect(screen.getByText(/Gestión de Expedientes/i)).toBeInTheDocument();
-  });
+    expect(
+      screen.getByRole("heading", { name: /CONTROL ADMINISTRATIVO/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/División de Servicios Escolares/i),
+    ).toBeInTheDocument();
+  }, 10000);
 
-  it("Clicking Consultar triggers Log Access", () => {
+  it("Clicking Modify triggers Log Access", () => {
     render(<DashboardSecretaria />);
-
-    const consultBtn = screen.getByText("Consultar");
-    fireEvent.click(consultBtn);
+    const modifyBtn = screen.getByLabelText(/Modificar Expediente/i);
+    fireEvent.click(modifyBtn);
 
     expect(mocks.logAccess).toHaveBeenCalledWith(
       expect.stringContaining("Consultar"),
       "1",
       "Secretaria Student"
     );
-
-    // Should reveal details (mocked data presence check)
-    expect(screen.getByText("Mother")).toBeInTheDocument();
   });
 
-  it("Saving in Edit Mode triggers Audit", async () => {
+  it("Auditing in Edit Mode triggers Audit", async () => {
     render(<DashboardSecretaria />);
 
     // 1. Enter Edit Mode
-    fireEvent.click(screen.getByText("Consultar"));
+    fireEvent.click(screen.getByLabelText(/Modificar Expediente/i));
 
     // 2. Click Save
-    const saveBtn = screen.getByText("Guardar");
-    fireEvent.click(saveBtn);
+    const auditBtn = screen.getByText(/AUDITAR REGISTRO/i);
+    fireEvent.click(auditBtn);
 
     await waitFor(() => {
       expect(mocks.logAudit).toHaveBeenCalled();

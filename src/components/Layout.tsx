@@ -9,8 +9,7 @@ import { FeedbackWidget } from "./FeedbackWidget";
 import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
-import { SaseIAOrb } from "./SaseIAOrb";
-import { IASaseAgent } from "./IASaseAgent";
+import { SaseOrb } from "./SaseOrb";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-red-900 border-none",
@@ -57,6 +56,7 @@ const roleImages: Record<UserRole, string> = {
     "https://ui-avatars.com/api/?name=Admin&background=000&color=fff",
 };
 
+
 export const Layout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -69,7 +69,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     isAssistantOpen,
     setIsAssistantOpen,
     assistantStatus,
-    systemState,
+    aiSystemState,
+    systemMessage,
+    highlightedModule,
+    autoNavigate,
+    clearHighlight,
+    students,
     currentModule,
     setCurrentModule,
     notifications,
@@ -108,6 +113,23 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     profile?.nombre || user?.user_metadata?.full_name || "Usuario SASE";
   const displayUserRole =
     profile?.cargo_institucional || profile?.rol || currentUserRole;
+  const neuralCoreState = aiSystemState;
+  const activeIncidentsCount = students.reduce(
+    (total: number, student: any) =>
+      total + (student.incidents ? student.incidents.length : 0),
+    0,
+  );
+  const connectedUsers = user ? 1 : 0;
+  const lastSystemEvent = notifications.length > 0
+    ? notifications[0].title
+    : "Sin eventos recientes";
+
+  useEffect(() => {
+    if (aiSystemState === "alert" && autoNavigate && highlightedModule) {
+      setCurrentModule(highlightedModule);
+      clearHighlight();
+    }
+  }, [aiSystemState, autoNavigate, highlightedModule, setCurrentModule, clearHighlight]);
 
   return (
     <div className="flex h-screen text-slate-300 overflow-hidden font-sans select-none bg-transparent">
@@ -187,6 +209,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 setIsSidebarOpen(false);
               }}
               color={currentUserRole}
+              highlighted={highlightedModule === AppModule.DASHBOARD}
               collapsed={isSidebarCollapsed}
             />
 
@@ -200,6 +223,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 setIsSidebarOpen(false);
               }}
               color={currentUserRole}
+              highlighted={highlightedModule === AppModule.AGENDA}
               collapsed={isSidebarCollapsed}
             />
 
@@ -213,6 +237,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 setIsSidebarOpen(false);
               }}
               color={currentUserRole}
+              highlighted={highlightedModule === AppModule.EXPEDIENTES}
               collapsed={isSidebarCollapsed}
             />
 
@@ -228,6 +253,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                     setIsSidebarOpen(false);
                   }}
                   color={currentUserRole}
+                  highlighted={highlightedModule === AppModule.REPORTES}
                   collapsed={isSidebarCollapsed}
                 />
 
@@ -241,6 +267,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                     setIsSidebarOpen(false);
                   }}
                   color={currentUserRole}
+                  highlighted={highlightedModule === AppModule.PROTOCOLOS}
                   collapsed={isSidebarCollapsed}
                 />
               </>
@@ -342,7 +369,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <SaseIAOrb state={systemState} className="w-8 h-8 mr-1" />
                 <h2 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
                   <span className="text-white/40 italic">IA_NUCLEUS</span>
@@ -478,6 +504,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-indigo-600/[0.02] blur-[150px]"></div>
           </div>
         </main>
+
+        <div className="fixed bottom-8 right-8 z-50">
+          <SaseOrb
+            state={neuralCoreState}
+            className="w-[110px] h-[110px]"
+            enablePanel
+            panelData={{
+              incidents: activeIncidentsCount,
+              connectedUsers,
+              lastEvent: lastSystemEvent,
+              message: systemMessage || undefined,
+              version: `SASE-310`,
+            }}
+          />
+        </div>
       </div>
 
       <FeedbackWidget />
@@ -494,7 +535,8 @@ const NavItem: React.FC<{
   onClick: () => void;
   color: string;
   collapsed?: boolean;
-}> = ({ icon, label, active, onClick, id, color, collapsed }) => {
+  highlighted?: boolean;
+}> = ({ icon, label, active, onClick, id, color, collapsed, highlighted }) => {
   // Determine active colors based on role background
   // Usually white text on dark bg, but active item should pop
   // We'll use White background with Colored Text for active state
@@ -527,7 +569,7 @@ const NavItem: React.FC<{
         active
           ? `bg-white/95 backdrop-blur-md ${activeTextClass} shadow-[0_8px_30px_rgba(0,0,0,0.2)] font-black border-white/20 scale-[1.02]`
           : "text-white/60 hover:bg-white/10 hover:text-white font-bold border-transparent"
-      } ${collapsed ? "justify-center px-0" : ""}`}
+      } ${highlighted ? "shadow-[0_0_25px_rgba(59,130,246,0.35)] border-blue-500/40 bg-blue-500/10 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span
         className={`material-symbols-outlined text-[20px] transition-transform ${

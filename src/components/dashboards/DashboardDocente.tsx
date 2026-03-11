@@ -71,6 +71,34 @@ export const DashboardDocente = () => {
     { label: "Sin material", type: IncidentType.ACADEMICO },
   ];
 
+  const commandTabs = [
+    {
+      id: "GENERAL",
+      label: "Vista General",
+      icon: "dashboard",
+      color: "text-blue-400",
+    },
+    {
+      id: "ASISTENCIA",
+      label: "Pase de Lista",
+      icon: "fact_check",
+      color: "text-emerald-400",
+    },
+    {
+      id: "CALIFICACIONES",
+      label: "Evaluacion",
+      icon: "history_edu",
+      color: "text-amber-400",
+    },
+    {
+      id: "TOUR",
+      label: "Induccion",
+      icon: "auto_awesome",
+      color: "text-blue-400",
+      action: () => startProductTour(),
+    },
+  ];
+
   const handleAttendanceChange = (
     studentId: string,
     status: "P" | "R" | "F",
@@ -177,96 +205,32 @@ export const DashboardDocente = () => {
                 <span className="h-px w-4 bg-white/20"></span>
               </div>
             </div>
-          </div>
 
-          {/* Rotating Orbital Tabs Container */}
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            className="absolute size-[300px] md:size-[360px] flex items-center justify-center pointer-events-none"
-          >
-            {[
-              {
-                id: "GENERAL",
-                label: "Vista General",
-                icon: "dashboard",
-                color: "text-blue-400",
-              },
-              {
-                id: "ASISTENCIA",
-                label: "Pase de Lista",
-                icon: "fact_check",
-                color: "text-emerald-400",
-              },
-              {
-                id: "CALIFICACIONES",
-                label: "Evaluación",
-                icon: "history_edu",
-                color: "text-amber-400",
-              },
-              {
-                id: "TOUR",
-                label: "Inducción",
-                icon: "auto_awesome",
-                color: "text-blue-400",
-                action: () => startProductTour(),
-              },
-            ].map((tab, index, arr) => {
-              const angle = (index * (360 / arr.length) - 90) * (Math.PI / 180);
-              const isMobile =
-                typeof window !== "undefined" && window.innerWidth < 768;
-              const radius = isMobile ? 100 : 130;
-              const x = Math.cos(angle) * radius;
-              const y = Math.sin(angle) * radius;
-              const isActive = activeTab === tab.id;
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              {commandTabs.map((tab) => {
+                const isActive = activeTab === tab.id;
 
-              return (
-                <motion.div
-                  key={tab.id}
-                  className="absolute pointer-events-auto"
-                  style={{
-                    left: "50%",
-                    top: "50%",
-                    marginLeft: -40,
-                    marginTop: -40,
-                    x,
-                    y,
-                  }}
-                >
-                  <motion.button
-                    animate={{ rotate: -360 }}
-                    transition={{
-                      duration: 60,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    whileHover={{ scale: 1.5, zIndex: 50 }}
-                    whileTap={{ scale: 0.95 }}
+                return (
+                  <button
+                    key={tab.id}
                     onClick={tab.action || (() => setActiveTab(tab.id as any))}
-                    className="group flex flex-col items-center"
+                    className={`px-4 py-2 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${
+                      isActive
+                        ? "bg-white/10 border-white/20 text-white shadow-[0_0_20px_rgba(59,130,246,0.25)]"
+                        : "bg-white/[0.03] border-white/10 text-slate-500 hover:text-white hover:border-white/20"
+                    }`}
                   >
-                    <div
-                      className={`
-                      size-6 md:size-7 rounded-full flex flex-col items-center justify-center transition-all duration-500 bg-transparent
-                      ${isActive ? "text-blue-400" : "text-white/20 group-hover:text-white/70"}
-                    `}
+                    <span
+                      className={`material-symbols-outlined text-sm ${tab.color}`}
                     >
-                      <span
-                        className={`material-symbols-outlined text-base transition-transform duration-300 group-hover:scale-110`}
-                      >
-                        {tab.icon}
-                      </span>
-                      <span
-                        className={`text-[5px] font-black uppercase tracking-[0.1em] text-center px-1 mt-0.5 transition-opacity ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-                      >
-                        {tab.label}
-                      </span>
-                    </div>
-                  </motion.button>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                      {tab.icon}
+                    </span>
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 

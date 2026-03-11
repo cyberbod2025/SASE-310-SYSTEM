@@ -11,6 +11,14 @@ Es el nivel de acceso más alto del sistema. Mientras que el Director gestiona l
 - **Acceso**: Exclusivo para cuentas con rol `DEVELOPER` en la base de datos.
 - **Responsabilidad**: Uso cauteloso. Las acciones aquí pueden alterar todo el sistema.
 
+### 1.1 Manejo de respaldos sensibles
+
+Los respaldos con datos reales **no deben** vivir dentro del repositorio ni compartirse por canales no cifrados.
+
+- Mantener cualquier respaldo fuera de la carpeta del proyecto.
+- Evitar subir archivos a git aunque estén en `.gitignore`.
+- Si un respaldo se comparte accidentalmente, rotar/anonimizar datos y eliminarlo del historial.
+
 ---
 
 ## 2. Capacidades y Acciones

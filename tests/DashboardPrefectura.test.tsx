@@ -1,15 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { DashboardPrefectura } from "../components/dashboards/DashboardPrefectura";
+import { DashboardPrefectura } from "../src/components/dashboards/DashboardPrefectura";
 
 const mocks = vi.hoisted(() => ({
   addIncident: vi.fn(),
   logAudit: vi.fn(),
   printContent: vi.fn(),
+  openQuickRegister: vi.fn(),
+  registerAttendance: vi.fn(),
+  printDocument: vi.fn(),
 }));
 
-vi.mock("../store", () => ({
+vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
       {
@@ -19,15 +22,20 @@ vi.mock("../store", () => ({
         group: "1º A",
         incidents: [],
         justificantes: [],
+        avatar: "https://i.pravatar.cc/150",
       },
     ],
     addIncident: mocks.addIncident,
     logAudit: mocks.logAudit,
     setCurrentModule: vi.fn(),
+    openQuickRegister: mocks.openQuickRegister,
+    dailyStats: { attendanceCount: 0, lateCount: 0 },
+    registerAttendance: mocks.registerAttendance,
+    printDocument: mocks.printDocument,
   }),
 }));
 
-vi.mock("../components/PrintButtons", () => ({
+vi.mock("../src/components/PrintButtons", () => ({
   printContent: mocks.printContent,
 }));
 
@@ -45,16 +53,17 @@ describe("Dashboard Prefectura Unit Tests", () => {
 
   it("renders Header correctly", () => {
     render(<DashboardPrefectura />);
-    expect(screen.getByText(/Control Disciplinario/i)).toBeInTheDocument();
+    expect(screen.getByText(/FIELD/i)).toBeInTheDocument();
+    expect(screen.getByText(/CONTROL OPERATIVO/i)).toBeInTheDocument();
   });
 
   it("Quick Register adds incident via Store", async () => {
     render(<DashboardPrefectura />);
 
-    const input = screen.getByPlaceholderText(/Ej. 2023-4492/i);
+    const input = screen.getByPlaceholderText(/MATRÍCULA/i);
     fireEvent.change(input, { target: { value: "2024-PREF" } });
 
-    const btn = screen.getByText("Registrar");
+    const btn = screen.getByText("Retardo");
     fireEvent.click(btn);
 
     await waitFor(() => {

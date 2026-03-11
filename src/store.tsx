@@ -1,8 +1,10 @@
 import React, { createContext, useContext } from "react";
-import { useAuth } from "./components/AuthProvider";
-import { UserRole, AuditActionType } from "./types";
-import { OrbState } from "./utils/estadoSistema";
 import toast from "react-hot-toast";
+
+import { useAuth } from "./components/AuthProvider";
+import { UserRole, AuditActionType, AppModule } from "./types";
+import { OrbState } from "./utils/estadoSistema";
+import { supabase } from "./supabase/client";
 
 // Import Slices
 import { useAuthSlice } from "./store/slices/useAuthSlice";
@@ -11,6 +13,8 @@ import { useInventoryStatsSlice } from "./store/slices/useInventoryStatsSlice";
 import { useStudentsSlice } from "./store/slices/useStudentsSlice";
 import { useUiSlice } from "./store/slices/useUiSlice";
 import { useAuditLogic } from "./store/slices/useAuditLogic";
+import { useSystemStateSlice } from "./store/slices/useSystemStateSlice";
+import type { SystemState } from "./types/systemState";
 
 // Re-export types for backward compatibility
 export * from "./types";
@@ -50,6 +54,14 @@ interface AppContextType {
   assistantStatus: any;
   setAssistantStatus: any;
   systemState: OrbState;
+  aiSystemState: SystemState;
+  systemMessage: string | null;
+  setSystemState: (state: SystemState, message?: string) => void;
+  resetSystemState: () => void;
+  highlightedModule: AppModule | null;
+  highlightModule: (moduleKey: string | AppModule) => void;
+  autoNavigate: boolean;
+  clearHighlight: () => void;
   activePrintJob: any;
   printDocument: any;
   printModal: any;
@@ -82,6 +94,17 @@ interface AppContextType {
   addInstitutionalDocument: any;
 }
 
+interface EvidenceInput {
+  title?: string;
+  link?: string;
+  fileType?: string;
+  notes?: string;
+  impactoEstimado?: number;
+  proyectoNombre?: string;
+  role?: string;
+  userId?: string;
+}
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{
@@ -92,6 +115,7 @@ export const AppProvider: React.FC<{
 
   // 1. Core Auth & Role Slice
   const auth = useAuthSlice(initialRole);
+  const currentUserRole = auth.currentUserRole;
 
   // 2. Audit Logic Slice (Needs auth status)
   const audit = useAuditLogic(user, auth.currentUserRole);
@@ -116,6 +140,26 @@ export const AppProvider: React.FC<{
 
   // 6. UI State Slice
   const ui = useUiSlice(user, auth.currentUserRole, studentsSlice.students);
+  const legacyToSystemState = (state: OrbState): SystemState => {
+    switch (state) {
+      case "red":
+        return "alert";
+      case "yellow":
+        return "warning";
+      case "thinking":
+        return "thinking";
+      case "blue":
+        return "thinking";
+      case "green":
+        return "normal";
+      case "gold":
+        return "normal";
+      default:
+        return "normal";
+    }
+  };
+
+  const aiSystem = useSystemStateSlice(legacyToSystemState(ui.systemState));
 
   // Update UI slice with real students for assistant messages
   // (In a real refactor, we might use a combined hook, but this works for now)
@@ -138,9 +182,32 @@ export const AppProvider: React.FC<{
     );
   };
 
-  const saveEvidence = async (data: any) => {
-    // Basic implementation placeholder
-    console.log("Saving evidence:", data);
+  const saveEvidence = async (data: EvidenceInput) => {
+    if (!user) {
+      toast.error("No hay sesión activa para guardar evidencia");
+      return;
+    }
+
+    const payload = {
+      title: data?.title?.trim() || "Evidencia",
+      link: data?.link?.trim() || null,
+      file_type: data?.fileType?.trim() || null,
+      notes: data?.notes?.trim() || null,
+      impacto_estimado:
+        typeof data?.impactoEstimado === "number" ? data.impactoEstimado : null,
+      proyecto_nombre: data?.proyectoNombre?.trim() || null,
+      role: data?.role || currentUserRole,
+      user_id: data?.userId || user.id,
+    };
+
+    try {
+      const { error } = await supabase.from("evidence_log").insert(payload);
+      if (error) throw error;
+      toast.success("Evidencia registrada");
+    } catch (err) {
+      console.error("Error saving evidence", err);
+      toast.error("No se pudo guardar la evidencia");
+    }
   };
 
   const updateCredencialStatus = (studentId: string, status: any) => {
@@ -173,6 +240,7 @@ export const AppProvider: React.FC<{
         currentUserProfile: useAuth().profile,
         ...studentsSlice,
         ...ui,
+        ...aiSystem,
         ...notificationsSlice,
         // Students & Incidents
         students: studentsSlice.students,

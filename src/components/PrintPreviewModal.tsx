@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DOMPurify from "dompurify";
 import { motion, AnimatePresence } from "framer-motion";
 import { printContent } from "./PrintButtons";
 
@@ -26,7 +27,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
   }, [initialHtml, isOpen]);
 
   const handlePrint = () => {
-    printContent(title, editableHtml);
+    printContent(title, DOMPurify.sanitize(editableHtml));
     onClose();
   };
 
@@ -120,7 +121,9 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
                   <div className="w-full h-full bg-white rounded-2xl overflow-y-auto p-8 shadow-inner custom-scrollbar">
                     <div
                       className="print-preview-container text-black"
-                      dangerouslySetInnerHTML={{ __html: editableHtml }}
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(editableHtml),
+                      }}
                     />
                     {/* Estilos específicos para la vista previa interna */}
                     <style

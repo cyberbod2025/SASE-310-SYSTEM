@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateState, CaseState, Incident, IncidentType } from "../types";
+import { calculateState, CaseState, Incident, IncidentType } from "../src/types";
 
 describe("Business Logic Tests", () => {
   const mockIncident: Incident = {
