@@ -296,7 +296,10 @@ const AppShell = () => {
 const App: React.FC = () => {
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  // Skipear el intro si ya se vio una vez (persistente)
+  const [showIntro, setShowIntro] = useState(() => {
+    return localStorage.getItem("sase_intro_played") !== "true";
+  });
   const [showFirstLogon, setShowFirstLogon] = useState(false);
   const [setupUser, setSetupUser] = useState<{
     fullName: string;
@@ -350,7 +353,14 @@ const App: React.FC = () => {
   }
 
   if (showIntro) {
-    return <SASEIntroAnimation onComplete={() => setShowIntro(false)} />;
+    return (
+      <SASEIntroAnimation
+        onComplete={() => {
+          localStorage.setItem("sase_intro_played", "true");
+          setShowIntro(false);
+        }}
+      />
+    );
   }
 
     if (!session) {

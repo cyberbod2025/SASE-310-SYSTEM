@@ -33,27 +33,27 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
 
       // STEP 0: LATENT/BLUE - Appearance (Base de Datos)
       setOrbState("blue");
-      await wait(delay(6000));
+      await wait(delay(3000));
 
       // STEP 1: ALERT/RED - "Protección"
       setStep(1);
       setOrbState("red");
-      await wait(delay(6000));
+      await wait(delay(3000));
 
       // STEP 2: WARNING/YELLOW - "Cuidado"
       setStep(2);
       setOrbState("yellow");
-      await wait(delay(6000));
+      await wait(delay(3000));
 
       // STEP 3: ZEN/GREEN - "Calma"
       setStep(3);
       setOrbState("green");
-      await wait(delay(6000));
+      await wait(delay(3000));
 
       // STEP 4: POWER/GOLD - "Bienvenida"
       setStep(4);
       setOrbState("gold");
-      await wait(delay(6000));
+      await wait(delay(3000));
 
       onComplete();
     };
@@ -185,13 +185,11 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
                   />
 
                   <p className="text-[14px] font-bold text-slate-300 tracking-[0.1em] uppercase max-w-[300px] leading-relaxed">
-                    {orbState === "red" && "ROJO: ALERTAS CRÍTICAS Y PROTECCIÓN"}
-                    {orbState === "yellow" &&
-                      "AMARILLO: ATENCIÓN PRIORITARIA Y SEGUIMIENTO"}
-                    {orbState === "green" && "VERDE: ENTORNO SEGURO Y PAZ INSTITUCIONAL"}
-                    {orbState === "gold" &&
-                      "DORADO: EXCELENCIA, PROTOCOLOS Y CONVIVENCIA SASE"}
-                    {orbState === "blue" && "AZUL: BASE DE DATOS ESTÁTICA Y PROTOCOLOS"}
+                    {orbState === "red" && "Alertas Críticas y Protección"}
+                    {orbState === "yellow" && "Atención Prioritaria y Seguimiento"}
+                    {orbState === "green" && "Entorno Seguro y Paz Institucional"}
+                    {orbState === "gold" && "Excelencia y Convivencia SASE"}
+                    {orbState === "blue" && "Iniciando Protocolos"}
                   </p>
                 </motion.div>
               </AnimatePresence>

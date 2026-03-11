@@ -129,7 +129,7 @@ export const Login: React.FC<LoginProps> = ({
           {/* Card Outer Glow */}
           <div className="relative card-sase !rounded-[2.5rem] p-6 md:p-14 border-white/[0.05] bg-[#0b121a]/80 backdrop-blur-[80px] overflow-hidden group">
             {/* Inner Reflections & Pulse */}
-            <div className="absolute inset-0 bg-blue-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse-soft"></div>
+            <div className="absolute inset-0 pointer-events-none bg-blue-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse-soft"></div>
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <div className="glass-shine opacity-20"></div>
 

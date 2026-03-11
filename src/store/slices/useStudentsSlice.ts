@@ -84,9 +84,6 @@ export const useStudentsSlice = (
           ),
           calificaciones (
             id, materia, trimestre1, trimestre2, trimestre3, promedio_final, ciclo_escolar
-          ),
-          estudiantes (
-            total_puntos, escaneos_realizados, nickname
           )
         `);
 
