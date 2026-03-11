@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SaseIAOrb } from "./SaseIAOrb";
-import { OrbState } from "../utils/estadoSistema";
+import { SaseOrb, SystemState } from "./SaseOrb";
 
 interface SASEIntroAnimationProps {
   onComplete: () => void;
@@ -9,13 +8,13 @@ interface SASEIntroAnimationProps {
 
 /**
  * SASE Intro Animation - "The Awakening of IA-SASE"
- * Dynamic color cycling, facial expressions, and high-impact institutional branding.
+ * High-impact institutional branding using the official SaseOrb.
  */
 export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   onComplete,
 }) => {
   const [step, setStep] = useState(0);
-  const [orbState, setOrbState] = useState<OrbState>("blue");
+  const [orbState, setOrbState] = useState<SystemState>("thinking");
   const [isFastPass, setIsFastPass] = useState(false);
 
   useEffect(() => {
@@ -31,28 +30,28 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
       const delay = (base: number) =>
         isFastPass ? base * 0.7 : base; // Much slower fastpass
 
-      // STEP 0: LATENT/BLUE - Appearance (Base de Datos)
-      setOrbState("blue");
+      // STEP 0: LATENT/BLUE - (Base de Datos)
+      setOrbState("thinking");
       await wait(delay(3000));
 
       // STEP 1: ALERT/RED - "Protección"
       setStep(1);
-      setOrbState("red");
+      setOrbState("alert");
       await wait(delay(3000));
 
       // STEP 2: WARNING/YELLOW - "Cuidado"
       setStep(2);
-      setOrbState("yellow");
+      setOrbState("warning");
       await wait(delay(3000));
 
       // STEP 3: ZEN/GREEN - "Calma"
       setStep(3);
-      setOrbState("green");
+      setOrbState("normal");
       await wait(delay(3000));
 
-      // STEP 4: POWER/GOLD - "Bienvenida"
+      // STEP 4: POWER/GOLD - "Bienvenida" (mapped to thinking or normal)
       setStep(4);
-      setOrbState("gold");
+      setOrbState("normal");
       await wait(delay(3000));
 
       onComplete();
@@ -64,16 +63,15 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   // Map step to text color
   const getTextColor = () => {
     switch (orbState) {
-      case "red":
+      case "alert":
         return "text-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)]";
-      case "yellow":
+      case "warning":
         return "text-yellow-400 shadow-[0_0_20px_rgba(253,224,71,0.5)]";
-      case "green":
-        return "text-green-400 shadow-[0_0_20px_rgba(74,222,128,0.5)]";
-      case "gold":
+      case "normal":
         return "text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.8)]";
+      case "thinking":
       default:
-        return "text-white/80 transition-colors duration-1000";
+        return "text-blue-500/80 transition-colors duration-1000";
     }
   };
 
@@ -103,14 +101,14 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
             className="relative"
           >
-            <SaseIAOrb
+            <SaseOrb
               state={orbState}
               className="w-44 h-44 sm:w-64 sm:h-64 transition-all duration-1000"
             />
 
             {/* POWER SHOCKWAVE (Only on Gold transition) */}
             <AnimatePresence>
-              {orbState === "gold" && (
+              {step >= 4 && (
                 <motion.div
                   initial={{ scale: 0.8, opacity: 1 }}
                   animate={{ scale: 3, opacity: 0 }}
@@ -137,63 +135,7 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
               ))}
             </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={step >= 1 ? { opacity: 1 } : {}}
-              className="space-y-3 min-h-[60px]"
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={orbState}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex flex-col items-center"
-                >
-                  <h3
-                    className={`text-[11px] font-black tracking-[0.4em] uppercase transition-colors duration-1000 ${
-                      orbState === "red"
-                        ? "text-red-400"
-                        : orbState === "yellow"
-                          ? "text-yellow-400"
-                          : orbState === "green"
-                            ? "text-green-400"
-                            : orbState === "gold"
-                              ? "text-amber-400"
-                              : "text-blue-500"
-                    }`}
-                  >
-                    {orbState === "red" && "Analizando Riesgos (Nivel Crítico)"}
-                    {orbState === "yellow" && "Atención Prioritaria (Seguimiento)"}
-                    {orbState === "green" && "Entorno Protegido (Paz Escolar)"}
-                    {orbState === "gold" && "Bienvenido al SASE Core (Excelencia)"}
-                    {orbState === "blue" && "Iniciando Protocolos (Estructura)"}
-                  </h3>
-
-                  <div
-                    className={`h-[2px] w-24 mx-auto my-3 transition-colors duration-1000 ${
-                      orbState === "red"
-                        ? "bg-red-500/30"
-                        : orbState === "yellow"
-                          ? "bg-yellow-500/30"
-                          : orbState === "green"
-                            ? "bg-green-500/30"
-                            : orbState === "gold"
-                              ? "bg-amber-500/30"
-                              : "bg-blue-500/30"
-                    }`}
-                  />
-
-                  <p className="text-[14px] font-bold text-slate-300 tracking-[0.1em] uppercase max-w-[300px] leading-relaxed">
-                    {orbState === "red" && "Alertas Críticas y Protección"}
-                    {orbState === "yellow" && "Atención Prioritaria y Seguimiento"}
-                    {orbState === "green" && "Entorno Seguro y Paz Institucional"}
-                    {orbState === "gold" && "Excelencia y Convivencia SASE"}
-                    {orbState === "blue" && "Iniciando Protocolos"}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
+            {/* Color meanings removed per user request */}
           </div>
 
           {/* FINAL HOOK */}
@@ -204,7 +146,7 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
           >
             <div
               className={`px-8 py-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl transition-all duration-1000 ${
-                orbState === "gold"
+                step >= 4
                   ? "border-amber-400/30 bg-amber-400/5 shadow-amber-400/10"
                   : ""
               }`}
