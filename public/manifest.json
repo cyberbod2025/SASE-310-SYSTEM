@@ -12,13 +12,13 @@
   "lang": "es-MX",
   "icons": [
     {
-      "src": "/assets/branding/SASE_ICON_GOLD.png",
+      "src": "/assets/branding/SASE_ICON_PREMIUM.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/branding/SASE_ICON_GOLD.png",
+      "src": "/assets/branding/SASE_ICON_PREMIUM.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

@@ -152,24 +152,21 @@ export const SaseIAOrb: React.FC<SaseIAOrbProps> = ({
               }}
               className="flex flex-col items-center gap-2"
             >
-              {/* Ojos */}
-              <div className="flex gap-8 relative z-10">
+              {/* Ojos (Simplificados a Rectángulos Verticales) */}
+              <div className="flex gap-10 relative z-10 mt-2">
                 {/* Ojo Izquierdo */}
                 <motion.div
                   animate={{ scaleY: [1, 1, 0.1, 1] }}
                   transition={{ duration: 4, repeat: Infinity, times: [0, 0.9, 0.95, 1], ease: "easeInOut" }}
-                  className="w-5 h-8 bg-white/90 rounded-full blur-[1px] shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                  className="w-4 h-12 bg-white/90 rounded-sm blur-[0.5px] shadow-[0_0_15px_rgba(255,255,255,0.8)]"
                 />
                 {/* Ojo Derecho */}
                 <motion.div
                   animate={{ scaleY: [1, 1, 0.1, 1] }}
                   transition={{ duration: 4, repeat: Infinity, times: [0, 0.9, 0.95, 1], ease: "easeInOut" }}
-                  className="w-5 h-8 bg-white/90 rounded-full blur-[1px] shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                  className="w-4 h-12 bg-white/90 rounded-sm blur-[0.5px] shadow-[0_0_15px_rgba(255,255,255,0.8)]"
                 />
               </div>
-              
-              {/* Boca (Sonrisa sutil) */}
-              <div className="w-6 h-2 border-b-2 border-white/50 rounded-b-full opacity-80 mt-1 blur-[0.5px]"></div>
             </motion.div>
       </motion.div>
 

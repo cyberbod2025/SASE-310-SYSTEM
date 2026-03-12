@@ -146,7 +146,7 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
     setEyeOffset({ x: 0, y: 0 });
   };
 
-  const eyeBase = { width: 6, height: 18 };
+  const eyeBase = { width: 4, height: 22 };
   const eyeHeightMultiplier =
     state === "warning" ? 1.2 : state === "alert" ? 0.75 : 1;
   const eyeScale = 1;
