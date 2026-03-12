@@ -15,6 +15,7 @@ import {
   AuditActionType,
 } from "../../types";
 import { evaluateEscalation } from "../../utils/saseUtils";
+import { sendWhatsAppNotification } from "../../utils/notifications";
 import toast from "react-hot-toast";
 
 // Production: No fictional data — students are loaded from Supabase
@@ -223,19 +224,39 @@ export const useStudentsSlice = (
 
     if (escalationResult?.notifyRoles) {
       const { notifyRoles, priority, message, protocolId } = escalationResult;
+      const student = students.find((s) => s.id === studentId);
+      
       notifyRoles.forEach((role: UserRole) => {
         addNotification({
           title:
             priority === "CRITICAL"
               ? "🚨 PROTOCOLO CRÍTICO"
               : "Aviso de Seguimiento",
-          message: `${message} (Alumno: ${students.find((s) => s.id === studentId)?.name || "N/A"})`,
+          message: `${message} (Alumno: ${student?.name || "N/A"})`,
           type: priority === "CRITICAL" ? "error" : "warning",
           targetRole: role,
           actionModule: protocolId ? AppModule.PROTOCOLOS : AppModule.REPORTES,
           actionData: { protocolId },
         });
       });
+
+      // Hallazgo 2: WhatsApp Automation for Critical Incidents
+      if (priority === "CRITICAL" && student?.guardianInfo?.phonePrimary) {
+        const whatsappMsg = `SASE-310 ALERTA: Se ha activado un protocolo de ${message} para el alumno ${student.name}. Por favor, comuníquese con la institución.`;
+        
+        sendWhatsAppNotification({
+          to: student.guardianInfo.phonePrimary,
+          message: whatsappMsg,
+          studentName: student.name,
+          incidentType: type
+        }).then(res => {
+          if (res.success) {
+            console.log("WhatsApp enviado correctamente");
+          } else {
+            console.warn("Fallo al enviar WhatsApp:", res.error);
+          }
+        });
+      }
 
       if (priority === "CRITICAL") {
         toast.error(`¡ACTIVACIÓN DE PROTOCOLO! ${message}`, { duration: 6000 });
@@ -244,7 +265,7 @@ export const useStudentsSlice = (
           `Protocolo Activado: ${message}`,
           "incidencias",
           tempId,
-          students.find((s) => s.id === studentId)?.name,
+          student?.name,
         );
       }
     }

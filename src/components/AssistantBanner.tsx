@@ -97,7 +97,9 @@ export const AssistantBanner: React.FC<{
       });
     }
 
-    if (currentUserRole === UserRole.DIRECTIVO) {
+    if (currentUserRole === UserRole.DIRECTIVO || 
+        currentUserRole === UserRole.SYSTEM_ADMIN || 
+        currentUserRole === UserRole.DEVELOPER) {
       actions.push({
         id: "bitacora",
         title: "Bitácora de auditoría disponible",

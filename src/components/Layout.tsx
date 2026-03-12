@@ -244,6 +244,26 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               collapsed={isSidebarCollapsed}
             />
 
+            {(currentUserRole === UserRole.PREFECTURA || 
+              currentUserRole === UserRole.DOCENTE || 
+              currentUserRole === UserRole.DOCENTE_TUTOR ||
+              currentUserRole === UserRole.SYSTEM_ADMIN ||
+              currentUserRole === UserRole.DEVELOPER) && (
+              <NavItem
+                id="nav-asistencia"
+                icon="fact_check"
+                label="Asistencia"
+                active={currentModule === AppModule.ASISTENCIA}
+                onClick={() => {
+                  setCurrentModule(AppModule.ASISTENCIA);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+                highlighted={highlightedModule === AppModule.ASISTENCIA}
+                collapsed={isSidebarCollapsed}
+              />
+            )}
+
             {currentUserRole !== UserRole.SECRETARIA && (
               <>
                 <NavItem
@@ -274,6 +294,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   collapsed={isSidebarCollapsed}
                 />
               </>
+            )}
+
+            {(currentUserRole === UserRole.SYSTEM_ADMIN || currentUserRole === UserRole.DEVELOPER) && (
+              <NavItem
+                id="nav-bitacora"
+                icon="history"
+                label="Bitácora"
+                active={currentModule === AppModule.BITACORA}
+                onClick={() => {
+                  setCurrentModule(AppModule.BITACORA);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+                highlighted={highlightedModule === AppModule.BITACORA}
+                collapsed={isSidebarCollapsed}
+              />
             )}
 
             {!isSidebarCollapsed && (

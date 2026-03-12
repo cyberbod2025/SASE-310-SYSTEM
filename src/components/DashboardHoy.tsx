@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../store";
 import { UserRole, AppModule, IncidentType, CaseState } from "../types";
+import { GlassCard } from "./ui/GlassCard";
 
 export const DashboardHoy: React.FC = () => {
   const { currentUserRole, setCurrentModule, students, openQuickRegister } =
@@ -69,7 +70,7 @@ export const DashboardHoy: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#05070a] text-white p-6 md:p-12 font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] text-white p-6 md:p-12 font-sans overflow-x-hidden relative">
       {/* HUD Background Effects */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
         <div className="absolute top-0 left-1/4 w-px h-full bg-blue-500/10"></div>
@@ -134,82 +135,43 @@ export const DashboardHoy: React.FC = () => {
             </h2>
 
             <div className="space-y-4">
-              {/* Incidencias Abiertas */}
-              <motion.div 
-                id="kpi-risk" 
-                whileHover={{ scale: 1.02, translateY: -5 }}
-                className="glass-card-quantum p-6 border-rose-500/20 group hover:border-rose-500/40 transition-all cursor-pointer relative overflow-hidden"
+              <GlassCard
+                title="Casos Activos"
+                icon="warning"
+                description="Incidencias abiertas que requieren seguimiento institucional."
+                className="border-rose-500/20 shadow-rose-500/5"
               >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 blur-[20px] rounded-bl-full"></div>
-                <div className="glass-shine opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="flex justify-between items-start relative z-10">
-                  <div className="p-3 bg-rose-500/10 rounded-xl border border-rose-500/20">
-                    <span className="material-symbols-outlined text-rose-500 text-2xl drop-shadow-[0_0_10px_rgba(244,63,94,0.4)]">
-                      warning
-                    </span>
-                  </div>
-                  <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">
-                    {activeCases.length}
-                  </span>
+                <div className="mt-auto flex justify-between items-end">
+                  <span className="text-[9px] text-rose-500/80 font-black tracking-widest uppercase">Seguimiento Requerido</span>
+                  <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">{activeCases.length}</span>
                 </div>
-                <h3 className="text-xs font-black text-white uppercase tracking-[0.1em] mt-4 relative z-10 font-sans">
-                  Incidencias Abiertas
-                </h3>
-                <p className="text-[9px] text-slate-500 uppercase tracking-widest font-black mt-1 relative z-10">
-                  CRITICAL_FOLLOW_UP_REQUIRED
-                </p>
-              </motion.div>
+              </GlassCard>
 
-              {/* Alertas Médicas */}
-              <motion.div 
-                id="kpi-assist" 
-                whileHover={{ scale: 1.02, translateY: -5 }}
-                className="glass-card-quantum p-6 border-blue-500/20 group hover:border-blue-500/40 transition-all cursor-pointer relative overflow-hidden"
+              <GlassCard
+                title="Alertas Médicas"
+                icon="medical_services"
+                description="Alumnos con condiciones de salud que requieren atención."
+                className="border-blue-500/20 shadow-blue-500/5"
               >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-[20px] rounded-bl-full"></div>
-                <div className="glass-shine opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="flex justify-between items-start relative z-10">
-                  <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                    <span className="material-symbols-outlined text-blue-500 text-2xl drop-shadow-[0_0_10px_rgba(59,130,246,0.4)]">
-                      medical_services
-                    </span>
-                  </div>
-                  <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">
-                    {medicalAlerts.length}
-                  </span>
+                <div className="mt-auto flex justify-between items-end">
+                  <span className="text-[9px] text-blue-500/80 font-black tracking-widest uppercase">Monitor de Salud</span>
+                  <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">{medicalAlerts.length}</span>
                 </div>
-                <h3 className="text-xs font-black text-white uppercase tracking-[0.1em] mt-4 relative z-10 font-sans">
-                  Alertas Médicas
-                </h3>
-                <p className="text-[9px] text-slate-500 uppercase tracking-widest font-black mt-1 relative z-10">
-                  HEALTH_MONITOR_ACTIVE
-                </p>
-              </motion.div>
+              </GlassCard>
 
-              {/* Alumnos Reincidentes */}
-              <motion.div 
-                whileHover={{ scale: 1.02, translateY: -5 }}
-                className="glass-card-quantum p-6 border-amber-500/20 group hover:border-amber-500/40 transition-all cursor-pointer relative overflow-hidden"
+              <GlassCard
+                title="Reincidencias"
+                icon="error"
+                description="Patrones de comportamiento detectados por el sistema."
+                className="border-amber-500/20 shadow-amber-500/5"
               >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 blur-[20px] rounded-bl-full"></div>
-                <div className="glass-shine opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="flex justify-between items-start relative z-10">
-                  <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                    <span className="material-symbols-outlined text-amber-500 text-2xl drop-shadow-[0_0_10px_rgba(245,158,11,0.4)]">
-                      error
-                    </span>
-                  </div>
+                <div className="mt-auto flex justify-between items-end">
+                  <span className="text-[9px] text-amber-500/80 font-black tracking-widest uppercase">Patrones de Conducta</span>
                   <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">
                     {students.filter((s) => s.incidents.length > 2).length}
                   </span>
                 </div>
-                <h3 className="text-xs font-black text-white uppercase tracking-[0.1em] mt-4 relative z-10 font-sans">
-                  Patrones Detectados
-                </h3>
-                <p className="text-[9px] text-slate-500 uppercase tracking-widest font-black mt-1 relative z-10">
-                  RECURRING_PATTERN_DETECTION
-                </p>
-              </motion.div>
+              </GlassCard>
             </div>
           </section>
 
@@ -295,35 +257,35 @@ export const DashboardHoy: React.FC = () => {
                 </div>
               </div>
             </div>
-          </section>
-
-          {/* SASE PROMISE: Hook for the user */}
-          <section className="mt-8 rounded-3xl bg-gradient-to-br from-indigo-900/40 via-blue-900/20 to-transparent border border-blue-500/20 p-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span className="material-symbols-outlined text-6xl text-blue-400 rotate-12">
-                verified_user
-              </span>
-            </div>
-            <div className="relative z-10 flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">
-                  Protocolo SASE Activo
+            
+            {/* SASE PROMISE: Hook for the user */}
+            <div className="rounded-3xl bg-gradient-to-br from-indigo-900/40 via-blue-900/20 to-transparent border border-blue-500/20 p-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span className="material-symbols-outlined text-6xl text-blue-400 rotate-12">
+                  verified_user
                 </span>
               </div>
-              <h3 className="text-xl font-black text-white italic lowercase leading-tight tracking-tighter">
-                reporta en <span className="text-blue-400">3 clics</span> y{" "}
-                <br />
-                siéntete{" "}
-                <span className="text-indigo-400 underline decoration-indigo-500/50">
-                  respaldado
-                </span>
-                .
-              </h3>
-              <p className="text-[10px] text-slate-400 max-w-[240px] mt-2 font-medium leading-relaxed">
-                La IA procesa, notifica a directivos y genera el acta oficial al
-                instante. Tu prioridad es el alumno, la nuestra es el proceso.
-              </p>
+              <div className="relative z-10 flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                  <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">
+                    Protocolo SASE Activo
+                  </span>
+                </div>
+                <h3 className="text-xl font-black text-white italic lowercase leading-tight tracking-tighter">
+                  reporta en <span className="text-blue-400">3 clics</span> y{" "}
+                  <br />
+                  siéntete{" "}
+                  <span className="text-indigo-400 underline decoration-indigo-500/50">
+                    respaldado
+                  </span>
+                  .
+                </h3>
+                <p className="text-[10px] text-slate-400 max-w-[240px] mt-2 font-medium leading-relaxed">
+                  La IA procesa, notifica a directivos y genera el acta oficial al
+                  instante. Tu prioridad es el alumno, la nuestra es el proceso.
+                </p>
+              </div>
             </div>
           </section>
 
@@ -336,94 +298,54 @@ export const DashboardHoy: React.FC = () => {
               3. ACCIONES INMEDIATAS
             </h2>
 
-            <div className="space-y-5">
-              <button
-                id="quick-register-btn"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <GlassCard
+                title="Registrar Incidencia"
+                icon="add_circle"
+                description="Reporte rápido de comportamiento o asistencia."
                 onClick={() => openQuickRegister()}
-                className="w-full glass-card-quantum p-7 border-blue-500/30 hover:border-blue-400 transition-all group relative overflow-hidden text-left shadow-[0_0_30px_rgba(59,130,246,0.1)]"
-              >
-                <div className="absolute top-0 right-0 p-4">
-                  <span className="text-[8px] font-black bg-blue-600 text-white px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-blue-500/40 border border-blue-400/30">
-                    PROTOCOL_FAST
-                  </span>
-                </div>
-                <div className="relative z-10 flex items-center gap-5">
-                  <div className="size-16 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-400 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] transition-all duration-500 shadow-inner border border-blue-500/30">
-                    <span className="material-symbols-outlined text-4xl">
-                      bolt
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-white uppercase italic tracking-tighter title-sase">
-                      Reporte Inmediato
-                    </h3>
-                    <p className="text-[10px] text-blue-400 group-hover:text-white/80 font-black uppercase tracking-[0.2em] mt-1 transition-colors">
-                      ACTIVA_PROTOCOLO_ALFA
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                  <span className="material-symbols-outlined text-blue-400">
-                    arrow_forward_ios
-                  </span>
-                </div>
-              </button>
+                className="md:col-span-2 border-blue-500/30"
+              />
+              
+              <GlassCard
+                title="Expediente"
+                icon="folder_shared"
+                description="Consulta expedientes digitales."
+                onClick={() => setCurrentModule(AppModule.EXPEDIENTES)}
+              />
 
-              <button
+              <GlassCard
+                title="Buscar"
+                icon="search"
+                description="Búsqueda rápida de alumnos."
                 onClick={() => setCurrentModule(AppModule.DASHBOARD)}
-                className="w-full glass-card-quantum p-7 border-white/5 hover:border-white/20 transition-all group relative overflow-hidden text-left"
-              >
-                <div className="relative z-10 flex items-center gap-5">
-                  <div className="size-14 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 group-hover:bg-white/10 group-hover:text-white transition-all border border-white/10">
-                    <span className="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform">
-                      person_search
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-base font-black text-white uppercase italic tracking-tighter title-sase">
-                      Buscar Alumno
-                    </h3>
-                    <p className="text-[10px] text-slate-600 group-hover:text-slate-400 font-black uppercase tracking-[0.2em] mt-1">
-                      DIRECTORY_ACCESS_RESTRICTED
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                  <span className="material-symbols-outlined text-white/40 font-light">
-                    trending_flat
-                  </span>
-                </div>
-              </button>
+              />
 
-              <button
+              <GlassCard
+                title="Estadísticas"
+                icon="insights"
+                description="Análisis y reportes globales."
                 onClick={() => setCurrentModule(AppModule.REPORTES)}
-                className="w-full glass-card-quantum p-7 border-white/5 hover:border-white/20 transition-all group relative overflow-hidden text-left"
-              >
-                <div className="relative z-10 flex items-center gap-5">
-                  <div className="size-14 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 group-hover:bg-white/10 group-hover:text-white transition-all border border-white/10">
-                    <span className="material-symbols-outlined text-3xl group-hover:scale-110 transition-transform">
-                      visibility
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-base font-black text-white uppercase italic tracking-tighter title-sase">
-                      Ver Alertas
-                    </h3>
-                    <p className="text-[10px] text-slate-600 group-hover:text-slate-400 font-black uppercase tracking-[0.2em] mt-1">
-                      THREAT_MONITOR_CENTRAL
-                    </p>
-                  </div>
-                </div>
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                  <span className="material-symbols-outlined text-white/40 font-light">
-                    trending_flat
-                  </span>
-                </div>
-              </button>
+              />
+
+              <GlassCard
+                title="Seguimiento"
+                icon="assignment"
+                description="Bitácora de acompañamiento."
+                onClick={() => setCurrentModule(AppModule.BITACORA)}
+              />
+              
+              <GlassCard
+                title="Riesgo"
+                icon="monitoring"
+                description="Panel de prevención de riesgo."
+                onClick={() => setCurrentModule(AppModule.DASHBOARD)}
+                className="md:col-span-2"
+              />
             </div>
 
             {/* Main CTA */}
-            <div className="pt-10">
+            <div className="pt-6">
               <button
                 onClick={() => setCurrentModule(AppModule.HOME)}
                 className="w-full py-5 bg-gradient-to-r from-blue-700 via-indigo-800 to-indigo-950 hover:from-blue-600 hover:via-indigo-700 hover:to-indigo-900 text-white font-black uppercase tracking-[0.4em] rounded-2xl shadow-[0_20px_40px_rgba(59,130,246,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-4 border border-white/10 group"

@@ -43,6 +43,8 @@ const RegistroPersonal = React.lazy(() => import("./RegistroPersonal").then((m) 
 const AprobacionesPersonal = React.lazy(() => import("./AprobacionesPersonal").then((m) => ({ default: m.AprobacionesPersonal })));
 const MisGrupos = React.lazy(() => import("./MisGrupos").then((m) => ({ default: m.MisGrupos })));
 
+const Asistencia = React.lazy(() => import("./Asistencia").then((m) => ({ default: m.Asistencia })));
+
 export const ModuleRouter: React.FC = () => {
   const { currentModule, currentUserRole, setCurrentModule } = useApp();
 
@@ -61,6 +63,7 @@ export const ModuleRouter: React.FC = () => {
         if (currentModule === AppModule.APROBACIONES_PERSONAL) return <AprobacionesPersonal />;
         if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
         if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;
+        if (currentModule === AppModule.ASISTENCIA) return <Asistencia />;
         if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
         if (currentModule === AppModule.HOME) {

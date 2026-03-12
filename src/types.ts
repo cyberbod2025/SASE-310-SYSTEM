@@ -289,6 +289,7 @@ export enum AppModule {
   LECTURA_TRACKER = "lectura_tracker",
   DEVELOPER = "developer",
   EXPEDIENTES = "expedientes",
+  ASISTENCIA = "asistencia",
   NOT_FOUND = "not_found",
   HOME = "home",
   WELCOME = "welcome",
