@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { SASEIntroAnimation } from "./SASEIntroAnimation";
 import { SaseIAOrb } from "./SaseIAOrb";
+import { VERSION } from "../config/sase.config";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -97,9 +98,9 @@ export const Login: React.FC<LoginProps> = ({
         }`}
       >
         {/* Glow Container */}
-        <div className="absolute -inset-4 bg-blue-500/5 rounded-[3rem] blur-3xl -z-10 animate-pulse-slow"></div>
+        <div className="absolute -inset-8 bg-blue-500/10 rounded-[3rem] blur-[80px] -z-10 animate-pulse-slow"></div>
 
-        <div className="bg-[#0f172a]/40 backdrop-blur-md border border-white/10 rounded-[3rem] p-12 shadow-[0_0_150px_rgba(0,0,0,0.8)] relative overflow-hidden group">
+        <div className="glass-card-quantum !rounded-[3rem] p-12 shadow-[0_0_150px_rgba(0,0,0,0.8)] relative overflow-hidden group">
           {/* Pi Symbol */}
           <div
             className="absolute top-6 right-8 text-white/5 hover:text-white/40 cursor-pointer select-none transition-all text-[14px] font-bold z-30 p-2"
@@ -111,7 +112,7 @@ export const Login: React.FC<LoginProps> = ({
             {/* Logo Section */}
             <div className="flex flex-col items-center mb-8">
               <SaseIAOrb state="green" className="w-32 h-32 mb-6" />
-              <h1 className="text-6xl font-black text-white tracking-[0.2em] drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]">
+              <h1 className="text-6xl font-black text-white tracking-[0.2em] drop-shadow-[0_0_20px_rgba(59,130,246,0.5)] title-sase">
                 SASE
               </h1>
             </div>
@@ -135,7 +136,7 @@ export const Login: React.FC<LoginProps> = ({
                     placeholder="ejemplo@aefcm.gob.mx"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-[#0a0f1e]/50 border border-white/10 text-white rounded-xl py-4 px-6 outline-none focus:bg-[#0a0f1e]/80 focus:border-blue-500/40 transition-all text-base font-normal placeholder:text-white/10 shadow-inner"
+                    className="w-full bg-black/40 border border-white/10 text-white rounded-xl py-4 px-6 outline-none focus:bg-black/60 focus:border-blue-500/50 transition-all text-base font-normal placeholder:text-white/10 shadow-inner"
                   />
                 </div>
 
@@ -150,7 +151,7 @@ export const Login: React.FC<LoginProps> = ({
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-[#0a0f1e]/50 border border-white/10 text-white rounded-xl py-4 px-6 outline-none focus:bg-[#0a0f1e]/80 focus:border-blue-500/40 transition-all text-base font-normal placeholder:text-white/10 shadow-inner"
+                      className="w-full bg-black/40 border border-white/10 text-white rounded-xl py-4 px-6 outline-none focus:bg-black/60 focus:border-blue-500/50 transition-all text-base font-normal placeholder:text-white/10 shadow-inner"
                     />
                     <button
                       type="button"
@@ -187,8 +188,8 @@ export const Login: React.FC<LoginProps> = ({
           </div>
         </div>
 
-        <p className="text-center mt-12 text-[10px] text-slate-500 font-medium tracking-widest select-none opacity-40">
-          SASE v2.5.0 Pilot
+        <p className="text-center mt-12 text-[10px] text-slate-500 font-black uppercase tracking-[0.5em] select-none opacity-60 title-sase">
+          SASE v{VERSION.numero} • NUCLEUS
         </p>
       </div>
 

@@ -480,7 +480,7 @@ export const OrbNavigation = () => {
             </span>
             <div className="h-px w-24 bg-white/10"></div>
           </div>
-          <span className="text-[10px] font-bold text-white/40 tabular-nums">
+          <span className="text-[10px] font-bold text-white/40 tabular-nums title-sase">
             OPERATIONAL // L4_AUTH_ACTIVE
           </span>
         </div>
@@ -491,7 +491,7 @@ export const OrbNavigation = () => {
               Neural_Core
             </span>
           </div>
-          <span className="text-[10px] font-bold text-white/40 tabular-nums">
+          <span className="text-[10px] font-bold text-white/40 tabular-nums title-sase">
             VESPERTINO_SEC_310
           </span>
         </div>
@@ -565,7 +565,7 @@ export const OrbNavigation = () => {
                       onClick={() => setCurrentModule(item.id)}
                       className="group"
                     >
-                      <div className="relative size-20 md:size-24 flex flex-col items-center justify-center rounded-2xl bg-[#0b0e14]/80 backdrop-blur-xl border border-white/10 group-hover:border-blue-500 group-hover:bg-blue-600/20 transition-all duration-500 shadow-2xl">
+                      <div className="relative size-20 md:size-24 flex flex-col items-center justify-center rounded-2xl glass-card-quantum !bg-[#0b0e14]/80 !backdrop-blur-xl border border-white/10 group-hover:border-blue-500 group-hover:bg-blue-600/20 transition-all duration-500 shadow-2xl">
                         <div
                           className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity`}
                         ></div>
@@ -574,7 +574,7 @@ export const OrbNavigation = () => {
                         >
                           {item.icon}
                         </span>
-                        <span className="mt-2 text-[8px] md:text-[9px] font-black text-slate-400 group-hover:text-white uppercase tracking-[0.2em] transition-colors">
+                        <span className="mt-2 text-[8px] md:text-[9px] font-black text-slate-400 group-hover:text-white uppercase tracking-[0.2em] transition-colors title-sase">
                           {item.label}
                         </span>
                         <div className="absolute -top-1 -right-1 size-3 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform origin-center flex items-center justify-center">
@@ -593,7 +593,7 @@ export const OrbNavigation = () => {
           </div>
 
           <div className="mt-24 text-center animate-fade-in relative z-10 w-full">
-            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-none mb-3 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4">
+            <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic leading-none mb-3 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 title-sase">
               <span>NÚCLEO</span>
               <span className="text-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]">
                 OPERATIVO
@@ -609,7 +609,7 @@ export const OrbNavigation = () => {
             <div className="flex flex-wrap items-center justify-center gap-3">
               <div className="flex items-center gap-2 px-6 py-2 bg-white/5 border border-white/10 rounded-full backdrop-blur-xl">
                 <span className="size-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></span>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 title-sase">
                   ACCESO AUTORIZADO: {currentUserRole}
                 </span>
               </div>

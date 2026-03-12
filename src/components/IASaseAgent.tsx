@@ -1,9 +1,10 @@
 import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
-import { SaseIAOrb } from "./SaseIAOrb";
+import { SaseOrb } from "./SaseOrb";
+import type { SystemState } from "../types/systemState";
 import { UserRole, AppModule, CaseState } from "../types";
-import { calcularEstadoSistema } from "../utils/estadoSistema";
+import { calcularEstadoSistema, OrbState } from "../utils/estadoSistema";
 
 /**
  * IA-SASE Agent Component
@@ -22,21 +23,24 @@ export const IASaseAgent: React.FC = () => {
     currentUserRole,
   } = useApp();
 
+  // Mapeo entre el semáforo institucional (OrbState) y el visualizador de núcleo (SystemState)
+  const orbState = useMemo((): SystemState => {
+    switch (systemState) {
+      case "thinking": return "thinking";
+      case "red": return "alert";
+      case "yellow": return "warning";
+      default: return "normal";
+    }
+  }, [systemState]);
+
   // Texto descriptivo del estado para accesibilidad/clima
   const stateLabel = useMemo(() => {
     switch (systemState) {
-      case "red":
-        return "CRÍTICO";
-      case "yellow":
-        return "ALERTA";
-      case "blue":
-        return "ACTIVO";
-      case "thinking":
-        return "PROCESANDO";
-      case "gold":
-        return "INVENCIBLE";
-      default:
-        return "ESTABLE";
+      case "red": return "CRÍTICO";
+      case "yellow": return "ALERTA";
+      case "thinking": return "PROCESANDO";
+      case "gold": return "NORMAL";
+      default: return "ESTABLE";
     }
   }, [systemState]);
 
@@ -142,9 +146,9 @@ export const IASaseAgent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        <SaseIAOrb
-          state={systemState as any}
-          className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+        <SaseOrb
+          state={orbState}
+          className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_30px_rgba(0,0,0,0.6)]"
         />
 
         {/* Pulsing Ring for critical states */}

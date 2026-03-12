@@ -25,6 +25,7 @@ const stateConfig: Record<
     glowStrong: string;
     pulse: boolean;
     fast: boolean;
+    accent: string;
   }
 > = {
   normal: {
@@ -34,6 +35,7 @@ const stateConfig: Record<
     glowStrong: "rgba(16, 185, 129, 0.6)",
     pulse: false,
     fast: false,
+    accent: "#10b981",
   },
   warning: {
     gradient:
@@ -42,6 +44,7 @@ const stateConfig: Record<
     glowStrong: "rgba(245, 158, 11, 0.7)",
     pulse: true,
     fast: false,
+    accent: "#f59e0b",
   },
   alert: {
     gradient:
@@ -50,6 +53,7 @@ const stateConfig: Record<
     glowStrong: "rgba(220, 38, 38, 0.85)",
     pulse: true,
     fast: true,
+    accent: "#ef4444",
   },
   thinking: {
     gradient:
@@ -58,6 +62,7 @@ const stateConfig: Record<
     glowStrong: "rgba(59, 130, 246, 0.45)",
     pulse: false,
     fast: false,
+    accent: "#3b82f6",
   },
 };
 
@@ -173,22 +178,44 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
         </div>
       )}
 
+      <div className="absolute inset-[-40%] pointer-events-none select-none">
+        <svg className="w-full h-full animate-[sase-ring-spin_60s_linear_infinite] opacity-20" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="85" fill="none" stroke={config.accent} strokeWidth="0.5" strokeDasharray="1 10" />
+          <circle cx="100" cy="100" r="95" fill="none" stroke={config.accent} strokeWidth="0.2" strokeDasharray="40 160" />
+        </svg>
+        <svg className="absolute inset-0 w-full h-full animate-[sase-ring-spin-reverse_40s_linear_infinite] opacity-30" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="90" fill="none" stroke={config.accent} strokeWidth="1" strokeDasharray="2 30" />
+          <path d="M100 5 A95 95 0 0 1 195 100" fill="none" stroke={config.accent} strokeWidth="0.5" opacity="0.5" />
+        </svg>
+      </div>
+
       {enablePanel && (
-        <div className="absolute -top-6 right-2 text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          Neural Core
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap">
+          <span className="text-[10px] font-black uppercase tracking-[0.5em] text-blue-400 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-1 title-sase block text-center">
+            NEURAL_CORE_V3
+          </span>
+          <div className="h-[1px] w-0 bg-blue-500/50 group-hover:w-full transition-all duration-500 mx-auto mt-1"></div>
         </div>
       )}
 
+      {/* Floating Data Bits */}
+      <div className="absolute inset-[-50%] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 select-none">
+        <div className="absolute top-[20%] left-[10%] text-[8px] font-mono text-blue-400/40 animate-pulse">0x8F2A</div>
+        <div className="absolute bottom-[25%] right-[5%] text-[8px] font-mono text-blue-400/40 animate-pulse delay-700">COORD_Z:44</div>
+        <div className="absolute top-[60%] left-[-5%] text-[8px] font-mono text-blue-400/40 animate-pulse delay-1000">LINK_ACTV</div>
+      </div>
+
       <div
-        className="absolute inset-0 rounded-full transition-all duration-[700ms] group-hover:scale-[1.05]"
+        className="absolute inset-0 rounded-full transition-all duration-[1000ms] group-hover:scale-[1.12]"
         style={{
-          boxShadow: `0 0 28px ${config.glow}, 0 0 90px ${config.glowStrong}`,
+          boxShadow: `0 0 30px ${config.glow}, 0 0 100px ${config.glowStrong}`,
         }}
       />
       <div
-        className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        className="absolute inset-[-10px] rounded-full opacity-0 transition-all duration-300 group-hover:opacity-100"
         style={{
-          boxShadow: `0 0 40px ${config.glowStrong}, 0 0 120px ${config.glowStrong}`,
+          boxShadow: `inset 0 0 20px ${config.accent}44`,
+          border: `1px solid ${config.accent}22`,
         }}
       />
 
@@ -198,7 +225,6 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
         } ${vibrate ? "sase-orb-vibrate" : ""}`}
         style={{
           background: config.gradient,
-          animation: undefined,
         }}
         role={enablePanel ? "button" : undefined}
         aria-label={enablePanel ? "Abrir panel de estado" : undefined}
@@ -212,11 +238,7 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
           }}
         />
         <div
-          className="absolute inset-0 rounded-full opacity-70"
-          style={{
-            background:
-              "radial-gradient(circle at 40% 70%, rgba(0,0,0,0.35), rgba(0,0,0,0) 55%)",
-          }}
+          className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1),transparent_70%)] animate-pulse"
         />
         <div
           className="absolute inset-0 rounded-full"
@@ -225,17 +247,16 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
               "inset 0 0 30px rgba(0,0,0,0.55), inset 0 -25px 35px rgba(0,0,0,0.45)",
           }}
         />
+        
+        {/* Anilos internos de interferencia */}
         <div
           className="absolute inset-1 rounded-full border border-white/10"
-          style={{ animation: `sase-orb-halo ${rotationDuration} ease-in-out infinite`, opacity: haloOpacity }}
+          style={{ animation: `sase-orb-halo ${rotationDuration} linear infinite`, opacity: haloOpacity }}
         />
         <div
           className="absolute inset-5 rounded-full border border-white/5"
-          style={{ animation: `sase-orb-halo ${rotationDuration} ease-in-out infinite`, opacity: haloOpacity * 0.7 }}
+          style={{ animation: `sase-orb-halo-reverse ${rotationDuration} linear infinite`, opacity: haloOpacity * 0.7 }}
         />
-
-        <div className="absolute inset-0 rounded-full sase-orb-iris" />
-        <div className="absolute inset-0 rounded-full sase-orb-iris-core" />
 
         <div className="absolute inset-0 flex items-center justify-center">
           <div
@@ -249,7 +270,7 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
               style={{
                 width: `${eyeBase.width}px`,
                 height: `${eyeBase.height * eyeHeightMultiplier}px`,
-                boxShadow: `inset 0 0 4px rgba(0,0,0,0.25), 0 0 10px rgba(255,255,255,${glowStrength})`,
+                boxShadow: `inset 0 0 4px rgba(0,0,0,0.25), 0 0 15px ${config.accent}`,
               }}
             />
             <span
@@ -257,7 +278,7 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
               style={{
                 width: `${eyeBase.width}px`,
                 height: `${eyeBase.height * eyeHeightMultiplier}px`,
-                boxShadow: `inset 0 0 4px rgba(0,0,0,0.25), 0 0 10px rgba(255,255,255,${glowStrength})`,
+                boxShadow: `inset 0 0 4px rgba(0,0,0,0.25), 0 0 15px ${config.accent}`,
               }}
             />
           </div>
@@ -265,15 +286,22 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
 
         <div className="absolute inset-0 rounded-full sase-orb-sheen" />
 
-        <div className="absolute inset-0 rounded-full pointer-events-none">
-          <span className="sase-orb-particle left-[12%] top-[18%]" />
-          <span className="sase-orb-particle left-[82%] top-[22%]" />
-          <span className="sase-orb-particle left-[18%] top-[72%]" />
-          <span className="sase-orb-particle left-[72%] top-[68%]" />
-          <span className="sase-orb-particle left-[48%] top-[10%]" />
-          <span className="sase-orb-particle left-[32%] top-[32%]" />
-          <span className="sase-orb-particle left-[62%] top-[36%]" />
-          <span className="sase-orb-particle left-[42%] top-[78%]" />
+        <div className="absolute inset-0 rounded-full pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
+          {/* Partículas mejoradas */}
+          {[...Array(6)].map((_, i) => (
+            <span 
+              key={i}
+              className="sase-orb-particle" 
+              style={{
+                left: `${15 + Math.random() * 70}%`,
+                top: `${15 + Math.random() * 70}%`,
+                animationDelay: `${i * 0.8}s`,
+                width: i % 2 === 0 ? '1px' : '2px',
+                height: i % 2 === 0 ? '1px' : '2px',
+              }} 
+            />
+          ))}
         </div>
       </div>
 
@@ -405,22 +433,36 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
           }
         }
 
-        @keyframes sase-orb-vibrate {
+        @keyframes sase-ring-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes sase-ring-spin-reverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        @keyframes sase-orb-halo-reverse {
           0% {
-            transform: translate3d(0, 0, 0);
-          }
-          25% {
-            transform: translate3d(1px, -1px, 0);
+            opacity: 0.2;
+            transform: scale(1.05) rotate(360deg);
           }
           50% {
-            transform: translate3d(-1px, 1px, 0);
-          }
-          75% {
-            transform: translate3d(1px, 1px, 0);
+            opacity: 0.5;
+            transform: scale(0.95) rotate(180deg);
           }
           100% {
-            transform: translate3d(0, 0, 0);
+            opacity: 0.2;
+            transform: scale(1.05) rotate(0deg);
           }
+        }
+        @keyframes sase-orb-vibrate {
+          0% { transform: translate3d(0, 0, 0); }
+          10% { transform: translate3d(-1px, 1px, 0); }
+          20% { transform: translate3d(1px, -1px, 0); }
+          30% { transform: translate3d(-1px, -1px, 0); }
+          40% { transform: translate3d(1px, 1px, 0); }
+          50% { transform: translate3d(-1px, 1px, 0); }
+          100% { transform: translate3d(0, 0, 0); }
         }
 
         .sase-orb-pulse {

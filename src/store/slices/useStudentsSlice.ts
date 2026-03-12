@@ -88,20 +88,19 @@ export const useStudentsSlice = (
         `);
 
       if (error) {
-        if (import.meta.env.DEV) {
-          console.warn("Error fetching students");
-        }
+        console.error("Error fetching students:", error);
+        toast.error("No se pudieron cargar los datos de los alumnos.");
         return;
       }
 
       if (data) {
-        const mappedStudents: Student[] = data.map((d: any) => ({
+        const mappedStudents: Student[] = data.map((d: any): Student => ({
           id: d.id,
           matricula: d.matricula,
           curp: d.curp,
           name: d.nombre_completo,
           group: d.grupo,
-          avatar: d.avatar_url || "https://i.pravatar.cc/150",
+          avatar: d.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${d.matricula}`,
           caseState: (d.estado_semaforo as CaseState) || CaseState.CERRADO,
           puntajeRiesgo: d.puntaje_riesgo,
           estadoSemaforo: d.estado_semaforo,
@@ -110,8 +109,9 @@ export const useStudentsSlice = (
           riesgoAsistencia: d.riesgo_asistencia,
           riesgoAcademico: d.riesgo_academico,
           riesgoSocioemocional: d.riesgo_socioemocional,
-          incidents: (d.incidencias || []).map((i: any) => ({
+          incidents: (d.incidencias || []).map((i: any): Incident => ({
             id: i.id,
+            studentId: d.id,
             type: i.tipo,
             description: i.descripcion,
             date: i.fecha || i.creado_en,
@@ -120,7 +120,7 @@ export const useStudentsSlice = (
             estado: i.estado,
             clasificacion: i.clasificacion,
           })),
-          justificantes: (d.justificantes || []).map((j: any) => ({
+          justificantes: (d.justificantes || []).map((j: any): Justificante => ({
             id: j.id,
             folio: j.folio,
             startDate: j.fecha_inicio,
@@ -138,7 +138,7 @@ export const useStudentsSlice = (
           guardianInfo: d.datos_tutor || undefined,
           bapInfo: d.datos_bap
             ? {
-                hasBAP: d.datos_bap.hasBAP || false,
+                hasBAP: !!d.datos_bap.hasBAP,
                 diagnosisPrivate: d.datos_bap.diagnosisPrivate || "",
                 accommodations: d.datos_bap.accommodations || [],
                 lastUpdated: d.datos_bap.lastUpdated || "",
@@ -149,7 +149,7 @@ export const useStudentsSlice = (
                 accommodations: [],
                 lastUpdated: "",
               },
-          calificaciones: (d.calificaciones || []).map((c: any) => ({
+          calificaciones: (d.calificaciones || []).map((c: any): Calificacion => ({
             materia: c.materia,
             trimestre1: c.trimestre1,
             trimestre2: c.trimestre2,
@@ -157,7 +157,7 @@ export const useStudentsSlice = (
             promedioFinal: c.promedio_final,
           })),
           documentos: [],
-          isDistancia: d.is_distancia || false,
+          isDistancia: !!d.is_distancia,
           gamificacion: d.estudiantes?.[0]
             ? {
                 total_puntos: d.estudiantes[0].total_puntos || 0,
@@ -169,10 +169,8 @@ export const useStudentsSlice = (
         setStudents(mappedStudents);
       }
     } catch (err: any) {
-      if (import.meta.env.DEV) {
-        console.warn("Unexpected error fetching students");
-      }
-      toast.error("Error de conexión: " + (err.message || "Desconocido"));
+      console.error("Unexpected error fetching students:", err);
+      toast.error("Error crítico de sincronización.");
     }
   }, [user]);
 

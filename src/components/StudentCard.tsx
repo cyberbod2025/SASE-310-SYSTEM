@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useApp } from "../store";
 import { Student, UserRole, CaseState } from "../types";
 import { getPrivacySafeAttributes } from "../utils/saseUtils";
@@ -18,121 +19,135 @@ export const StudentCard: React.FC<StudentCardProps> = ({
   const isUdeii = student.guardianInfo?.details?.is_udeii || false;
 
   const handleReport = () => {
-    // Pre-select student logic would go here if QuickRegister supports it.
-    // For now just open the modal.
     setQuickRegisterOpen(true);
-    // Ideally we dispatch an action to select this student in the store first.
   };
 
   const statusColor =
     {
-      [CaseState.CERRADO]: "bg-green-500",
+      [CaseState.CERRADO]: "bg-emerald-500",
       [CaseState.OBSERVADO]: "bg-blue-500",
-      [CaseState.PATRON_DETECTADO]: "bg-red-500",
-    }[student.caseState] || "bg-gray-400";
+      [CaseState.PATRON_DETECTADO]: "bg-rose-500",
+    }[student.caseState] || "bg-slate-400";
 
   return (
-    <div className="relative bg-black/40 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden group animate-fade-in-up transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)] hover:border-teal-500/50 hover:-translate-y-1">
-      {/* Holographic Overlay on Hover */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-teal-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="relative bg-slate-900/40 backdrop-blur-xl rounded-[2.5rem] border border-white/10 overflow-hidden group glass-shine transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.4)] hover:border-blue-500/50"
+    >
+      {/* Dynamic Background Glow */}
+      <div className={`absolute -top-20 -right-20 size-40 blur-[80px] opacity-20 transition-colors duration-500 pointer-events-none ${
+        student.caseState === CaseState.PATRON_DETECTADO ? "bg-rose-500" : "bg-blue-500"
+      }`} />
 
-      <div className="p-4 flex items-start gap-4 relative z-10">
-        {/* Avatar Section */}
-        <div className="relative">
-          <div className="relative size-16 rounded-full p-[2px] bg-gradient-to-b from-white/20 to-transparent group-hover:from-teal-400 group-hover:to-blue-500 transition-colors">
-            <img
-              src={
-                student.avatar ||
-                `https://ui-avatars.com/api/?name=${student.name}&background=random`
-              }
-              alt={student.name}
-              className="size-full rounded-full object-cover bg-gray-900"
-            />
+      <div className="p-6 relative z-10">
+        <div className="flex items-start gap-6">
+          {/* Avatar Section */}
+          <div className="relative shrink-0">
+            <div className="relative size-20 rounded-[2rem] p-[3px] bg-gradient-to-br from-white/20 via-white/5 to-transparent group-hover:from-blue-400 group-hover:via-blue-500 group-hover:to-indigo-600 transition-all duration-500">
+              <img
+                src={
+                  student.avatar ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`
+                }
+                alt={student.name}
+                className="size-full rounded-[1.8rem] object-cover bg-slate-900"
+              />
+            </div>
+            <motion.div
+              layoutId={`status-${student.id}`}
+              className={`absolute -bottom-1 -right-1 size-7 rounded-full border-4 border-slate-950 flex items-center justify-center ${statusColor} shadow-xl shadow-black/50`}
+              title={`Estado: ${student.caseState}`}
+            >
+              <span className="material-symbols-outlined text-[12px] text-white font-black">
+                {student.caseState === CaseState.PATRON_DETECTADO ? "warning" : 
+                 student.caseState === CaseState.OBSERVADO ? "visibility" : "check"}
+              </span>
+            </motion.div>
           </div>
-          <div
-            className={`absolute -bottom-1 -right-1 size-5 rounded-full border-2 border-black flex items-center justify-center ${statusColor} shadow-lg`}
-            title={`Estado: ${student.caseState}`}
-          >
-            {student.caseState === CaseState.PATRON_DETECTADO && (
-              <span className="material-symbols-outlined text-[10px] text-white font-bold animate-pulse">
-                warning
-              </span>
-            )}
-            {student.caseState === CaseState.OBSERVADO && (
-              <span className="material-symbols-outlined text-[10px] text-white font-bold">
-                visibility
-              </span>
-            )}
-            {student.caseState === CaseState.CERRADO && (
-              <span className="material-symbols-outlined text-[10px] text-white font-bold">
-                check
-              </span>
-            )}
-          </div>
-        </div>
 
-        {/* Info Section */}
-        <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start">
-            <h3 className="text-white font-bold truncate pr-2 group-hover:text-teal-300 transition-colors text-lg tracking-tight">
-              {student.name}
-            </h3>
-            {isUdeii && privacySettings.showAccommodations && (
-              <div className="relative group/tooltip">
-                <span
-                  className="material-symbols-outlined text-purple-400 cursor-help text-lg animate-pulse drop-shadow-[0_0_5px_rgba(168,85,247,0.5)]"
-                  title="Alumno UDEII"
-                >
-                  extension
-                </span>
-                <div className="absolute right-0 top-6 z-50 w-64 p-4 bg-black/90 text-xs text-gray-300 rounded-lg shadow-2xl border border-purple-500/50 backdrop-blur-xl opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none">
-                  <p className="font-bold text-purple-400 mb-2 uppercase tracking-wider border-b border-purple-500/30 pb-1">
-                    Protocolo UDEII
-                  </p>
-                  <ul className="list-disc pl-4 space-y-1.5 marker:text-purple-500">
-                    <li>Requiere instrucciones segmentadas.</li>
-                    <li>Ubicación preferencial en aula.</li>
-                    <li>Refuerzo positivo constante.</li>
-                    <li>Verificar diagnósticos específicos con UDEII.</li>
-                  </ul>
+          {/* Info Section */}
+          <div className="flex-1 min-w-0 pt-1">
+            <div className="flex justify-between items-start gap-2">
+              <h3 className="text-white font-bold truncate group-hover:text-blue-300 transition-colors text-xl tracking-tight leading-tight">
+                {student.name}
+              </h3>
+              {isUdeii && privacySettings.showAccommodations && (
+                <div className="relative group/tooltip">
+                  <span
+                    className="material-symbols-outlined text-purple-400 cursor-help text-xl animate-pulse drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]"
+                  >
+                    psychology_alt
+                  </span>
+                  <div className="absolute right-0 top-8 z-50 w-72 p-5 bg-slate-950/95 text-xs text-slate-300 rounded-[2rem] shadow-2xl border border-purple-500/40 backdrop-blur-2xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-300 scale-95 group-hover/tooltip:scale-100 origin-top-right pointer-events-none">
+                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-purple-500/20">
+                      <span className="material-symbols-outlined text-purple-400 text-sm">info</span>
+                      <span className="font-black text-purple-400 uppercase tracking-widest text-[10px]">
+                        Protocolo UDEII Activo
+                      </span>
+                    </div>
+                    <ul className="space-y-2">
+                      <li className="flex gap-2">
+                        <span className="text-purple-500">•</span>
+                        <span>Requiere instrucciones segmentadas y claras.</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-purple-500">•</span>
+                        <span>Ubicación preferencial en el aula para atención.</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <span className="text-purple-500">•</span>
+                        <span>Refuerzo positivo constante y monitoreo.</span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          <p className="text-gray-500 font-mono text-xs mb-2">
-            ID: <span className="text-gray-300">{student.matricula}</span>
-          </p>
-
-          <div className="flex flex-wrap gap-2 mt-2">
-            <span className="text-xs font-bold px-2.5 py-1 rounded bg-white/5 text-gray-300 border border-white/10 group-hover:border-teal-500/30 transition-colors uppercase tracking-widest">
-              {student.group}
-            </span>
-            {student.incidents.length > 0 && (
-              <span className="text-xs font-bold px-2.5 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/20 flex items-center gap-1.5 uppercase tracking-widest">
-                <span className="size-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                {student.incidents.length} Incidencias
+            <div className="flex items-center gap-3 mt-1.5 mb-3">
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-lg border border-white/5">
+                {student.matricula}
               </span>
-            )}
+              <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                Gpo: {student.group}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-2">
+              {student.incidents.length > 0 && (
+                <span className="text-[9px] font-black px-3 py-1.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center gap-2 uppercase tracking-widest shadow-inner">
+                  <span className="size-1.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]"></span>
+                  {student.incidents.length} Incidentes
+                </span>
+              )}
+              {student.riesgoAsistencia && student.riesgoAsistencia > 15 && (
+                <span className="text-[9px] font-black px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-2 uppercase tracking-widest shadow-inner">
+                  <span className="material-symbols-outlined text-[10px]">calendar_today</span>
+                  Riesgo Asistencia
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Actions Footer */}
-      <div className="px-4 py-3 bg-white/5 border-t border-white/5 mt-2 flex justify-between items-center opacity-70 group-hover:opacity-100 transition-all">
+      <div className="px-6 py-4 bg-white/[0.03] border-t border-white/5 flex justify-between items-center opacity-60 group-hover:opacity-100 transition-all duration-300">
         <button
           onClick={handleReport}
-          className="text-xs font-bold text-gray-400 hover:text-teal-400 flex items-center gap-1.5 transition-colors uppercase tracking-wide"
+          className="text-[10px] font-black text-slate-400 hover:text-rose-400 flex items-center gap-2 transition-colors uppercase tracking-widest group/btn"
         >
-          <span className="material-symbols-outlined text-sm">flag</span>
+          <span className="material-symbols-outlined text-sm group-hover/btn:scale-125 transition-transform">add_alert</span>
           Reportar
         </button>
 
-        <button className="text-xs font-bold text-gray-400 hover:text-white flex items-center gap-1.5 transition-colors uppercase tracking-wide">
-          <span className="material-symbols-outlined text-sm">visibility</span>
-          Perfil
+        <button className="text-[10px] font-black text-slate-400 hover:text-white flex items-center gap-2 transition-colors uppercase tracking-widest group/btn">
+          <span className="material-symbols-outlined text-sm group-hover/btn:scale-125 transition-transform">account_circle</span>
+          Ver Perfil
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };

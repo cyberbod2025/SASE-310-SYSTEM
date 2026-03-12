@@ -148,7 +148,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       {/* Sidebar - Premium Crystal Glass */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} bg-[#063b6d]/10 backdrop-blur-[40px] saturate-[180%] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/10 md:relative md:translate-x-0 shadow-[20px_0_80px_-15px_rgba(0,0,0,0.6)] ${
+        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-[#06182a]/40 !backdrop-blur-[60px] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/10 md:relative md:translate-x-0 shadow-[20px_0_80px_-15px_rgba(0,0,0,0.6)] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -175,7 +175,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex-1 min-w-0 animate-fade-in">
-                  <h3 className="text-sm font-black text-white truncate uppercase tracking-tight">
+                  <h3 className="text-[10px] font-black text-white truncate uppercase tracking-widest title-sase">
                     {displayUserName}
                   </h3>
                   <div className="flex flex-col gap-0.5 mt-0.5">
@@ -359,7 +359,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Header - Glassmorphism Sticky */}
-        <header className="h-20 bg-[#0b0e14]/50 backdrop-blur-xl border-b border-white/5 flex items-center justify-between px-6 shrink-0 z-40 relative">
+        <header className="h-20 glass-card-quantum !rounded-none !border-b !border-white/5 !border-t-0 !border-l-0 !border-r-0 !bg-[#0b0e14]/50 flex items-center justify-between px-6 shrink-0 z-40 relative">
           <div className="flex items-center gap-6">
             <button
               className="md:hidden size-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-400"
@@ -372,9 +372,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <h2 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">
+                <h2 className="text-[11px] font-black text-slate-100 uppercase tracking-[0.4em] title-sase">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
-                  <span className="text-white/40 italic">IA_NUCLEUS</span>
+                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">IA_NUCLEUS</span>
                 </h2>
               </div>
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">
