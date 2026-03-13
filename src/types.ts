@@ -110,6 +110,7 @@ export interface Incident {
   prefectoAsignado?: string;
   grupoId?: string;
   gravedad?: "leve" | "media" | "grave" | "critica"; // Impacto semáforo
+  notificado_whatsapp?: boolean;
 }
 
 export interface Justificante {

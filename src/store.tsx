@@ -35,6 +35,7 @@ interface AppContextType {
   groups: any[];
   fetchGroups: any;
   addIncident: any;
+  markIncidentAsNotified: any;
   addJustificante: any;
   updateGrades: any;
   updateBapInfo: any;
@@ -161,11 +162,6 @@ export const AppProvider: React.FC<{
 
   const aiSystem = useSystemStateSlice(legacyToSystemState(ui.systemState));
 
-  // Update UI slice with real students for assistant messages
-  // (In a real refactor, we might use a combined hook, but this works for now)
-  // We can't re-call useUiSlice here, but we can pass the students to it via effect if needed.
-  // For simplicity, we'll just merge everything in the context value.
-
   // Compatibility functions for missing ones in slices
   const updateStudentAudit = async (studentId: string, modifiedBy: string) => {
     // Basic implementation to match original
@@ -248,6 +244,7 @@ export const AppProvider: React.FC<{
         groups: studentsSlice.groups,
         fetchGroups: studentsSlice.fetchGroups,
         addIncident: studentsSlice.addIncident,
+        markIncidentAsNotified: studentsSlice.markIncidentAsNotified,
         ...statsSlice,
         ...audit,
         updateStudentAudit,

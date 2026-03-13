@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 interface IntroProps {
   onEnter: () => void;
@@ -118,36 +119,17 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
               <div className="absolute top-[15%] left-[75%] w-36 h-36 bg-blue-400/20 rounded-full blur-[45px] animate-[levitate_4.5s_ease-in-out_infinite_0.2s]" />
             </div>
 
-            {/* El Orbe 3D Esfera */}
-            <div
-              className="relative w-full h-full rounded-full flex justify-center items-center transition-all duration-[1200ms] overflow-hidden"
-              style={{
-                background: orbGradient,
-                boxShadow: `0 0 100px 40px ${orbGlow}, inset -30px -30px 60px rgba(0,0,0,0.8), inset 30px 30px 50px rgba(255,255,255,0.6), inset -10px -10px 15px rgba(2,8,22,0.9)`,
-              }}
-            >
-              {/* Ojos - Se encienden poco a poco */}
-              <div
-                className="flex gap-10 transition-transform duration-[800ms] ease-in-out"
-                style={{
-                  transform: `translate(${eyeX}px, ${eyeY}px)`,
-                }}
-              >
-                <div
-                  className={`w-1.5 sm:w-2 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-[3000ms] ease-out animate-[blink_4s_infinite_1s]`}
-                  style={{
-                    height: phase >= 2 ? "16px" : "0px",
-                    opacity: phase >= 2 ? 0.9 : 0,
-                  }}
-                ></div>
-                <div
-                  className={`w-1.5 sm:w-2 bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.8)] transition-all duration-[3000ms] ease-out delay-300 animate-[blink_4s_infinite_1s]`}
-                  style={{
-                    height: phase >= 2 ? "16px" : "0px",
-                    opacity: phase >= 2 ? 0.9 : 0,
-                  }}
-                ></div>
-              </div>
+            {/* El Orbe 3D Esfera Spline Official */}
+            <div className="relative w-full h-full rounded-full transition-all duration-[1200ms]">
+              <SaseSplineOrb 
+                state={
+                  phase === 3 ? "normal" :
+                  phase === 4 ? "warning" :
+                  phase === 5 ? "alert" :
+                  "thinking"
+                }
+                className="w-full h-full"
+              />
             </div>
           </div>
         </div>

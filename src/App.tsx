@@ -1,65 +1,34 @@
 import React, { useState } from "react";
-import { AppProvider, useApp } from "./store";
+import { AppProvider } from "./store";
 import { Toaster } from "react-hot-toast";
-import { Layout } from "./components/Layout";
-import { SplashScreen } from "./components/SplashScreen";
-import { UserRole, AppModule } from "./types";
+import { UserRole } from "./types";
 import { useAuth } from "./components/AuthProvider";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
-import { ModuleRouter, LoadingSpinner } from "./components/ModuleRouter";
+import { LoadingSpinner } from "./components/ModuleRouter";
 import { GlobalModals } from "./components/GlobalModals";
 import { DocumentRenderer } from "./components/DocumentRenderer";
+import { AppShell } from "./components/AppShell";
 
-const RadarEscolar = React.lazy(() => import("./components/RadarEscolar").then(m => ({ default: m.RadarEscolar })));
-const DashboardHoy = React.lazy(() => import("./components/DashboardHoy").then(m => ({ default: m.DashboardHoy })));
+const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
 const SASEIntroAnimation = React.lazy(() => import("./components/SASEIntroAnimation").then(m => ({ default: m.SASEIntroAnimation })));
 const FirstLogonSetup = React.lazy(() => import("./components/FirstLogonSetup").then(m => ({ default: m.FirstLogonSetup })));
 const RegistroPersonal = React.lazy(() => import("./components/RegistroPersonal").then(m => ({ default: m.RegistroPersonal })));
 
-// ... (existing code below)
-
-const MainContent = () => {
-  return <ModuleRouter />;
-};
-
-// Componente para manejar la lógica de contenido con o sin Layout
-const AppShell = () => {
-  const { currentModule } = useApp();
-  const [showRadar, setShowRadar] = React.useState(true);
-
-  // El Radar solo se muestra en el módulo de bienvenida (post-login inmediato)
-  const isWelcome = currentModule === AppModule.WELCOME;
-
-  return (
-    <ErrorBoundary>
-      <React.Suspense fallback={<LoadingSpinner />}>
-        {isWelcome && showRadar ? (
-          <RadarEscolar onComplete={() => setShowRadar(false)} />
-        ) : isWelcome ? (
-          <DashboardHoy />
-        ) : (
-          <Layout>
-            <MainContent />
-          </Layout>
-        )}
-      </React.Suspense>
-    </ErrorBoundary>
-  );
-};
-
 const App: React.FC = () => {
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const [isRegistering, setIsRegistering] = useState(false);
+  
   // Skipear el intro si ya se vio una vez (persistente)
   const [showIntro, setShowIntro] = useState(() => {
     return localStorage.getItem("sase_intro_played") !== "true";
   });
+
   const [showFirstLogon, setShowFirstLogon] = useState(false);
   const [setupUser, setSetupUser] = useState<{
     fullName: string;
     email: string;
   } | null>(null);
+  
   const { session, loading } = useAuth();
 
   // Handle direct links (e.g., ?registro=true)
@@ -67,7 +36,7 @@ const App: React.FC = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("registro") === "true") {
       setIsRegistering(true);
-      setShowIntro(false); // Skip intro for direct registration links
+      setShowIntro(false); 
     }
   }, []);
 
@@ -75,9 +44,7 @@ const App: React.FC = () => {
   React.useEffect(() => {
     if (isRegistering) {
       window.history.pushState({ registering: true }, "");
-      const handlePop = () => {
-        setIsRegistering(false);
-      };
+      const handlePop = () => setIsRegistering(false);
       window.addEventListener("popstate", handlePop);
       return () => window.removeEventListener("popstate", handlePop);
     }
@@ -118,25 +85,25 @@ const App: React.FC = () => {
     );
   }
 
-    if (!session) {
-      if (isRegistering) {
+  if (!session) {
+    if (isRegistering) {
       return (
-        <>
+        <ErrorBoundary>
           <Toaster position="top-center" reverseOrder={false} />
           <React.Suspense fallback={<LoadingSpinner />}>
             <RegistroPersonal onBack={() => setIsRegistering(false)} />
           </React.Suspense>
-        </>
-      );
-      }
-      return (
-        <React.Suspense fallback={<LoadingSpinner />}>
-          <Login
-            onRegisterClick={() => setIsRegistering(true)}
-          />
-        </React.Suspense>
+        </ErrorBoundary>
       );
     }
+    return (
+      <ErrorBoundary>
+        <React.Suspense fallback={<LoadingSpinner />}>
+          <Login onRegisterClick={() => setIsRegistering(true)} />
+        </React.Suspense>
+      </ErrorBoundary>
+    );
+  }
 
   return (
     <AppProvider initialRole={initialRole}>

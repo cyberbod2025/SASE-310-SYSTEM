@@ -922,6 +922,7 @@ export type Database = {
           id: string
           nivel_gravedad: number
           reportado_por: string
+          notificado_whatsapp: boolean | null
           tipo: string | null
         }
         Insert: {
@@ -933,6 +934,7 @@ export type Database = {
           id?: string
           nivel_gravedad?: number
           reportado_por: string
+          notificado_whatsapp?: boolean | null
           tipo?: string | null
         }
         Update: {
@@ -944,6 +946,7 @@ export type Database = {
           id?: string
           nivel_gravedad?: number
           reportado_por?: string
+          notificado_whatsapp?: boolean | null
           tipo?: string | null
         }
         Relationships: [

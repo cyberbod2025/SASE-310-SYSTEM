@@ -3,6 +3,7 @@ import { useAuditoriaAccesos } from "../hooks/useAuditoriaAccesos";
 import { AvisoUsoResponsable } from "./AvisoUsoResponsable";
 import {
   Student,
+  Incident,
   DocumentoInstitucional,
   UserRole,
   CaseState,
@@ -25,6 +26,7 @@ import "./StudentProfile.css"; // Usa el nuevo CSS "Institutional Light"
 import toast from "react-hot-toast";
 
 import { PrintPreviewModal } from "./PrintPreviewModal";
+import { sendWhatsAppNotification } from "../utils/notifications";
 
 interface StudentAdvancedPanelProps {
   student: Student;
@@ -41,6 +43,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
     toggleDistanceState,
     logAudit,
     addIncident,
+    markIncidentAsNotified,
   } = useApp();
   const [activeTab, setActiveTab] = useState<"CLINICAL" | "ACADEMIC" | "LEGAL">(
     "ACADEMIC",
@@ -208,6 +211,38 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
     });
     updateGrades(student.id, updatedGrades);
     toast.success("Calificación actualizada");
+  };
+
+  const handleWhatsAppIncident = async (incident: Incident) => {
+    if (incident.notificado_whatsapp) {
+      toast.error("Esta incidencia ya ha sido notificada.");
+      return;
+    }
+
+    if (!student.guardianInfo?.phonePrimary) {
+      toast.error("No hay teléfono del tutor registrado.");
+      return;
+    }
+
+    const loadingToast = toast.loading("Enviando notificación SASE...");
+    
+    try {
+      const res = await sendWhatsAppNotification({
+        to: student.guardianInfo.phonePrimary,
+        message: `SASE ALERTA: Reporte de ${incident.type} para ${student.name}. Detalle: ${incident.description}`,
+        studentName: student.name,
+        incidentType: incident.type
+      });
+
+      if (res.success) {
+        toast.success("Notificación enviada con éxito", { id: loadingToast });
+        await markIncidentAsNotified(student.id, incident.id);
+      } else {
+        toast.error(`Error: ${res.error}`, { id: loadingToast });
+      }
+    } catch (err) {
+      toast.error("Error al conectar con el servicio de mensajería", { id: loadingToast });
+    }
   };
 
   const handlePrintDoc = (doc: DocumentoInstitucional) => {
@@ -719,16 +754,32 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             >
                               {inc.type}
                             </span>
-                            <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                              <span className="material-symbols-outlined text-[12px]">
-                                calendar_today
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => handleWhatsAppIncident(inc)}
+                                className={`p-1.5 rounded-lg transition-all flex items-center gap-1.5 border ${
+                                  inc.notificado_whatsapp 
+                                    ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
+                                    : "bg-slate-50 text-slate-400 border-slate-200 hover:bg-emerald-500 hover:text-white hover:border-emerald-400"
+                                }`}
+                                title={inc.notificado_whatsapp ? "Notificado por WhatsApp" : "Notificar al Tutor por WhatsApp"}
+                              >
+                                <span className="material-symbols-outlined text-[16px]">
+                                  {inc.notificado_whatsapp ? 'done_all' : 'send_to_mobile'}
+                                </span>
+                                <span className="text-[9px] font-black uppercase tracking-tighter">WhatsApp</span>
+                              </button>
+                              <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[12px]">
+                                  calendar_today
+                                </span>
+                                {new Date(inc.date).toLocaleDateString("es-MX", {
+                                  weekday: "short",
+                                  day: "numeric",
+                                  month: "short",
+                                })}
                               </span>
-                              {new Date(inc.date).toLocaleDateString("es-MX", {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              })}
-                            </span>
+                            </div>
                           </div>
                           <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-100">
                             {inc.description}

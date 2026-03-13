@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SaseOrb, SystemState } from "./SaseOrb";
+import { SaseSplineOrb } from "./SaseSplineOrb";
+import type { SystemState } from "../types/systemState";
 
 interface SASEIntroAnimationProps {
   onComplete: () => void;
@@ -101,7 +102,7 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
             transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
             className="relative"
           >
-            <SaseOrb
+            <SaseSplineOrb
               state={orbState}
               className="w-44 h-44 sm:w-64 sm:h-64 transition-all duration-1000"
             />

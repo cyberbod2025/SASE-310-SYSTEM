@@ -75,7 +75,7 @@ export const useStudentsSlice = (
       const { data, error } = await supabase.from("alumnos").select(`
           *,
           incidencias (
-            id, tipo, descripcion, creado_en, reportado_por, fecha, estado, reporta, clasificacion, gravedad
+            id, tipo, descripcion, creado_en, reportado_por, fecha, estado, reporta, clasificacion, gravedad, notificado_whatsapp
           ),
           justificantes (
             id, folio, fecha_inicio, fecha_fin, motivo, descripcion, creado_en, emitido_por
@@ -120,6 +120,7 @@ export const useStudentsSlice = (
             gravedad: i.gravedad,
             estado: i.estado,
             clasificacion: i.clasificacion,
+            notificado_whatsapp: i.notificado_whatsapp,
           })),
           justificantes: (d.justificantes || []).map((j: any): Justificante => ({
             id: j.id,
@@ -192,7 +193,8 @@ export const useStudentsSlice = (
       date: new Date().toISOString(),
       reportedBy: currentUserRole,
       evidence,
-      reporta: reporterName, // Use profile name
+      reporta: reporterName,
+      notificado_whatsapp: false,
     };
 
     let escalationResult: any = null;
@@ -455,6 +457,32 @@ export const useStudentsSlice = (
     updateBapInfo,
     toggleDistanceState,
     importStudents,
+    markIncidentAsNotified: async (studentId: string, incidentId: string) => {
+      setStudents((prev) =>
+        prev.map((s) => {
+          if (s.id !== studentId) return s;
+          return {
+            ...s,
+            incidents: s.incidents.map((inc) =>
+              inc.id === incidentId ? { ...inc, notificado_whatsapp: true } : inc
+            ),
+          };
+        })
+      );
+
+      try {
+        const { error } = await supabase
+          .from("incidencias")
+          .update({ notificado_whatsapp: true })
+          .eq("id", incidentId);
+
+        if (error) throw error;
+        toast.success("Estado de notificación actualizado");
+      } catch (err) {
+        console.error("Error marking incident as notified:", err);
+        toast.error("No se pudo actualizar el estado de notificación");
+      }
+    },
     setStudents,
   };
 };

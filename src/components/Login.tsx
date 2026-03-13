@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { SaseOrb } from "./SaseOrb";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -149,8 +149,8 @@ export const Login: React.FC<LoginProps> = ({
                 className="group flex flex-col items-center select-none"
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
-                  <SaseOrb
-                    state="normal"
+                  <SaseSplineOrb
+                    state="thinking"
                     className="w-24 h-24 sm:w-32 sm:h-32"
                   />
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
