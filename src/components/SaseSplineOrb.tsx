@@ -55,18 +55,6 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
         </svg>
       </div>
 
-      {/* SASE Identities & System telemetry */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center">
-        <motion.div 
-          animate={{ opacity: [0.1, 0.4, 0.1] }}
-          transition={{ duration: 5, repeat: Infinity }}
-        >
-          <span className="text-[7px] font-black text-white/40 tracking-[1em] uppercase mb-1">
-            CORE_SASE_310
-          </span>
-          <div className="h-[1px] w-14 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-        </motion.div>
-      </div>
 
       {/* Atmospheric Glow */}
       <AnimatePresence mode="wait">
@@ -119,17 +107,6 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
         />
       </div>
 
-      {/* Branding Anchor */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="px-4 py-1 bg-black/60 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl"
-        >
-          <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/90 italic">
-            SASE
-          </span>
-        </motion.div>
-      </div>
 
       <style>{`
         .spline-watermark { display: none !important; }

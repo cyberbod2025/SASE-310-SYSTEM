@@ -9,7 +9,7 @@ import { FeedbackWidget } from "./FeedbackWidget";
 import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
-import { SaseOrb } from "./SaseOrb";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-red-900 border-none",
@@ -545,17 +545,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </main>
 
         <div className="fixed bottom-8 right-8 z-50">
-          <SaseOrb
+          <SaseSplineOrb
             state={neuralCoreState}
             className="w-[110px] h-[110px]"
-            enablePanel
-            panelData={{
-              incidents: activeIncidentsCount,
-              connectedUsers,
-              lastEvent: lastSystemEvent,
-              message: systemMessage || undefined,
-              version: `SASE-310`,
-            }}
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
-import { SaseOrb } from "./SaseOrb";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 import type { SystemState } from "../types/systemState";
 import { UserRole, AppModule, CaseState } from "../types";
 import { calcularEstadoSistema, OrbState } from "../utils/estadoSistema";
@@ -146,7 +146,7 @@ export const IASaseAgent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        <SaseOrb
+        <SaseSplineOrb
           state={orbState}
           className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_30px_rgba(0,0,0,0.6)]"
         />
