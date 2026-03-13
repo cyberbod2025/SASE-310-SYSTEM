@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NeuralCorePanel } from "./NeuralCorePanel";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 import type { SystemState } from "../types/systemState";
 
 export type { SystemState } from "../types/systemState";
@@ -220,90 +221,20 @@ export const SaseOrb: React.FC<SaseOrbProps> = ({
       />
 
       <div
-        className={`relative w-full h-full rounded-full overflow-hidden border border-white/10 shadow-[inset_-18px_-22px_36px_rgba(0,0,0,0.6),inset_16px_14px_28px_rgba(255,255,255,0.2)] transition-all duration-[700ms] group-hover:scale-[1.05] ${
-          config.pulse ? "sase-orb-pulse" : "sase-orb-breathe"
-        } ${vibrate ? "sase-orb-vibrate" : ""}`}
-        style={{
-          background: config.gradient,
-        }}
-        role={enablePanel ? "button" : undefined}
-        aria-label={enablePanel ? "Abrir panel de estado" : undefined}
+        className={`relative w-full h-full transition-all duration-[700ms] group-hover:scale-[1.05] ${
+          vibrate ? "sase-orb-vibrate" : ""
+        }`}
         onClick={() => enablePanel && setPanelOpen((prev) => !prev)}
       >
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle at 28% 22%, rgba(255,255,255,0.6), rgba(255,255,255,0) 45%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1),transparent_70%)] animate-pulse"
-        />
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            boxShadow:
-              "inset 0 0 30px rgba(0,0,0,0.55), inset 0 -25px 35px rgba(0,0,0,0.45)",
-          }}
+        <SaseSplineOrb 
+          state={state} 
+          className="w-full h-full"
         />
         
-        {/* Anilos internos de interferencia */}
-        <div
-          className="absolute inset-1 rounded-full border border-white/10"
-          style={{ animation: `sase-orb-halo ${rotationDuration} linear infinite`, opacity: haloOpacity }}
-        />
-        <div
-          className="absolute inset-5 rounded-full border border-white/5"
-          style={{ animation: `sase-orb-halo-reverse ${rotationDuration} linear infinite`, opacity: haloOpacity * 0.7 }}
-        />
-
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="sase-orb-eyes"
-            style={{
-              transform: `translate3d(${eyeOffset.x}px, ${eyeOffset.y}px, 0) scale(${eyeScale})`,
-            }}
-          >
-            <span
-              className={`sase-orb-eye ${isBlinking ? "sase-orb-eye-blink" : ""}`}
-              style={{
-                width: `${eyeBase.width}px`,
-                height: `${eyeBase.height * eyeHeightMultiplier}px`,
-                boxShadow: `inset 0 0 4px rgba(0,0,0,0.25), 0 0 15px ${config.accent}`,
-              }}
-            />
-            <span
-              className={`sase-orb-eye ${isBlinking ? "sase-orb-eye-blink" : ""}`}
-              style={{
-                width: `${eyeBase.width}px`,
-                height: `${eyeBase.height * eyeHeightMultiplier}px`,
-                boxShadow: `inset 0 0 4px rgba(0,0,0,0.25), 0 0 15px ${config.accent}`,
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="absolute inset-0 rounded-full sase-orb-sheen" />
-
-        <div className="absolute inset-0 rounded-full pointer-events-none overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
-          {/* Partículas mejoradas */}
-          {[...Array(6)].map((_, i) => (
-            <span 
-              key={i}
-              className="sase-orb-particle" 
-              style={{
-                left: `${15 + Math.random() * 70}%`,
-                top: `${15 + Math.random() * 70}%`,
-                animationDelay: `${i * 0.8}s`,
-                width: i % 2 === 0 ? '1px' : '2px',
-                height: i % 2 === 0 ? '1px' : '2px',
-              }} 
-            />
-          ))}
-        </div>
+        {/* Shadow Overlay to maintain depth */}
+        <div className="absolute inset-0 rounded-full pointer-events-none shadow-[inset_-10px_-10px_20px_rgba(0,0,0,0.3),inset_10px_10px_20px_rgba(255,255,255,0.1)]" />
       </div>
+
 
       <style>{`
         @keyframes sase-panel {
