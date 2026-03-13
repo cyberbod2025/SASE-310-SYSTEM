@@ -3,7 +3,7 @@ import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { SaseIAOrb } from "./SaseIAOrb";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 // Internal component for Secure Admin Login
 const AdminLoginModal = ({
@@ -519,7 +519,7 @@ export const OrbNavigation = () => {
                 title="Activar IA SASE"
                 className="relative z-10 w-32 h-32 md:w-56 md:h-56 rounded-full overflow-hidden cursor-pointer group transition-all duration-700 hover:scale-110 active:scale-95 flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/5 shadow-2xl"
               >
-                <SaseIAOrb state={saseState} className="w-full h-full" />
+                <SaseSplineOrb state={saseState as any} className="w-full h-full" />
 
                 <div className="absolute inset-0 rounded-full border border-white/10 group-hover:border-white/30 transition-all duration-700 pointer-events-none" />
               </button>
@@ -640,3 +640,4 @@ export const OrbNavigation = () => {
     </div>
   );
 };
+

@@ -1,0 +1,1 @@
+src/components/OrbNavigation.tsx(6,27): error TS2307: Cannot find module './SaseIAOrb' or its corresponding type declarations.

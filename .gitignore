@@ -65,3 +65,4 @@ tmp/
 
 # Diagnostic Scripts Output
 scripts/*.txt
+.vercel

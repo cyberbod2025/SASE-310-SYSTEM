@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase/client";
 import { SASEIntroAnimation } from "./SASEIntroAnimation";
-import { SaseIAOrb } from "./SaseIAOrb";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 import { VERSION } from "../config/sase.config";
 
 interface LoginProps {
@@ -111,7 +111,7 @@ export const Login: React.FC<LoginProps> = ({
           <div className="flex flex-col items-center">
             {/* Logo Section */}
             <div className="flex flex-col items-center mb-8">
-              <SaseIAOrb state="green" className="w-32 h-32 mb-6" />
+              <SaseSplineOrb state="thinking" className="w-32 h-32 mb-6" />
               <h1 className="text-6xl font-black text-white tracking-[0.2em] drop-shadow-[0_0_20px_rgba(59,130,246,0.5)] title-sase">
                 SASE
               </h1>
