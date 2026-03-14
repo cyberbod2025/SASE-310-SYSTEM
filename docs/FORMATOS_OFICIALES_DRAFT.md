@@ -1,189 +1,236 @@
-# Propuesta de Formatos Oficiales (Estándar AEFCM/SEP)
+# Formatos Oficiales (Actualizados a Linea Institucional)
 
-Basado en la normativa para Escuelas Secundarias Diurnas en la CDMX, he redactado las siguientes plantillas. Estos formatos incluyen los elementos legales y administrativos obligatorios.
+Estos formatos estan alineados con las plantillas activas de SASE-310 y la
+identidad institucional definida en `src/config/sase.config.ts`.
+
+Institucion: Escuela Secundaria Diurna No. 310 "Presidentes de Mexico"
+CCT: 09DES4310M
+Turno: Vespertino
 
 ---
 
-## 1. Citatorio a Padres de Familia
-
-**Uso:** Solicitar la presencia del tutor para tratar asuntos académicos o conductuales.
+## Encabezado institucional (uso comun)
 
 ```html
-<!-- ENCABEZADO OFICIAL -->
-<div style="text-align: center; font-weight: bold;">
-  SECRETARÍA DE EDUCACIÓN PÚBLICA<br />
-  AUTORIDAD EDUCATIVA FEDERAL EN LA CIUDAD DE MÉXICO<br />
-  DIRECCIÓN GENERAL DE OPERACIÓN DE SERVICIOS EDUCATIVOS<br />
-  ESCUELA SECUNDARIA DIURNA No. 310 "MÉXICO-TENOCHTITLAN"<br />
-  C.C.T. 09DES4310Z
-</div>
-
-<div style="text-align: right; margin-top: 20px;">
-  <strong>Asunto:</strong> Citatorio<br />
-  <strong>Fecha:</strong> [FECHA_ACTUAL]
-</div>
-
-<p>
-  <strong>C. PADRE, MADRE DE FAMILIA O TUTOR(A)</strong><br />
-  DEL ALUMNO(A): <strong>[NOMBRE_ALUMNO]</strong><br />
-  GRADO Y GRUPO: <strong>[GRADO_GRUPO]</strong><br />
-  PRESENTE.
-</p>
-
-<p>
-  Por medio del presente, se le solicita de la manera más atenta presentarse en
-  las instalaciones de este plantel educativo el día
-  <strong>[FECHA_CITA]</strong> a las <strong>[HORA_CITA]</strong> horas.
-</p>
-
-<p>
-  <strong>Motivo:</strong><br />
-  [DESCRIPCION_MOTIVO] (Ej. Revisión de desempeño académico / Situación
-  conductual / Firma de boleta)
-</p>
-
-<p>
-  Se le ruega puntualidad. Agradecemos su compromiso con la educación de su
-  hijo(a).
-</p>
-
-<div style="margin-top: 50px; text-align: center;">
-  ATENTAMENTE<br /><br />
-  _________________________________<br />
-  <strong>[NOMBRE_SOLICITANTE]</strong><br />
-  [CARGO_SOLICITANTE]
-</div>
-
-<div
-  style="margin-top: 40px; border-top: 1px dashed black; padding-top: 10px; font-size: 0.8em;"
->
-  <strong>ACUSE DE RECIBO</strong><br />
-  Nombre y Firma del Tutor: _____________________________________ Fecha:
-  ___________
+<div style="text-align:center; margin-bottom:30px; border-bottom:2px solid #1e3a8a; padding-bottom:20px;">
+  <p style="font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:3px; color:#64748b; margin:0;">
+    SECRETARIA DE EDUCACION PUBLICA
+  </p>
+  <p style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin:4px 0;">
+    AUTORIDAD EDUCATIVA FEDERAL EN LA CIUDAD DE MEXICO
+  </p>
+  <p style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#94a3b8; margin:4px 0;">
+    DIRECCION GENERAL DE EDUCACION SECUNDARIA
+  </p>
+  <h1 style="font-size:18px; font-weight:900; color:#1e3a8a; margin:16px 0 4px; text-transform:uppercase; letter-spacing:1px;">
+    ESCUELA SECUNDARIA DIURNA No. 310
+  </h1>
+  <p style="font-size:10px; color:#94a3b8; margin:0; font-weight:600;">
+    "PRESIDENTES DE MEXICO" — TURNO VESPERTINO — C.C.T. 09DES4310M
+  </p>
+  <p style="font-size:10px; color:#cbd5e1; margin:8px 0 0; font-weight:700;">
+    FOLIO: [FOLIO] | FECHA: [FECHA]
+  </p>
 </div>
 ```
 
 ---
 
-## 2. Acta de Hechos (Incidencias)
+## 1) Citatorio a Padres de Familia o Tutores
 
-**Uso:** Narrativa oficial de un suceso relevante (conflicto, accidente, falta grave).
+Uso: Solicitar la presencia del tutor para tratar asuntos academicos o conductuales.
 
 ```html
-<!-- ENCABEZADO IGUAL AL ANTERIOR -->
+<!-- ENCABEZADO INSTITUCIONAL -->
 
-<h3 style="text-align: center;">ACTA DE HECHOS</h3>
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  CITATORIO A PADRES DE FAMILIA O TUTORES
+</h2>
 
-<p style="text-align: justify;">
-  En la Ciudad de México, siendo las <strong>[HORA]</strong> horas del día
-  <strong>[FECHA]</strong>, reunidos en el área de
-  <strong>[LUGAR_ESCUELA]</strong> de la Escuela Secundaria Diurna No. 310, se
-  hace constar los siguientes hechos relacionados con el alumno(a):
-  <strong>[NOMBRE_ALUMNO]</strong> del grupo <strong>[GRUPO]</strong>.
-</p>
-
-<h4>NARRATIVA DE LOS HECHOS:</h4>
-<p
-  style="text-align: justify; border: 1px solid #ccc; padding: 10px; min-height: 100px;"
->
-  [DESCRIPCION_DETALLADA_HECHOS]
-  <!-- Ejemplo: El alumno fue sorprendido utilizando el dispositivo móvil en clase sin autorización, procediendo a agredir verbalmente al docente al solicitársele su entrega... -->
-</p>
-
-<h4>INTERVIENEN:</h4>
-<ul>
-  <li>Por la Escuela: [NOMBRE_AUTORIDAD] ([CARGO])</li>
-  <li>Alumno(a): [NOMBRE_ALUMNO]</li>
-  <li>Testigos (si aplica): [NOMBRES_TESTIGOS]</li>
-</ul>
-
-<h4>ACUERDOS / MEDIDAS PRECAUTORIAS:</h4>
-<ol>
-  <li>[MEDIDA_1] (Ej. Citatorio a padres para el día X)</li>
-  <li>[MEDIDA_2] (Ej. Suspensión temporal de X actividad)</li>
-</ol>
-
-<p>
-  No habiendo otro asunto que tratar, se cierra la presente acta a las
-  <strong>[HORA_CIERRE]</strong> horas del mismo día, firmando al calce los que
-  en ella intervinieron para constancia legal.
-</p>
-
-<!-- FIRMAS -->
-<table style="width: 100%; margin-top: 50px; text-align: center;">
+<table style="width:100%; border-collapse:collapse; margin:20px 0; font-size:12px;">
   <tr>
-    <td>__________________________<br />Firma Alumno(a)</td>
-    <td>__________________________<br />Firma Autoridad Escolar</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; width:30%; text-transform:uppercase; font-size:10px;">Alumno(a)</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[NOMBRE_ALUMNO]</td>
   </tr>
   <tr>
-    <td colspan="2">
-      <br /><br />__________________________<br />Testigo (Opcional)
-    </td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; text-transform:uppercase; font-size:10px;">Grupo</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[GRUPO]</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; text-transform:uppercase; font-size:10px;">Fecha del incidente</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[FECHA_INCIDENTE] a las [HORA] hrs.</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; text-transform:uppercase; font-size:10px;">Lugar</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[LUGAR]</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; text-transform:uppercase; font-size:10px;">Reporta</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[DOCENTE_REPORTA]</td>
   </tr>
 </table>
+
+<div style="margin:20px 0; padding:16px; background:#fef3c7; border:1px solid #fbbf24; border-radius:8px; text-align:center;">
+  <p style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:2px; margin:0 0 8px;">
+    Se cita para presentarse el dia
+  </p>
+  <p style="font-size:18px; font-weight:900; margin:0;">
+    [FECHA_CITA] a las [HORA_CITA] hrs.
+  </p>
+  <p style="font-size:10px; margin:8px 0 0;">
+    En la Oficina de Orientacion y Tutoria Educativa de este plantel.
+  </p>
+</div>
 ```
 
 ---
 
-## 3. Carta Compromiso de Conducta
+## 2) Acta Circunstanciada de Hechos
 
-**Uso:** Acuerdo firmado por padres y alumno tras acumulación de faltas o falta grave.
+Uso: Narrativa oficial de un suceso relevante (conflicto, accidente, falta grave).
 
 ```html
-<!-- ENCABEZADO IGUAL AL ANTERIOR -->
+<!-- ENCABEZADO INSTITUCIONAL -->
 
-<h3 style="text-align: center;">CARTA COMPROMISO DE CONVIVENCIA ESCOLAR</h3>
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  ACTA CIRCUNSTANCIADA DE HECHOS
+</h2>
 
-<p style="text-align: justify;">
-  Por medio de la presente, yo <strong>[NOMBRE_TUTOR]</strong>, padre/madre o
-  tutor(a) del alumno(a) <strong>[NOMBRE_ALUMNO]</strong> inscrito en el grado y
-  grupo <strong>[GRADO_GRUPO]</strong>, estoy enterado(a) de la situación
-  conductual de mi hijo(a) consistente en:
-</p>
+<table style="width:100%; border-collapse:collapse; margin:20px 0; font-size:12px;">
+  <tr>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; width:30%; text-transform:uppercase; font-size:10px;">Alumno(a)</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[NOMBRE_ALUMNO]</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; text-transform:uppercase; font-size:10px;">Grupo</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[GRUPO]</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; text-transform:uppercase; font-size:10px;">Fecha del incidente</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[FECHA_INCIDENTE] a las [HORA] hrs.</td>
+  </tr>
+  <tr>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:800; background:#f8fafc; text-transform:uppercase; font-size:10px;">Lugar</td>
+    <td style="padding:8px 12px; border:1px solid #e2e8f0; font-weight:700;">[LUGAR]</td>
+  </tr>
+</table>
 
-<p style="background-color: #f0f0f0; padding: 10px;">
-  <strong>Falta al Marco para la Convivencia Escolar:</strong><br />
-  [DESCRIPCION_FALTA]
-</p>
-
-<p>
-  Derivado de lo anterior, y con el objetivo de favorecer su formación integral,
-  <strong>NOS COMPROMETEMOS</strong> a:
-</p>
-
-<ol>
-  <li>
-    Respetar y cumplir cabalmente el Marco para la Convivencia Escolar de la
-    AEFCM.
-  </li>
-  <li>Vigilar el cumplimiento de tareas y asistencia puntual a clases.</li>
-  <li>Mantener comunicación constante con Trabajo Social y Prefectura.</li>
-  <li>[COMPROMISO_ESPECIFICO] (Ej. Asistir a terapias externas si aplica).</li>
-</ol>
-
-<p style="text-align: justify;">
-  Estamos conscientes de que el incumplimiento de estos compromisos derivará en
-  las acciones disciplinarias correspondientes marcadas por la normativa
-  vigente, que pueden incluir el cambio de ambiente escolar si la integridad de
-  la comunidad educativa se ve afectada.
-</p>
-
-<div style="text-align: center; margin-top: 60px;">
-  <div style="display: inline-block; width: 45%;">
-    _________________________________<br />
-    <strong>[NOMBRE_TUTOR]</strong><br />
-    PADRE O TUTOR
-  </div>
-  <div style="display: inline-block; width: 45%;">
-    _________________________________<br />
-    <strong>[NOMBRE_ALUMNO]</strong><br />
-    ALUMNO(A)
-  </div>
+<div style="margin:24px 0; padding:20px; background:#fafbff; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; line-height:1.8; text-align:justify;">
+  [RELATO_DE_HECHOS]
 </div>
+```
 
-<div style="text-align: center; margin-top: 40px;">
-  _________________________________<br />
-  <strong>DIRECCIÓN DEL PLANTEL</strong><br />
-  Vo. Bo.
+---
+
+## 3) Hoja de Acuerdos y Compromisos
+
+Uso: Registro de acuerdos posteriores a una incidencia o citatorio.
+
+```html
+<!-- ENCABEZADO INSTITUCIONAL -->
+
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  HOJA DE ACUERDOS Y COMPROMISOS
+</h2>
+
+<div style="margin:20px 0;">
+  <p style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:2px; margin-bottom:12px;">
+    Acuerdos y compromisos establecidos
+  </p>
+  <ol style="font-size:12px; line-height:2; padding-left:20px;">
+    <li>[ACUERDO_1]</li>
+    <li>[ACUERDO_2]</li>
+    <li>[ACUERDO_3]</li>
+  </ol>
+</div>
+```
+
+---
+
+## 4) Informe de Caso
+
+Uso: Documento de seguimiento para casos especiales.
+
+```html
+<!-- ENCABEZADO INSTITUCIONAL -->
+
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  INFORME DE CASO
+</h2>
+
+<div style="margin:24px 0; padding:20px; background:#fafbff; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; line-height:1.8; text-align:justify;">
+  [CONTENIDO_INFORME]
+</div>
+```
+
+---
+
+## 5) Informe de Supervision
+
+Uso: Reporte de supervision interna o externa.
+
+```html
+<!-- ENCABEZADO INSTITUCIONAL -->
+
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  INFORME DE SUPERVISION
+</h2>
+
+<div style="margin:24px 0; padding:20px; background:#fafbff; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; line-height:1.8; text-align:justify;">
+  [CONTENIDO_SUPERVISION]
+</div>
+```
+
+---
+
+## 6) Circular Interna
+
+Uso: Comunicaciones internas al personal docente.
+
+```html
+<!-- ENCABEZADO INSTITUCIONAL -->
+
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  CIRCULAR INTERNA
+</h2>
+
+<div style="margin:24px 0; padding:20px; background:#fafbff; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; line-height:1.8; text-align:justify;">
+  [CONTENIDO_CIRCULAR]
+</div>
+```
+
+---
+
+## 7) Aviso a la Comunidad Escolar
+
+Uso: Comunicados generales para la comunidad escolar.
+
+```html
+<!-- ENCABEZADO INSTITUCIONAL -->
+
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  AVISO A LA COMUNIDAD ESCOLAR
+</h2>
+
+<div style="margin:24px 0; padding:20px; background:#fafbff; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; line-height:1.8; text-align:justify;">
+  [CONTENIDO_AVISO]
+</div>
+```
+
+---
+
+## 8) Minuta del Consejo Tecnico Escolar
+
+Uso: Registro de acuerdos del CTE.
+
+```html
+<!-- ENCABEZADO INSTITUCIONAL -->
+
+<h2 style="text-align:center; font-size:16px; font-weight:900; text-transform:uppercase; letter-spacing:3px; margin:30px 0 20px;">
+  MINUTA DEL CONSEJO TECNICO ESCOLAR
+</h2>
+
+<div style="margin:24px 0; padding:20px; background:#fafbff; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; line-height:1.8; text-align:justify;">
+  [CONTENIDO_MINUTA]
 </div>
 ```
