@@ -12,7 +12,7 @@
 
 **(Encabezado Visual impactante, fondo oscuro/tecnológico minimalista)**
 
-# 🚀 TÚ ERES PARTE DEL CAMBIO
+## 🚀 TÚ ERES PARTE DEL CAMBIO
 
 **Hola, compañero/a.**
 La Secundaria 310 inicia hoy su transformación digital y tú eres una pieza clave.
@@ -22,9 +22,9 @@ No es "otra carga administrativa".
 Es **S.A.S.E.** (Sistema de Acompañamiento y Seguimiento Escolar).
 La herramienta 100% Mexicana que hemos construido para:
 
-1.  🛑 **PREVENIR** riesgos antes de que escalen.
-2.  🛡️ **PROTEGER** tu trabajo con evidencia digital.
-3.  ⚡ **RECUPERAR** el tiempo que pierdes en papeleo.
+1. 🛑 **PREVENIR** riesgos antes de que escalen.
+1. 🛡️ **PROTEGER** tu trabajo con evidencia digital.
+1. ⚡ **RECUPERAR** el tiempo que pierdes en papeleo.
 
 **LA NECESIDAD ES URGENTE**
 Necesitamos recuperar el control. Necesitamos una cultura de prevención real. Necesitamos trabajar como un solo equipo conectado.

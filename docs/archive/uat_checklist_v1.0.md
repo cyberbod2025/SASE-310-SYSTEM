@@ -1,6 +1,6 @@
 # Checklist de Pruebas de Usuario (UAT) — SASE v1.0
 
-Versión: `v1.0-alertas-riesgo`
+**Versión:** `v1.0-alertas-riesgo`
 
 Este documento detalla los puntos críticos que deben ser validados por el equipo directivo y técnico para asegurar la estabilidad operativa del Sistema de Alertas de Riesgo.
 
