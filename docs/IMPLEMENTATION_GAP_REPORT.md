@@ -54,9 +54,16 @@ Evidencia:
 * **Verificación:** `src/store/slices/useStudentsSlice.ts` consume `puntaje_riesgo` y `estado_semaforo` desde la base de datos sin recalcular en frontend.
 
 #### 3.3 Flujo de Incidencias y Roles
+Estado: ✅ RESUELTO
 
-* **Cumplimiento:** 90%.
-* **Observación:** La validación de quién puede cerrar una incidencia escalada (Directivo/Orientación) está presente en el frontend, pero debe verificarse la robustez en las políticas RLS de Supabase.
+Verificación: Existen múltiples políticas RLS en `public.incidencias`
+que controlan visualización, creación, edición y cierre por roles
+institucionales (staff, prefectura, system_admin).
+
+Archivos relevantes:
+- `20260314124500_incidencias_cierre_escalado_rls.sql`
+- `20260310150000_incidencias_prefectura_flow.sql`
+- `20260313010000_rls_dimension_hardening.sql`
 
 ---
 
