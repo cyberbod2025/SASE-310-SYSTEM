@@ -13,6 +13,8 @@ import {
   AppModule,
   UserRole,
   AuditActionType,
+  ObjetoRetenido,
+  EstadoObjetoRetenido,
 } from "../../types";
 import { evaluateEscalation } from "../../utils/saseUtils";
 import { sendWhatsAppNotification } from "../../utils/notifications";
@@ -85,6 +87,14 @@ export const useStudentsSlice = (
           ),
           calificaciones (
             id, materia, trimestre1, trimestre2, trimestre3, promedio_final, ciclo_escolar
+          ),
+          documentos_institucionales (
+            id, tipo, folio, fecha, titulo, contenido, narracionIA, firmas, creado_por
+          ),
+          objetos_retenidos (
+            id, objeto, motivo, fecha, responsable_id, responsable_nombre, responsable_rol, 
+            estado, incidencia_id, created_at, fecha_devolucion, entregado_a, entregado_por, 
+            lugar_retencion, categoria, observaciones, evidencia_url, autorizado_por
           )
         `);
 
@@ -158,7 +168,18 @@ export const useStudentsSlice = (
             trimestre3: c.trimestre3,
             promedioFinal: c.promedio_final,
           })),
-          documentos: [],
+          documentos: (d.documentos_institucionales || []).map((doc: any): DocumentoInstitucional => ({
+            id: doc.id,
+            tipo: doc.tipo,
+            folio: doc.folio,
+            fecha: doc.fecha,
+            titulo: doc.titulo,
+            contenido: doc.contenido,
+            narracionIA: doc.narracionIA,
+            firmas: doc.firmas || [],
+            creado_por: doc.creado_por,
+            studentId: d.id,
+          })),
           isDistancia: !!d.is_distancia,
           gamificacion: d.estudiantes?.[0]
             ? {
@@ -167,6 +188,32 @@ export const useStudentsSlice = (
                 nickname: d.estudiantes[0].nickname,
               }
             : undefined,
+          objetosRetenidos: (d.objetos_retenidos || []).map((o: any): ObjetoRetenido => ({
+            id: o.id,
+            alumno_id: d.id,
+            studentId: d.id,
+            studentName: d.nombre_completo,
+            group: d.grupo,
+            objeto: o.objeto,
+            motivo: o.motivo,
+            fecha: o.fecha,
+            responsable_id: o.responsable_id,
+            responsableId: o.responsable_id,
+            responsableNombre: o.responsable_nombre,
+            responsableRol: o.responsable_rol,
+            estado: o.estado as EstadoObjetoRetenido,
+            incidencia_id: o.incidencia_id,
+            incidenciaId: o.incidencia_id,
+            fechaDevolucion: o.fecha_devolucion,
+            entregadoA: o.entregado_a,
+            entregadoPor: o.entregado_por,
+            lugarRetencion: o.lugar_retencion,
+            categoria: o.categoria,
+            observaciones: o.observaciones,
+            evidenciaUrl: o.evidencia_url,
+            autorizadoPor: o.autorizado_por,
+            created_at: o.created_at,
+          })),
         }));
         setStudents(mappedStudents);
       }
@@ -279,6 +326,7 @@ export const useStudentsSlice = (
           tipo: type,
           descripcion: description,
           reportado_por: user?.id,
+          reportado_por_docente: user?.id,
           reporta: reporterName,
           fecha: new Date().toISOString(),
           estado: "Nuevo",
@@ -421,6 +469,208 @@ export const useStudentsSlice = (
     setStudents((prev) => [...prev, ...newStudents]);
   };
 
+  const addDocumentoInstitucional = async (doc: Omit<DocumentoInstitucional, "id">) => {
+    try {
+      const { data, error } = await (supabase as any)
+        .from("documentos_institucionales")
+        .insert([
+          {
+            alumno_id: doc.studentId,
+            tipo: doc.tipo,
+            folio: doc.folio,
+            fecha: doc.fecha,
+            titulo: doc.titulo,
+            contenido: doc.contenido,
+            narracionIA: doc.narracionIA,
+            firmas: doc.firmas,
+            creado_por: doc.creado_por,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setStudents((prev) =>
+          prev.map((s) => {
+            if (s.id !== doc.studentId) return s;
+            return {
+              ...s,
+              documentos: [
+                ...(s.documentos || []),
+                {
+                  id: data.id,
+                  tipo: data.tipo,
+                  folio: data.folio,
+                  fecha: data.fecha,
+                  titulo: data.titulo,
+                  contenido: data.contenido,
+                  narracionIA: data.narracionIA,
+                  firmas: data.firmas || [],
+                  creado_por: data.creado_por,
+                  studentId: data.alumno_id,
+                },
+              ],
+            };
+          })
+        );
+        toast.success("Documento registrado exitosamente");
+      }
+    } catch (err) {
+      console.error("Error adding document:", err);
+      toast.error("No se pudo registrar el documento.");
+    }
+  };
+
+  const deleteDocumentoInstitucional = async (docId: string, studentId: string) => {
+    try {
+      const { error } = await (supabase as any)
+        .from("documentos_institucionales")
+        .delete()
+        .eq("id", docId);
+
+      if (error) throw error;
+
+      setStudents((prev) =>
+        prev.map((s) => {
+          if (s.id !== studentId) return s;
+          return {
+            ...s,
+            documentos: (s.documentos || []).filter((d) => d.id !== docId),
+          };
+        })
+      );
+      toast.success("Documento eliminado");
+    } catch (err) {
+      console.error("Error deleting document:", err);
+      toast.error("No se pudo eliminar el documento.");
+    }
+  };
+    
+  const addObjetoRetenido = async (
+    studentId: string, 
+    objeto: string, 
+    motivo: string, 
+    fecha: string,
+    categoria?: string,
+    lugarRetencion?: string,
+    observaciones?: string
+  ) => {
+    try {
+      if (!user) {
+        toast.error("No hay sesión activa");
+        return;
+      }
+      
+      const student = students.find((s: any) => s.id === studentId);
+      const reporterName = profile?.nombre_completo || profile?.full_name || user.email || "Usuario Institucional";
+
+      // 1. Crear incidencia de conducta asociada
+      const { data: incidentData, error: incError } = await (supabase as any)
+        .from("incidencias")
+        .insert([{
+          alumno_id: studentId,
+          tipo: IncidentType.CONDUCTA,
+          descripcion: `RETENCIÓN DE OBJETO: ${objeto}. Motivo: ${motivo}.`,
+          fecha: fecha,
+          reportado_por: user.id,
+          reportado_por_docente: user.id,
+          reporta: reporterName,
+          estado: "Abierta",
+          clasificacion: "Tipo I"
+        }])
+        .select()
+        .single();
+
+      if (incError) throw incError;
+
+      // 2. Crear registro de objeto retenido
+      const { error: objError } = await (supabase as any)
+        .from("objetos_retenidos")
+        .insert([{
+          alumno_id: studentId,
+          objeto: objeto,
+          motivo: motivo,
+          fecha: fecha,
+          responsable_id: user.id,
+          responsable_nombre: reporterName,
+          responsable_rol: currentUserRole,
+          estado: EstadoObjetoRetenido.RETENIDO,
+          incidencia_id: incidentData.id,
+          categoria,
+          lugar_retencion: lugarRetencion,
+          observaciones
+        }]);
+
+      if (objError) throw objError;
+
+      // 3. Auditoría
+      await logAudit(
+        "CREACION",
+        `Objeto retenido registrado: ${objeto} (Alumno: ${student?.name})`,
+        "objetos_retenidos",
+        studentId,
+        student?.name
+      );
+
+      toast.success("Objeto retenido registrado correctamente");
+      fetchStudents();
+    } catch (err) {
+      console.error("Error al registrar objeto retenido:", err);
+      toast.error("No se pudo registrar el objeto");
+    }
+  };
+
+  const registrarDevolucion = async (
+    objetoId: string,
+    entregadoA: string,
+    observacionesEntrega: string,
+    nuevoEstado: EstadoObjetoRetenido,
+    fechaDevolucion?: string
+  ) => {
+    try {
+      if (!user) return;
+
+      const { error } = await (supabase as any)
+        .from("objetos_retenidos")
+        .update({ 
+          estado: nuevoEstado, 
+          entregado_a: entregadoA,
+          observaciones: observacionesEntrega,
+          fecha_devolucion: fechaDevolucion || new Date().toISOString(),
+          entregado_por: user.id,
+          updated_at: new Date().toISOString() 
+        })
+        .eq("id", objetoId);
+
+      if (error) throw error;
+
+      toast.success(`Devolución registrada: ${nuevoEstado}`);
+      fetchStudents();
+    } catch (err) {
+      console.error("Error al registrar devolución:", err);
+      toast.error("No se pudo registrar la devolución");
+    }
+  };
+
+  const updateEstadoObjeto = async (objetoId: string, nuevoEstado: EstadoObjetoRetenido) => {
+    try {
+      const { error } = await (supabase as any)
+        .from("objetos_retenidos")
+        .update({ estado: nuevoEstado, updated_at: new Date().toISOString() })
+        .eq("id", objetoId);
+
+      if (error) throw error;
+
+      toast.success(`Estado del objeto actualizado a: ${nuevoEstado}`);
+      fetchStudents();
+    } catch (err) {
+      console.error("Error al actualizar estado del objeto:", err);
+      toast.error("No se pudo actualizar el estado");
+    }
+  };
+
   useEffect(() => {
     fetchGroups();
     fetchStudents();
@@ -440,6 +690,11 @@ export const useStudentsSlice = (
         { event: "INSERT", schema: "public", table: "justificantes" },
         () => fetchStudents(),
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "objetos_retenidos" },
+        () => fetchStudents(),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -457,6 +712,11 @@ export const useStudentsSlice = (
     updateBapInfo,
     toggleDistanceState,
     importStudents,
+    addDocumentoInstitucional,
+    deleteDocumentoInstitucional,
+    addObjetoRetenido,
+    updateEstadoObjeto,
+    registrarDevolucion,
     markIncidentAsNotified: async (studentId: string, incidentId: string) => {
       setStudents((prev) =>
         prev.map((s) => {
