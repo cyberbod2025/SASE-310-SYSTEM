@@ -529,6 +529,12 @@ export const DashboardPrefectura = () => {
                     }
                   />
                   <TacticalActionButton
+                    label="Objetos Ret"
+                    icon="inventory_2"
+                    color="bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/40"
+                    onClick={() => setCurrentModule(AppModule.OBJETOS_RETENIDOS)}
+                  />
+                  <TacticalActionButton
                     label="Observación"
                     icon="visibility"
                     color="bg-slate-500/10 text-slate-400 border-slate-500/20 hover:bg-slate-500/20 hover:border-slate-500/40"

@@ -8,10 +8,11 @@ export const Expedientes: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<DatosAlumnoExpediente | null>(null);
 
-  const filteredStudents = students.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.matricula.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStudents = students.filter(s => {
+    const nameMatch = s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false;
+    const matriculaMatch = s.matricula?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false;
+    return nameMatch || matriculaMatch;
+  });
 
   if (selectedStudent) {
     return (

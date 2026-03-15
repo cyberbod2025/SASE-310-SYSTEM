@@ -4,6 +4,7 @@ import type {
   DocumentoExpediente,
   EventoLinea,
   ExpedienteCompleto,
+  ObjetoRetenidoExpediente,
 } from "./types";
 import { generarQRDataUrl } from "../documentos/trazabilidad";
 
@@ -38,6 +39,37 @@ export async function recopilarIncidencias(
 }
 
 /**
+ * Recopila objetos retenidos del alumno (Custodia Institucional).
+ */
+export async function recopilarObjetosRetenidos(
+  supabase: any,
+  alumnoId: string,
+): Promise<ObjetoRetenidoExpediente[]> {
+  try {
+    const { data, error } = await supabase
+      .from("objetos_retenidos")
+      .select("id, objeto, motivo, fecha, responsable_nombre, estado, fecha_devolucion, entregado_a")
+      .eq("alumno_id", alumnoId)
+      .order("fecha", { ascending: false });
+
+    if (error || !data) return [];
+
+    return data.map((obj: any) => ({
+      id: obj.id,
+      objeto: obj.objeto,
+      motivo: obj.motivo,
+      fecha: obj.fecha,
+      responsableNombre: obj.responsable_nombre,
+      estado: obj.estado,
+      fechaDevolucion: obj.fecha_devolucion,
+      entregadoA: obj.entregado_a,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Recopila documentos generados asociados al alumno.
  */
 export async function recopilarDocumentos(
@@ -45,25 +77,23 @@ export async function recopilarDocumentos(
   alumnoId: string,
 ): Promise<DocumentoExpediente[]> {
   try {
-    // Los documentos se registran en auditoria_accesos con el patrón FOLIO_GENERADO
     const { data, error } = await (supabase as any)
-      .from("auditoria_accesos")
-      .select("pantalla, fecha, hora, usuario")
+      .from("documentos_institucionales")
+      .select("id, folio, tipo, fecha, titulo, contenido, creado_por")
       .eq("alumno_id", alumnoId)
-      .ilike("pantalla", "FOLIO_GENERADO:%")
       .order("fecha", { ascending: false });
 
     if (error || !data) return [];
 
-    return data.map((doc: any) => {
-      const partes = (doc.pantalla || "").split(":");
-      return {
-        folio: partes[1] || "S/F",
-        tipo: partes[2] || "documento",
-        fecha: doc.fecha || "S/F",
-        generado_por: doc.usuario || "Sistema",
-      };
-    });
+    return data.map((doc: any) => ({
+      id: doc.id,
+      folio: doc.folio || "S/F",
+      tipo: doc.tipo || "documento",
+      fecha: doc.fecha || "S/F",
+      titulo: doc.titulo || "Documento sin título",
+      contenido: doc.contenido || "",
+      generado_por: doc.creado_por || "Sistema",
+    }));
   } catch {
     return [];
   }
@@ -94,6 +124,7 @@ export function construirLineaTiempo(
           : inc.clasificacion === "Tipo II"
             ? "amber"
             : "blue",
+      incidencia_id: inc.id,
     });
   }
 
@@ -117,6 +148,7 @@ export function construirLineaTiempo(
       descripcion: `Folio: ${doc.folio}`,
       icon: "description",
       color: "indigo",
+      document_id: doc.id,
     });
   }
 
@@ -244,6 +276,28 @@ export function generarHTMLExpediente(exp: ExpedienteCompleto): string {
           .join("")
       : '<tr><td colspan="3" style="padding:12px; text-align:center; color:#94a3b8; font-size:10px;">Sin documentos generados.</td></tr>';
 
+  const objetosHTML =
+    exp.objetosRetenidos.length > 0
+      ? exp.objetosRetenidos
+          .map(
+            (obj) => `
+      <tr>
+        <td style="padding:6px 10px; border:1px solid #e2e8f0; font-size:10px; font-weight:700;">${new Date(obj.fecha).toLocaleDateString("es-MX")}</td>
+        <td style="padding:6px 10px; border:1px solid #e2e8f0; font-size:10px;">${obj.objeto}</td>
+        <td style="padding:6px 10px; border:1px solid #e2e8f0; font-size:10px;">${obj.motivo.substring(0, 80)}${obj.motivo.length > 80 ? "..." : ""}</td>
+        <td style="padding:6px 10px; border:1px solid #e2e8f0; font-size:10px; text-align:center;">${obj.estado === "retenido" ? "Bajo custodia" : obj.estado}</td>
+        <td style="padding:6px 10px; border:1px solid #e2e8f0; font-size:10px;">${obj.responsableNombre || "-"}</td>
+        <td style="padding:6px 10px; border:1px solid #e2e8f0; font-size:10px; text-align:center;">${
+          obj.fechaDevolucion
+            ? `${new Date(obj.fechaDevolucion).toLocaleDateString("es-MX")}${obj.entregadoA ? ` — ${obj.entregadoA}` : ""}`
+            : "-"
+        }</td>
+      </tr>
+    `,
+          )
+          .join("")
+      : '<tr><td colspan="6" style="padding:12px; text-align:center; color:#94a3b8; font-size:10px;">Sin objetos retenidos registrados.</td></tr>';
+
   const timestamp = new Date().toISOString();
 
   return `
@@ -329,6 +383,24 @@ export function generarHTMLExpediente(exp: ExpedienteCompleto): string {
           </tr>
         </thead>
         <tbody>${documentosHTML}</tbody>
+      </table>
+
+      <!-- CUSTODIA DE OBJETOS -->
+      <h3 style="font-size:12px; font-weight:900; color:#1e3a8a; text-transform:uppercase; letter-spacing:2px; margin:30px 0 10px; border-left:4px solid #1e3a8a; padding-left:12px;">
+        Custodia de Objetos (${exp.objetosRetenidos.length})
+      </h3>
+      <table style="width:100%; border-collapse:collapse; font-size:11px;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:left; font-size:9px; font-weight:800; text-transform:uppercase; color:#64748b;">Fecha</th>
+            <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:left; font-size:9px; font-weight:800; text-transform:uppercase; color:#64748b;">Objeto</th>
+            <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:left; font-size:9px; font-weight:800; text-transform:uppercase; color:#64748b;">Motivo</th>
+            <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center; font-size:9px; font-weight:800; text-transform:uppercase; color:#64748b;">Estado</th>
+            <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:left; font-size:9px; font-weight:800; text-transform:uppercase; color:#64748b;">Responsable</th>
+            <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center; font-size:9px; font-weight:800; text-transform:uppercase; color:#64748b;">Devolución</th>
+          </tr>
+        </thead>
+        <tbody>${objetosHTML}</tbody>
       </table>
 
       <!-- ANÁLISIS INSTITUCIONAL -->

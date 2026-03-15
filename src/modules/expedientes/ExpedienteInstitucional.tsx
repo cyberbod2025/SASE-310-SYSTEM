@@ -9,11 +9,13 @@ import type {
   DocumentoExpediente,
   EventoLinea,
   ExpedienteCompleto,
+  ObjetoRetenidoExpediente,
 } from "./types";
 
 import {
   recopilarIncidencias,
   recopilarDocumentos,
+  recopilarObjetosRetenidos,
   construirLineaTiempo,
   generarAnalisisIA,
   generarFolioExpediente,
@@ -33,9 +35,13 @@ export function ExpedienteInstitucional({
   const [generandoPDF, setGenerandoPDF] = useState(false);
   const [incidencias, setIncidencias] = useState<IncidenciaExpediente[]>([]);
   const [documentos, setDocumentos] = useState<DocumentoExpediente[]>([]);
+  const [objetosRetenidos, setObjetosRetenidos] = useState<ObjetoRetenidoExpediente[]>([]);
   const [lineaTiempo, setLineaTiempo] = useState<EventoLinea[]>([]);
   const [analisisIA, setAnalisisIA] = useState<string | null>(null);
   const [analizando, setAnalizando] = useState(false);
+  const [documentoSeleccionado, setDocumentoSeleccionado] = useState<DocumentoExpediente | null>(null);
+  const [editandoDocumento, setEditandoDocumento] = useState(false);
+  const [contenidoTemp, setContenidoTemp] = useState("");
 
   useEffect(() => {
     cargarDatosExpediente();
@@ -46,13 +52,15 @@ export function ExpedienteInstitucional({
     try {
       setCargando(true);
 
-      const [inc, docs] = await Promise.all([
+      const [inc, docs, objetos] = await Promise.all([
         recopilarIncidencias(supabase, alumno.id),
         recopilarDocumentos(supabase, alumno.id),
+        recopilarObjetosRetenidos(supabase, alumno.id),
       ]);
 
       setIncidencias(inc);
       setDocumentos(docs);
+      setObjetosRetenidos(objetos);
       setLineaTiempo(construirLineaTiempo(inc, docs));
     } catch (err) {
       console.error(err);
@@ -89,16 +97,17 @@ export function ExpedienteInstitucional({
         day: "2-digit",
       });
 
-      const expedienteData: ExpedienteCompleto = {
-        folio,
-        alumno,
-        incidencias,
-        documentos,
-        lineaTiempo,
-        analisisIA: analisisIA || undefined,
-        fechaGeneracion: fechaActual,
-        generadoPor: "SASE-310 (Sistema)",
-      };
+        const expedienteData: ExpedienteCompleto = {
+          folio,
+          alumno,
+          incidencias,
+          documentos,
+          objetosRetenidos,
+          lineaTiempo,
+          analisisIA: analisisIA || undefined,
+          fechaGeneracion: fechaActual,
+          generadoPor: "SASE-310 (Sistema)",
+        };
 
       const htmlContent = generarHTMLExpediente(expedienteData);
 
@@ -122,6 +131,41 @@ export function ExpedienteInstitucional({
       toast.error("Error al exportar", { id: "pdf-exp" });
     } finally {
       setGenerandoPDF(false);
+    }
+  };
+
+  const handleVerDocumento = (evento: EventoLinea) => {
+    const doc = documentos.find(d => d.id === evento.document_id);
+    if (doc) {
+      setDocumentoSeleccionado(doc);
+      setContenidoTemp(doc.contenido);
+      setEditandoDocumento(false);
+    }
+  };
+
+  const handleGuardarDocumento = async () => {
+    if (!documentoSeleccionado) return;
+
+    try {
+      const { error } = await (supabase as any)
+        .from("documentos_institucionales")
+        .update({ contenido: contenidoTemp })
+        .eq("id", documentoSeleccionado.id);
+
+      if (error) throw error;
+
+      toast.success("Documento actualizado correctamente");
+      setEditandoDocumento(false);
+      
+      // Actualizar estado local
+      setDocumentos(prev => 
+        prev.map(d => d.id === documentoSeleccionado.id ? { ...d, contenido: contenidoTemp } : d)
+      );
+      setDocumentoSeleccionado(prev => prev ? { ...prev, contenido: contenidoTemp } : null);
+      
+    } catch (err) {
+      console.error(err);
+      toast.error("Error al actualizar el documento");
     }
   };
 
@@ -212,18 +256,28 @@ export function ExpedienteInstitucional({
                             {evento.icon}
                           </span>
                         </div>
-                        <div className="w-[calc(100%-3.5rem)] bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div 
+                          onClick={() => evento.tipo === "documento" && handleVerDocumento(evento)}
+                          className={`w-[calc(100%-3.5rem)] bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-all ${evento.tipo === "documento" ? "cursor-pointer hover:border-indigo-300 hover:shadow-md hover:bg-indigo-50/10" : "hover:shadow-md"}`}
+                        >
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                               {evento.fecha}
                             </span>
-                            <span
-                              className={`px-2 py-0.5 rounded text-[8px] font-black uppercase bg-${evento.color}-50 text-${evento.color}-600 border border-${evento.color}-200`}
-                            >
-                              {evento.tipo}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              {evento.tipo === "documento" && (
+                                <span className="material-symbols-outlined text-[12px] text-indigo-400">
+                                  visibility
+                                </span>
+                              )}
+                              <span
+                                className={`px-2 py-0.5 rounded text-[8px] font-black uppercase bg-${evento.color}-50 text-${evento.color}-600 border border-${evento.color}-200`}
+                              >
+                                {evento.tipo}
+                              </span>
+                            </div>
                           </div>
-                          <h4 className="text-xs font-bold text-slate-700 mb-1">
+                          <h4 className={`text-xs font-bold mb-1 ${evento.tipo === "documento" ? "text-indigo-700" : "text-slate-700"}`}>
                             {evento.titulo}
                           </h4>
                           <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
@@ -269,6 +323,69 @@ export function ExpedienteInstitucional({
                         {documentos.length}
                       </p>
                     </div>
+                  </div>
+                </div>
+
+                {/* Custodia de Objetos */}
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm shrink-0">
+                  <div className="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-amber-500">
+                        inventory_2
+                      </span>
+                      <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
+                        Custodia de Objetos
+                      </h3>
+                    </div>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      {objetosRetenidos.length} registros
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    {objetosRetenidos.length === 0 ? (
+                      <div className="text-center p-6 border-2 border-dashed border-slate-200 rounded-xl">
+                        <span className="material-symbols-outlined text-slate-300 text-3xl mb-2">
+                          inventory
+                        </span>
+                        <p className="text-xs text-slate-400 font-medium tracking-wide">
+                          Sin objetos retenidos registrados.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {objetosRetenidos.map((obj) => (
+                          <div key={obj.id} className="border border-slate-200 rounded-xl p-4">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                                  {obj.objeto}
+                                </p>
+                                <p className="text-[11px] text-slate-500 font-medium mt-1">
+                                  {obj.motivo}
+                                </p>
+                                <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                                  <span>{new Date(obj.fecha).toLocaleDateString("es-MX")}</span>
+                                  <span>•</span>
+                                  <span>{obj.responsableNombre || "Responsable no definido"}</span>
+                                </div>
+                              </div>
+                              <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                                obj.estado === "retenido"
+                                  ? "text-amber-600 border-amber-200 bg-amber-50"
+                                  : "text-emerald-600 border-emerald-200 bg-emerald-50"
+                              }`}>
+                                {obj.estado === "retenido" ? "Bajo custodia" : obj.estado}
+                              </span>
+                            </div>
+                            {obj.fechaDevolucion && (
+                              <div className="mt-3 text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                                Devuelto: {new Date(obj.fechaDevolucion).toLocaleDateString("es-MX")} {obj.entregadoA ? `— ${obj.entregadoA}` : ""}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -354,6 +471,87 @@ export function ExpedienteInstitucional({
           )}
         </div>
       </div>
+
+      {/* MODAL DE VISTA/EDICIÓN DE DOCUMENTO */}
+      {documentoSeleccionado && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md animate-fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="size-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-indigo-600">description</span>
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                    {documentoSeleccionado.titulo}
+                  </h3>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                    Expediente Institucional — {alumno.nombre}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {!editandoDocumento ? (
+                  <button
+                    onClick={() => setEditandoDocumento(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-sm">edit</span>
+                    Editar
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleGuardarDocumento}
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+                  >
+                    <span className="material-symbols-outlined text-sm">save</span>
+                    Guardar Cambios
+                  </button>
+                )}
+                <button
+                  onClick={() => printContent(documentoSeleccionado.titulo, documentoSeleccionado.contenido)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
+                >
+                  <span className="material-symbols-outlined text-sm">print</span>
+                  Imprimir
+                </button>
+                <div className="w-px h-6 bg-slate-200 mx-2" />
+                <button
+                  onClick={() => setDocumentoSeleccionado(null)}
+                  className="p-2 hover:bg-slate-200 rounded-lg transition-colors text-slate-400 hover:text-slate-600"
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-12 bg-slate-100/30 custom-scrollbar">
+              <div className="max-w-[210mm] mx-auto bg-white shadow-xl border border-slate-200 min-h-full p-[2cm]">
+                {editandoDocumento ? (
+                  <textarea
+                    value={contenidoTemp}
+                    onChange={(e) => setContenidoTemp(e.target.value)}
+                    className="w-full h-full min-h-[60vh] border-none focus:ring-0 p-0 text-[14px] font-serif leading-relaxed text-slate-800 resize-none overflow-hidden"
+                    autoFocus
+                  />
+                ) : (
+                  <div 
+                    dangerouslySetInnerHTML={{ __html: documentoSeleccionado.contenido }}
+                    className="document-content-preview text-[14px] font-serif leading-relaxed text-slate-800"
+                  />
+                )}
+              </div>
+            </div>
+            
+            {editandoDocumento && (
+              <div className="px-6 py-3 bg-amber-50 border-t border-amber-100 flex items-center gap-2 text-[10px] text-amber-700 font-bold uppercase tracking-widest">
+                <span className="material-symbols-outlined text-[14px]">info</span>
+                Estás en modo edición. Los cambios se guardarán directamente en el expediente institucional.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -92,11 +92,19 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
         {/* Neural Overlay / Scanning effect */}
         <motion.div
           animate={{ 
-            backgroundColor: `${color}08`,
-            boxShadow: `inset 0 0 50px ${color}22, 0 0 30px ${color}08`
+            backgroundColor: `${color}33`,
+            boxShadow: `inset 0 0 60px ${color}33, 0 0 40px ${color}22`
           }}
-          transition={{ duration: 1.5 }}
-          className="absolute inset-0 pointer-events-none rounded-full mix-blend-overlay border border-white/[0.03]"
+          transition={{ duration: 1.2 }}
+          style={{ mixBlendMode: "screen" }}
+          className="absolute inset-0 pointer-events-none rounded-full border border-white/[0.03]"
+        />
+
+        <motion.div
+          animate={{ backgroundColor: `${color}22` }}
+          transition={{ duration: 1.2 }}
+          style={{ mixBlendMode: "color" }}
+          className="absolute inset-0 pointer-events-none rounded-full"
         />
         
         {/* Horizontal Pulse Line */}
@@ -114,4 +122,3 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
     </div>
   );
 };
-

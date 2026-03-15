@@ -18,10 +18,15 @@ const App: React.FC = () => {
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const [isRegistering, setIsRegistering] = useState(false);
   
-  // Skipear el intro si ya se vio una vez (persistente)
+  // Estado para controlar la animación de introducción
   const [showIntro, setShowIntro] = useState(() => {
-    return localStorage.getItem("sase_intro_played") !== "true";
+    return sessionStorage.getItem("sase_intro_v4_shown") !== "true";
   });
+
+  const handleIntroComplete = () => {
+    sessionStorage.setItem("sase_intro_v4_shown", "true");
+    setShowIntro(false);
+  };
 
   const [showFirstLogon, setShowFirstLogon] = useState(false);
   const [setupUser, setSetupUser] = useState<{
@@ -50,6 +55,16 @@ const App: React.FC = () => {
     }
   }, [isRegistering]);
 
+  if (showIntro) {
+    return (
+      <SASEIntroAnimation
+        onComplete={() => {
+          setShowIntro(false);
+        }}
+      />
+    );
+  }
+
   if (loading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-[#05070a]">
@@ -65,23 +80,12 @@ const App: React.FC = () => {
             <h3 className="text-white font-black text-xs uppercase tracking-[0.5em] animate-pulse">
               Iniciando Protocolos
             </h3>
-            <p className="text-blue-500/50 text-[10px] font-bold uppercase tracking-[0.3em]">
-              S.A.S.E. • CONECTAMOS CONTIGO
-            </p>
+              <p className="text-blue-500/50 text-[10px] font-bold uppercase tracking-[0.3em]">
+                SISTEMA SASE-310
+              </p>
           </div>
         </main>
       </div>
-    );
-  }
-
-  if (showIntro) {
-    return (
-      <SASEIntroAnimation
-        onComplete={() => {
-          localStorage.setItem("sase_intro_played", "true");
-          setShowIntro(false);
-        }}
-      />
     );
   }
 

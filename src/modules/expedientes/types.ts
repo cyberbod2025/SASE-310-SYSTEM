@@ -22,9 +22,12 @@ export interface IncidenciaExpediente {
 }
 
 export interface DocumentoExpediente {
+  id: string;
   folio: string;
   tipo: string;
   fecha: string;
+  titulo: string;
+  contenido: string;
   generado_por: string;
 }
 
@@ -35,6 +38,19 @@ export interface EventoLinea {
   descripcion: string;
   icon: string;
   color: string;
+  document_id?: string;
+  incidencia_id?: string;
+}
+
+export interface ObjetoRetenidoExpediente {
+  id: string;
+  objeto: string;
+  motivo: string;
+  fecha: string;
+  responsableNombre: string;
+  estado: string;
+  fechaDevolucion?: string;
+  entregadoA?: string;
 }
 
 export interface ExpedienteCompleto {
@@ -42,6 +58,7 @@ export interface ExpedienteCompleto {
   alumno: DatosAlumnoExpediente;
   incidencias: IncidenciaExpediente[];
   documentos: DocumentoExpediente[];
+  objetosRetenidos: ObjetoRetenidoExpediente[];
   lineaTiempo: EventoLinea[];
   analisisIA?: string;
   fechaGeneracion: string;

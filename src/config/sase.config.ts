@@ -68,7 +68,7 @@ export const BRANDING = {
   sistemaName: "SASE",
 
   /** Nombre completo del sistema */
-  sistemaNameFull: "Sistema de Acompañamiento y Seguimiento Escolar",
+  sistemaNameFull: "SISTEMA SASE-310",
 };
 
 // ============================

@@ -13,18 +13,15 @@ import { calcularEstadoSistema, OrbState } from "../utils/estadoSistema";
  */
 export const IASaseAgent: React.FC = () => {
   const {
-    students,
     isAssistantOpen,
     setIsAssistantOpen,
-    assistantStatus,
     systemState,
     setCurrentModule,
     openQuickRegister,
-    currentUserRole,
   } = useApp();
 
   // Mapeo entre el semáforo institucional (OrbState) y el visualizador de núcleo (SystemState)
-  const orbState = useMemo((): SystemState => {
+  const orbState = React.useMemo((): SystemState => {
     switch (systemState) {
       case "thinking": return "thinking";
       case "red": return "alert";
@@ -34,7 +31,7 @@ export const IASaseAgent: React.FC = () => {
   }, [systemState]);
 
   // Texto descriptivo del estado para accesibilidad/clima
-  const stateLabel = useMemo(() => {
+  const stateLabel = React.useMemo(() => {
     switch (systemState) {
       case "red": return "CRÍTICO";
       case "yellow": return "ALERTA";
@@ -43,6 +40,31 @@ export const IASaseAgent: React.FC = () => {
       default: return "ESTABLE";
     }
   }, [systemState]);
+
+  // Frases periódicas para la IA
+  const [currentPhrase, setCurrentPhrase] = React.useState("");
+  const [showPhrase, setShowPhrase] = React.useState(false);
+
+  const phrases = [
+    "¿Qué necesitas hoy?",
+    "¿Te ayudo a hacer un reporte?",
+    "¿Necesitas consultar algo?",
+    "¿Quieres agendar algo?",
+    "¡Hola! Soy IA SASE, ¿en qué te ayudo?",
+    "Análisis de grupo completado",
+    "Sugerencia: Revisar citatorios de hoy",
+    "¿Buscamos a algún alumno?"
+  ];
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+      setCurrentPhrase(randomPhrase);
+      setShowPhrase(true);
+      setTimeout(() => setShowPhrase(false), 5000);
+    }, 15000); // Cada 15 segundos
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="fixed bottom-[20px] right-[20px] z-[5000] flex flex-col items-end">
@@ -53,7 +75,7 @@ export const IASaseAgent: React.FC = () => {
             initial={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: 20, scale: 0.9, filter: "blur(10px)" }}
-            className="mb-4 w-[280px] bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden relative"
+            className="mb-4 w-[320px] bg-slate-900/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden relative"
           >
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px] pointer-events-none"></div>
@@ -65,21 +87,22 @@ export const IASaseAgent: React.FC = () => {
                     IA-SASE
                   </h3>
                   <p className="text-blue-400 text-[8px] font-black uppercase tracking-[0.2em] mt-1">
-                    Núcleo Operativo
+                    Núcleo de Inteligencia Institucional
                   </p>
                 </div>
-                <div className="px-2 py-1 rounded-md bg-white/5 border border-white/10">
-                  <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest">
-                    v1.0
-                  </span>
-                </div>
+                <button 
+                  onClick={() => setIsAssistantOpen(false)}
+                  className="size-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white"
+                >
+                  <span className="material-symbols-outlined text-sm">close</span>
+                </button>
               </div>
 
               <div className="space-y-3">
                 <ActionButton
                   icon="add_circle"
                   label="Registrar Incidencia"
-                  description="Reporte inmediato de conducta o asistencia"
+                  description="Apertura de Registro Rápido"
                   onClick={() => {
                     openQuickRegister();
                     setIsAssistantOpen(false);
@@ -87,26 +110,26 @@ export const IASaseAgent: React.FC = () => {
                 />
                 <ActionButton
                   icon="person_search"
-                  label="Buscar Alumno"
-                  description="Acceso rápido a expedientes y fotos"
+                  label="Gestión de Alumnos"
+                  description="Expedientes y Trayectorias"
                   onClick={() => {
                     setCurrentModule(AppModule.REPORTES);
                     setIsAssistantOpen(false);
                   }}
                 />
                 <ActionButton
-                  icon="analytics"
-                  label="Alumnos en Riesgo"
-                  description="Trayectorias con alerta activa"
+                  icon="calendar_month"
+                  label="Agenda Escolar"
+                  description="Citas y Eventos Pendientes"
                   onClick={() => {
-                    setCurrentModule(AppModule.REPORTES);
+                    setCurrentModule(AppModule.AGENDA);
                     setIsAssistantOpen(false);
                   }}
                 />
                 <ActionButton
                   icon="emergency"
-                  label="Consultar Alertas"
-                  description="Protocolos y avisos institucionales"
+                  label="Protocolos SASE"
+                  description="Guía de Actuación Inmediata"
                   onClick={() => {
                     setCurrentModule(AppModule.DASHBOARD);
                     setIsAssistantOpen(false);
@@ -116,10 +139,26 @@ export const IASaseAgent: React.FC = () => {
 
               <div className="mt-6 pt-4 border-t border-white/5 text-center">
                 <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest italic">
-                  "Conectamos para proteger"
+                  "Inteligencia Artificial aplicada a la Seguridad Escolar"
                 </p>
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Bubble de Frases Periódicas */}
+      <AnimatePresence>
+        {showPhrase && !isAssistantOpen && (
+          <motion.div
+            initial={{ opacity: 0, x: 20, scale: 0.8 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20, scale: 0.8 }}
+            className="absolute -top-16 right-0 bg-blue-600 text-white px-4 py-2 rounded-2xl rounded-tr-none shadow-xl border border-blue-400/30 whitespace-nowrap z-[5001]"
+          >
+            <p className="text-[10px] font-black uppercase tracking-tight">{currentPhrase}</p>
+            {/* Arrow */}
+            <div className="absolute -bottom-1 right-0 size-3 bg-blue-600 rotate-45 transform origin-top-left" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -148,7 +187,7 @@ export const IASaseAgent: React.FC = () => {
 
         <SaseSplineOrb
           state={orbState}
-          className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_30px_rgba(0,0,0,0.6)]"
+          className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-[0_0_30px_rgba(59,130,246,0.3)] shadow-blue-500/20"
         />
 
         {/* Pulsing Ring for critical states */}

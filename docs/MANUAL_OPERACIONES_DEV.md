@@ -26,6 +26,7 @@ Los respaldos con datos reales **no deben** vivir dentro del repositorio ni comp
 ### A. Gestión de Usuarios y Accesos
 
 **¿Qué hace?** Permite generar invitaciones y aprobar cuentas institucionales manualmente.
+
 **¿Cuándo usarlo?**
 
 - Cuando el Director no puede acceder para aprobar a alguien.
@@ -33,13 +34,14 @@ Los respaldos con datos reales **no deben** vivir dentro del repositorio ni comp
 
 **Pasos:**
 
-1.  Ingresa al Dashboard Dev.
-2.  Pestaña **"Cuentas Institucionales"**.
-3.  Usa el **Generador de Invitaciones** para crear accesos pre-aprobados.
+1. Ingresa al Dashboard Dev.
+1. Pestaña **"Cuentas Institucionales"**.
+1. Usa el **Generador de Invitaciones** para crear accesos pre-aprobados.
 
 ### B. Bitácora de Auditoría (El "Ojo que Todo lo Ve")
 
 **¿Qué hace?** Muestra un registro inmutable de quién hizo qué en el sistema.
+
 **¿Cuándo usarlo?**
 
 - Para investigar incidentes de seguridad (ej. "¿Quién borró este alumno?").
@@ -47,13 +49,14 @@ Los respaldos con datos reales **no deben** vivir dentro del repositorio ni comp
 
 **Pasos:**
 
-1.  Pestaña **"Bitácora de Auditoría"**.
-2.  Revisa la tabla: **Acción | Descripción | Usuario | Rol | Hora**.
-3.  Busca acciones críticas como `ELIMINACION` (en rojo) o `CREACION` (en verde).
+1. Pestaña **"Bitácora de Auditoría"**.
+1. Revisa la tabla: **Acción | Descripción | Usuario | Rol | Hora**.
+1. Busca acciones críticas como `ELIMINACION` (en rojo) o `CREACION` (en verde).
 
 ### C. Centro de Feedback y Errores
 
 **¿Qué hace?** Centraliza todos los reportes enviados por los usuarios desde el botón `?`.
+
 **¿Cuándo usarlo?**
 
 - **Diariamente** durante el piloto.
@@ -68,17 +71,19 @@ Los respaldos con datos reales **no deben** vivir dentro del repositorio ni comp
 
 **Pasos:**
 
-1.  Pestaña **"Retroalimentación"**.
-2.  Filtra por tipos:
-    - 🐞 **Bug**: Errores técnicos. Prioridad Alta.
-    - 💡 **Idea**: Sugerencias.
-    - 🎨 **UX**: Problemas de diseño/usabilidad.
-3.  Revisa el **User Agent** para saber si falló en Android, iPhone o PC.
+1. Pestaña **"Retroalimentación"**.
+1. Filtra por tipos:
+   - 🐞 **Bug**: Errores técnicos. Prioridad Alta.
+   - 💡 **Idea**: Sugerencias.
+   - 🎨 **UX**: Problemas de diseño/usabilidad.
+1. Revisa el **User Agent** para saber si falló en Android, iPhone o PC.
 
 ### D. "Botón Rojo": Sincronización de Ambiente (Sync)
 
 **¿Qué hace?** `Sync Ambiente` (Botón arriba a la derecha).
+
 ⚠️ **PELIGRO**: Reinicia la base de datos con datos de demostración o "semilla".
+
 **¿Cuándo usarlo?**
 
 - **NUNCA en producción real** con datos de alumnos verdaderos.

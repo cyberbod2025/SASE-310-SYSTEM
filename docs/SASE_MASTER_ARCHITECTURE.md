@@ -9,7 +9,7 @@ Versión inicial — Base para desarrollo institucional
 
 ---
 
-# 1. Identidad del Sistema
+## 1. Identidad del Sistema
 
 ## 1.1 ¿Qué es SASE?
 
@@ -60,7 +60,7 @@ SASE centraliza esta información en un sistema digital que permite:
 
 ---
 
-# 2. Principio de la "Caja Negra Institucional"
+## 2. Principio de la "Caja Negra Institucional"
 
 SASE funciona como una caja negra institucional.
 
@@ -77,28 +77,28 @@ Esto permite reconstruir la trayectoria institucional de un alumno cuando sea ne
 
 ---
 
-# 3. Usuarios del Sistema
+## 3. Usuarios del Sistema
 
 SASE está diseñado para múltiples roles institucionales.
 
 Los usuarios principales son:
 
-Directivos
-Subdirección
-Docentes
-Prefectura
-Orientación
-Trabajo Social
-UDEII
-Enfermería
-Promotora de lectura
-Secretaría administrativa
+* Directivos
+* Subdirección
+* Docentes
+* Prefectura
+* Orientación
+* Trabajo Social
+* UDEII
+* Enfermería
+* Promotora de lectura
+* Secretaría administrativa
 
 Cada rol posee un dashboard específico con funciones particulares.
 
 ---
 
-# 4. Arquitectura General del Sistema
+## 4. Arquitectura General del Sistema
 
 La arquitectura de SASE se organiza en tres niveles funcionales.
 
@@ -146,7 +146,7 @@ Funciones:
 
 ---
 
-# 5. Operación Escolar
+## 5. Operación Escolar
 
 ## Docentes
 
@@ -207,7 +207,7 @@ Funciones:
 
 ---
 
-# 6. Intervención Especializada
+## 6. Intervención Especializada
 
 ## Orientación
 
@@ -256,7 +256,7 @@ También puede registrar incidencias observadas en pasillos.
 
 ---
 
-# 7. Módulos Transversales del Sistema
+## 7. Módulos Transversales del Sistema
 
 ## Buscador Universal de Alumnos
 
@@ -270,10 +270,10 @@ Botón universal para registrar incidencias en segundos.
 
 Campos mínimos:
 
-Alumno
-Grupo
-Tipo de incidencia
-Observación
+* Alumno
+* Grupo
+* Tipo de incidencia
+* Observación
 
 El sistema optimiza el registro mostrando incidencias comunes según el momento del día.
 
@@ -317,7 +317,7 @@ Genera reportes sobre:
 
 ---
 
-# 8. Registro de Objetos Retenidos
+## 8. Registro de Objetos Retenidos
 
 El sistema permite registrar decomisos temporales conforme al reglamento escolar.
 
@@ -340,7 +340,7 @@ Estado de devolución
 
 ---
 
-# 9. IA-SASE
+## 9. IA-SASE
 
 IA-SASE es la entidad analítica del sistema.
 
@@ -358,23 +358,19 @@ La IA detecta patrones y genera alertas institucionales.
 
 ---
 
-# 10. Flujo Central del Sistema
+## 10. Flujo Central del Sistema
 
 El funcionamiento básico de SASE es el siguiente:
 
-Docente o personal registra un evento
-↓
-El evento se guarda en el expediente del alumno
-↓
-IA-SASE analiza patrones históricos
-↓
-Se actualiza el estado del sistema
-↓
-Dirección recibe alertas cuando es necesario
+1. Docente o personal registra un evento
+2. El evento se guarda en el expediente del alumno
+3. IA-SASE analiza patrones históricos
+4. Se actualiza el estado del sistema
+5. Dirección recibe alertas cuando es necesario
 
 ---
 
-# 11. Filosofía del Sistema
+## 11. Filosofía del Sistema
 
 SASE no es únicamente un sistema de incidencias.
 

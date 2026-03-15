@@ -2,7 +2,7 @@
 description: Aplicar migración SQL a Supabase
 ---
 
-## Pasos para aplicar una migración
+# Pasos para aplicar una migración
 
 1. Verificar que la migración SQL esté lista
 
@@ -10,20 +10,22 @@ description: Aplicar migración SQL a Supabase
 dir supabase\migrations
 ```
 
-// turbo 2. Revisar el contenido de la migración antes de aplicar
+// turbo
+
+1. Revisar el contenido de la migración antes de aplicar
 
 ```bash
 type supabase\migrations\[nombre-migracion].sql
 ```
 
-3. Aplicar la migración (REQUIERE APROBACIÓN)
+1. Aplicar la migración (REQUIERE APROBACIÓN)
 
 ```bash
 # Este comando modifica la base de datos, requiere confirmación del usuario
 supabase db push
 ```
 
-4. Verificar que la migración se aplicó correctamente
+1. Verificar que la migración se aplicó correctamente
 
 ```bash
 supabase db diff

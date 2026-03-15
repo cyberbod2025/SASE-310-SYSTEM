@@ -171,6 +171,40 @@ export enum CredencialStatus {
   NO_SOLICITADA = "no_solicitada",
 }
 
+export enum EstadoObjetoRetenido {
+  RETENIDO = "retenido",
+  DEVUELTO_ALUMNO = "devuelto al alumno",
+  ENTREGADO_PADRE = "entregado a padre",
+}
+
+export interface ObjetoRetenido {
+  id: string;
+  alumno_id?: string;
+  studentId?: string;
+  studentName?: string;
+  group?: string;
+  objeto: string;
+  motivo: string;
+  fecha: string; // ISO string
+  responsable_id?: string;
+  responsableId?: string;
+  responsableNombre: string;
+  responsableRol: UserRole;
+  estado: EstadoObjetoRetenido;
+  incidencia_id?: string;
+  incidenciaId?: string; // Relación con la incidencia generada
+  created_at?: string;
+  // Nuevos campos para cadena de custodia completa
+  fechaDevolucion?: string;
+  entregadoA?: string;
+  entregadoPor?: string;
+  lugarRetencion?: string;
+  categoria?: string;
+  observaciones?: string;
+  evidenciaUrl?: string;
+  autorizadoPor?: string;
+}
+
 export interface SocioeconomicData {
   familyType: "Nuclear" | "Extendida" | "Monoparental" | "Otra";
   incomeLevel: "Bajo" | "Medio-Bajo" | "Medio" | "Alto";
@@ -225,6 +259,7 @@ export interface Student {
   documentationComplete?: boolean;
   socioeconomicData?: SocioeconomicData;
   gamificacion?: GamificacionData;
+  objetosRetenidos?: ObjetoRetenido[];
 }
 
 export type ProtocolType =
@@ -296,6 +331,8 @@ export enum AppModule {
   WELCOME = "welcome",
   REGISTRO_PERSONAL = "registro_personal",
   PLANEACION_NEM = "planeacion_nem",
+  IA_SASE = "ia_sase",
+  OBJETOS_RETENIDOS = "objetos_retenidos",
 }
 
 export interface Group {

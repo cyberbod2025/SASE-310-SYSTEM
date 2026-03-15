@@ -41,6 +41,9 @@ interface AppContextType {
   updateBapInfo: any;
   toggleDistanceState: any;
   importStudents: any;
+  addObjetoRetenido: any;
+  updateEstadoObjeto: any;
+  registrarDevolucion: any;
 
   // UI & UX
   quickRegisterOpen: any;
@@ -93,6 +96,8 @@ interface AppContextType {
   updateStudentAudit: any;
   saveEvidence: any;
   addInstitutionalDocument: any;
+  addDocumentoInstitucional: any;
+  deleteDocumentoInstitucional: any;
 }
 
 interface EvidenceInput {
@@ -251,6 +256,11 @@ export const AppProvider: React.FC<{
         saveEvidence,
         updateCredencialStatus,
         addInstitutionalDocument,
+        addDocumentoInstitucional: studentsSlice.addDocumentoInstitucional,
+        deleteDocumentoInstitucional: studentsSlice.deleteDocumentoInstitucional,
+        addObjetoRetenido: studentsSlice.addObjetoRetenido,
+        updateEstadoObjeto: studentsSlice.updateEstadoObjeto,
+        registrarDevolucion: studentsSlice.registrarDevolucion,
       }}
     >
       {children}

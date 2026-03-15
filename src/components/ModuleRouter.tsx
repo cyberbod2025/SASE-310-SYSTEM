@@ -25,6 +25,7 @@ const DashboardSubdireccion = React.lazy(() => import("./dashboards/DashboardSub
 const DashboardUDEII = React.lazy(() => import("./dashboards/DashboardUDEII").then((m) => ({ default: m.DashboardUDEII })));
 const DashboardLectura = React.lazy(() => import("./dashboards/DashboardLectura"));
 const DashboardDeveloper = React.lazy(() => import("./dashboards/DashboardDeveloper").then((m) => ({ default: m.DashboardDeveloper })));
+const DashboardIntelligence = React.lazy(() => import("./dashboards/DashboardIntelligence").then((m) => ({ default: m.DashboardIntelligence })));
 
 // Modules (Lazy Loaded)
 const Agenda = React.lazy(() => import("./Agenda").then((m) => ({ default: m.Agenda })));
@@ -44,6 +45,7 @@ const AprobacionesPersonal = React.lazy(() => import("./AprobacionesPersonal").t
 const MisGrupos = React.lazy(() => import("./MisGrupos").then((m) => ({ default: m.MisGrupos })));
 
 const Asistencia = React.lazy(() => import("./Asistencia").then((m) => ({ default: m.Asistencia })));
+const ObjetosRetenidos = React.lazy(() => import("./ObjetosRetenidos").then((m) => ({ default: m.ObjetosRetenidos })));
 
 export const ModuleRouter: React.FC = () => {
   const { currentModule, currentUserRole, setCurrentModule } = useApp();
@@ -64,6 +66,8 @@ export const ModuleRouter: React.FC = () => {
         if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
         if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;
         if (currentModule === AppModule.ASISTENCIA) return <Asistencia />;
+        if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
+        if (currentModule === AppModule.IA_SASE) return <DashboardIntelligence />;
         if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
         if (currentModule === AppModule.HOME) {

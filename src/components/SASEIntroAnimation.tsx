@@ -19,46 +19,59 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
   const [isFastPass, setIsFastPass] = useState(false);
 
   useEffect(() => {
-    const seen = sessionStorage.getItem("sase_intro_seen");
-    if (seen) setIsFastPass(true);
-    else sessionStorage.setItem("sase_intro_seen", "true");
+    setIsFastPass(false);
+    sessionStorage.setItem("sase_intro_seen", "true");
   }, []);
 
   useEffect(() => {
-    const sequence = async () => {
-      const wait = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-      const delay = (base: number) =>
-        isFastPass ? base * 0.7 : base; // Much slower fastpass
+    let cancelled = false;
+    const wait = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+    const delay = (base: number) =>
+      Math.max(300, isFastPass ? base * 0.5 : base);
 
+    const safetyTimer = setTimeout(() => {
+      if (!cancelled) onComplete();
+    }, delay(7500));
+
+    const sequence = async () => {
       // STEP 0: LATENT/BLUE - (Base de Datos)
       setOrbState("thinking");
-      await wait(delay(3000));
+      await wait(delay(1200));
+      if (cancelled) return;
 
       // STEP 1: ALERT/RED - "Protección"
       setStep(1);
       setOrbState("alert");
-      await wait(delay(3000));
+      await wait(delay(1200));
+      if (cancelled) return;
 
       // STEP 2: WARNING/YELLOW - "Cuidado"
       setStep(2);
       setOrbState("warning");
-      await wait(delay(3000));
+      await wait(delay(1200));
+      if (cancelled) return;
 
       // STEP 3: ZEN/GREEN - "Calma"
       setStep(3);
       setOrbState("normal");
-      await wait(delay(3000));
+      await wait(delay(1200));
+      if (cancelled) return;
 
       // STEP 4: POWER/GOLD - "Bienvenida" (mapped to thinking or normal)
       setStep(4);
       setOrbState("normal");
-      await wait(delay(3000));
+      await wait(delay(1200));
 
-      onComplete();
+      if (!cancelled) onComplete();
     };
 
     sequence();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(safetyTimer);
+    };
   }, [isFastPass, onComplete]);
 
   // Map step to text color
@@ -153,7 +166,7 @@ export const SASEIntroAnimation: React.FC<SASEIntroAnimationProps> = ({
               }`}
             >
               <span className="text-[12px] font-black text-amber-400 tracking-[0.2em] uppercase">
-                ACOMPAÑAMIENTO EN 3 CLICS
+                SISTEMA SASE-310
               </span>
             </div>
           </motion.div>

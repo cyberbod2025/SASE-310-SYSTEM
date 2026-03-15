@@ -280,6 +280,25 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   collapsed={isSidebarCollapsed}
                 />
 
+                {(currentUserRole === UserRole.DIRECTIVO ||
+                  currentUserRole === UserRole.SUBDIRECCION ||
+                  currentUserRole === UserRole.SYSTEM_ADMIN ||
+                  currentUserRole === UserRole.DEVELOPER) && (
+                  <NavItem
+                    id="nav-ia-sase"
+                    icon="neurology"
+                    label="Núcleo IA"
+                    active={currentModule === AppModule.IA_SASE}
+                    onClick={() => {
+                      setCurrentModule(AppModule.IA_SASE);
+                      setIsSidebarOpen(false);
+                    }}
+                    color={currentUserRole}
+                    highlighted={highlightedModule === AppModule.IA_SASE}
+                    collapsed={isSidebarCollapsed}
+                  />
+                )}
+
                 <NavItem
                   id="nav-protocolos"
                   icon="policy"
@@ -410,7 +429,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <div className="flex items-center gap-2">
                 <h2 className="text-[11px] font-black text-slate-100 uppercase tracking-[0.4em] title-sase">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
-                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">IA_NUCLEUS</span>
+                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">FERIA_DE_CIENCIAS</span>
                 </h2>
               </div>
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">

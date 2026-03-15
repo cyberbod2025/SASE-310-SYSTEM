@@ -1,6 +1,6 @@
 # Changelog SASE v1.0 — Sistema de Alertas de Riesgo Escolar
 
-Fecha: 2026-03-05
+**Fecha:** 2026-03-05
 
 ## [v1.0-alertas-riesgo] - Lanzamiento Inicial del Núcleo Táctico
 
@@ -25,9 +25,9 @@ Fecha: 2026-03-05
 
 ### 🛠️ Cambios en Base de Datos
 
-- Nuevas Vistas: `public.expediente_integral_alumno`, `public.alumnos_en_riesgo`.
-- Nuevas Columnas: `public.estudiantes.alumno_id` (Relación FO).
-- Registro de Auditoría: Documentación automática de cambios estructurales en la tabla `auditoria`.
+- **Nuevas Vistas**: `public.expediente_integral_alumno`, `public.alumnos_en_riesgo`.
+- **Nuevas Columnas**: `public.estudiantes.alumno_id` (Relación FO).
+- **Registro de Auditoría**: Documentación automática de cambios estructurales en la tabla `auditoria`.
 
 ---
 

@@ -1,6 +1,6 @@
 // SASE Login - Institutional Portal (Liquid Glass Identity 2026)
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SaseSplineOrb } from "./SaseSplineOrb";
@@ -18,6 +18,23 @@ export const Login: React.FC<LoginProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const orbX = useMotionValue(0);
+  const orbY = useMotionValue(0);
+  const orbXSpring = useSpring(orbX, { stiffness: 120, damping: 18, mass: 0.6 });
+  const orbYSpring = useSpring(orbY, { stiffness: 120, damping: 18, mass: 0.6 });
+
+  useEffect(() => {
+    const handleMove = (event: MouseEvent) => {
+      const x = (event.clientX / window.innerWidth - 0.5) * 28;
+      const y = (event.clientY / window.innerHeight - 0.5) * 28;
+      orbX.set(x);
+      orbY.set(y);
+    };
+
+    window.addEventListener("mousemove", handleMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, [orbX, orbY]);
 
   // Recovery State
   const [showRecovery, setShowRecovery] = useState(false);
@@ -39,24 +56,29 @@ export const Login: React.FC<LoginProps> = ({
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    const normalizedEmail = username.includes("@")
-      ? username.trim().toLowerCase()
-      : `${username.trim().toLowerCase()}@sase.mx`;
-    const emailRegex = /^[a-z]+\.[a-z]+@sase\.mx$/;
-
-    if (!emailRegex.test(normalizedEmail)) {
-      toast.error("Correo institucional inválido. Use nombre.apellido@sase.mx");
+    
+    // Normalización: minúsculas y quitar espacios
+    const normalizedUsername = username.toLowerCase().trim();
+    
+    // Validación de formato: Permitir admin@sase.mx y otros formatos corporativos
+    const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    
+    if (!emailRegex.test(normalizedUsername)) {
+      console.log('Login: Formato de usuario inválido:', normalizedUsername);
+      toast.error("Formato de correo inválido. Por favor, verifique su entrada.");
       setLoading(false);
       return;
     }
 
+    console.log('Login: Intentando acceso con:', normalizedUsername);
+
     const { error } = await supabase.auth.signInWithPassword({
-      email: normalizedEmail,
+      email: normalizedUsername,
       password,
     });
 
     if (error) {
+      console.error('Login error:', error);
       toast.error("Protocolo Rechazado: Credenciales no válidas", {
         style: {
           background: "#1e1b4b",
@@ -149,10 +171,12 @@ export const Login: React.FC<LoginProps> = ({
                 className="group flex flex-col items-center select-none"
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
-                  <SaseSplineOrb
-                    state="thinking"
-                    className="w-24 h-24 sm:w-32 sm:h-32"
-                  />
+                  <motion.div style={{ x: orbXSpring, y: orbYSpring }}>
+                    <SaseSplineOrb
+                      state="thinking"
+                      className="w-24 h-24 sm:w-32 sm:h-32"
+                    />
+                  </motion.div>
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
                     SASE
                   </h1>
@@ -160,7 +184,7 @@ export const Login: React.FC<LoginProps> = ({
 
                 <div className="flex flex-col items-center gap-3">
                   <p className="text-[10px] md:text-[11px] font-black text-blue-500/80 uppercase tracking-widest max-w-[320px] leading-relaxed">
-                    SISTEMA DE ACOMPAÑAMIENTO Y SEGUIMIENTO ESCOLAR
+                    SISTEMA SASE-310
                   </p>
                   <div className="flex items-center justify-center gap-4 mt-4 select-none">
                     <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
