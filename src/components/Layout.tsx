@@ -429,7 +429,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <div className="flex items-center gap-2">
                 <h2 className="text-[11px] font-black text-slate-100 uppercase tracking-[0.4em] title-sase">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
-                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">FERIA_DE_CIENCIAS</span>
+                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">SISTEMA_SASE_310</span>
                 </h2>
               </div>
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">

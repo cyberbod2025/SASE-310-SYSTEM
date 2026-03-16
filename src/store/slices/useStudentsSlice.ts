@@ -21,7 +21,7 @@ import { sendWhatsAppNotification } from "../../utils/notifications";
 import toast from "react-hot-toast";
 
 // Production: No fictional data — students are loaded from Supabase
-const INITIAL_STUDENTS: Student[] = [];
+const INITIAL_STUDENTS: Student[] = []; // v4.1 Sync
 
 export const useStudentsSlice = (
   user: User | null,
@@ -89,12 +89,15 @@ export const useStudentsSlice = (
             id, materia, trimestre1, trimestre2, trimestre3, promedio_final, ciclo_escolar
           ),
           documentos_institucionales (
-            id, tipo, folio, fecha, titulo, contenido, narracionIA, firmas, creado_por
+            id, tipo, folio, fecha, titulo, contenido, narracionIA:narracion_ia, firmas, creado_por
           ),
           objetos_retenidos (
             id, objeto, motivo, fecha, responsable_id, responsable_nombre, responsable_rol, 
             estado, incidencia_id, created_at, fecha_devolucion, entregado_a, entregado_por, 
             lugar_retencion, categoria, observaciones, evidencia_url, autorizado_por
+          ),
+          estudiantes (
+            total_puntos, escaneos_realizados, nickname
           )
         `);
 
@@ -111,7 +114,7 @@ export const useStudentsSlice = (
           curp: d.curp,
           name: d.nombre_completo,
           group: d.grupo,
-          avatar: d.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${d.matricula}`,
+          avatar: d.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + d.matricula,
           caseState: (d.estado_semaforo as CaseState) || CaseState.CERRADO,
           puntajeRiesgo: d.puntaje_riesgo,
           estadoSemaforo: d.estado_semaforo,
@@ -429,7 +432,7 @@ export const useStudentsSlice = (
       await supabase
         .from("alumnos")
         .update({
-          datos_bap: { ...bapData, lastUpdated: new Date().toISOString() },
+            datos_bap: { ...bapData, lastUpdated: new Date().toISOString() },
         })
         .eq("id", studentId);
       toast.success("Información UDEII actualizada");

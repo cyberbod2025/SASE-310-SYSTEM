@@ -1,10 +1,10 @@
-const CACHE_NAME = "sase-cache-v2";
+const CACHE_NAME = "sase-cache-v4.1";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.json",
+  "/assets/branding/SASE_ICON_PREMIUM.png",
   "/assets/branding/SASE_ICON_GOLD.png",
-  "/assets/branding/IA-SASE.png",
 ];
 
 self.addEventListener("install", (event) => {
