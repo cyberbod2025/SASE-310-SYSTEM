@@ -1,13 +1,13 @@
 {
-  "name": "SASE | Sistema de Acompañamiento y Seguimiento Escolar",
-  "short_name": "SASE",
-  "description": "SASE - Sistema de Acompañamiento y Seguimiento Escolar",
+  "name": "SISTEMA SASE-310",
+  "short_name": "SASE-310",
+  "description": "SASE - Sistema de Acompañamiento y Seguimiento Escolar - Escuela Secundaria Diurna 310",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
-  "background_color": "#0f172a",
-  "theme_color": "#fbbf24",
+  "background_color": "#020617",
+  "theme_color": "#3b82f6",
   "dir": "ltr",
   "lang": "es-MX",
   "icons": [
