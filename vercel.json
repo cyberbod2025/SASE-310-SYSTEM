@@ -1,5 +1,20 @@
 {
   "routes": [
+    {
+      "src": "/sw.js",
+      "headers": {
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "service-worker-allowed": "/"
+      },
+      "continue": true
+    },
+    {
+      "src": "/index.html",
+      "headers": {
+        "cache-control": "no-cache, no-store, must-revalidate"
+      },
+      "continue": true
+    },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/" }
   ]

@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: "/",
     server: {
-      port: 3010,
+      port: 3100,
       host: "0.0.0.0",
       open: false,
     },

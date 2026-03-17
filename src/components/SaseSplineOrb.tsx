@@ -10,7 +10,7 @@ interface SaseSplineOrbProps {
 
 // SASE Official Color Palette (Semaforo Logic)
 const stateColors: Record<SystemState, string> = {
-  normal: "#10b981",    // Green (Acompañamiento concluido / Zen)
+  normal: "#fbbf24",    // Gold (Estable / Dorado Institucional)
   warning: "#f59e0b",   // Amber (Observado / Patron Detectado)
   alert: "#ef4444",     // Red (En Análisis / Intervención)
   thinking: "#3b82f6",  // Blue (Processing / Neural Link)

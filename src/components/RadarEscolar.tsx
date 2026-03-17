@@ -217,15 +217,15 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
             onClick={() => {
               if (onComplete) onComplete();
             }}
-            className="group relative px-12 py-5 overflow-hidden rounded-2xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 transition-all active:scale-95"
+            className="group relative px-12 py-5 overflow-hidden rounded-2xl bg-blue-600/10 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-600/20 transition-all active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:shadow-[0_0_50px_rgba(59,130,246,0.2)]"
           >
             <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative z-10 flex items-center gap-3">
-              <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">
-                Continuar al Sistema
+            <div className="relative z-10 flex items-center gap-4">
+              <span className="text-[11px] font-black text-white uppercase tracking-[0.5em]">
+                ENTRAR AL SISTEMA
               </span>
-              <span className="material-symbols-outlined text-blue-500 group-hover:translate-x-1 transition-transform">
-                bolt
+              <span className="material-symbols-outlined text-blue-400 group-hover:scale-125 transition-transform animate-pulse">
+                rocket_launch
               </span>
             </div>
           </button>

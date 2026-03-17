@@ -138,7 +138,8 @@ export const OrbNavigation = () => {
     setCurrentModule,
     currentUserRole,
     setIsAssistantOpen,
-    systemState: saseState,
+    isAssistantOpen,
+    aiSystemState: saseState,
   } = useApp();
   const { user } = useAuth();
   const [showAdminModal, setShowAdminModal] = useState(false);
@@ -515,13 +516,21 @@ export const OrbNavigation = () => {
               <div className="absolute inset-8 rounded-full border-t-2 border-l-2 border-cyan-500/20 animate-spin-reverse-slow"></div>
 
               <button
-                onClick={() => setIsAssistantOpen(true)}
-                title="Activar IA SASE"
-                className="relative z-10 w-32 h-32 md:w-56 md:h-56 rounded-full overflow-hidden cursor-pointer group transition-all duration-700 hover:scale-110 active:scale-95 flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/5 shadow-2xl"
+                onClick={() => setIsAssistantOpen(!isAssistantOpen)}
+                title="Interactuar con Núcleo IA SASE"
+                className="relative z-10 w-32 h-32 md:w-56 md:h-56 rounded-full overflow-hidden cursor-pointer group transition-all duration-700 hover:scale-110 active:scale-90 flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/5 shadow-2xl"
               >
                 <SaseSplineOrb state={saseState as any} className="w-full h-full" />
 
-                <div className="absolute inset-0 rounded-full border border-white/10 group-hover:border-white/30 transition-all duration-700 pointer-events-none" />
+                <div className="absolute inset-0 rounded-full border border-white/10 group-hover:border-blue-500/30 transition-all duration-700 pointer-events-none" />
+                {/* Visual pulse indicator when in normal state */}
+                {saseState === "normal" && (
+                  <motion.div 
+                    animate={{ opacity: [0, 0.2, 0], scale: [1, 1.2, 1] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="absolute inset-0 bg-amber-500 rounded-full"
+                  />
+                )}
               </button>
             </motion.div>
 
@@ -574,7 +583,7 @@ export const OrbNavigation = () => {
                         >
                           {item.icon}
                         </span>
-                        <span className="mt-2 text-[8px] md:text-[9px] font-black text-slate-400 group-hover:text-white uppercase tracking-[0.2em] transition-colors title-sase">
+                        <span className="mt-2 text-[10px] md:text-[11px] font-black text-slate-300 group-hover:text-white uppercase tracking-[0.2em] transition-colors title-sase">
                           {item.label}
                         </span>
                         <div className="absolute -top-1 -right-1 size-3 bg-blue-500 rounded-full scale-0 group-hover:scale-100 transition-transform origin-center flex items-center justify-center">

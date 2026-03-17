@@ -563,12 +563,27 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </div>
         </main>
 
-        <div className="fixed bottom-8 right-8 z-50">
-          <SaseSplineOrb
-            state={neuralCoreState}
-            className="w-[110px] h-[110px]"
-          />
-        </div>
+        {/* Floating IA-SASE Core - Hidden on HOME to avoid duplication */}
+        {currentModule !== AppModule.HOME && (
+          <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
+            <button
+              onClick={() => setIsAssistantOpen(!isAssistantOpen)}
+              className="relative focus:outline-none group active:scale-95 transition-transform"
+              title="Interactuar con IA-SASE"
+            >
+              <SaseSplineOrb
+                state={neuralCoreState}
+                className="w-[110px] h-[110px] cursor-pointer"
+              />
+              {!isAssistantOpen && (
+                <span className="absolute top-0 right-0 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                </span>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       <FeedbackWidget />
