@@ -46,7 +46,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
   const reportesHoy = useMemo(() => {
     return students.reduce((acc: number, s: any) => {
       const todayCount = s.incidents.filter((inc: any) =>
-        inc.date.startsWith(todayStr),
+        (inc.date || "").startsWith(todayStr),
       ).length;
       return acc + todayCount;
     }, 0);

@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import Spline from "@splinetool/react-spline";
 import { motion, AnimatePresence } from "framer-motion";
 import type { SystemState } from "../types/systemState";
@@ -6,6 +6,7 @@ import type { SystemState } from "../types/systemState";
 interface SaseSplineOrbProps {
   state: SystemState;
   className?: string;
+  isInteracting?: boolean;
 }
 
 // SASE Official Color Palette (Semaforo Logic)
@@ -16,17 +17,49 @@ const stateColors: Record<SystemState, string> = {
   thinking: "#3b82f6",  // Blue (Processing / Neural Link)
 };
 
-export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }) => {
-  const color = stateColors[state];
+export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, isInteracting }) => {
+  const color = stateColors[state] || stateColors.normal;
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  // Seguimiento del Mouse para los Ojos de IA-SASE
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePos({ x, y });
+    };
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, []);
 
   return (
-    <div className={`relative flex items-center justify-center overflow-hidden rounded-full ${className || "w-64 h-64"}`}>
-      {/* Tactical HUD Overlay - Institutional Tech Layer */}
-      <div className="absolute inset-0 z-20 pointer-events-none">
-        <svg className="w-full h-full opacity-40" viewBox="0 0 200 200">
+    <div className={`relative flex items-center justify-center overflow-hidden rounded-full transition-all duration-700 ${className || "w-64 h-64"}`}>
+      
+      {/* 1. Capa de Atmosfera / Resplandor de Conciencia */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={state}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            scale: isInteracting ? 1.1 : 1,
+            filter: isInteracting ? "blur(100px)" : "blur(80px)"
+          }}
+          exit={{ opacity: 0, scale: 1.1 }}
+          transition={{ duration: 1.2, ease: "circOut" }}
+          className="absolute inset-0 rounded-full"
+          style={{ 
+            background: `radial-gradient(circle, ${color}44 0%, transparent 70%)` 
+          }}
+        />
+      </AnimatePresence>
+
+      {/* 2. Tactical HUD Overlay - Interfaz Institucional */}
+      <div className="absolute inset-0 z-30 pointer-events-none opacity-50">
+        <svg className="w-full h-full" viewBox="0 0 200 200">
           <defs>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <filter id="glow-sase">
+              <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
               <feMerge>
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>
@@ -34,87 +67,85 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
             </filter>
           </defs>
           
-          {/* Outer Ring Sectors */}
-          <circle cx="100" cy="100" r="98" fill="none" stroke={color} strokeWidth="0.5" strokeDasharray="2 12" />
-          <circle cx="100" cy="100" r="92" fill="none" stroke={color} strokeWidth="1.5" strokeDasharray="40 160" opacity="0.3" />
-          
-          {/* Compass Marks */}
-          <path d="M100 2 L100 12 M198 100 L188 100 M100 198 L100 188 M2 100 L12 100" stroke={color} strokeWidth="1" filter="url(#glow)" />
-          
-          {/* Spinning Tech Ring */}
-          <motion.path 
+          {/* Anillos de Datos Circundantes */}
+          <motion.circle 
             animate={{ rotate: 360 }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             style={{ originX: "100px", originY: "100px" }}
-            d="M50 20 A90 90 0 0 1 150 20" 
-            fill="none" 
-            stroke={color} 
-            strokeWidth="0.8" 
-            opacity="0.6" 
+            cx="100" cy="100" r="95" 
+            fill="none" stroke={color} strokeWidth="0.5" strokeDasharray="1 15" 
           />
+          
+          <circle cx="100" cy="100" r="90" fill="none" stroke={color} strokeWidth="1" strokeDasharray="30 170" opacity="0.2" filter="url(#glow-sase)" />
         </svg>
       </div>
 
-
-      {/* Atmospheric Glow */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={state}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.1 }}
-          transition={{ duration: 1.2, ease: "circOut" }}
-          className="absolute inset-0 rounded-full blur-[80px]"
-          style={{ 
-            background: `radial-gradient(circle, ${color}33 0%, transparent 70%)` 
-          }}
-        />
-      </AnimatePresence>
-
-      {/* 3D Neural Face Container */}
-      <div className="relative w-[95%] h-[95%] z-10 group bg-transparent">
+      {/* 3. Contenedor de la Cara Neural (Spline) */}
+      <div className="relative w-[92%] h-[92%] z-10 group bg-transparent">
         <Suspense fallback={
-          <div className="w-full h-full flex items-center justify-center">
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              className="w-10 h-10 border-2 border-white/5 border-t-blue-500/60 rounded-full" 
-            />
+          <div className="w-full h-full flex items-center justify-center bg-slate-900/20 rounded-full animate-pulse">
+            <div className="w-8 h-8 border-2 border-white/5 border-t-white/40 rounded-full animate-spin" />
           </div>
         }>
           <Spline 
-            // Carga el archivo local que copiamos a public/
             scene="/sase-orb.splinecode"
-            className="w-full h-full transform scale-125"
+            className={`w-full h-full transform scale-125 transition-all duration-1000 ${isInteracting ? 'brightness-125' : 'brightness-100'}`}
           />
         </Suspense>
 
-        {/* Neural Overlay / Scanning effect */}
+        {/* 4. OJOS INTERACTIVOS (Sentient Layer) */}
+        {/* Estos ojos se superponen al modelo 3D para darle vida y 'mirada' */}
+        <div 
+          className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none mix-blend-overlay opacity-80"
+          style={{
+            transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 15}px)`
+          }}
+        >
+          <div className="flex gap-12 sm:gap-20">
+             <motion.div 
+               animate={state === 'thinking' ? { scaleY: [1, 0.1, 1], transition: { repeat: Infinity, duration: 4 } } : {}}
+               className="size-1.5 sm:size-2.5 bg-white rounded-full shadow-[0_0_15px_white]" 
+             />
+             <motion.div 
+               animate={state === 'thinking' ? { scaleY: [1, 0.1, 1], transition: { repeat: Infinity, duration: 4, delay: 0.2 } } : {}}
+               className="size-1.5 sm:size-2.5 bg-white rounded-full shadow-[0_0_15px_white]" 
+             />
+          </div>
+        </div>
+
+        {/* 5. Capas de Color Adaptativas (Inundan el modelo 3D) */}
+        {/* Capa 1: Tinte Base */}
         <motion.div
           animate={{ 
             backgroundColor: `${color}33`,
-            boxShadow: `inset 0 0 60px ${color}33, 0 0 40px ${color}22`
+            boxShadow: `inset 0 0 100px ${color}44, 0 0 60px ${color}33`
           }}
-          transition={{ duration: 1.2 }}
-          style={{ mixBlendMode: "screen" }}
-          className="absolute inset-0 pointer-events-none rounded-full border border-white/[0.03]"
-        />
-
-        <motion.div
-          animate={{ backgroundColor: `${color}22` }}
-          transition={{ duration: 1.2 }}
-          style={{ mixBlendMode: "color" }}
-          className="absolute inset-0 pointer-events-none rounded-full"
+          transition={{ duration: 1 }}
+          style={{ mixBlendMode: "overlay" }}
+          className="absolute inset-0 pointer-events-none rounded-full border border-white/[0.08]"
         />
         
-        {/* Horizontal Pulse Line */}
+        {/* Capa 2: Brillo Central / Saturación */}
+        <motion.div
+          animate={{ 
+            background: `radial-gradient(circle, ${color}66 0%, transparent 60%)`,
+          }}
+          transition={{ duration: 1 }}
+          style={{ mixBlendMode: "screen" }}
+          className="absolute inset-0 pointer-events-none rounded-full opacity-60"
+        />
+
+        {/* Línea de Escaneo Horizontal (Latido Vital) */}
         <motion.div 
-          animate={{ top: ["10%", "90%", "10%"], opacity: [0, 0.3, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-[15%] right-[15%] h-[1px] bg-white z-30 blur-[1px]"
+          animate={{ 
+            top: ["10%", "90%", "10%"], 
+            opacity: [0, 0.4, 0],
+            backgroundColor: color
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-[20%] right-[20%] h-[1px] z-50 blur-[2px]"
         />
       </div>
-
 
       <style>{`
         .spline-watermark { display: none !important; }

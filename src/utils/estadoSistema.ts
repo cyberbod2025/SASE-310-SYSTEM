@@ -39,7 +39,7 @@ export const calcularEstadoSistema = (
   // 4. Incidencias del Día (Amarillo)
   const today = new Date().toISOString().split("T")[0];
   const hasIncidentsToday = students.some((s) =>
-    s.incidents?.some((i) => i.date.startsWith(today)),
+    s.incidents?.some((i) => (i.date || "").startsWith(today)),
   );
 
   if (hasIncidentsToday) return "yellow";

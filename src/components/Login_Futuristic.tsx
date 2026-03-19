@@ -97,16 +97,10 @@ export const Login: React.FC<LoginProps> = ({
             : "opacity-0 translate-y-4 scale-95 pointer-events-none"
         }`}
       >
-        {/* Glow Container */}
         <div className="absolute -inset-8 bg-blue-500/10 rounded-[3rem] blur-[80px] -z-10 animate-pulse-slow"></div>
 
         <div className="glass-card-quantum !rounded-[3rem] p-12 shadow-[0_0_150px_rgba(0,0,0,0.8)] relative overflow-hidden group">
-          {/* Pi Symbol */}
-          <div
-            className="absolute top-6 right-8 text-white/5 hover:text-white/40 cursor-pointer select-none transition-all text-[14px] font-bold z-30 p-2"
-          >
-            π
-          </div>
+
 
           <div className="flex flex-col items-center">
             {/* Logo Section */}

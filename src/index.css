@@ -420,25 +420,28 @@
   overflow: visible !important;
 }
 
-/* SASE Face floating near popover */
+/* SASE Sentient Core floating near popover */
 .driver-popover.sase-tour-popover::before {
   content: "";
   position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 100px;
-  height: 100px;
-  background-image: url("/assets/branding/SASE_ICON_GOLD.png");
-  background-size: cover;
-  background-position: center;
+  top: -40px;
+  right: -40px;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at 30% 30%, #3b82f6, #000);
   border-radius: 50%;
   box-shadow:
-    0 0 30px rgba(59, 130, 246, 0.6),
-    0 0 60px rgba(59, 130, 246, 0.3);
-  animation: float 3s ease-in-out infinite;
+    0 0 30px rgba(59, 130, 246, 0.8),
+    0 0 60px rgba(0, 242, 255, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+  animation: float 3s ease-in-out infinite, sase-neural-pulse 2s ease-in-out infinite;
   z-index: 1000;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes sase-neural-pulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.05); filter: brightness(1.3); }
 }
 
 .driver-popover.sase-tour-popover .driver-popover-title {
@@ -446,13 +449,9 @@
   font-weight: 900 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.15em !important;
-  color: #fff !important;
+  color: #60a5fa !important; /* Fixed color for better visibility */
   margin-bottom: 12px !important;
   font-style: italic !important;
-  background: linear-gradient(to right, #60a5fa, #a855f7);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
@@ -523,21 +522,21 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Add a floating SASE icon on the highlighted element itself */
+/* Add a neural pulse overlay on the highlighted element */
 .driver-active-element::after {
   content: "";
   position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 40px;
-  height: 40px;
-  background-image: url("/assets/branding/SASE_ICON_GOLD.png");
-  background-size: cover;
-  border-radius: 50%;
-  box-shadow: 0 0 20px #00f2ff;
-  animation: float 2s ease-in-out infinite;
+  inset: -10px;
+  background: radial-gradient(circle, rgba(0, 242, 255, 0.1) 0%, transparent 70%);
+  border-radius: inherit;
+  animation: sase-neural-blink 2s ease-in-out infinite;
   z-index: 1000001;
   pointer-events: none;
+}
+
+@keyframes sase-neural-blink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
 }
 
 @keyframes sase-element-glow {

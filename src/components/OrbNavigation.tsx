@@ -5,127 +5,8 @@ import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SaseSplineOrb } from "./SaseSplineOrb";
 
-// Internal component for Secure Admin Login
-const AdminLoginModal = ({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    // 1. Authenticate with Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
 
-    if (error || !data.user) {
-      toast.error("Credenciales inválidas o error de conexión.");
-      setLoading(false);
-      return;
-    }
-
-    // 2. Verify Role in DB (Strict Backend Validation)
-    // We check both tables to be safe as per pilot schema migration
-    let role = null;
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", data.user.id)
-      .single();
-
-    if (profile) role = profile.role;
-    else {
-      // Fallback check
-      const { data: perfil2 } = await supabase
-        .from("perfiles_usuario")
-        .select("rol")
-        .eq("id", data.user.id)
-        .single();
-      if (perfil2) role = perfil2.rol;
-    }
-
-    if (role === UserRole.DEVELOPER || role === "super_admin") {
-      toast.success("Acceso Super Admin Verificado. Bienvenido, Hugo.");
-      window.location.assign("/"); // Clean reload without query params
-    } else {
-      toast.error(
-        "Acceso Denegado: Este usuario no tiene privilegios de Super Admin.",
-      );
-      await supabase.auth.signOut();
-    }
-    setLoading(false);
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in">
-      <div className="bg-slate-900 border border-slate-700 p-8 rounded-2xl w-full max-w-md shadow-2xl relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-slate-500 hover:text-white"
-          title="Cerrar ventana de acceso"
-        >
-          <span className="material-symbols-outlined">close</span>
-        </button>
-
-        <div className="flex flex-col items-center mb-6">
-          <span className="text-4xl mb-2">🛡️</span>
-          <h2 className="text-xl font-black text-white uppercase tracking-widest">
-            Acceso Restringido
-          </h2>
-          <p className="text-slate-400 text-xs mt-1">
-            Nivel 0: Super Administración
-          </p>
-        </div>
-
-        <form onSubmit={handleAdminLogin} className="space-y-4">
-          <div>
-            <label className="block text-slate-400 text-xs uppercase font-bold mb-1">
-              ID Administrativo
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none focus:border-blue-500"
-              placeholder="admin@sase..."
-              title="Ingrese su correo electrónico administrativo"
-            />
-          </div>
-          <div>
-            <label className="block text-slate-400 text-xs uppercase font-bold mb-1">
-              Contraseña
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-600 rounded p-2 text-white outline-none focus:border-blue-500"
-              placeholder="Clave de acceso"
-              title="Ingrese su contraseña institucional"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-blue-700 to-indigo-800 hover:from-blue-600 hover:to-indigo-700 text-white font-black uppercase tracking-widest rounded-lg mt-4 transition-all disabled:opacity-50"
-          >
-            {loading ? "Verificando..." : "Autenticar"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
 
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -142,8 +23,8 @@ export const OrbNavigation = () => {
     aiSystemState: saseState,
   } = useApp();
   const { user } = useAuth();
-  const [showAdminModal, setShowAdminModal] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
 
   const getMenuItems = () => {
     const baseItems = [
@@ -452,10 +333,7 @@ export const OrbNavigation = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-8 font-sans bg-transparent">
-      <AdminLoginModal
-        isOpen={showAdminModal}
-        onClose={() => setShowAdminModal(false)}
-      />
+
 
       {/* Institutional Depth Background - Enhanced */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -627,25 +505,7 @@ export const OrbNavigation = () => {
         </div>
       </div>
 
-      {/* Secret Access π */}
-      <button
-        type="button"
-        className="fixed bottom-6 right-6 z-50 group flex items-center gap-3 pb-safe bg-transparent border-none appearance-none cursor-pointer outline-none"
-        onClick={(e) => e.ctrlKey && setShowAdminModal(true)}
-        title="Acceso restringido para desarrolladores"
-        aria-label="Portal secreto de administración"
-      >
-        <div className="flex flex-col items-end opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          <span className="text-[7px] font-black text-blue-500 uppercase tracking-[0.3em]">
-            SECURE_AUTH
-          </span>
-        </div>
-        <div className="size-10 bg-slate-900/50 border border-white/5 rounded-2xl flex items-center justify-center hover:bg-blue-600/10 hover:border-blue-500/30 transition-all backdrop-blur-md">
-          <span className="text-slate-600 group-hover:text-blue-500 italic text-sm">
-            π
-          </span>
-        </div>
-      </button>
+
     </div>
   );
 };

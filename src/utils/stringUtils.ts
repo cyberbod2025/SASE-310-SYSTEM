@@ -1,5 +1,6 @@
-export const normalizeString = (str: string): string => {
-  return str
+export const normalizeString = (str: string | null | undefined): string => {
+  if (!str) return "";
+  return String(str)
     .toLowerCase()
     .trim()
     .normalize("NFD")

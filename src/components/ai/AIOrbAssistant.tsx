@@ -4,6 +4,7 @@ import { useApp } from "../../store";
 import { UserRole, AppModule } from "../../types";
 import { VoiceInput } from "../VoiceInput";
 import toast from "react-hot-toast";
+import { SaseSplineOrb } from "../SaseSplineOrb";
 
 interface AIOrbAssistantProps {
   initialPosition?: "floating" | "central";
@@ -29,6 +30,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
     setIsFeedbackOpen,
     students,
     notifications,
+    aiSystemState,
   } = useApp();
 
   const [chatInput, setChatInput] = useState("");
@@ -534,12 +536,20 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
                     }}
                   />
 
-                  {/* SASE FACE ICON - Expanded */}
+                  {/* SASE Neural Face - Unified Component */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <img
-                      src="/SASE_ICON.png"
-                      alt="SASE Core"
-                      className="size-48 object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]"
+                    <SaseSplineOrb 
+                      state={
+                        status === 'thinking' || status === 'listening' 
+                          ? 'thinking' 
+                          : aiSystemState === 'alert' 
+                            ? 'alert' 
+                            : aiSystemState === 'warning' 
+                              ? 'warning' 
+                              : 'normal'
+                      }
+                      isInteracting={true}
+                      className="w-full h-full scale-150"
                     />
                   </div>
                 </motion.div>

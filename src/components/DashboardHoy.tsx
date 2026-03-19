@@ -25,7 +25,7 @@ export const DashboardHoy: React.FC = () => {
   const todayIncidents = useMemo(() => {
     return students.reduce((acc, s) => {
       const todayCount = s.incidents.filter((inc) =>
-        inc.date.startsWith(todayStr),
+        (inc.date || "").startsWith(todayStr),
       ).length;
       return acc + todayCount;
     }, 0);

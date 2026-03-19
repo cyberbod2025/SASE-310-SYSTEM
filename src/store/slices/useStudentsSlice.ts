@@ -128,7 +128,7 @@ export const useStudentsSlice = (
             studentId: d.id,
             type: i.tipo,
             description: i.descripcion,
-            date: i.fecha || i.creado_en,
+            date: i.fecha || i.creado_en || "",
             reportedBy: i.reportado_por,
             gravedad: i.gravedad,
             estado: i.estado,

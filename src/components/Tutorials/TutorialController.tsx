@@ -4,6 +4,7 @@ import "driver.js/dist/driver.css";
 import { useApp } from "../../store";
 import { UserRole } from "../../types";
 import toast from "react-hot-toast";
+import { SaseSplineOrb } from "../SaseSplineOrb";
 
 export const TutorialController: React.FC = () => {
   const { currentUserRole, isTutorMode } = useApp();
@@ -366,14 +367,10 @@ export const TutorialController: React.FC = () => {
                 <div className="flex-1 w-0 p-5">
                   <div className="flex items-start">
                     <div className="flex-shrink-0 pt-0.5">
-                      <div className="relative size-12 shrink-0 flex items-center justify-center">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 animate-[spin_3s_linear_infinite] blur-sm opacity-50"></div>
-                        <div className="absolute inset-0.5 rounded-full bg-black/90 flex items-center justify-center">
-                          <img
-                            className="h-8 w-8 object-contain"
-                            src="/assets/branding/SASE_ICON.png"
-                            alt="IA SASE"
-                          />
+                      <div className="relative size-14 shrink-0 flex items-center justify-center">
+                        <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-pulse blur-md"></div>
+                        <div className="absolute inset-0 flex items-center justify-center scale-[1.5]">
+                          <SaseSplineOrb state="thinking" />
                         </div>
                       </div>
                     </div>

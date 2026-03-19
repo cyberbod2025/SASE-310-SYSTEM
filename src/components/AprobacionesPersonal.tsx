@@ -161,7 +161,7 @@ export const AprobacionesPersonal: React.FC = () => {
       }
 
       // 2. Calcular permisos combinados (Asumimos el rol principal como base)
-      const rolesFinales = [...solicitud.rol_solicitado];
+      const rolesFinales = [...(solicitud.rol_solicitado || [])];
       if (assignmentData.es_tutor && !rolesFinales.includes("docente_tutor")) {
         rolesFinales.push("docente_tutor");
       }
