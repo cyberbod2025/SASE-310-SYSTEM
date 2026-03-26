@@ -19,6 +19,7 @@ import {
 import { evaluateEscalation } from "../../utils/saseUtils";
 import { sendWhatsAppNotification } from "../../utils/notifications";
 import toast from "react-hot-toast";
+import { generateSecureToken, generateSecureNumCode } from "../../utils/security";
 
 // Production: No fictional data — students are loaded from Supabase
 const INITIAL_STUDENTS: Student[] = []; // v4.1 Sync
@@ -232,7 +233,7 @@ export const useStudentsSlice = (
     description: string,
     evidence?: string[],
   ) => {
-    const tempId = Math.random().toString(36).substr(2, 9);
+    const tempId = generateSecureToken(9);
     const reporterName = profile?.nombre_completo || profile?.nombres || user?.email || "SASE-System";
     
     const newIncidentLocal: Incident = {
@@ -348,10 +349,10 @@ export const useStudentsSlice = (
   };
 
   const addJustificante = async (studentId: string, data: any) => {
-    const folio = `JUST-${Math.floor(Math.random() * 10000)}`;
+    const folio = `JUST-${generateSecureNumCode(4)}`;
     const newJustLocal: Justificante = {
       ...data,
-      id: Math.random().toString(36).substr(2, 9),
+      id: generateSecureToken(9),
       folio,
       issuedAt: new Date().toISOString(),
     };

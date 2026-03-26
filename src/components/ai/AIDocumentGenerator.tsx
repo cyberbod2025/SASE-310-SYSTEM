@@ -4,6 +4,7 @@ import { useApp } from "../../store";
 import { DocumentType, DocumentoInstitucional } from "../../types";
 import { printContent } from "../PrintButtons";
 import toast from "react-hot-toast";
+import { generateSecureNumCode } from "../../utils/security";
 
 interface AIDocumentGeneratorProps {
   studentId: string;
@@ -74,7 +75,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
   };
 
   const handleSaveAndPrint = async () => {
-    const folio = `DOC-${Math.floor(Math.random() * 100000)}`;
+    const folio = `DOC-${generateSecureNumCode(5)}`;
     await addDocumentoInstitucional({
       studentId,
       tipo: docType,

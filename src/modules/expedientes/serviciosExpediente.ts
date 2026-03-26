@@ -7,6 +7,7 @@ import type {
   ObjetoRetenidoExpediente,
 } from "./types";
 import { generarQRDataUrl } from "../documentos/trazabilidad";
+import { generateSecureNumCode } from "../../utils/security";
 
 /**
  * Recopila incidencias del alumno desde Supabase.
@@ -234,7 +235,7 @@ ANÁLISIS INSTITUCIONAL:`;
 export function generarFolioExpediente(grupo: string): string {
   const grupoClean = grupo.replace(/\s+/g, "").toUpperCase();
   const anio = new Date().getFullYear();
-  const id = String(Math.floor(Math.random() * 999) + 1).padStart(3, "0");
+  const id = generateSecureNumCode(3);
   return `SASE-310-EXP-${grupoClean}-${anio}-${id}`;
 }
 

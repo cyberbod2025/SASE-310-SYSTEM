@@ -132,3 +132,35 @@ export async function resumirTexto(texto: string): Promise<string> {
   const { promptResumir } = await import("./prompts");
   return ejecutarAccionIA(promptResumir(texto), texto);
 }
+/**
+ * Servicio de respuesta general para el agente IA-SASE.
+ * Responde a preguntas del usuario sobre el sistema o procesos institucionales.
+ */
+export async function respuestaGeneralIA(
+  pregunta: string,
+  contexto: string = "general",
+): Promise<string> {
+  const prompt = `Eres la IA-SASE (Sistema de Alerta y Seguimiento Escolar), un agente inteligente diseñado para asistir al personal de secundarias técnicas en México.
+Tu personalidad es profesional, eficiente, empática y de alta tecnología.
+
+CONTEXTO ACTUAL: ${contexto}
+
+INSTRUCCIONES:
+1. Responde de forma concisa (máximo 3 párrafos).
+2. Si te preguntan por procesos legales o disciplinarios, menciona siempre que el "Marco para la Convivencia Escolar" es la guía oficial.
+3. Si te piden navegar, sugiere el módulo adecuado (Dashboard, Reportes, Alumnos, Incidencias).
+4. Usa un tono de asistente biónico avanzado.
+5. Puedes usar emojis sutiles relacionados con tecnología o educación.
+6. Si despues de investigar en todas partes no encuentras la respuesta dile al usuario que sigues aprendiendo y que reportaras esto el centro de mando con su solicitud y que estara disponible cuanto antes.
+
+PREGUNTA DEL USUARIO:
+${pregunta}
+
+RESPUESTA IA-SASE:`;
+
+  try {
+    return await callGeminiProxy(prompt, "gemini-flash-latest");
+  } catch (err) {
+    return "Lo siento, mi núcleo de procesamiento está experimentando una fluctuación. Por favor, intenta de nuevo en un momento.";
+  }
+}

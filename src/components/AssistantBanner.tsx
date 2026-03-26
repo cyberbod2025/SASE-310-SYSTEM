@@ -3,6 +3,7 @@ import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
 import { useAuth } from "./AuthProvider";
 import { getFechaHoy, INSTITUCION } from "../config/sase.config";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 // Role-based avatars for visual integration
 const roleImages: Record<UserRole, string> = {
@@ -163,11 +164,13 @@ export const AssistantBanner: React.FC<{
                 className="w-full h-full object-cover"
               />
             </div>
+0.5,
             {/* Animated SASE Face integration */}
-            <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-slate-900 shadow-xl border border-white/20 flex items-center justify-center">
-              <div
-                className={`size-8 sase-assistant-face ${assistantMessage ? "thinking" : ""}`}
-              ></div>
+            <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-slate-900 shadow-xl border border-white/20 flex items-center justify-center overflow-hidden">
+              <SaseSplineOrb 
+                state={assistantMessage ? "thinking" : "normal"} 
+                className="w-10 h-10 -m-1" // Compensar el margen para que llene el círculo
+              />
             </div>
           </div>
         </div>

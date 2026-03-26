@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useApp } from "../store";
 import { UserRole, AppModule, IncidentType, CaseState } from "../types";
 import { GlassCard } from "./ui/GlassCard";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 export const DashboardHoy: React.FC = () => {
   const { currentUserRole, setCurrentModule, students, openQuickRegister } =
@@ -86,8 +87,8 @@ export const DashboardHoy: React.FC = () => {
         {/* Header */}
         <header id="dashboard-header" className="mb-16 border-l-[6px] border-blue-600 pl-8 py-4 relative">
           <div className="absolute -left-[6px] top-0 h-full w-[6px] bg-blue-400 blur-[8px] opacity-40"></div>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="relative">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="relative z-10">
               <h1 className="text-5xl md:text-8xl font-black title-sase italic leading-none text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
                 HOY EN LA{" "}
                 <span className="text-blue-500 text-glow-blue">
@@ -108,6 +109,23 @@ export const DashboardHoy: React.FC = () => {
               <p className="mt-6 text-slate-400 text-[11px] font-bold uppercase tracking-widest max-w-xl leading-relaxed border-l border-white/10 pl-4">
                 {getRoleTip()}
               </p>
+            </div>
+
+            {/* Pulsing Neural Core in Header */}
+            <div className="relative flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-[60px] animate-pulse"></div>
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1.5, ease: "circOut" }}
+                className="relative z-20 cursor-pointer group"
+              >
+                <SaseSplineOrb state="normal" className="size-32 md:size-48" />
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-[7px] font-black text-blue-400 tracking-[0.3em] uppercase mb-1">Neural_Identity</span>
+                  <span className="text-[10px] font-black text-white italic tracking-tighter shadow-blue-500/20 shadow-sm">SASE-310</span>
+                </div>
+              </motion.div>
             </div>
             <div className="text-right">
               <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest leading-none">

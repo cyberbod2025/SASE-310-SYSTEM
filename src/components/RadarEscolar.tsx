@@ -1,6 +1,8 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
+import toast from "react-hot-toast";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 import { CaseState, AppModule } from "../types";
 
 export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
@@ -175,7 +177,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                             ? "bg-amber-500"
                             : ind.color === "emerald"
                               ? "bg-emerald-500"
-                              : ind.color === "blue"
+                            : ind.color === "blue"
                                 ? "bg-blue-500"
                                 : "bg-indigo-500"
                       }
@@ -230,9 +232,14 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
             </div>
           </button>
 
-          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
-            IA-SASE Agent Monitoreando
-          </p>
+            <div className="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 rounded-2xl">
+              <div className="size-6 rounded-full overflow-hidden">
+                <SaseSplineOrb state="thinking" className="w-8 h-8 -m-1" />
+              </div>
+              <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest animate-pulse">
+                IA-SASE Agent Monitoreando
+              </span>
+            </div>
         </motion.div>
       </motion.div>
 

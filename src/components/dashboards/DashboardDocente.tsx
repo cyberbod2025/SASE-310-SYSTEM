@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../AuthProvider";
 import { startProductTour } from "../TourGuide";
 import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
+import { SaseSplineOrb } from "../SaseSplineOrb";
 
 export const DashboardDocente = () => {
   const {
@@ -175,12 +176,9 @@ export const DashboardDocente = () => {
             <div className="size-32 md:size-44 bg-blue-600/10 rounded-full blur-3xl absolute animate-pulse"></div>
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="size-20 md:size-28 flex items-center justify-center relative overflow-hidden cursor-pointer"
+              className="size-28 md:size-40 flex items-center justify-center relative overflow-hidden cursor-pointer"
             >
-              <div className="absolute inset-0 bg-blue-500/5 rounded-full blur-xl animate-pulse"></div>
-
-              {/* Inner scanning ring */}
-              <div className="absolute inset-2 border border-blue-400/10 rounded-full animate-spin-slow opacity-20"></div>
+              <SaseSplineOrb state="normal" className="size-28 md:size-40" />
             </motion.div>
 
             {/* Central Identity Text - MOVED BELOW ORB FOR CLARITY */}

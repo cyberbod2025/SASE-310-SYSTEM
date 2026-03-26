@@ -1,4 +1,5 @@
 import { Student } from "../types";
+import { generateSecureToken } from "./security";
 
 export const getDocumentTemplate = (
   type: "JUSTIFICANTE" | "REPORTE_INCIDENCIA" | "BITACORA",
@@ -14,7 +15,7 @@ export const getDocumentTemplate = (
 
   const folio = data.folio || "0000-0000";
   const issuedBy = data.issuedBy || "TRABAJO SOCIAL";
-  const uuid = Math.random().toString(36).substring(7).toUpperCase();
+  const uuid = generateSecureToken(12);
 
   let content = "";
 

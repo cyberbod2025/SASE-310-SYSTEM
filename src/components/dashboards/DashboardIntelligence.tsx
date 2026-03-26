@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../../supabase/client";
 import { useApp } from "../../store";
 import toast from "react-hot-toast";
+import { SaseSplineOrb } from "../SaseSplineOrb";
+import { generateSecureToken } from "../../utils/security";
 
 /**
  * IA-SASE Intelligence Dashboard
@@ -147,9 +149,8 @@ export const DashboardIntelligence = () => {
               <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Estado Operativo</p>
               <p className="text-xs font-black text-emerald-400 italic">ANALIZANDO_PATRONES</p>
             </div>
-            <div className="size-10 rounded-full border border-emerald-500/20 flex items-center justify-center relative">
-              <div className="size-2 bg-emerald-500 rounded-full animate-ping"></div>
-              <div className="absolute inset-0 border-2 border-emerald-500/20 rounded-full animate-spin-slow"></div>
+            <div className="size-10 rounded-full border border-indigo-500/20 flex items-center justify-center relative overflow-hidden bg-black/40">
+              <SaseSplineOrb state="thinking" className="w-12 h-12 -m-1" />
             </div>
           </div>
         </div>
@@ -304,7 +305,7 @@ export const DashboardIntelligence = () => {
           <div className="flex gap-6">
             <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">CPU_LOAD: 12%</span>
             <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">NETWORK: SECURE</span>
-            <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">HASH: {Math.random().toString(36).substring(7).toUpperCase()}</span>
+            <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">HASH: {generateSecureToken(10)}</span>
           </div>
         </div>
 

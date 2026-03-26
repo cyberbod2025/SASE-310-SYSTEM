@@ -7,6 +7,7 @@ import { supabase } from "../../supabase/client";
 import { startProductTour } from "../TourGuide";
 import { printContent } from "../PrintButtons";
 import { PrintPreviewModal } from "../PrintPreviewModal";
+import { SaseSplineOrb } from "../SaseSplineOrb";
 
 // --- MICRO-COMPONENTS (TACTICAL UI) ---
 
@@ -362,15 +363,7 @@ export const DashboardDireccion = () => {
                 whileHover={{ scale: 1.05 }}
                 className="size-full flex items-center justify-center relative overflow-visible group cursor-pointer"
               >
-                {/* Central Identity Text - Moved Below Orb Effect */}
-                <div className="absolute top-[120%] flex flex-col items-center justify-center w-max">
-                  <span className="text-[6px] font-black text-indigo-400 tracking-[0.2em] leading-none mb-0.5 opacity-50 uppercase">
-                    AI_UNIT
-                  </span>
-                  <span className="text-sm font-black text-white italic tracking-tighter leading-none pulse-glow">
-                    SASE-310
-                  </span>
-                </div>
+                <SaseSplineOrb state="normal" className="size-16 md:size-28" />
 
                 <div className="absolute inset-2 border border-indigo-500/10 rounded-full animate-spin-slow opacity-20"></div>
               </motion.div>

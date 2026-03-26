@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { supabase } from "../../supabase/client";
 import { printContent } from "../../components/PrintButtons";
+import { sanitizeHtml } from "../../utils/security";
+import { SaseSplineOrb } from "../../components/SaseSplineOrb";
 
 import type {
   DatosAlumnoExpediente,
@@ -215,11 +217,9 @@ export function ExpedienteInstitucional({
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
           {cargando ? (
             <div className="flex-1 flex flex-col items-center justify-center p-12">
-              <span className="material-symbols-outlined text-indigo-500 animate-spin text-4xl mb-4">
-                progress_activity
-              </span>
-              <p className="text-sm font-black text-slate-400 uppercase tracking-widest">
-                Recopilando historial institucional...
+              <SaseSplineOrb state="thinking" className="size-32 md:size-48 mb-6" />
+              <p className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
+                RECOPILANDO_HISTORIAL_INSTITUCIONAL
               </p>
             </div>
           ) : (
@@ -536,7 +536,7 @@ export function ExpedienteInstitucional({
                   />
                 ) : (
                   <div 
-                    dangerouslySetInnerHTML={{ __html: documentoSeleccionado.contenido }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(documentoSeleccionado.contenido) }}
                     className="document-content-preview text-[14px] font-serif leading-relaxed text-slate-800"
                   />
                 )}

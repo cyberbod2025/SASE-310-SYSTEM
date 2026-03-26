@@ -1,5 +1,6 @@
 import React from "react";
 import { Student, Justificante } from "../types";
+import { generateSecureToken } from "../utils/security";
 
 interface DocumentProps {
   type: "JUSTIFICANTE" | "REPORTE_INCIDENCIA" | "BITACORA";
@@ -203,7 +204,7 @@ export const OfficialDocument: React.FC<DocumentProps> = ({
               VALIDACIÓN QR SASE-DIGITAL
             </div>
             <p className="text-[7px] font-mono mt-2 text-gray-400">
-              UUID: {Math.random().toString(36).substring(7).toUpperCase()}
+              UUID: {generateSecureToken(12)}
             </p>
           </div>
         </div>

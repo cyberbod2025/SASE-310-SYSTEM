@@ -23,6 +23,8 @@ import {
 import { PanelAdvertencias } from "./PanelAdvertencias";
 import { generarFolioInstitucional } from "./trazabilidad";
 import { getDocumentosPorCategoria, CATEGORIAS_LABEL } from "./types";
+import { SaseSplineOrb } from "../../components/SaseSplineOrb";
+import { sanitizeHtml } from "../../utils/security";
 
 interface GeneradorDocumentosProps {
   studentId: string;
@@ -518,10 +520,8 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
           {/* FASE 2: GENERANDO */}
           {fase === "generando" && (
             <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
-              <div className="size-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-xl shadow-blue-500/30 animate-pulse">
-                <span className="material-symbols-outlined text-white text-4xl animate-spin">
-                  auto_awesome
-                </span>
+              <div className="relative mb-6">
+                <SaseSplineOrb state="thinking" className="size-32 md:size-48" />
               </div>
               <h3 className="text-lg font-black text-slate-700 italic uppercase tracking-tight">
                 IA-SASE Analizando...
@@ -721,9 +721,9 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
 
               <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-inner max-h-[50vh] overflow-y-auto">
                 <div
-                  className="p-8"
+                  className="prose prose-slate max-w-none text-slate-700 leading-relaxed font-serif"
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(htmlFinal),
+                    __html: sanitizeHtml(htmlFinal),
                   }}
                 />
               </div>

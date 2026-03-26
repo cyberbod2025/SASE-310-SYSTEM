@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 
 import { PrintPreviewModal } from "./PrintPreviewModal";
 import { sendWhatsAppNotification } from "../utils/notifications";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 interface StudentAdvancedPanelProps {
   student: Student;
@@ -1324,12 +1325,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
         <Suspense
           fallback={
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-              <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 shadow-2xl">
-                <span className="material-symbols-outlined text-indigo-500 animate-spin text-4xl">
-                  progress_activity
-                </span>
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
-                  Cargando IA-SASE...
+              <div className="bg-white p-8 rounded-[3rem] flex flex-col items-center gap-6 shadow-2xl border border-white/20">
+                <SaseSplineOrb state="thinking" className="size-32 md:size-48" />
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] animate-pulse">
+                  CONVIRTIDENDO_PULSOS_EN_DATOS
                 </p>
               </div>
             </div>
@@ -1348,12 +1347,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
         <Suspense
           fallback={
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-              <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 shadow-2xl">
-                <span className="material-symbols-outlined text-blue-500 animate-spin text-4xl">
-                  progress_activity
-                </span>
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
-                  Cargando Expediente...
+              <div className="bg-white p-8 rounded-[3rem] flex flex-col items-center gap-6 shadow-2xl border border-white/20">
+                <SaseSplineOrb state="thinking" className="size-32 md:size-48" />
+                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] animate-pulse">
+                  VINCULANDO_NÚCLEOS_DOCUMENTALES
                 </p>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Notification, SystemNotice, UserRole, AppModule } from "../../types";
 import toast from "react-hot-toast";
+import { generateSecureToken } from "../../utils/security";
 
 export const useNotificationSlice = () => {
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -46,7 +47,7 @@ export const useNotificationSlice = () => {
   ) => {
     const newNotif: Notification = {
       ...data,
-      id: Math.random().toString(36).substr(2, 9),
+      id: generateSecureToken(9),
       read: false,
       time: "Ahora mismo",
     };
@@ -58,7 +59,7 @@ export const useNotificationSlice = () => {
   ) => {
     const newNotice: SystemNotice = {
       ...notice,
-      id: Math.random().toString(36).substr(2, 9),
+      id: generateSecureToken(9),
       date: new Date().toISOString(),
       resolved: false,
     };

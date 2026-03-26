@@ -5,6 +5,9 @@ import { SaseSplineOrb } from "./SaseSplineOrb";
 import type { SystemState } from "../types/systemState";
 import { UserRole, AppModule, CaseState } from "../types";
 import { calcularEstadoSistema, OrbState } from "../utils/estadoSistema";
+import { respuestaGeneralIA } from "../modules/documentos/serviciosIA";
+import { VoiceInput } from "./VoiceInput";
+import toast from "react-hot-toast";
 
 /**
  * IA-SASE Agent Component
@@ -65,6 +68,33 @@ export const IASaseAgent: React.FC = () => {
     }, 15000); // Cada 15 segundos
     return () => clearInterval(interval);
   }, []);
+
+  // --- INTERACCIÓN IA (Q&A) ---
+  const [userQuestion, setUserQuestion] = React.useState("");
+  const [iaResponse, setIaResponse] = React.useState("");
+  const [isThinking, setIsThinking] = React.useState(false);
+
+  const handleAskIA = async (overrideQuestion?: string) => {
+    const question = overrideQuestion || userQuestion;
+    if (!question.trim()) return;
+
+    setIsThinking(true);
+    setIaResponse("");
+    
+    // Cambiar visualmente al estado 'thinking' vía systemState (o localmente si se prefiere)
+    // Pero systemState viene del store, así que lo manejamos localmente para el visualizador
+    const originalSystemState = systemState;
+    
+    try {
+      const response = await respuestaGeneralIA(question);
+      setIaResponse(response);
+      setUserQuestion("");
+    } catch (err) {
+      toast.error("Error en la conexión neuronal");
+    } finally {
+      setIsThinking(false);
+    }
+  };
 
   return (
     <div className="fixed bottom-[20px] right-[20px] z-[5000] flex flex-col items-end">
@@ -131,6 +161,70 @@ export const IASaseAgent: React.FC = () => {
                 />
               </div>
 
+              {/* Chat / IA Interaction Area */}
+              <div className="mt-8 pt-6 border-t border-white/10 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="material-symbols-outlined text-blue-400 text-sm">forum</span>
+                  <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">IA-SASE Neural Dialog</span>
+                </div>
+                
+                {/* Answer Display */}
+                <AnimatePresence>
+                  {iaResponse && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                      className="bg-blue-600/10 border border-blue-500/20 p-4 rounded-[1.5rem] mb-4 relative group"
+                    >
+                      <button 
+                        onClick={() => setIaResponse('')}
+                        className="absolute top-2 right-2 p-1 rounded-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Limpiar respuesta"
+                      >
+                        <span className="material-symbols-outlined text-[10px] text-blue-400">close</span>
+                      </button>
+                      <p className="text-[11px] text-blue-100 leading-relaxed font-medium italic">
+                        {iaResponse}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="relative">
+                  <input 
+                    type="text"
+                    value={userQuestion}
+                    onChange={(e) => setUserQuestion(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleAskIA();
+                    }}
+                    placeholder={isThinking ? "Analizando..." : "Escribe o usa el micrófono..."}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-4 pr-20 text-[11px] text-white placeholder:text-white/20 outline-none focus:border-blue-500/50 transition-all focus:bg-white/[0.08]"
+                    disabled={isThinking}
+                  />
+                  <div className="absolute right-1 top-1 flex items-center gap-1">
+                    <VoiceInput 
+                      onTranscript={(transcript) => {
+                        setUserQuestion(transcript);
+                        // Delay pequeño para que el usuario vea el texto antes de procesar
+                        setTimeout(() => handleAskIA(transcript), 500);
+                      }}
+                      className="!bg-transparent !text-white/30 hover:!text-blue-400 hover:!bg-white/5"
+                    />
+                    <button 
+                      onClick={() => handleAskIA()}
+                      disabled={isThinking || !userQuestion.trim()}
+                      className="size-8 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center hover:bg-blue-600/30 disabled:opacity-20 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-sm">
+                        {isThinking ? "hourglass_top" : "send"}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-center gap-2">
                 <span className="size-1 bg-blue-500 rounded-full animate-ping"></span>
                 <p className="text-[7px] font-black text-slate-500 uppercase tracking-[0.3em]">
@@ -189,9 +283,9 @@ export const IASaseAgent: React.FC = () => {
 
         {/* El Núcleo / Cara Neural 3D */}
         <SaseSplineOrb
-          state={orbState}
-          isInteracting={isAssistantOpen}
-          className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-[0_0_40px_rgba(59,130,246,0.3)]"
+          state={isThinking ? "thinking" : orbState}
+          isInteracting={isAssistantOpen || isThinking}
+          className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all duration-700"
         />
 
         {/* HALO DE REACCIÓN (Cuando se toca la cara) */}
