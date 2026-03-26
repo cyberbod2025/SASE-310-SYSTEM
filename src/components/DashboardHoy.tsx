@@ -85,10 +85,10 @@ export const DashboardHoy: React.FC = () => {
       >
         {/* Header */}
         <header id="dashboard-header" className="mb-16 border-l-[6px] border-blue-600 pl-8 py-4 relative">
-          <div className="absolute -left-[6px] top-0 h-full w-[6px] bg-blue-400 blur-[8px] opacity-40"></div>
+          <div className="absolute -left-[6px] top-0 h-full w-[6px] bg-blue-500/20 blur-[4px]"></div>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="relative">
-              <h1 className="text-5xl md:text-8xl font-black title-sase italic leading-none text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+              <h1 className="text-5xl md:text-8xl font-black title-sase italic leading-none text-white">
                 HOY EN LA{" "}
                 <span className="text-blue-500 text-glow-blue">
                   ESCUELA

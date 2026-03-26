@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { supabase } from "../../supabase/client";
 import { printContent } from "../../components/PrintButtons";
+import DOMPurify from "dompurify";
 
 import type {
   DatosAlumnoExpediente,
@@ -536,7 +537,7 @@ export function ExpedienteInstitucional({
                   />
                 ) : (
                   <div 
-                    dangerouslySetInnerHTML={{ __html: documentoSeleccionado.contenido }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(documentoSeleccionado.contenido) }}
                     className="document-content-preview text-[14px] font-serif leading-relaxed text-slate-800"
                   />
                 )}

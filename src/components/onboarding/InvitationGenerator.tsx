@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import DOMPurify from "dompurify";
 import { UserRole, RoleLabels } from "../../types";
 import { useAuth } from "../AuthProvider";
 
@@ -399,7 +400,7 @@ export const InvitationGenerator: React.FC = () => {
       </html>
     `;
 
-    printWindow.document.write(content);
+    printWindow.document.write(DOMPurify.sanitize(content));
     printWindow.document.close();
   };
 

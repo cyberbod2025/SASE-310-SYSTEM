@@ -37,7 +37,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
           <!DOCTYPE html>
           <html>
           <head>
-            <title>${title}</title>
+            <title>${DOMPurify.sanitize(title)}</title>
             <style>
               body { 
                 font-family: 'Inter', -apple-system, sans-serif; 
@@ -150,7 +150,7 @@ export const printContent = (title: string, htmlContent: string) => {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>${title}</title>
+        <title>${DOMPurify.sanitize(title)}</title>
         <style>
           body { 
             font-family: 'Inter', -apple-system, sans-serif; 

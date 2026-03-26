@@ -65,7 +65,7 @@ export const AprobacionesPersonal: React.FC = () => {
 
     // Using simple random suffix for now, can be replaced with
     // sequence from DB if exact incremental order is required
-    const randomSuffix = Math.floor(100 + Math.random() * 900);
+    const randomSuffix = crypto.getRandomValues(new Uint16Array(1))[0] % 900 + 100;
     return `SASE-${year}-${rolePrefix}-${randomSuffix}`;
   };
 
@@ -115,9 +115,11 @@ export const AprobacionesPersonal: React.FC = () => {
       // INTENTO 1: Crear usuario Real via Edge Function (Seguro)
       try {
         // Generate a cryptographically safer-ish random temp password
+        const tempArray = new Uint32Array(2);
+        crypto.getRandomValues(tempArray);
         const tempPassword =
-          Math.random().toString(36).slice(-10) +
-          Math.random().toString(36).toUpperCase().slice(-4) +
+          tempArray[0].toString(36) +
+          tempArray[1].toString(36).toUpperCase() +
           "!@#";
 
         const { data, error } = await supabase.functions.invoke("create-user", {

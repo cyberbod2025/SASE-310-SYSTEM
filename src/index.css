@@ -76,10 +76,10 @@
     width: 70vmax;
     height: 70vmax;
     border-radius: 50%;
-    filter: blur(120px);
+    filter: blur(160px);
     z-index: -2;
     pointer-events: none;
-    opacity: 0.22;
+    opacity: 0.12;
     animation: float-bg 30s ease-in-out infinite alternate;
   }
 
@@ -235,7 +235,7 @@
   }
 
   .text-glow-blue {
-    text-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 30px rgba(59, 130, 246, 0.3);
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
   }
 
   .glass-card-quantum {
@@ -512,9 +512,9 @@
 /* Make the highlighted element glow brilliantly with SASE energy */
 .driver-active-element {
   box-shadow:
-    0 0 40px 15px rgba(0, 242, 255, 0.5),
-    0 0 80px 30px rgba(0, 242, 255, 0.2),
-    inset 0 0 20px rgba(255, 255, 255, 0.4) !important;
+    0 0 20px 5px rgba(0, 242, 255, 0.3),
+    0 0 40px 10px rgba(0, 242, 255, 0.1),
+    inset 0 0 15px rgba(255, 255, 255, 0.3) !important;
   animation: sase-element-glow 1.5s ease-in-out infinite alternate !important;
   position: relative !important;
   z-index: 1000000 !important;

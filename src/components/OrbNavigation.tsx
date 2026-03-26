@@ -346,8 +346,8 @@ export const OrbNavigation = () => {
         <div className="absolute inset-0 opacity-[0.05] dot-grid-bg"></div>
 
         {/* Ambient Pulsing Glows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-blue-600/[0.03] rounded-full blur-[160px] animate-pulse"></div>
-        <div className="absolute -bottom-1/4 -right-1/4 w-full h-full bg-indigo-900/[0.05] rounded-full blur-[180px]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-blue-600/[0.02] rounded-full blur-[180px] animate-pulse"></div>
+        <div className="absolute -bottom-1/4 -right-1/4 w-full h-full bg-indigo-900/[0.03] rounded-full blur-[200px]"></div>
       </div>
 
       {/* HUD Header */}
