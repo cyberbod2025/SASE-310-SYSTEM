@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import DOMPurify from "dompurify";
 import { UserRole, RoleLabels } from "../../types";
 import { useAuth } from "../AuthProvider";
+import { supabase } from "../../supabase/client";
 
 const QRCodeSVG = ({ url }: { url: string }) => {
   return (
@@ -43,22 +44,20 @@ export const InvitationGenerator: React.FC = () => {
 
     setIsInviting(true);
     try {
-      const response = await fetch("/api/auth/invite-staff", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke("invite-staff", {
+        body: {
           email,
           role: selectedRole,
           fullName: customName.trim() || undefined,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData?.error || "No se pudo enviar la invitación");
+      if (error) {
+        throw new Error(error.message || "No se pudo enviar la invitación");
+      }
+
+      if (data?.error) {
+        throw new Error(data.error || "No se pudo enviar la invitación");
       }
 
       toast.success("Invitación enviada al correo institucional");
