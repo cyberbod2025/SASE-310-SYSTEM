@@ -1,37 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Notification, SystemNotice, UserRole, AppModule } from "../../types";
 import toast from "react-hot-toast";
+import { supabase } from "../../supabase/client";
+
+const mapDbNotification = (row: {
+  id: string;
+  titulo: string;
+  mensaje: string;
+  tipo: string | null;
+  rol_destino: string | null;
+  leida: boolean | null;
+  creado_en: string | null;
+}): Notification => {
+  const timeLabel = row.creado_en
+    ? new Date(row.creado_en).toLocaleString("es-MX")
+    : "Ahora mismo";
+
+  return {
+    id: row.id,
+    title: row.titulo,
+    message: row.mensaje,
+    type: (row.tipo as Notification["type"]) ?? "SYSTEM",
+    targetRole: row.rol_destino as UserRole | undefined,
+    read: row.leida ?? false,
+    time: timeLabel,
+  };
+};
 
 export const useNotificationSlice = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "n1",
-      title: "Stock Crítico en Enfermería",
-      message: "Paracetamol bajo (2 unidades). Se recomienda reabastecer.",
-      read: false,
-      time: "10:30 AM",
-      type: "warning",
-      actionModule: AppModule.DASHBOARD,
-    },
-    {
-      id: "n2",
-      title: "Justificante Pendiente",
-      message: "Nuevo justificante de 3º B pendiente de validación.",
-      read: false,
-      time: "09:15 AM",
-      type: "info",
-      actionModule: AppModule.DASHBOARD,
-    },
-    {
-      id: "n3",
-      title: "Patrón de Riesgo Detectado",
-      message: "Estudiante con 3+ incidencias requiere intervención.",
-      read: false,
-      time: "Ayer",
-      type: "error",
-      actionModule: AppModule.REPORTES,
-    },
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const [notices, setNotices] = useState<SystemNotice[]>([]);
 
@@ -41,16 +38,34 @@ export const useNotificationSlice = () => {
     );
   };
 
-  const addNotification = (
+  const addNotification = async (
     data: Omit<Notification, "id" | "read" | "time">,
   ) => {
-    const newNotif: Notification = {
-      ...data,
-      id: Math.random().toString(36).substr(2, 9),
-      read: false,
-      time: "Ahora mismo",
-    };
-    setNotifications((prev) => [newNotif, ...prev]);
+    try {
+      const payload = {
+        titulo: data.title,
+        mensaje: data.message,
+        tipo: data.type ?? "SYSTEM",
+        rol_destino: data.targetRole ?? UserRole.PREFECTURA,
+      };
+
+      const { data: inserted, error } = await supabase
+        .from("notificaciones" as any)
+        .insert(payload)
+        .select("id, titulo, mensaje, tipo, rol_destino, leida, creado_en")
+        .single();
+
+      if (error) throw error;
+      if (!inserted) return;
+
+      const mapped = mapDbNotification(inserted as any);
+      setNotifications((prev) =>
+        prev.some((n) => n.id === mapped.id) ? prev : [mapped, ...prev],
+      );
+    } catch (err) {
+      console.error("Error creando notificación", err);
+      toast.error("No se pudo crear la notificación");
+    }
   };
 
   const addSystemNotice = (
@@ -77,6 +92,39 @@ export const useNotificationSlice = () => {
     );
     toast.success("Aviso resuelto correctamente");
   };
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("notificaciones-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notificaciones",
+        },
+        (payload) => {
+          const row = payload.new as {
+            id: string;
+            titulo: string;
+            mensaje: string;
+            tipo: string | null;
+            rol_destino: string | null;
+            leida: boolean | null;
+            creado_en: string | null;
+          };
+          const mapped = mapDbNotification(row);
+          setNotifications((prev) =>
+            prev.some((n) => n.id === mapped.id) ? prev : [mapped, ...prev],
+          );
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return {
     notifications,

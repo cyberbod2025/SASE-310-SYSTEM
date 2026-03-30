@@ -1,13 +1,23 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
 import { Student, CaseState } from "../types";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { GRUPOS, CICLO_ESCOLAR } from "../config/sase.config";
+import { GlassCard } from "./ui/GlassCard";
+
+const steps = [
+  { id: 1, label: "Datos del Alumno", icon: "person" },
+  { id: 2, label: "Tutor / Contacto", icon: "family_restroom" },
+  { id: 3, label: "Documentación", icon: "upload_file" },
+  { id: 4, label: "Verificación", icon: "verified" },
+];
 
 export const Inscripciones: React.FC = () => {
   const { importStudents } = useApp();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const [formData, setFormData] = useState({
     apellidoPaterno: "",
@@ -34,9 +44,6 @@ export const Inscripciones: React.FC = () => {
     situacionRiesgo: "",
     hasMedicalDoc: false,
     detallePersonaInscribe: "",
-    verificationCode: "",
-    verifyingPhone: null as "mama" | "papa" | "tutor" | null,
-    verifiedPhones: { mama: false, papa: false, tutor: false },
     docs: {
       actaNacimiento: false,
       comprobanteDomicilio: false,
@@ -50,6 +57,10 @@ export const Inscripciones: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileStudent, setFileStudent] = useState<File | null>(null);
   const [fileGuardian, setFileGuardian] = useState<File | null>(null);
+
+  const nextStep = () =>
+    setCurrentStep((prev) => Math.min(prev + 1, steps.length));
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -74,27 +85,6 @@ export const Inscripciones: React.FC = () => {
       ...formData,
       docs: { ...formData.docs, [doc]: !formData.docs[doc] },
     });
-  };
-
-  const startVerification = (type: "mama" | "papa" | "tutor") => {
-    setFormData({ ...formData, verifyingPhone: type, verificationCode: "" });
-    toast.success(`Código enviado al ${type} (Simulación: 1234)`);
-  };
-
-  const verifyCode = () => {
-    if (formData.verificationCode === "1234") {
-      setFormData({
-        ...formData,
-        verifiedPhones: {
-          ...formData.verifiedPhones,
-          [formData.verifyingPhone!]: true,
-        },
-        verifyingPhone: null,
-      });
-      toast.success("Teléfono verificado");
-    } else {
-      toast.error("Código incorrecto");
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -238,466 +228,589 @@ export const Inscripciones: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 w-full space-y-8 animate-fade-in pb-20">
-      <header className="flex items-center gap-5 pb-6 border-b border-slate-200">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-1 h-full bg-cyan-600"></div>
-          <span className="material-symbols-outlined text-4xl text-cyan-700">
-            person_add
-          </span>
-        </div>
-        <div>
-          <h2 className="text-3xl font-black text-slate-800 tracking-tight">
-            Control de Inscripciones
-          </h2>
-          <p className="text-xs font-black text-slate-500 uppercase tracking-widest mt-1">
-            Control Escolar • {CICLO_ESCOLAR.label}
-          </p>
-        </div>
-      </header>
+    <div className="w-full max-w-5xl mx-auto p-6 relative z-10">
+      <div className="mb-10 text-center">
+        <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight mb-2">
+          Nueva Inscripción
+        </h1>
+        <p className="text-slate-400 text-lg">
+          Completa el expediente digital en 4 sencillos pasos. {CICLO_ESCOLAR.label}
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-12">
-        <Section title="01. Datos del Alumno" icon="person">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FormField label="Apellido Paterno" required id="apellidoPaterno">
-              <input
-                id="apellidoPaterno"
-                type="text"
-                className="inst-input"
-                required
-                value={formData.apellidoPaterno}
-                placeholder="EJ. GARCÍA"
-                title="Ingrese el apellido paterno del alumno"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    apellidoPaterno: e.target.value.toUpperCase(),
-                  })
-                }
-              />
-            </FormField>
-            <FormField label="Apellido Materno" id="apellidoMaterno">
-              <input
-                id="apellidoMaterno"
-                type="text"
-                className="inst-input"
-                value={formData.apellidoMaterno}
-                placeholder="EJ. LÓPEZ"
-                title="Ingrese el apellido materno del alumno"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    apellidoMaterno: e.target.value.toUpperCase(),
-                  })
-                }
-              />
-            </FormField>
-            <FormField label="Nombre(s)" required id="nombre">
-              <input
-                id="nombre"
-                type="text"
-                className="inst-input"
-                required
-                value={formData.nombre}
-                placeholder="EJ. JUAN CARLOS"
-                title="Ingrese el nombre o nombres del alumno"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    nombre: e.target.value.toUpperCase(),
-                  })
-                }
-              />
-            </FormField>
+      <div className="flex items-center justify-between relative mb-12">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-white/10 rounded-full z-0"></div>
+        <motion.div
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-blue-500 rounded-full z-0 shadow-[0_0_10px_rgba(59,130,246,0.8)]"
+          initial={{ width: "0%" }}
+          animate={{
+            width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
+          }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+        />
+
+        {steps.map((step) => (
+          <div key={step.id} className="relative z-10 flex flex-col items-center gap-2">
+            <motion.div
+              animate={{
+                backgroundColor:
+                  currentStep >= step.id
+                    ? "rgba(59, 130, 246, 1)"
+                    : "rgba(255, 255, 255, 0.05)",
+                borderColor:
+                  currentStep >= step.id
+                    ? "rgba(59, 130, 246, 1)"
+                    : "rgba(255, 255, 255, 0.2)",
+              }}
+              className={`w-12 h-12 rounded-full border-2 flex items-center justify-center backdrop-blur-md transition-colors duration-300 ${
+                currentStep >= step.id
+                  ? "shadow-[0_0_20px_rgba(59,130,246,0.6)] text-white"
+                  : "text-slate-400"
+              }`}
+            >
+              <span className="material-icons">{step.icon}</span>
+            </motion.div>
+            <span
+              className={`text-sm font-medium ${
+                currentStep >= step.id ? "text-blue-400" : "text-slate-500"
+              }`}
+            >
+              {step.label}
+            </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            <FormField label="CURP" required>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  maxLength={18}
-                  className={`inst-input ${
-                    formData.verifiedCurp ? "bg-green-50 border-green-200" : ""
-                  }`}
-                  required
-                  value={formData.curp}
-                  placeholder="CURP DE 18 CARACTERES"
-                  title="Clave Única de Registro de Población (18 dígitos)"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      curp: e.target.value.toUpperCase(),
-                    })
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={handleVerifyCurp}
-                  title="Validar CURP contra base de datos oficial"
-                  className={`px-4 rounded-xl text-xs font-black uppercase ${
-                    formData.verifiedCurp
-                      ? "bg-green-600 text-white"
-                      : "bg-slate-100 text-slate-600 shadow-sm"
-                  }`}
-                >
-                  {formData.verifiedCurp ? "Válido" : "Verificar"}
-                </button>
-              </div>
-            </FormField>
-            <FormField label="Grupo">
-              <select
-                className="inst-input"
-                value={formData.group}
-                title="Seleccione el grado y grupo asignado"
-                onChange={(e) =>
-                  setFormData({ ...formData, group: e.target.value })
-                }
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <GlassCard className="min-h-[400px] flex flex-col justify-between overflow-visible">
+          <div className="flex-1 relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-6"
               >
-                <option value="Provisional">Provisional</option>
-                {GRUPOS.todos().map((g) => (
-                  <option key={g}>{g}</option>
-                ))}
-              </select>
-            </FormField>
-            <div className="flex items-center gap-3 pt-6">
-              <input
-                type="checkbox"
-                id="udeii"
-                title="Marcar si el alumno requiere apoyo UDEII"
-                className="size-5 rounded border-slate-300 text-cyan-600"
-                checked={formData.isUdeii}
-                onChange={(e) =>
-                  setFormData({ ...formData, isUdeii: e.target.checked })
-                }
-              />
-              <label
-                htmlFor="udeii"
-                className="text-xs font-black text-slate-700 uppercase tracking-widest cursor-pointer"
-              >
-                Alumno UDEII
-              </label>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-            <FormField label="Nacimiento">
-              <input
-                type="date"
-                required
-                className="inst-input"
-                value={formData.fechaNacimiento}
-                title="Seleccione la fecha de nacimiento oficial"
-                onChange={(e) =>
-                  setFormData({ ...formData, fechaNacimiento: e.target.value })
-                }
-              />
-            </FormField>
-            <FormField label="Género">
-              <select
-                className="inst-input"
-                value={formData.genero}
-                title="Seleccione el género del alumno"
-                onChange={(e) =>
-                  setFormData({ ...formData, genero: e.target.value })
-                }
-              >
-                <option value="M">Masculino</option>
-                <option value="F">Femenino</option>
-                <option value="X">Otro</option>
-              </select>
-            </FormField>
-            <FormField label="Promedio">
-              <input
-                type="number"
-                step="0.1"
-                className="inst-input"
-                value={formData.promedioAnterior}
-                placeholder="0.0"
-                title="Promedio obtenido en el ciclo anterior"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    promedioAnterior: Number(e.target.value),
-                  })
-                }
-              />
-            </FormField>
-          </div>
-          <div className="mt-8 p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-            <FormField label="Fotografía Estudiante">
-              <input
-                type="file"
-                accept="image/*"
-                title="Subir fotografía reciente del estudiante"
-                onChange={(e) => handleFileChange(e, setFileStudent)}
-                className="text-xs file:bg-white file:border file:border-slate-200 file:rounded-xl file:px-4 file:py-2.5 file:mr-4 file:font-black file:uppercase file:text-slate-600 file:shadow-sm"
-              />
-            </FormField>
-          </div>
-        </Section>
+                {currentStep === 1 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Apellido Paterno
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ej. García"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:bg-blue-500/5 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300"
+                        value={formData.apellidoPaterno}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            apellidoPaterno: e.target.value.toUpperCase(),
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Apellido Materno
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ej. López"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:bg-blue-500/5 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300"
+                        value={formData.apellidoMaterno}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            apellidoMaterno: e.target.value.toUpperCase(),
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Nombre(s)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ej. Juan Carlos"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:bg-blue-500/5 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300"
+                        value={formData.nombre}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            nombre: e.target.value.toUpperCase(),
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        CURP
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          maxLength={18}
+                          placeholder="18 caracteres"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:bg-blue-500/5 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 uppercase"
+                          value={formData.curp}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              curp: e.target.value.toUpperCase(),
+                            })
+                          }
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyCurp}
+                          className={`px-4 rounded-xl text-xs font-black uppercase ${
+                            formData.verifiedCurp
+                              ? "bg-green-600 text-white"
+                              : "bg-white/10 text-slate-300"
+                          }`}
+                        >
+                          {formData.verifiedCurp ? "Válido" : "Verificar"}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Grupo
+                      </label>
+                      <select
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.group}
+                        onChange={(e) =>
+                          setFormData({ ...formData, group: e.target.value })
+                        }
+                      >
+                        <option value="Provisional">Provisional</option>
+                        {GRUPOS.todos().map((g) => (
+                          <option key={g} value={g}>
+                            {g}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Fecha de Nacimiento
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.fechaNacimiento}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            fechaNacimiento: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Género
+                      </label>
+                      <select
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.genero}
+                        onChange={(e) =>
+                          setFormData({ ...formData, genero: e.target.value })
+                        }
+                      >
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="X">No especificar</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Promedio Anterior
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        max={10}
+                        step={0.1}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.promedioAnterior}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            promedioAnterior: Number(e.target.value),
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
 
-        <Section title="02. Datos Familiares" icon="family_restroom">
-          <div className="mb-8 space-y-4">
-            <label className="text-xs font-black text-slate-600 uppercase tracking-widest">
-              Residencia del Alumno:
-            </label>
-            <div className="flex flex-wrap gap-3">
-              {["ambos", "mama", "papa", "tutor"].map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, viveCon: v })}
-                  title={`El alumno vive con: ${v.toUpperCase()}`}
-                  className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest border transition-all shadow-sm ${
-                    formData.viveCon === v
-                      ? "bg-slate-800 text-white border-slate-800"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-slate-400"
-                  }`}
-                >
-                  {v.toUpperCase()}
-                </button>
-              ))}
-            </div>
+                {currentStep === 2 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Vive con
+                      </label>
+                      <select
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.viveCon}
+                        onChange={(e) =>
+                          setFormData({ ...formData, viveCon: e.target.value })
+                        }
+                      >
+                        <option value="ambos">Padre y Madre</option>
+                        <option value="mama">Solo Madre</option>
+                        <option value="papa">Solo Padre</option>
+                        <option value="tutor">Tutor</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Teléfono de Emergencia
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.telEmergencia}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            telEmergencia: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Nombre del Padre
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.nombrePadre}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            nombrePadre: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Teléfono del Padre
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.telPadre}
+                        onChange={(e) =>
+                          setFormData({ ...formData, telPadre: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Nombre de la Madre
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.nombreMadre}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            nombreMadre: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Teléfono de la Madre
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.telMadre}
+                        onChange={(e) =>
+                          setFormData({ ...formData, telMadre: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Nombre del Tutor
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.nombreTutor}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            nombreTutor: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Teléfono del Tutor
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.telTutor}
+                        onChange={(e) =>
+                          setFormData({ ...formData, telTutor: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Parentesco del Tutor
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.parentescoTutor}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            parentescoTutor: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Persona que inscribe
+                      </label>
+                      <select
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.personaInscribe}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            personaInscribe: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="padre">Padre</option>
+                        <option value="madre">Madre</option>
+                        <option value="tutor">Tutor</option>
+                        <option value="otro">Otro</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        Motivo de Alta
+                      </label>
+                      <select
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.motivoAlta}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            motivoAlta: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="nuevo_ingreso">Nuevo Ingreso</option>
+                        <option value="reingreso">Reingreso</option>
+                        <option value="cambio">Cambio de Escuela</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">
+                        UDEII
+                      </label>
+                      <select
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-blue-400 transition-all duration-300"
+                        value={formData.isUdeii ? "si" : "no"}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            isUdeii: e.target.value === "si",
+                          })
+                        }
+                      >
+                        <option value="no">No</option>
+                        <option value="si">Sí</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {currentStep === 3 && (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300">
+                          Fotografía Estudiante
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+                          onChange={(e) => handleFileChange(e, setFileStudent)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300">
+                          Fotografía Tutor
+                        </label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+                          onChange={(e) => handleFileChange(e, setFileGuardian)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {(Object.keys(formData.docs) as Array<keyof typeof formData.docs>).map(
+                        (docKey) => (
+                          <label
+                            key={docKey}
+                            className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/5 text-slate-200"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={formData.docs[docKey]}
+                              onChange={() => handleCheckboxChange(docKey)}
+                              className="size-4"
+                            />
+                            <span className="text-sm font-medium">
+                              {docKey.replace(/([A-Z])/g, " $1")}
+                            </span>
+                          </label>
+                        ),
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300">
+                          Situación de Riesgo / Salud
+                        </label>
+                        <textarea
+                          className="w-full min-h-[120px] bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-all duration-300"
+                          value={formData.situacionRiesgo}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              situacionRiesgo: e.target.value,
+                            })
+                          }
+                          placeholder="Describe condiciones médicas o situación de riesgo"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300">
+                          Documento Médico (Opcional)
+                        </label>
+                        <input
+                          type="file"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white"
+                          onChange={(e) => handleFileChange(e, setFile)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {currentStep === 4 && (
+                  <div className="space-y-4">
+                    <p className="text-slate-300">
+                      Verifica los datos antes de finalizar la inscripción.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+                        <p className="text-xs text-slate-500 uppercase tracking-widest">
+                          Alumno
+                        </p>
+                        <p className="text-slate-200 font-semibold">
+                          {formData.nombre} {formData.apellidoPaterno}
+                        </p>
+                        <p className="text-slate-400 text-sm">{formData.curp}</p>
+                      </div>
+                      <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+                        <p className="text-xs text-slate-500 uppercase tracking-widest">
+                          Grupo
+                        </p>
+                        <p className="text-slate-200 font-semibold">
+                          {formData.group}
+                        </p>
+                        <p className="text-slate-400 text-sm">
+                          Promedio: {formData.promedioAnterior}
+                        </p>
+                      </div>
+                      <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+                        <p className="text-xs text-slate-500 uppercase tracking-widest">
+                          Contacto
+                        </p>
+                        <p className="text-slate-200 font-semibold">
+                          {formData.nombrePadre ||
+                            formData.nombreMadre ||
+                            formData.nombreTutor ||
+                            "No registrado"}
+                        </p>
+                        <p className="text-slate-400 text-sm">
+                          {formData.telPadre ||
+                            formData.telMadre ||
+                            formData.telTutor ||
+                            formData.telEmergencia}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <ParentCard
-              role="Madre"
-              name={formData.nombreMadre}
-              phone={formData.telMadre}
-              verified={formData.verifiedPhones.mama}
-              disabled={
-                formData.viveCon === "papa" || formData.viveCon === "tutor"
-              }
-              onName={(v) => setFormData({ ...formData, nombreMadre: v })}
-              onPhone={(v) => setFormData({ ...formData, telMadre: v })}
-              onVerify={() => startVerification("mama")}
-            />
-            <ParentCard
-              role="Padre"
-              name={formData.nombrePadre}
-              phone={formData.telPadre}
-              verified={formData.verifiedPhones.papa}
-              disabled={
-                formData.viveCon === "mama" || formData.viveCon === "tutor"
-              }
-              onName={(v) => setFormData({ ...formData, nombrePadre: v })}
-              onPhone={(v) => setFormData({ ...formData, telPadre: v })}
-              onVerify={() => startVerification("papa")}
-            />
+
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/10">
+            <button
+              type="button"
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              className={`px-6 py-2 rounded-full font-medium transition-all ${
+                currentStep === 1
+                  ? "opacity-0 cursor-default"
+                  : "text-slate-300 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/10"
+              }`}
+            >
+              Atrás
+            </button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type={currentStep === steps.length ? "submit" : "button"}
+              onClick={currentStep === steps.length ? undefined : nextStep}
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-8 py-2.5 rounded-full bg-blue-600 text-white font-medium shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] transition-all disabled:opacity-60"
+            >
+              {currentStep === steps.length
+                ? isSubmitting
+                  ? "Procesando..."
+                  : "Finalizar Inscripción"
+                : "Siguiente"}
+              <span className="material-icons text-sm">
+                {currentStep === steps.length ? "check" : "arrow_forward"}
+              </span>
+            </motion.button>
           </div>
-          {formData.verifyingPhone && (
-            <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-              <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-2xl max-w-sm w-full space-y-6">
-                <div className="text-center">
-                  <h3 className="text-lg font-black text-slate-800 uppercase italic">
-                    Verificar Línea
-                  </h3>
-                </div>
-                <input
-                  type="text"
-                  maxLength={4}
-                  className="w-full text-center text-4xl font-black py-4 bg-slate-50 rounded-2xl border"
-                  value={formData.verificationCode}
-                  placeholder="0000"
-                  title="Ingrese el código de 4 dígitos enviado al teléfono"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      verificationCode: e.target.value,
-                    })
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={verifyCode}
-                  className="w-full py-4 bg-cyan-700 text-white rounded-2xl font-black text-[10px] uppercase"
-                >
-                  Confirmar Identidad
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormData({ ...formData, verifyingPhone: null })
-                  }
-                  className="w-full text-[10px] font-black text-slate-400 uppercase"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          )}
-        </Section>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Section title="03. Salud" icon="medical_services">
-            <textarea
-              className="inst-input h-32 resize-none"
-              placeholder="Describa alergias, padecimientos o requerimientos médicos..."
-              title="Ingrese detalles de salud o situación médica de riesgo"
-              value={formData.situacionRiesgo}
-              onChange={(e) =>
-                setFormData({ ...formData, situacionRiesgo: e.target.value })
-              }
-            />
-            <div className="flex items-center gap-3 mt-4">
-              <input
-                type="checkbox"
-                id="mDoc"
-                title="Confirmar que se anexa expediente médico digital"
-                className="size-5 rounded border-slate-300 text-cyan-600"
-                checked={formData.hasMedicalDoc}
-                onChange={(e) =>
-                  setFormData({ ...formData, hasMedicalDoc: e.target.checked })
-                }
-              />
-              <label
-                htmlFor="mDoc"
-                className="text-xs font-black text-slate-700 uppercase tracking-widest"
-              >
-                Anexar Expediente Médico
-              </label>
-            </div>
-            {formData.hasMedicalDoc && (
-              <input
-                type="file"
-                onChange={(e) => handleFileChange(e, setFile)}
-                className="mt-4 text-xs"
-                title="Seleccione el expediente médico digital del alumno"
-              />
-            )}
-          </Section>
-
-          <Section title="04. Documentos" icon="fact_check">
-            <div className="space-y-3">
-              {[
-                "actaNacimiento",
-                "curpDoc",
-                "comprobanteDomicilio",
-                "boletaPrimaria",
-                "boletaSecundaria",
-              ].map((d) => (
-                <div key={d} className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    id={d}
-                    className="size-5 rounded border-slate-300"
-                    checked={(formData.docs as any)[d]}
-                    onChange={() => handleCheckboxChange(d as any)}
-                  />
-                  <label
-                    htmlFor={d}
-                    className="text-xs font-bold text-slate-600 uppercase italic"
-                  >
-                    {(d as string).replace(/([A-Z])/g, " $1")}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </Section>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          title="Guardar y finalizar inscripción oficial en el sistema"
-          className="w-full py-6 bg-cyan-700 hover:bg-cyan-800 text-white font-black text-xs uppercase tracking-[0.3em] rounded-2xl shadow-xl shadow-cyan-900/10 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-        >
-          <span className="material-symbols-outlined">
-            {isSubmitting ? "sync" : "save"}
-          </span>
-          {isSubmitting ? "Procesando..." : "Finalizar Inscripción Oficial"}
-        </button>
+        </GlassCard>
       </form>
     </div>
   );
 };
-
-const Section = ({ title, icon, children }: any) => (
-  <section className="space-y-6">
-    <div className="flex items-center gap-3 text-slate-800">
-      <span className="material-symbols-outlined text-2xl">{icon}</span>
-      <h2 className="text-sm font-black uppercase tracking-widest italic">
-        {title}
-      </h2>
-    </div>
-    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-      {children}
-    </div>
-  </section>
-);
-
-const FormField = ({ label, required, id, children }: any) => (
-  <div className="space-y-2">
-    <label
-      htmlFor={id}
-      className="text-xs font-black text-slate-600 uppercase tracking-[0.2em] ml-1 cursor-pointer"
-    >
-      {label} {required && <span className="text-red-500">*</span>}
-    </label>
-    {children}
-  </div>
-);
-
-const ParentCard = ({
-  role,
-  name,
-  phone,
-  verified,
-  disabled,
-  onName,
-  onPhone,
-  onVerify,
-}: any) => (
-  <div
-    className={`p-6 rounded-2xl border transition-all ${
-      disabled
-        ? "bg-slate-50 opacity-40 grayscale"
-        : "bg-white border-slate-200 shadow-sm"
-    }`}
-  >
-    <div className="flex items-center gap-2 mb-4 font-black text-slate-800 text-[11px] uppercase tracking-widest border-b pb-2">
-      {role}
-    </div>
-    <div className="space-y-4">
-      <FormField label="Nombre">
-        <input
-          type="text"
-          disabled={disabled}
-          className="inst-input"
-          value={name}
-          onChange={(e) => onName(e.target.value)}
-          placeholder="Nombre completo"
-          title={`Nombre del ${role}`}
-        />
-      </FormField>
-      <FormField label="Teléfono">
-        <div className="flex gap-2">
-          <input
-            type="tel"
-            disabled={disabled || verified}
-            className={`inst-input ${
-              verified ? "bg-green-50 border-green-200" : ""
-            }`}
-            value={phone}
-            onChange={(e) => onPhone(e.target.value)}
-            placeholder="10 dígitos"
-            title={`Teléfono del ${role}`}
-          />
-          {!disabled && (
-            <button
-              type="button"
-              onClick={onVerify}
-              disabled={verified}
-              className={`px-3 rounded-xl text-xs font-black uppercase ${
-                verified
-                  ? "bg-green-600 text-white"
-                  : "bg-slate-100 text-slate-600 shadow-sm"
-              }`}
-            >
-              {verified ? "OK" : "VERIFICAR"}
-            </button>
-          )}
-        </div>
-      </FormField>
-    </div>
-  </div>
-);

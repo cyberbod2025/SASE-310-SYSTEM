@@ -77,7 +77,7 @@ export const useStudentsSlice = (
       const { data, error } = await supabase.from("alumnos").select(`
           *,
           incidencias (
-            id, tipo, descripcion, creado_en, reportado_por, fecha, estado, reporta, clasificacion, gravedad, notificado_whatsapp
+            id, tipo, descripcion, creado_en, reportado_por, fecha, nivel_gravedad, notificado_whatsapp
           ),
           justificantes (
             id, folio, fecha_inicio, fecha_fin, motivo, descripcion, creado_en, emitido_por
@@ -87,17 +87,6 @@ export const useStudentsSlice = (
           ),
           calificaciones (
             id, materia, trimestre1, trimestre2, trimestre3, promedio_final, ciclo_escolar
-          ),
-          documentos_institucionales (
-            id, tipo, folio, fecha, titulo, contenido, narracionIA:narracion_ia, firmas, creado_por
-          ),
-          objetos_retenidos (
-            id, objeto, motivo, fecha, responsable_id, responsable_nombre, responsable_rol, 
-            estado, incidencia_id, created_at, fecha_devolucion, entregado_a, entregado_por, 
-            lugar_retencion, categoria, observaciones, evidencia_url, autorizado_por
-          ),
-          estudiantes (
-            total_puntos, escaneos_realizados, nickname
           )
         `);
 
@@ -123,17 +112,15 @@ export const useStudentsSlice = (
           riesgoAsistencia: d.riesgo_asistencia,
           riesgoAcademico: d.riesgo_academico,
           riesgoSocioemocional: d.riesgo_socioemocional,
-          incidents: (d.incidencias || []).map((i: any): Incident => ({
+          incidents: (d.incidencias || []).map((i: any) => ({
             id: i.id,
             studentId: d.id,
-            type: i.tipo,
+            type: (i.tipo as IncidentType) || IncidentType.ASISTENCIA,
             description: i.descripcion,
-            date: i.fecha || i.creado_en || "",
+            date: i.fecha || i.creado_en,
             reportedBy: i.reportado_por,
-            gravedad: i.gravedad,
-            estado: i.estado,
-            clasificacion: i.clasificacion,
-            notificado_whatsapp: i.notificado_whatsapp,
+            gravedad: i.nivel_gravedad === 8 ? "critica" : i.nivel_gravedad >= 5 ? "grave" : i.nivel_gravedad >= 3 ? "media" : "leve",
+            notificado_whatsapp: i.notificado_whatsapp
           })),
           justificantes: (d.justificantes || []).map((j: any): Justificante => ({
             id: j.id,
@@ -184,13 +171,6 @@ export const useStudentsSlice = (
             studentId: d.id,
           })),
           isDistancia: !!d.is_distancia,
-          gamificacion: d.estudiantes?.[0]
-            ? {
-                total_puntos: d.estudiantes[0].total_puntos || 0,
-                escaneos_realizados: d.estudiantes[0].escaneos_realizados || 0,
-                nickname: d.estudiantes[0].nickname,
-              }
-            : undefined,
           objetosRetenidos: (d.objetos_retenidos || []).map((o: any): ObjetoRetenido => ({
             id: o.id,
             alumno_id: d.id,

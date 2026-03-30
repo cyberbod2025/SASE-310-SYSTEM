@@ -1,9 +1,10 @@
 // SASE Login - Institutional Portal (Liquid Glass Identity 2026)
 import React, { useEffect, useState } from "react";
+import { Input } from "./ui/Input";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { SaseSplineOrb } from "./SaseSplineOrb";
+import { SasinLoginOrb } from "./SasinLoginOrb";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -172,9 +173,10 @@ export const Login: React.FC<LoginProps> = ({
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
                   <motion.div style={{ x: orbXSpring, y: orbYSpring }}>
-                    <SaseSplineOrb
-                      state="thinking"
+                    <SasinLoginOrb
                       className="w-24 h-24 sm:w-32 sm:h-32"
+                      mouseX={orbX.get() / 28}
+                      mouseY={orbY.get() / 28}
                     />
                   </motion.div>
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
@@ -224,6 +226,7 @@ export const Login: React.FC<LoginProps> = ({
                   </span>
                   <input
                     id="login-username"
+                    name="login-username"
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -260,6 +263,7 @@ export const Login: React.FC<LoginProps> = ({
                   </span>
                   <input
                     id="login-password"
+                    name="login-password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -321,6 +325,8 @@ export const Login: React.FC<LoginProps> = ({
                 <div className="flex items-center justify-between px-2">
                   <div className="flex items-center gap-2 cursor-pointer group">
                     <input
+                      id="remember-me"
+                      name="remember-me"
                       type="checkbox"
                       title="Recordar mis credenciales"
                       className="size-4 rounded border-white/10 bg-white/5 checked:bg-blue-500 transition-all cursor-pointer"
@@ -426,10 +432,13 @@ export const Login: React.FC<LoginProps> = ({
                       iniciar el protocolo de desafío.
                     </p>
                     <div className="space-y-2">
-                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                      <label htmlFor="recovery-identifier" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
                         Identificador Institucional
                       </label>
                       <input
+                        id="recovery-identifier"
+                        name="recovery-identifier"
+                        autoComplete="username"
                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white font-mono uppercase tracking-widest outline-none focus:border-blue-500/40 transition-all"
                         placeholder="MAT-XXXX-XXXX"
                         value={recoveryData.identifier}
@@ -505,10 +514,12 @@ export const Login: React.FC<LoginProps> = ({
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1">
+                        <label htmlFor="recovery-answer-1" className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1">
                           {securityQuestions.q1}
                         </label>
                         <input
+                          id="recovery-answer-1"
+                          name="recovery-answer-1"
                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-blue-500/40 transition-all uppercase"
                           placeholder="Respuesta 1"
                           value={recoveryData.answer1}
@@ -521,10 +532,12 @@ export const Login: React.FC<LoginProps> = ({
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1">
+                        <label htmlFor="recovery-answer-2" className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1">
                           {securityQuestions.q2}
                         </label>
                         <input
+                          id="recovery-answer-2"
+                          name="recovery-answer-2"
                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm outline-none focus:border-blue-500/40 transition-all uppercase"
                           placeholder="Respuesta 2"
                           value={recoveryData.answer2}
@@ -557,11 +570,14 @@ export const Login: React.FC<LoginProps> = ({
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                        <label htmlFor="recovery-new-password" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
                           Nueva Contraseña
                         </label>
                         <input
+                          id="recovery-new-password"
+                          name="recovery-new-password"
                           type="password"
+                          autoComplete="new-password"
                           title="Nueva contraseña"
                           placeholder="Nueva contraseña"
                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white outline-none focus:border-blue-500/40 transition-all"
@@ -575,11 +591,14 @@ export const Login: React.FC<LoginProps> = ({
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                        <label htmlFor="recovery-confirm-password" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
                           Confirmar Nueva Contraseña
                         </label>
                         <input
+                          id="recovery-confirm-password"
+                          name="recovery-confirm-password"
                           type="password"
+                          autoComplete="new-password"
                           title="Confirmar nueva contraseña"
                           placeholder="Confirmar nueva contraseña"
                           className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white outline-none focus:border-blue-500/40 transition-all"

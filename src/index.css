@@ -25,6 +25,25 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    @apply bg-[#0B1120] text-slate-200 antialiased;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  ::selection {
+    @apply bg-blue-500/30 text-blue-100;
+  }
+
   body {
     @apply text-slate-300 font-sans antialiased selection:bg-blue-500/30 selection:text-white;
     margin: 0;
@@ -187,13 +206,28 @@
 
   /* === SCROLLBAR PREMIUM === */
   .custom-scrollbar::-webkit-scrollbar {
-    @apply w-1.5 h-1.5;
+    width: 6px;
+    height: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    background: rgba(255, 255, 255, 0.01);
+    border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   /* === NEW UTILITIES FOR INLINE STYLE REMOVAL === */
@@ -552,4 +586,9 @@
       0 0 100px rgba(0, 242, 255, 0.3);
     border-color: #00f2ff;
   }
+}
+
+.liquid-glass {
+  filter: url(#liquid-glass-refraction);
+  backdrop-filter: blur(20px);
 }

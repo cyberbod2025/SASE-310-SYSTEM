@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useApp } from "../store";
 import { UserRole, AppModule, IncidentType } from "../types";
 import { QuickRegisterModal } from "./QuickRegisterModal";
@@ -10,6 +10,9 @@ import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
 import { SaseSplineOrb } from "./SaseSplineOrb";
+import { LiquidGlassFilters } from "./ui/LiquidGlassFilters";
+import { QuickRegister } from "./ui/QuickRegister";
+import { motion, AnimatePresence } from "framer-motion";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-red-900 border-none",
@@ -85,12 +88,34 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   } = useApp();
   const { user, profile } = useAuth();
 
+  // 🧭 PLAN ONBOARDING 30-60-90
+  const onboardingPhase = useMemo(() => {
+    const createdDate = profile?.creado_en ? new Date(profile.creado_en) : new Date();
+    const diffDays = Math.ceil(Math.abs(new Date().getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 30) return 'PHASE_1';
+    if (diffDays <= 60) return 'PHASE_2';
+    if (diffDays <= 90) return 'PHASE_3';
+    return 'GRADUATED';
+  }, [profile]);
+
+  const isPhase1 = onboardingPhase === 'PHASE_1';
+  const isDocente = currentUserRole === UserRole.DOCENTE || currentUserRole === UserRole.DOCENTE_TUTOR;
+
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProtocolDismissed, setIsProtocolDismissed] = useState(false);
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // Roles con acceso global a todas las notificaciones institucionales
+  const ROLES_ACCESO_TOTAL = [UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
+  const visibleNotifications = notifications.filter((n) => {
+    if (!n.targetRole) return true; // Sin targetRole = global, todos la ven
+    if (ROLES_ACCESO_TOTAL.includes(currentUserRole as UserRole)) return true;
+    return n.targetRole === currentUserRole;
+  });
+  const unreadCount = visibleNotifications.filter((n) => !n.read).length;
+
 
   const sidebarWidth = isSidebarCollapsed ? "w-20" : "w-72";
 
@@ -135,8 +160,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   }, [aiSystemState, autoNavigate, highlightedModule, setCurrentModule, clearHighlight]);
 
   return (
-    <div className="flex h-screen text-slate-300 overflow-hidden font-sans select-none bg-transparent">
+    <div className="flex h-screen w-full bg-[#0B1120] text-slate-200 overflow-hidden font-sans select-none">
       <TutorialController />
+      
+      {/* 🔮 Inyectar Filtros SVG Globales para Liquid Glass */}
+      <LiquidGlassFilters />
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (
@@ -216,19 +244,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               collapsed={isSidebarCollapsed}
             />
 
-            <NavItem
-              id="nav-agenda"
-              icon="calendar_month"
-              label="Agenda"
-              active={currentModule === AppModule.AGENDA}
-              onClick={() => {
-                setCurrentModule(AppModule.AGENDA);
-                setIsSidebarOpen(false);
-              }}
-              color={currentUserRole}
-              highlighted={highlightedModule === AppModule.AGENDA}
-              collapsed={isSidebarCollapsed}
-            />
+            {/* Fase 1 Docente: Mostrar SOLO herramientas críticas para evitar sobrecarga */}
+            {isPhase1 && isDocente && (
+               <NavItem
+                id="nav-pedagogia"
+                icon="psychology"
+                label="Detección Pedagógica"
+                active={currentModule === AppModule.REPORTES_DOCENTES}
+                onClick={() => {
+                  setCurrentModule(AppModule.REPORTES_DOCENTES);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+                collapsed={isSidebarCollapsed}
+              />
+            )}
 
             <NavItem
               id="nav-expedientes"
@@ -243,6 +273,25 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               highlighted={highlightedModule === AppModule.EXPEDIENTES}
               collapsed={isSidebarCollapsed}
             />
+
+            {/* FASES AVANZADAS: Desbloquear módulos complejos progresivamente (Excepto para administrativos/prefectura que necesitan todo) */}
+            {(!isPhase1 || !isDocente || currentUserRole === UserRole.PREFECTURA) && (
+              <>
+                <NavItem
+                  id="nav-agenda"
+                  icon="calendar_month"
+                  label="Agenda"
+                  active={currentModule === AppModule.AGENDA}
+                  onClick={() => {
+                    setCurrentModule(AppModule.AGENDA);
+                    setIsSidebarOpen(false);
+                  }}
+                  color={currentUserRole}
+                  highlighted={highlightedModule === AppModule.AGENDA}
+                  collapsed={isSidebarCollapsed}
+                />
+              </>
+            )}
 
             {(currentUserRole === UserRole.PREFECTURA || 
               currentUserRole === UserRole.DOCENTE || 
@@ -349,6 +398,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               collapsed={isSidebarCollapsed}
             />
           </nav>
+
+          {/* Fase 2: Sistema Buddy (Mentor asignado) */}
+          {onboardingPhase === 'PHASE_2' && !isSidebarCollapsed && (
+            <div className="mx-4 mt-6 p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/20 animate-fade-in-up">
+                <p className="text-[9px] text-emerald-400 font-bold mb-2 uppercase tracking-[0.2em]">Buddy Asignado</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
+                      <span className="material-icons text-emerald-400 text-sm">person</span>
+                  </div>
+                  <p className="text-[11px] text-slate-300 font-medium">Prof. Roberto M.</p>
+                </div>
+            </div>
+          )}
 
           {/* Footer Sidebar */}
           <div className="p-4 border-t border-white/5 space-y-3 relative z-10">
@@ -498,7 +560,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                     )}
                   </div>
                   <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-2">
-                    {notifications.length === 0 ? (
+                    {visibleNotifications.length === 0 ? (
                       <div className="py-12 text-center opacity-40">
                         <span className="material-symbols-outlined text-4xl block mb-2">
                           notifications_off
@@ -508,7 +570,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                         </p>
                       </div>
                     ) : (
-                      notifications.map((notif) => (
+                      visibleNotifications.map((notif) => (
                         <div
                           key={notif.id}
                           className={`p-4 rounded-xl mb-2 transition-all cursor-pointer ${notif.read ? "bg-white/[0.02] opacity-60" : "bg-white/5 hover:bg-white/[0.08]"}`}
@@ -521,10 +583,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                         >
                           <div className="flex gap-3">
                             <div
-                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-500/20 text-red-500" : "bg-blue-500/20 text-blue-500"}`}
+                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-500/20 text-red-500" : notif.type === "warning" ? "bg-amber-500/20 text-amber-400" : "bg-blue-500/20 text-blue-500"}`}
                             >
                               <span className="material-symbols-outlined text-sm">
-                                {notif.type === "error" ? "report" : "info"}
+                                {notif.type === "error" ? "report" : notif.type === "warning" ? "warning" : "info"}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -551,8 +613,41 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
         {/* Main Content Scroll Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
+          
+          {/* 🏛️ Banners de Onboarding 30-60-90 */}
+          <AnimatePresence>
+            {isPhase1 && (
+              <motion.div 
+                initial={{ y: -50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -50, opacity: 0 }}
+                className="absolute top-0 left-0 w-full bg-blue-600/20 border-b border-blue-500/30 backdrop-blur-xl z-30 px-6 py-4 flex items-center justify-center gap-6 shadow-2xl"
+              >
+                <div className="flex items-center gap-3">
+                   <span className="material-icons text-blue-400 text-xl">info</span>
+                   <p className="text-sm text-blue-100 font-medium text-center">
+                     <strong>Regla de Oro:</strong> SASE acompaña procesos, no persigue errores. Lo que no se documenta, se olvida.
+                   </p>
+                </div>
+                <div className="px-3 py-1 bg-blue-500/20 rounded-full text-[10px] text-blue-300 font-black tracking-widest uppercase border border-blue-500/30 whitespace-nowrap">
+                  FASE 1: ADAPTACIÓN
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Disclaimer Sasito Zero UI en Fase 1 */}
+          {isPhase1 && (
+             <div className="fixed bottom-28 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-slate-900/40 border border-white/10 backdrop-blur-2xl z-20 shadow-2xl animate-fade-in">
+                <p className="text-xs text-slate-400 text-center flex items-center gap-2">
+                  <span className="size-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_#3b82f6]"></span>
+                  Sasito es un asistente de detección, <strong className="text-white">nunca sustituye tu criterio humano</strong>.
+                </p>
+             </div>
+          )}
+
           <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-blue-500/5 via-transparent to-transparent opacity-30"></div>
-          <div className="p-4 md:p-8 animate-fade-in relative z-10">
+          <div className={`p-4 md:p-8 animate-fade-in relative z-10 ${isPhase1 ? 'pt-24' : ''}`}>
             {children}
           </div>
 
@@ -575,17 +670,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 state={neuralCoreState}
                 className="w-[110px] h-[110px] cursor-pointer"
               />
-              {!isAssistantOpen && (
-                <span className="absolute top-0 right-0 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-                </span>
-              )}
             </button>
           </div>
         )}
       </div>
 
+      <QuickRegister />
       <FeedbackWidget />
       <QuickRegisterModal />
     </div>
@@ -602,11 +692,6 @@ const NavItem: React.FC<{
   collapsed?: boolean;
   highlighted?: boolean;
 }> = ({ icon, label, active, onClick, id, color, collapsed, highlighted }) => {
-  // Determine active colors based on role background
-  // Usually white text on dark bg, but active item should pop
-  // We'll use White background with Colored Text for active state
-
-  // Map role to text color for the active stats
   const textColors: Record<UserRole, string> = {
     [UserRole.DIRECTIVO]: "text-slate-900",
     [UserRole.SUBDIRECCION]: "text-orange-800",

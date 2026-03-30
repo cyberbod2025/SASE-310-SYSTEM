@@ -87,7 +87,7 @@ export const Archivo: React.FC = () => {
   return (
     <div className="p-4 lg:p-8 space-y-8 animate-fade-in max-w-[1600px] mx-auto pb-32">
       {/* TACTICAL HEADER */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="card-sase p-6 border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-6">
           <div className="size-16 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center justify-center text-indigo-500 shadow-2xl">
             <span className="material-symbols-outlined text-4xl font-black">
@@ -248,7 +248,7 @@ export const Archivo: React.FC = () => {
                     search_off
                   </span>
                   <p className="text-[10px] font-black uppercase tracking-widest">
-                    No record found in primary database
+                    No se encontraron expedientes
                   </p>
                 </div>
               )}

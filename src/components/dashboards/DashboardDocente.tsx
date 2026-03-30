@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../AuthProvider";
 import { startProductTour } from "../TourGuide";
 import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
+import { TestGlowCard } from "../TestGlowCard";
 
 export const DashboardDocente = () => {
   const {
@@ -139,6 +140,9 @@ export const DashboardDocente = () => {
 
   return (
     <div className="flex-1 min-h-full p-4 lg:p-8 bg-transparent relative overflow-hidden custom-scrollbar pb-32">
+      <div className="max-w-[420px] w-full mb-6">
+        <TestGlowCard />
+      </div>
       {/* Background SASE Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.02] z-0">
         <h1 className="text-[25vw] font-black italic tracking-tighter text-white">
@@ -828,56 +832,48 @@ export const DashboardDocente = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="card-sase w-full max-w-md border-white/10 overflow-hidden"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="w-full max-w-lg relative group"
             >
-              <div className="p-5 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
-                <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] italic">
-                  REPORTE_MÚLTIPLE
-                </h3>
-                <span className="bg-blue-500/10 text-blue-400 text-[9px] font-black px-2.5 py-1 rounded border border-blue-500/20 uppercase tracking-widest">
-                  {selectedStudentIds.size} TARGETS
-                </span>
-              </div>
-              <div className="p-6">
-                <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-4">
-                  SELECCIONE INCIDENCIA COMÚN:
+              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-2xl opacity-50 group-hover:opacity-80 transition duration-500" />
+
+              <div className="relative rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-8 shadow-2xl backdrop-blur-2xl">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Reporte Rápido
+                </h2>
+                <p className="text-slate-300 mb-6 text-sm">
+                  Selecciona la incidencia para los {selectedStudentIds.size}
+                  alumnos seleccionados.
                 </p>
-                <div className="grid grid-cols-1 gap-3">
-                  {quickComments.map((comment, idx) => (
-                    <button
-                      key={idx}
+
+                <div className="grid grid-cols-2 gap-3 mb-8">
+                  {quickComments.map((comment, index) => (
+                    <motion.button
+                      key={index}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() =>
                         handleBulkReport(comment.type, comment.label)
                       }
-                      className="p-4 text-left border border-white/5 rounded-xl hover:bg-white/[0.03] hover:border-white/10 transition-all flex items-center justify-between group active:scale-95"
+                      className="p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-blue-500/20 hover:border-blue-400 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-slate-200 font-medium text-sm flex items-center gap-2"
                     >
-                      <span className="text-xs font-black text-white uppercase tracking-tight">
-                        {comment.label}
+                      <span className="material-icons text-blue-400 text-sm">
+                        bolt
                       </span>
-                      <span
-                        className={`text-[9px] font-black uppercase px-2.5 py-1 rounded border ${
-                          comment.type === IncidentType.CONDUCTA
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            : comment.type === IncidentType.UNIFORME
-                              ? "bg-slate-500/10 text-slate-400 border-slate-500/20"
-                              : "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
-                        }`}
-                      >
-                        {comment.type}
-                      </span>
-                    </button>
+                      {comment.label}
+                    </motion.button>
                   ))}
                 </div>
-                <div className="mt-6 flex justify-end">
+
+                <div className="flex justify-end">
                   <button
                     onClick={() => setIsQuickReportOpen(false)}
-                    className="text-slate-500 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors px-4 py-2 rounded-xl hover:bg-white/5"
+                    className="px-6 py-2 rounded-full border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                   >
                     Cancelar
                   </button>
