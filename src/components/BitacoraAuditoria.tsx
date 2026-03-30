@@ -370,13 +370,20 @@ const ActionBadge: React.FC<{ type: string }> = ({ type }) => {
     ELIMINACION: "bg-red-50 text-red-700 border-red-100",
   };
 
+  const labels: any = {
+    CONSULTA: "CONSULTA",
+    ACTUALIZACION: "ACTUALIZACIÓN",
+    CREACION: "CREACIÓN",
+    ELIMINACION: "ELIMINACIÓN",
+  };
+
   return (
     <span
       className={`px-3 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest ${
         styles[type] || "bg-slate-50 text-slate-500"
       }`}
     >
-      {type}
+      {labels[type] || type}
     </span>
   );
 };

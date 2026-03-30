@@ -43,11 +43,25 @@ export function ExpedienteInstitucional({
   const [documentoSeleccionado, setDocumentoSeleccionado] = useState<DocumentoExpediente | null>(null);
   const [editandoDocumento, setEditandoDocumento] = useState(false);
   const [contenidoTemp, setContenidoTemp] = useState("");
+  const [historialMedicoVisible, setHistorialMedicoVisible] = useState(false);
+  const [historialAcademicoVisible, setHistorialAcademicoVisible] = useState(false);
+  const [modalAcceso, setModalAcceso] = useState<"medico" | "academico" | null>(null);
+  const [claveAcceso, setClaveAcceso] = useState("");
+  const [validandoAcceso, setValidandoAcceso] = useState(false);
+  const [correoUsuario, setCorreoUsuario] = useState<string | null>(null);
 
   useEffect(() => {
     cargarDatosExpediente();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alumno.id]);
+
+  useEffect(() => {
+    const cargarUsuario = async () => {
+      const { data } = await supabase.auth.getUser();
+      setCorreoUsuario(data.user?.email || null);
+    };
+    cargarUsuario();
+  }, []);
 
   const cargarDatosExpediente = async () => {
     try {
@@ -168,6 +182,189 @@ export function ExpedienteInstitucional({
       console.error(err);
       toast.error("Error al actualizar el documento");
     }
+  };
+
+  const calcularEdad = (fecha?: string) => {
+    if (!fecha) return undefined;
+    const nacimiento = new Date(fecha);
+    if (Number.isNaN(nacimiento.getTime())) return undefined;
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad -= 1;
+    }
+    return edad;
+  };
+
+  const edadAlumno = alumno.edad ?? calcularEdad(alumno.fecha_nacimiento);
+
+  const resumenAsistencia = React.useMemo(() => {
+    return incidencias.reduce(
+      (acc, inc) => {
+        const tipo = (inc.tipo || "").toLowerCase();
+        if (tipo.includes("asistencia") || tipo.includes("falta")) acc.faltas += 1;
+        if (tipo.includes("retardo")) acc.retardos += 1;
+        return acc;
+      },
+      { faltas: 0, retardos: 0 },
+    );
+  }, [incidencias]);
+
+  const incidenciasConducta = React.useMemo(() => {
+    return incidencias.filter((inc) => {
+      const tipo = (inc.tipo || "").toLowerCase();
+      return tipo.includes("conducta") || tipo.includes("disciplina");
+    });
+  }, [incidencias]);
+
+  const promedioGeneral = React.useMemo(() => {
+    if (!alumno.calificaciones || alumno.calificaciones.length === 0) return "N/D";
+    const suma = alumno.calificaciones.reduce((acc: number, cal: any) => {
+      const promedio =
+        cal.promedioFinal ??
+        (Number(cal.trimestre1 || 0) + Number(cal.trimestre2 || 0) + Number(cal.trimestre3 || 0)) / 3;
+      return acc + (Number.isFinite(promedio) ? promedio : 0);
+    }, 0);
+    return (suma / alumno.calificaciones.length).toFixed(1);
+  }, [alumno.calificaciones]);
+
+  const obtenerCorreoUsuario = async () => {
+    if (correoUsuario) return correoUsuario;
+    const { data } = await supabase.auth.getUser();
+    const correo = data.user?.email || null;
+    setCorreoUsuario(correo);
+    return correo;
+  };
+
+  const registrarAccesoSensibles = async (accion: string) => {
+    const correo = await obtenerCorreoUsuario();
+    await (supabase as any).from("auditoria_accesos").insert({
+      usuario: correo || "usuario_desconocido",
+      rol: "operador",
+      accion,
+      alumno_id: alumno.id,
+      pantalla: "ExpedienteInstitucional",
+      fecha: new Date().toISOString().split("T")[0],
+      hora: new Date().toLocaleTimeString("es-MX", { hour12: false }),
+    });
+  };
+
+  const confirmarAcceso = async () => {
+    if (!modalAcceso) return;
+    if (!claveAcceso.trim()) {
+      toast.error("Ingrese su contraseña");
+      return;
+    }
+    setValidandoAcceso(true);
+    const correo = await obtenerCorreoUsuario();
+    if (!correo) {
+      toast.error("No se pudo validar la sesión actual");
+      setValidandoAcceso(false);
+      return;
+    }
+    const { error } = await supabase.auth.signInWithPassword({
+      email: correo,
+      password: claveAcceso,
+    });
+    if (error) {
+      toast.error("Contraseña incorrecta");
+      setValidandoAcceso(false);
+      return;
+    }
+    if (modalAcceso === "medico") {
+      setHistorialMedicoVisible(true);
+      await registrarAccesoSensibles("consultar_historial_medico");
+    } else {
+      setHistorialAcademicoVisible(true);
+      await registrarAccesoSensibles("consultar_historial_academico");
+    }
+    toast.success("Acceso autorizado");
+    setClaveAcceso("");
+    setModalAcceso(null);
+    setValidandoAcceso(false);
+  };
+
+  const imprimirHistorialAcademico = () => {
+    const calificaciones = alumno.calificaciones || [];
+    const filasCalificaciones = calificaciones
+      .map(
+        (cal: any) => `
+          <tr>
+            <td style="padding: 8px; border: 1px solid #e2e8f0;">${cal.materia || "Materia"}</td>
+            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.trimestre1 ?? "-"}</td>
+            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.trimestre2 ?? "-"}</td>
+            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.trimestre3 ?? "-"}</td>
+            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.promedioFinal ?? "-"}</td>
+          </tr>
+        `,
+      )
+      .join("");
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #1e293b;">
+        <h2 style="margin-bottom: 8px;">Historial Académico</h2>
+        <p style="margin-top: 0; color: #475569;">Alumno: ${alumno.nombre} — Grupo ${alumno.grupo}</p>
+        <h3 style="margin-top: 20px;">Asistencia</h3>
+        <p>Faltas registradas: ${resumenAsistencia.faltas}</p>
+        <p>Retardos registrados: ${resumenAsistencia.retardos}</p>
+        <h3 style="margin-top: 20px;">Calificaciones</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Materia</th>
+              <th style="padding: 8px; border: 1px solid #e2e8f0;">T1</th>
+              <th style="padding: 8px; border: 1px solid #e2e8f0;">T2</th>
+              <th style="padding: 8px; border: 1px solid #e2e8f0;">T3</th>
+              <th style="padding: 8px; border: 1px solid #e2e8f0;">Final</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filasCalificaciones || "<tr><td colspan='5' style='padding: 8px; text-align: center; color: #64748b;'>Sin calificaciones registradas</td></tr>"}
+          </tbody>
+        </table>
+        <p style="margin-top: 16px;">Promedio general: ${promedioGeneral}</p>
+      </div>
+    `;
+
+    printContent("Historial_Academico", html);
+  };
+
+  const imprimirHistorialConducta = () => {
+    const filas = incidencias
+      .map(
+        (inc) => `
+          <tr>
+            <td style="padding: 8px; border: 1px solid #e2e8f0;">${new Date(inc.fecha).toLocaleDateString("es-MX")}</td>
+            <td style="padding: 8px; border: 1px solid #e2e8f0;">${inc.tipo}</td>
+            <td style="padding: 8px; border: 1px solid #e2e8f0;">${inc.estado}</td>
+            <td style="padding: 8px; border: 1px solid #e2e8f0; color: #475569;">${inc.descripcion}</td>
+          </tr>
+        `,
+      )
+      .join("");
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; color: #1e293b;">
+        <h2 style="margin-bottom: 8px;">Historial de Conducta</h2>
+        <p style="margin-top: 0; color: #475569;">Alumno: ${alumno.nombre} — Grupo ${alumno.grupo}</p>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Fecha</th>
+              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Tipo</th>
+              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Estado</th>
+              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Descripcion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filas || "<tr><td colspan='4' style='padding: 8px; text-align: center; color: #64748b;'>Sin incidencias registradas</td></tr>"}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    printContent("Historial_Conducta", html);
   };
 
   return (

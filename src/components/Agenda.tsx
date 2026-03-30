@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useApp } from "../store";
 import { useAuth } from "./AuthProvider";
 import toast from "react-hot-toast";
+import { UserRole } from "../types";
+import { motion } from "framer-motion";
 import { CICLO_ESCOLAR } from "../config/sase.config";
 import { supabase } from "../supabase/client";
 
@@ -97,7 +99,8 @@ const TYPE_CONFIG: Record<
 
 export const Agenda: React.FC = () => {
   const { user } = useAuth();
-  const { students } = useApp();
+  const { students, addNotification } = useApp();
+  const [isSendingNotif, setIsSendingNotif] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(
     new Date().toISOString().split("T")[0],
@@ -214,6 +217,25 @@ export const Agenda: React.FC = () => {
       toast.error("Error inesperado al guardar actividad.");
     }
   };
+
+  const handleBroadcastNotification = async (event: CalendarEvent) => {
+    if (!event.id) return;
+    setIsSendingNotif(event.id);
+    try {
+      await addNotification({
+        title: `📣 AVISO: ${event.title}`,
+        message: `Actividad institucional: ${event.title} para el ${new Date(event.date).toLocaleDateString()}${event.time ? " a las " + event.time : ""}. ${event.description || ""}`,
+        type: "info",
+        targetRole: UserRole.DOCENTE,
+      });
+      toast.success("Notificación enviada a la plantilla docente");
+    } catch (error) {
+      toast.error("Error al despachar la notificación");
+    } finally {
+      setIsSendingNotif(null);
+    }
+  };
+
 
   const days = (() => {
     const year = currentMonth.getFullYear();
@@ -454,14 +476,27 @@ export const Agenda: React.FC = () => {
                         </div>
                       )}
                       {event.para_todos_maestros && (
-                        <div className="flex items-center gap-2 mb-2 bg-indigo-500/10 p-2 rounded-xl border border-indigo-500/20">
-                          <span className="material-symbols-outlined text-indigo-400 text-xs">
-                            notifications_active
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleBroadcastNotification(event);
+                          }}
+                          disabled={isSendingNotif === event.id}
+                          className={`flex items-center gap-2 mb-2 p-2 rounded-xl border transition-all w-full ${
+                            isSendingNotif === event.id 
+                              ? "bg-slate-500/10 border-slate-500/20 opacity-50 cursor-wait" 
+                              : "bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20 cursor-pointer"
+                          }`}
+                        >
+                          <span className={`${isSendingNotif === event.id ? "animate-spin" : ""} material-symbols-outlined text-indigo-400 text-xs`}>
+                            {isSendingNotif === event.id ? "sync" : "notifications_active"}
                           </span>
                           <span className="text-[9px] font-black text-indigo-300 uppercase">
-                            Notificar a plantilla docente
+                            {isSendingNotif === event.id ? "Enviando..." : "Notificar a plantilla docente"}
                           </span>
-                        </div>
+                        </motion.button>
                       )}
                       {event.description && (
                         <p className="text-[10px] text-slate-400 mt-2 font-medium leading-relaxed italic border-t border-white/10 pt-3">

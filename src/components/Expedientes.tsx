@@ -14,6 +14,19 @@ export const Expedientes: React.FC = () => {
     return nameMatch || matriculaMatch;
   });
 
+  const calcularEdad = (fecha?: string) => {
+    if (!fecha) return undefined;
+    const nacimiento = new Date(fecha);
+    if (Number.isNaN(nacimiento.getTime())) return undefined;
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad -= 1;
+    }
+    return edad;
+  };
+
   if (selectedStudent) {
     return (
       <ExpedienteInstitucional 
@@ -60,10 +73,19 @@ export const Expedientes: React.FC = () => {
                   nombre: s.name,
                   grupo: s.group,
                   grado: s.group[0] || "1",
-                  turno: "Matutino", // Default
-                  curp: s.matricula, // Using matricula as fallback for display
-                  tutor: "Tutor no registrado",
-                  telefono_tutor: "No disponible"
+                  turno: "Matutino",
+                  curp: s.curp || s.matricula,
+                  fecha_nacimiento: s.birthdate,
+                  edad: calcularEdad(s.birthdate),
+                  tutor: s.guardianInfo?.name || "Tutor no registrado",
+                  relacion_tutor: s.guardianInfo?.relationship,
+                  telefono_tutor: s.guardianInfo?.phonePrimary || "No disponible",
+                  telefono_tutor_secundario: s.guardianInfo?.phoneSecondary,
+                  correo_tutor: s.guardianInfo?.email,
+                  direccion: s.guardianInfo?.address,
+                  alertas_medicas: s.medicalAlerts,
+                  historial_medico: s.medicalHistory,
+                  calificaciones: s.calificaciones,
                 })}
                 className="w-full text-left p-5 bg-white hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-2xl flex items-center gap-5 transition-all group hover:scale-[1.01] shadow-sm"
               >

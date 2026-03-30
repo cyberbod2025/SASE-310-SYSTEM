@@ -4,6 +4,7 @@ import { useApp } from "../store";
 import { CaseState, IncidentType, UserRole, AppModule } from "../types";
 import { printContent } from "./PrintButtons";
 import { anonymizeName } from "../utils/saseUtils";
+import { GlassCard } from "./ui/GlassCard";
 
 type ReportType = "incidencias" | "asistencia" | "estudiantes" | "bitacora";
 
@@ -486,171 +487,113 @@ export const Reportes: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full overflow-y-auto custom-scrollbar p-4 lg:p-8 animate-fade-in font-sans">
-      <div className="max-w-[1600px] mx-auto space-y-8 pb-32">
-        {/* COMMAND HEADER */}
-        <div className="card-sase p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 border-white/5 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px] -mr-40 -mt-40 group-hover:bg-cyan-500/10 transition-colors duration-1000"></div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex-1 p-6 lg:p-8 relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col"
+    >
+      {/* ENCABEZADO */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
+          Reportes Institucionales
+        </h1>
+        <p className="text-slate-400 text-sm">
+          Filtra, consulta e imprime la bitacora e incidencias.
+        </p>
+      </div>
 
-          <div className="flex items-center gap-6 relative z-10">
-            <div className="size-20 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center justify-center text-cyan-500 shadow-2xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-cyan-500/10 animate-pulse"></div>
-              <span className="material-symbols-outlined text-4xl font-black relative z-10">
-                analytics
-              </span>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0">
+        {/* PANEL LATERAL DE FILTROS */}
+        <GlassCard className="lg:col-span-1 flex flex-col h-fit">
+          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <span className="material-icons text-blue-400 text-sm">filter_alt</span>
+            Filtros
+          </h2>
+
+          <div className="space-y-4">
             <div>
-              <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
-                TERMINAL DE <span className="text-cyan-400">INTELIGENCIA</span>
-              </h2>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3 italic">
-                DATA_ANALYTICS_MODULE // SASE-310
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4 relative z-10">
-            <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/10 text-cyan-500 text-[9px] font-black rounded border border-cyan-500/20 tabular-nums uppercase tracking-widest overflow-hidden relative">
-              <motion.div
-                animate={{ opacity: [0.4, 1, 0.4] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="size-1.5 bg-cyan-500 rounded-full shadow-[0_0_8px_rgba(6,182,212,0.8)]"
-              />
-              <span className="relative z-10">PIPELINE_ACTIVE</span>
-            </div>
-            <button
-              onClick={handlePrintReport}
-              className="px-8 py-4 bg-cyan-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-cyan-600/20 hover:bg-cyan-500 transition-all flex items-center gap-3 active:scale-95"
-            >
-              <span className="material-symbols-outlined text-xl">print</span>
-              GENERAR_INFORME
-            </button>
-          </div>
-        </div>
-
-        {/* REPORT TYPE SELECTOR — TACTICAL CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {reportOptions.map((opt) => (
-            <button
-              key={opt.id}
-              onClick={() => setSelectedReport(opt.id as ReportType)}
-              className={`card-sase p-6 text-left transition-all relative overflow-hidden group/card ${
-                selectedReport === opt.id
-                  ? `border ${reportColors[opt.color]} scale-[1.02] shadow-xl`
-                  : "border-white/5 hover:border-white/10 hover:bg-white/[0.02]"
-              }`}
-            >
-              <div className="flex items-start gap-4 relative z-10">
-                <div
-                  className={`size-12 rounded-2xl flex items-center justify-center border transition-all ${
-                    selectedReport === opt.id
-                      ? reportColors[opt.color]
-                      : "bg-white/[0.03] border-white/10 text-slate-500"
-                  }`}
-                >
-                  <span className="material-symbols-outlined">{opt.icon}</span>
-                </div>
-                <div>
-                  <p
-                    className={`font-black text-sm uppercase italic tracking-tight ${
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                Tipo de reporte
+              </label>
+              <div className="mt-2 space-y-2">
+                {reportOptions.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setSelectedReport(opt.id as ReportType)}
+                    className={`w-full text-left px-3 py-2 rounded-xl border transition-all ${
                       selectedReport === opt.id
-                        ? "text-white"
-                        : "text-slate-400"
+                        ? `${reportColors[opt.color]} shadow-lg`
+                        : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                     }`}
                   >
-                    {opt.label}
-                  </p>
-                  <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mt-1">
-                    {opt.description}
-                  </p>
-                </div>
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-sm">
+                        {opt.icon}
+                      </span>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wider">
+                          {opt.label}
+                        </p>
+                        <p className="text-[10px] text-slate-500">
+                          {opt.description}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
               </div>
-              {selectedReport === opt.id && (
-                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-current to-transparent opacity-30"></div>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* FILTER BAR — TACTICAL */}
-        <div className="card-sase p-6 border-white/5">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex items-center gap-3">
-              <div className="size-8 bg-white/[0.03] border border-white/10 rounded-lg flex items-center justify-center">
-                <span className="material-symbols-outlined text-[18px] text-cyan-500">
-                  date_range
-                </span>
-              </div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                VENTANA_TEMPORAL
-              </span>
             </div>
 
-            <div className="flex items-center gap-4 bg-white/[0.02] p-2 rounded-2xl border border-white/5">
-              <input
-                type="date"
-                title="Fecha de inicio del reporte"
-                value={dateRange.start}
-                onChange={(e) =>
-                  setDateRange({ ...dateRange, start: e.target.value })
-                }
-                className="bg-transparent border-none text-xs font-black text-slate-300 outline-none p-2 cursor-pointer font-mono"
-              />
-              <span className="text-slate-600 font-black text-[9px] uppercase tracking-widest">
-                →
-              </span>
-              <input
-                type="date"
-                title="Fecha de fin del reporte"
-                value={dateRange.end}
-                onChange={(e) =>
-                  setDateRange({ ...dateRange, end: e.target.value })
-                }
-                className="bg-transparent border-none text-xs font-black text-slate-300 outline-none p-2 cursor-pointer font-mono"
-              />
-            </div>
-
-            <div className="flex gap-2">
-              {["7D", "30D", "1Y"].map((lbl) => (
-                <button
-                  key={lbl}
-                  className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/5 rounded-xl border border-transparent hover:border-cyan-500/20 transition-all"
-                >
-                  {lbl}
-                </button>
-              ))}
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                Rango de fechas
+              </label>
+              <div className="mt-2 space-y-2">
+                <input
+                  type="date"
+                  title="Fecha de inicio del reporte"
+                  value={dateRange.start}
+                  onChange={(e) =>
+                    setDateRange({ ...dateRange, start: e.target.value })
+                  }
+                  className="bg-white/5 border border-white/10 rounded-xl p-2 text-white focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] w-full"
+                />
+                <input
+                  type="date"
+                  title="Fecha de fin del reporte"
+                  value={dateRange.end}
+                  onChange={(e) =>
+                    setDateRange({ ...dateRange, end: e.target.value })
+                  }
+                  className="bg-white/5 border border-white/10 rounded-xl p-2 text-white focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] w-full"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </GlassCard>
 
-        {/* DATA PREVIEW — INTELLIGENCE VIEW */}
-        <div className="card-sase border-white/5 overflow-hidden">
-          <div className="px-8 py-6 border-b border-white/5 bg-white/[0.01] flex justify-between items-center relative">
-            <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500"></div>
-            <div className="flex items-center gap-4 pl-4">
-              <div className="size-10 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-500">
-                <span className="material-symbols-outlined text-xl">
-                  query_stats
-                </span>
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] italic">
-                  VISTA PREVIA{" "}
-                  <span className="text-cyan-400">INTELIGENTE</span>
-                </h3>
-                <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
-                  PROCESADOR DE DATOS INSTITUCIONALES
-                </p>
-              </div>
+        {/* ÁREA PRINCIPAL: TABLA Y ACCIONES */}
+        <GlassCard className="lg:col-span-3 flex flex-col h-full overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-white/10">
+            <div className="text-xs text-slate-400 font-medium">
+              Reporte activo: <span className="text-slate-200">{reportOptions.find((opt) => opt.id === selectedReport)?.label}</span>
             </div>
-            <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-mono text-slate-500 uppercase tracking-widest">
-              {filteredIncidents.length} REG_ACTIVOS
-            </span>
+            <div className="flex justify-end gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handlePrintReport}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm"
+              >
+                <span className="material-icons text-sm">print</span>
+                Imprimir
+              </motion.button>
+            </div>
           </div>
 
-          <div className="p-8">
+          <div className="mb-6">
             {selectedReport === "incidencias" && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <IntelligenceKPI
                   label="Retardos"
                   value={incidentsByType.retardos}
@@ -683,7 +626,7 @@ export const Reportes: React.FC = () => {
             )}
 
             {selectedReport === "estudiantes" && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <IntelligenceKPI
                   label="Caso Cerrado"
                   value={studentsByState.cerrados}
@@ -709,45 +652,141 @@ export const Reportes: React.FC = () => {
             )}
 
             {selectedReport === "asistencia" && (
-              <div className="card-sase p-10 border-white/5 flex flex-col items-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.03] to-transparent pointer-events-none"></div>
-                <motion.p
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-7xl font-black text-white italic tracking-tighter mb-4 font-mono tabular-nums relative z-10 drop-shadow-[0_0_40px_rgba(6,182,212,0.3)]"
-                >
-                  {students.length > 0
-                    ? (
-                        100 -
-                        (incidentsByType.faltas / (students.length * 5)) * 100
-                      ).toFixed(1)
-                    : 100}
-                  %
-                </motion.p>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] italic relative z-10">
-                  EFICIENCIA_ASISTENCIA_GLOBAL
-                </p>
-                <div className="flex gap-8 mt-8 relative z-10">
-                  <div className="flex items-center gap-2">
-                    <span className="size-2 bg-rose-400 rounded-full shadow-[0_0_6px_rgba(251,113,133,0.6)]"></span>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
-                      {incidentsByType.faltas} FALTAS
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="size-2 bg-amber-400 rounded-full shadow-[0_0_6px_rgba(251,191,36,0.6)]"></span>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
-                      {incidentsByType.retardos} RETARDOS
-                    </span>
-                  </div>
-                </div>
-                {/* Decorative scan line */}
-                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <IntelligenceKPI
+                  label="Faltas"
+                  value={incidentsByType.faltas}
+                  color="rose"
+                  icon="event_busy"
+                  delay={0}
+                />
+                <IntelligenceKPI
+                  label="Retardos"
+                  value={incidentsByType.retardos}
+                  color="amber"
+                  icon="timer"
+                  delay={1}
+                />
               </div>
             )}
           </div>
-        </div>
+
+          <div className="flex-1 overflow-x-auto overflow-y-auto custom-scrollbar pr-2">
+            {selectedReport === "incidencias" && (
+              <table className="w-full text-left text-sm">
+                <thead className="text-slate-400">
+                  <tr>
+                    <th className="py-3 px-3">Fecha</th>
+                    <th className="py-3 px-3">Estudiante</th>
+                    <th className="py-3 px-3">Grupo</th>
+                    <th className="py-3 px-3">Categoria</th>
+                    <th className="py-3 px-3">Observaciones</th>
+                  </tr>
+                </thead>
+                <tbody className="text-slate-300">
+                  {filteredIncidents.length === 0 && (
+                    <tr>
+                      <td className="py-6 px-3 text-slate-500" colSpan={5}>
+                        No hay incidencias en el rango seleccionado.
+                      </td>
+                    </tr>
+                  )}
+                  {filteredIncidents.map((i, idx) => (
+                    <tr key={`${i.id || "inc"}-${idx}`} className="border-t border-white/5">
+                      <td className="py-3 px-3">
+                        {new Date(i.date).toLocaleDateString("es-MX")}
+                      </td>
+                      <td className="py-3 px-3 font-semibold">
+                        {anonymizeName(i.studentName)}
+                      </td>
+                      <td className="py-3 px-3">{i.group}</td>
+                      <td className="py-3 px-3">{i.type}</td>
+                      <td className="py-3 px-3 text-slate-400">
+                        {i.description}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {selectedReport === "estudiantes" && (
+              <table className="w-full text-left text-sm">
+                <thead className="text-slate-400">
+                  <tr>
+                    <th className="py-3 px-3">#</th>
+                    <th className="py-3 px-3">Nombre</th>
+                    <th className="py-3 px-3">Matricula</th>
+                    <th className="py-3 px-3">Grupo</th>
+                    <th className="py-3 px-3">Estado</th>
+                    <th className="py-3 px-3">Incidencias</th>
+                  </tr>
+                </thead>
+                <tbody className="text-slate-300">
+                  {students.length === 0 && (
+                    <tr>
+                      <td className="py-6 px-3 text-slate-500" colSpan={6}>
+                        No hay estudiantes cargados.
+                      </td>
+                    </tr>
+                  )}
+                  {students.map((s, idx) => (
+                    <tr key={s.id || idx} className="border-t border-white/5">
+                      <td className="py-3 px-3">{idx + 1}</td>
+                      <td className="py-3 px-3 font-semibold">
+                        {anonymizeName(s.name)}
+                      </td>
+                      <td className="py-3 px-3">{s.matricula}</td>
+                      <td className="py-3 px-3">{s.group}</td>
+                      <td className="py-3 px-3">{s.caseState}</td>
+                      <td className="py-3 px-3">{s.incidents.length}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {selectedReport === "asistencia" && (
+              <table className="w-full text-left text-sm">
+                <thead className="text-slate-400">
+                  <tr>
+                    <th className="py-3 px-3">Alumno</th>
+                    <th className="py-3 px-3">Grupo</th>
+                    <th className="py-3 px-3">Faltas</th>
+                    <th className="py-3 px-3">Retardos</th>
+                  </tr>
+                </thead>
+                <tbody className="text-slate-300">
+                  {students
+                    .map((s) => {
+                      const counts = s.incidents.reduce(
+                        (acc, i) => {
+                          if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
+                          if (i.type === IncidentType.RETARDO) acc.retardos++;
+                          return acc;
+                        },
+                        { faltas: 0, retardos: 0 },
+                      );
+                      return { ...s, ...counts };
+                    })
+                    .filter((s) => s.faltas > 0 || s.retardos > 0)
+                    .sort((a, b) => b.faltas + b.retardos - (a.faltas + a.retardos))
+                    .map((s) => (
+                      <tr key={s.id} className="border-t border-white/5">
+                        <td className="py-3 px-3 font-semibold">
+                          {anonymizeName(s.name)}
+                        </td>
+                        <td className="py-3 px-3">{s.group}</td>
+                        <td className="py-3 px-3">{s.faltas}</td>
+                        <td className="py-3 px-3">{s.retardos}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </GlassCard>
       </div>
-    </div>
+    </motion.div>
   );
 };

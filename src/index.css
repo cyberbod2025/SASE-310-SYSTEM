@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  --sase-bg: #05070a;
+  --sase-bg: #0B1120;
   --sase-bg-alt: #0b0e14;
   --sase-primary: #3b82f6;
   --sase-primary-glow: rgba(59, 130, 246, 0.5);
@@ -45,7 +45,7 @@
   }
 
   body {
-    @apply text-slate-300 font-sans antialiased selection:bg-blue-500/30 selection:text-white;
+    @apply text-slate-200 font-sans antialiased selection:bg-blue-500/30 selection:text-white;
     margin: 0;
     overflow-x: hidden;
     min-height: 100vh;
@@ -53,7 +53,7 @@
     position: relative;
 
     /* Global Deep Background System — Nebula Edition */
-    background-color: #05070a;
+    background-color: #0B1120;
     background-image:
       /* Nebula core — blue top center */
       radial-gradient(
@@ -144,6 +144,20 @@
   h6 {
     @apply text-white font-bold tracking-tight uppercase;
   }
+
+  input,
+  textarea,
+  select {
+    @apply focus-glow;
+  }
+
+  @media (max-width: 640px) {
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
 }
 
 @layer components {
@@ -161,7 +175,7 @@
 
   /* === BOTONES SASE ULTIMATE === */
   .btn-sase {
-    @apply relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 rounded-2xl 
+    @apply relative overflow-hidden flex items-center justify-center gap-2 px-5 py-3 rounded-2xl min-h-[48px] min-w-[48px]
            font-black uppercase tracking-[0.15em] text-[10px] transition-all duration-300 
            active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
   }
@@ -591,4 +605,23 @@
 .liquid-glass {
   filter: url(#liquid-glass-refraction);
   backdrop-filter: blur(20px);
+}
+
+@layer utilities {
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform, backdrop-filter;
+  }
+
+  .focus-glow {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .focus-glow:focus,
+  .focus-glow:focus-visible {
+    box-shadow:
+      0 0 0 2px rgba(59, 130, 246, 0.35),
+      0 0 18px rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.6);
+  }
 }

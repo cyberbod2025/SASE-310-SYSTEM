@@ -201,7 +201,7 @@ export const AssistantBanner: React.FC<{
               <span className="material-symbols-outlined text-[16px]">
                 dashboard
               </span>
-              IR AL DASHBOARD
+              IR AL TABLERO
             </button>
 
             {pendingActions.length > 0 && (

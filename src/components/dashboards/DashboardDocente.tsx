@@ -15,6 +15,7 @@ export const DashboardDocente = () => {
     setCurrentModule,
     addIncident,
     registerAttendance,
+    userCreatedAt,
   } = useApp();
 
   // Filter alerts for relevant notifications (demo logic: last 5 incidents)
@@ -40,6 +41,22 @@ export const DashboardDocente = () => {
     Record<string, "P" | "R" | "F">
   >({});
 
+  const medirKPIProductividad = (tipoAccion: string) => {
+    const kpiRegistrado = localStorage.getItem(`kpi_primer_${tipoAccion}`);
+    if (!kpiRegistrado && userCreatedAt) {
+      const diffTime = Math.abs(
+        new Date().getTime() - new Date(userCreatedAt).getTime(),
+      );
+      const diasTardados = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      console.log(
+        `[KPI LOG] Tiempo a Productividad (${tipoAccion}): ${diasTardados} dias`,
+      );
+
+      localStorage.setItem(`kpi_primer_${tipoAccion}`, "true");
+    }
+  };
+
   // --- FILTROS DE VISTA ---
   const myStudents = students;
 
@@ -58,6 +75,7 @@ export const DashboardDocente = () => {
       addIncident(id, type, description);
     });
     import("../../utils/sound").then((s) => s.playSuccessSound());
+    medirKPIProductividad("reporte_grupal");
     toast.success(`Reporte creado para ${selectedStudentIds.size} alumnos`);
     setIsQuickReportOpen(false);
     setSelectedStudentIds(new Set());
@@ -126,6 +144,7 @@ export const DashboardDocente = () => {
         }),
       );
 
+      medirKPIProductividad("pase_lista");
       toast.promise(promise, {
         loading: "Registrando asistencia...",
         success: "Asistencia guardada correctamente",
@@ -190,7 +209,7 @@ export const DashboardDocente = () => {
             {/* Central Identity Text - MOVED BELOW ORB FOR CLARITY */}
             <div className="relative mt-4 flex flex-col items-center justify-center">
               <span className="text-[7px] font-black text-blue-400 tracking-[0.3em] leading-none mb-1 opacity-50 uppercase">
-                AI_NUCLEUS_OPERATIVE
+                NUCLEO IA OPERATIVO
               </span>
               <span className="text-lg font-black text-white italic tracking-tighter leading-none pulse-glow">
                 SASE-310
@@ -199,12 +218,12 @@ export const DashboardDocente = () => {
 
             <div className="mt-6" id="docente-dashboard-title">
               <h2 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase leading-none mb-1">
-                COMMAND <span className="text-blue-500">CENTER</span>
+                CENTRO <span className="text-blue-500">DE MANDO</span>
               </h2>
               <div className="flex items-center gap-2 justify-center opacity-30">
                 <span className="h-px w-4 bg-white/20"></span>
                 <span className="text-[7px] font-black text-slate-500 uppercase tracking-[0.3em] italic leading-tight">
-                  DOCENTE_COMMAND_CENTRAL
+                  CENTRO DE MANDO DOCENTE
                 </span>
                 <span className="h-px w-4 bg-white/20"></span>
               </div>

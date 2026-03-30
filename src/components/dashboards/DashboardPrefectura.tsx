@@ -297,9 +297,9 @@ export const DashboardPrefectura = () => {
               </p>
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
-              FIELD{" "}
+              CENTRO DE{" "}
               <span className="text-amber-500 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                COMMAND
+                CONTROL
               </span>
             </h1>
           </div>
@@ -311,7 +311,7 @@ export const DashboardPrefectura = () => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="size-1.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"
               />
-              <span>CORE_SYNC_ACTIVE</span>
+              <span>SINC_NUCLEO_ACTIVA</span>
             </div>
             <button
               onClick={() =>
@@ -378,7 +378,7 @@ export const DashboardPrefectura = () => {
               >
                 <div className="size-1.5 bg-amber-500 rounded-full animate-pulse"></div>
                 <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">
-                  LOCK: {selectedStudent.name.split(" ")[0]}
+                  Alumno: {selectedStudent.name.split(" ")[0]}
                 </span>
               </motion.div>
             )}
@@ -447,7 +447,7 @@ export const DashboardPrefectura = () => {
                     ACOMPAÑAMIENTO_INMEDIATO
                   </h3>
                   <span className="text-[9px] font-black text-slate-500 uppercase px-2 py-0.5 border border-white/5 rounded">
-                    ONE_TOUCH
+                    ACCESO_RAPIDO
                   </span>
                 </div>
 
@@ -564,7 +564,7 @@ export const DashboardPrefectura = () => {
                 />
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
                 <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] italic mb-4 relative z-10">
-                  PATTERN // RIESGO_POR_GRUPO
+                  PATRÓN // RIESGO_POR_GRUPO
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
@@ -586,7 +586,7 @@ export const DashboardPrefectura = () => {
                 />
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
                 <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] italic mb-4 relative z-10">
-                  PATTERN // TOP_RIESGOS_ACTIVOS
+                  PATRÓN // TOP_RIESGOS_ACTIVOS
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
@@ -612,10 +612,10 @@ export const DashboardPrefectura = () => {
               <div className="flex items-center justify-between mb-6 pb-3 border-b border-white/5 relative z-10">
                 <h3 className="text-[11px] font-black text-amber-500 uppercase tracking-[0.4em] italic flex items-center gap-3">
                   <span className="size-2 bg-amber-500 rounded-full animate-ping"></span>
-                  ACTIVITY_STREAM
+                  CANAL_ACTIVIDAD
                 </h3>
                 <button
-                  onClick={() => setCurrentModule(AppModule.REPORTES)}
+                  onClick={() => setCurrentModule(AppModule.BITACORA)}
                   className="text-[10px] font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-colors"
                 >
                   Ver Bitácora →
@@ -629,7 +629,7 @@ export const DashboardPrefectura = () => {
                       terminal
                     </span>
                     <p className="text-[10px] uppercase font-black tracking-widest">
-                      Awaiting activity data...
+                      Esperando flujo de datos...
                     </p>
                   </div>
                 ) : (

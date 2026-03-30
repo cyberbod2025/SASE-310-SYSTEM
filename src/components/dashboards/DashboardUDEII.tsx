@@ -57,7 +57,7 @@ export const DashboardUDEII = () => {
           className="px-8 py-3.5 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 hover:bg-indigo-500 transition-all active:scale-95 flex items-center gap-3"
         >
           <span className="material-symbols-outlined text-xl">file_save</span>
-          EXPORTAR_LOG_BAP
+          Generar reporte BAP
         </button>
       </div>
 
@@ -72,7 +72,7 @@ export const DashboardUDEII = () => {
               MONITOR DE BARRERAS (BAP)
             </h3>
             <span className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-slate-500">
-              {studentsWithBAP.length} CASOS_ACTIVOS
+              {studentsWithBAP.length} casos activos
             </span>
           </div>
 
@@ -80,11 +80,11 @@ export const DashboardUDEII = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-white/5 text-slate-500 text-[9px] uppercase font-black border-b border-white/5 italic">
-                  <th className="px-8 py-5">EXPEDIENTE_ID</th>
+                  <th className="px-8 py-5">Expediente</th>
                   <th className="px-8 py-5">ESTUDIANTE</th>
-                  <th className="px-8 py-5">CONDICIÓN_BAP</th>
+                  <th className="px-8 py-5">Condicion BAP</th>
                   <th className="px-8 py-5">AJUSTES</th>
-                  <th className="px-8 py-5 text-right">OPS</th>
+                  <th className="px-8 py-5 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.03]">
@@ -159,12 +159,12 @@ export const DashboardUDEII = () => {
           <div className="card-sase p-8 border-indigo-500/20 bg-indigo-500/[0.02] relative overflow-hidden group">
             <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
               <span className="size-2 bg-indigo-500 rounded-full shadow-[0_0_8px_#6366f1]"></span>
-              HERRAMIENTAS_UDEII
+              Herramientas UDEII
             </h3>
 
             <div className="space-y-4">
               <button
-                onClick={() => toast("Abriendo Guía de Ajustes Reasonables...")}
+                onClick={() => toast("Abriendo Guia de Ajustes Razonables...")}
                 className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
               >
                 <span className="material-symbols-outlined text-indigo-400">
@@ -195,7 +195,7 @@ export const DashboardUDEII = () => {
               </span>
             </div>
             <h4 className="text-[11px] font-black text-white uppercase tracking-[0.2em] mb-2">
-              IA_INCLUSION_ADVISOR
+              Asesor de inclusion IA
             </h4>
             <p className="text-[10px] font-medium text-slate-500 uppercase italic">
               SE DETECTA NECESIDAD DE REFUERZO EN LECTOESCRITURA PARA EL 25% DE

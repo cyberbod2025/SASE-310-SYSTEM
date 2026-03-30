@@ -195,7 +195,7 @@ export const DashboardSubdireccion = () => {
                 </div>
                 <div>
                   <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic">
-                    STREAM DE{" "}
+                    FLUJO DE{" "}
                     <span className="text-orange-500">INTERVENCIONES</span>
                   </h3>
                   <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
@@ -207,7 +207,7 @@ export const DashboardSubdireccion = () => {
                 onClick={() => setCurrentModule(AppModule.REPORTES)}
                 className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-all"
               >
-                VER_HISTORIAL_COMPLETO
+                Ver historial completo
               </button>
             </div>
 
@@ -259,7 +259,7 @@ export const DashboardSubdireccion = () => {
                     verified
                   </span>
                   <p className="text-[10px] font-black text-center uppercase tracking-[0.4em] italic">
-                    NO_ACTIVE_INTERVENTIONS_DETECTED
+                    No hay intervenciones activas registradas
                   </p>
                 </div>
               )}
@@ -278,7 +278,7 @@ export const DashboardSubdireccion = () => {
 
             <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
               <span className="size-2 bg-orange-500 rounded-full shadow-[0_0_8px_#f97316]"></span>
-              COMMAND_ACTIONS
+              Acciones de mando
             </h3>
 
             <div className="space-y-4">

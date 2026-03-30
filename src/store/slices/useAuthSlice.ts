@@ -6,6 +6,7 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
   const { role, profile } = useAuth();
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(initialRole);
   const [currentUserProfile, setCurrentUserProfile] = useState<any>(null);
+  const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
   const [currentModule, setCurrentModule] = useState<AppModule>(
     AppModule.WELCOME,
   );
@@ -21,12 +22,13 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
     }
     if (profile) {
       setCurrentUserProfile(profile);
+      setUserCreatedAt(profile?.creado_en || null);
       // Simulación de cálculo de fase basado en fecha de creación del perfil
       const createdDate = profile.creado_en ? new Date(profile.creado_en) : new Date();
       const diffTime = Math.abs(new Date().getTime() - createdDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-      setOnboardingDays(diffDays);
+    setOnboardingDays(diffDays);
       
       if (diffDays <= 1) setOnboardingPhase("intro");
       else if (diffDays <= 30) setOnboardingPhase("learning");
@@ -54,6 +56,7 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
     setCurrentModule,
     isTutorMode,
     setIsTutorMode,
+    userCreatedAt,
     onboardingDays,
     onboardingPhase,
     switchRole,

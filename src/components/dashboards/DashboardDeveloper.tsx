@@ -97,19 +97,19 @@ export const DashboardDeveloper = () => {
             className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:bg-white/10 transition-all flex items-center gap-2"
           >
             <span className="material-symbols-outlined text-sm">security</span>
-            Audit RLS
+            Auditar RLS
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Row 1: Quick Stats */}
-        <SystemStat label="Components" value="42" color="text-indigo-400" />
-        <SystemStat label="Active RLS" value="14" color="text-emerald-400" />
-        <SystemStat label="DB Tables" value="12" color="text-amber-400" />
+        <SystemStat label="Componentes" value="42" color="text-indigo-400" />
+        <SystemStat label="RLS activas" value="14" color="text-emerald-400" />
+        <SystemStat label="Tablas" value="12" color="text-amber-400" />
         <SystemStat
-          label="API Status"
-          value="LATENCY < 12ms"
+          label="Estado API"
+          value="Latencia < 12 ms"
           color="text-blue-400"
         />
 
@@ -117,7 +117,7 @@ export const DashboardDeveloper = () => {
         <div className="lg:col-span-3 bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
-              System Output
+              Salida del sistema
             </h3>
             <div className="flex gap-2">
               <span className="size-2 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50"></span>
@@ -131,7 +131,7 @@ export const DashboardDeveloper = () => {
         {/* Row 2 Right: Module Jump */}
         <div className="bg-gradient-to-b from-indigo-900/20 to-transparent border border-white/10 rounded-2xl p-6 flex flex-col shadow-2xl">
           <h3 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-6">
-            Hot-Jump Modules
+            Accesos rapidos
           </h3>
           <div className="space-y-2 flex-1">
             {Object.values(AppModule).map((mod) => (
@@ -158,10 +158,10 @@ export const DashboardDeveloper = () => {
             </span>
             <div>
               <h3 className="text-xl font-black text-white">
-                Experimental Lab
+                Laboratorio experimental
               </h3>
               <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
-                IA-SASE Neural Core Testing
+                Pruebas del nucleo IA SASE
               </p>
             </div>
           </div>
