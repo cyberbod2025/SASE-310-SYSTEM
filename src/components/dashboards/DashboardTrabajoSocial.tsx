@@ -164,13 +164,16 @@ export const DashboardTrabajoSocial = () => {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <span className="px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded text-[9px] font-black text-orange-400 uppercase tracking-widest">
-                UNIT_03 // SOCIAL_CORE
+                UNIDAD 03 // TRABAJO SOCIAL
               </span>
               <div className="size-1.5 bg-orange-600 rounded-full animate-ping"></div>
             </div>
             <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
               TRABAJO <span className="text-orange-500 italic">SOCIAL</span>
             </h2>
+            <p className="text-slate-400 text-sm mt-2">
+              Vinculacion familiar, analisis de contexto y seguimiento institucional.
+            </p>
           </div>
         </div>
 
@@ -352,11 +355,11 @@ export const DashboardTrabajoSocial = () => {
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-white/5 text-slate-500 text-[9px] uppercase font-black border-b border-white/5 italic italic tracking-widest font-mono">
-                    <th className="px-8 py-5">FOLIO_ID</th>
+                    <th className="px-8 py-5">FOLIO</th>
                     <th className="px-8 py-5">EXPEDIENTE</th>
                     <th className="px-8 py-5">VIGENCIA</th>
                     <th className="px-8 py-5">TIPO</th>
-                    <th className="px-8 py-5 text-right">OPS</th>
+                    <th className="px-8 py-5 text-right">ACCIONES</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.03]">
@@ -418,7 +421,7 @@ export const DashboardTrabajoSocial = () => {
                         colSpan={5}
                         className="py-20 text-center text-slate-700 font-black uppercase text-[10px] tracking-widest opacity-30 italic"
                       >
-                        NO_DATA_STREAM_AVAILABLE
+                        SIN REGISTROS DISPONIBLES
                       </td>
                     </tr>
                   )}
@@ -437,10 +440,10 @@ export const DashboardTrabajoSocial = () => {
                 <span className="material-symbols-outlined text-rose-500 animate-pulse">
                   warning
                 </span>
-                ALERTA_TEMPRANA_DETECCIÓN
+                Casos en vinculacion activa
               </h3>
               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">
-                SISTEMA_PREDICTIVO // {dropoutRisk.length} CASOS_ACTIVOS
+                Seguimiento familiar en proceso // {dropoutRisk.length} casos activos
               </p>
             </div>
             <button
@@ -468,7 +471,7 @@ export const DashboardTrabajoSocial = () => {
               <span className="material-symbols-outlined text-sm text-rose-400">
                 print
               </span>
-              GERERAR_BITÁCORA_RIESGO
+              Generar bitacora institucional
             </button>
           </div>
 
@@ -483,7 +486,7 @@ export const DashboardTrabajoSocial = () => {
                     {s.name.charAt(0)}
                   </div>
                   <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg animate-pulse">
-                    ALERTA_DESERCIÓN
+                    Seguimiento familiar en proceso
                   </span>
                 </div>
 
@@ -504,7 +507,7 @@ export const DashboardTrabajoSocial = () => {
                       error
                     </span>
                     <p className="text-[10px] font-black text-slate-400 uppercase italic">
-                      Patrón de inasistencia crítico
+                      Motivo de vinculacion
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -512,7 +515,7 @@ export const DashboardTrabajoSocial = () => {
                       home_pin
                     </span>
                     <p className="text-[10px] font-black text-slate-600 uppercase italic">
-                      Visita domiciliaria pendiente
+                      Seguimiento familiar en proceso
                     </p>
                   </div>
                 </div>
@@ -525,7 +528,7 @@ export const DashboardTrabajoSocial = () => {
                     }}
                     className="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
                   >
-                    Programar Visita
+                    Registrar contacto o visita
                   </button>
                   <button
                     onClick={() =>
@@ -597,7 +600,7 @@ export const DashboardTrabajoSocial = () => {
                 <span className="material-symbols-outlined text-orange-500">
                   auto_awesome
                 </span>
-                SOCIAL_INSIGHT_IA
+                ANALISIS SOCIAL IA
               </h3>
               <p className="text-slate-400 text-xs font-medium leading-relaxed uppercase italic max-w-lg mb-8">
                 EL ANÁLISIS DE INTERACCIÓN SOCIOECONÓMICA DETECTA UN PERFIL DE
@@ -623,20 +626,20 @@ export const DashboardTrabajoSocial = () => {
                   analytics
                 </span>
               </div>
-              <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] mb-2 italic italic">
-                EXPORTAR_INTELIGENCIA_SOCIAL
-              </h3>
-              <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-8 max-w-xs">
-                GÉNERA EL REPORTE ESTADÍSTICO PARA SUPERVISIÓN DE ZONA
-              </p>
-              <button
-                onClick={() =>
-                  toast.success("Compilando Atlas Social del Plantel...")
-                }
-                className="px-10 py-4 bg-orange-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-600/20 hover:bg-orange-500 transition-all active:scale-95"
-              >
-                DESCARGAR_ESTADÍSTICA_GZ
-              </button>
+               <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] mb-2 italic italic">
+                 Solicitar actualizacion de seguimiento
+               </h3>
+               <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-8 max-w-xs">
+                 Genera el reporte de seguimiento institucional
+               </p>
+               <button
+                 onClick={() =>
+                   toast.success("Compilando Atlas Social del Plantel...")
+                 }
+                 className="px-10 py-4 bg-orange-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-600/20 hover:bg-orange-500 transition-all active:scale-95"
+               >
+                 Generar bitacora institucional
+               </button>
             </div>
           </div>
         </div>
@@ -646,18 +649,36 @@ export const DashboardTrabajoSocial = () => {
       <GenericActionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Programar Visita de Campo"
-        description="Coordinación de intervención domiciliaria"
+        title="Registro de intervencion social"
+        description="Vinculacion familiar, analisis de contexto y seguimiento institucional"
         fields={[
           {
-            name: "date",
-            label: "FECHA_INTERVENCIÓN",
-            type: "date",
+            name: "student",
+            label: "Matricula del alumno",
+            type: "text",
             required: true,
           },
           {
-            name: "objective",
-            label: "OBJETIVOS_TÁCTICOS",
+            name: "motivo",
+            label: "Motivo de vinculacion",
+            type: "text",
+            required: true,
+          },
+          {
+            name: "contexto",
+            label: "Descripcion del contexto familiar",
+            type: "textarea",
+            required: true,
+          },
+          {
+            name: "acciones",
+            label: "Acciones realizadas",
+            type: "textarea",
+            required: true,
+          },
+          {
+            name: "resultado",
+            label: "Resultado y seguimiento",
             type: "textarea",
             required: true,
           },

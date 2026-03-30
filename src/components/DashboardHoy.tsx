@@ -2,11 +2,17 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { GlassCard } from "./ui/GlassCard";
 import { useApp } from "../store";
-import { CaseState, UserRole } from "../types";
+import { AppModule, CaseState, IncidentType, UserRole } from "../types";
 import { GlassEffectContainer } from "./ui/GlassEffectContainer";
 
 export const DashboardHoy = () => {
-  const { students } = useApp();
+  const {
+    students,
+    setCurrentModule,
+    currentUserRole,
+    currentUserProfile,
+    openQuickRegister,
+  } = useApp();
 
   const activeCases = useMemo(
     () => students.filter((s) => s.caseState !== CaseState.CERRADO),
@@ -53,13 +59,31 @@ export const DashboardHoy = () => {
     },
   ];
 
-  const { currentUserRole, currentUserProfile } = useApp();
+
 
   const getGreeting = () => {
     const hours = new Date().getHours();
     if (hours < 12) return "Buenos días";
     if (hours < 19) return "Buenas tardes";
     return "Buenas noches";
+  };
+
+  const handlePrimaryAction = () => {
+    switch (currentUserRole) {
+      case UserRole.DOCENTE:
+      case UserRole.DOCENTE_TUTOR:
+        openQuickRegister(IncidentType.CONDUCTA);
+        return;
+      case UserRole.PREFECTURA:
+        setCurrentModule(AppModule.BITACORA);
+        return;
+      case UserRole.ORIENTACION:
+      case UserRole.TRABAJO_SOCIAL:
+        setCurrentModule(AppModule.REPORTES);
+        return;
+      default:
+        setCurrentModule(AppModule.DASHBOARD);
+    }
   };
 
   const roleConfigs: Record<string, any> = {
@@ -89,7 +113,7 @@ export const DashboardHoy = () => {
     },
     default: {
       focus: "Operativa Institucional",
-      action: "Ir al Dashboard",
+      action: "Ir al Tablero",
       icon: "admin_panel_settings",
       color: "indigo"
     }
@@ -107,7 +131,7 @@ export const DashboardHoy = () => {
     >
       <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-5xl font-black text-white mb-2 tracking-tighter title-sase text-glow-blue">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter title-sase text-glow-blue">
             {getGreeting()}, <span className="text-blue-400 capitalize">{currentUserProfile?.full_name?.split(" ")[0] || "Compañero"}</span>
           </h1>
           <p className="text-slate-400 text-lg font-medium">
@@ -116,7 +140,10 @@ export const DashboardHoy = () => {
         </div>
         
         <div className="flex gap-2">
-          <button className="btn-sase-primary px-6 py-4">
+          <button
+            onClick={handlePrimaryAction}
+            className="btn-sase-primary px-6 py-4"
+          >
             <span className="material-icons text-sm">{config.icon}</span>
             {config.action}
           </button>
@@ -212,7 +239,7 @@ export const DashboardHoy = () => {
                 <p className="text-slate-200 font-medium">{task}</p>
               </div>
               <span className="text-sm font-medium text-slate-500 bg-white/5 px-3 py-1 rounded-lg border border-white/10">
-                {10 + index}:00 AM
+                {10 + index}:00 h
               </span>
             </motion.div>
           ))}

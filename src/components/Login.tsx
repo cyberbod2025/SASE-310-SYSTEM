@@ -1,10 +1,9 @@
-// SASE Login - Institutional Portal (Liquid Glass Identity 2026)
 import React, { useEffect, useState } from "react";
-import { Input } from "./ui/Input";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SasinLoginOrb } from "./SasinLoginOrb";
+import { GlassCard } from "./ui/GlassCard";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -13,7 +12,6 @@ interface LoginProps {
 
 export const Login: React.FC<LoginProps> = ({
   onDemoEnter,
-  onRegisterClick,
 }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -37,41 +35,36 @@ export const Login: React.FC<LoginProps> = ({
     return () => window.removeEventListener("mousemove", handleMove);
   }, [orbX, orbY]);
 
-  // Recovery State
   const [showRecovery, setShowRecovery] = useState(false);
-  const [recoveryStep, setRecoveryStep] = useState(1); // 1: ID, 2: Questions, 3: New Pass
+  const [recoveryStep, setRecoveryStep] = useState(1);
   const [recoveryData, setRecoveryData] = useState({
-    identifier: "", // Matricula or CURP
+    identifier: "",
     answer1: "",
     answer2: "",
     newPassword: "",
     confirmPassword: "",
   });
 
-  // Mock questions for the demo/UI
-  const [securityQuestions, setSecurityQuestions] = useState({
+  const [securityQuestions] = useState({
     q1: "¿Nombre de su primera escuela primaria?",
-    q2: "¿Título de su libro favorito?",
+    q2: "¿Titulo de su libro favorito?",
   });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Normalización: minúsculas y quitar espacios
+
     const normalizedUsername = username.toLowerCase().trim();
-    
-    // Validación de formato: Permitir admin@sase.mx y otros formatos corporativos
     const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-    
+
     if (!emailRegex.test(normalizedUsername)) {
-      console.log('Login: Formato de usuario inválido:', normalizedUsername);
-      toast.error("Formato de correo inválido. Por favor, verifique su entrada.");
+      console.log("Login: Formato de usuario invalido:", normalizedUsername);
+      toast.error("Formato de correo invalido. Por favor, verifique su entrada.");
       setLoading(false);
       return;
     }
 
-    console.log('Login: Intentando acceso con:', normalizedUsername);
+    console.log("Login: Intentando acceso con:", normalizedUsername);
 
     const { error } = await supabase.auth.signInWithPassword({
       email: normalizedUsername,
@@ -79,8 +72,8 @@ export const Login: React.FC<LoginProps> = ({
     });
 
     if (error) {
-      console.error('Login error:', error);
-      toast.error("Protocolo Rechazado: Credenciales no válidas", {
+      console.error("Login error:", error);
+      toast.error("Protocolo rechazado: credenciales no validas", {
         style: {
           background: "#1e1b4b",
           color: "#fff",
@@ -100,289 +93,103 @@ export const Login: React.FC<LoginProps> = ({
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center bg-[#020408] overflow-hidden font-sans selection:bg-blue-500/30">
-      {/* IMMERSIVE BACKGROUND SYSTEM */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {/* Main Mesh Gradient */}
-        <div className="absolute inset-0 bg-[#020408]"></div>
+    <div className="min-h-screen w-full bg-[#0B1120] flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-        {/* Animated Orbs */}
-        <motion.div
-          animate={{
-            x: [0, 100, -50, 0],
-            y: [0, -150, 50, 0],
-            scale: [1, 1.2, 0.9, 1],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/4 -left-20 size-[500px] bg-blue-600/10 rounded-full blur-[120px]"
-        />
-        <motion.div
-          animate={{
-            x: [0, -80, 120, 0],
-            y: [0, 100, -100, 0],
-            scale: [1, 0.8, 1.1, 1],
-          }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute -bottom-20 -right-20 size-[600px] bg-indigo-600/10 rounded-full blur-[140px]"
-        />
-        <motion.div
-          animate={{
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[800px] bg-blue-500/[0.03] rounded-full blur-[160px]"
-        />
-
-        {/* Tactical Grid */}
-        <div className="absolute inset-0 opacity-[0.05] [background-image:radial-gradient(circle_at_2px_2px,rgba(255,255,255,0.15)_1px,transparent_0)] [background-size:40px_40px]"></div>
-
-        {/* Scan Lines Overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%]" />
-        </div>
-      </div>
-
-      {/* LOGIN CONTAINER */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-[480px] p-4"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-md relative z-10"
       >
-        <div className="relative group">
-          {/* Card Outer Glow */}
-          <div className="relative card-sase !rounded-[2.5rem] p-6 md:p-14 border-white/[0.05] bg-[#0b121a]/80 backdrop-blur-[80px] overflow-hidden group">
-            {/* Inner Reflections & Pulse */}
-            <div className="absolute inset-0 pointer-events-none bg-blue-500/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse-soft"></div>
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <div className="glass-shine opacity-20"></div>
+        <GlassCard className="p-8 flex flex-col items-center">
+          <motion.div style={{ x: orbXSpring, y: orbYSpring }}>
+            <SasinLoginOrb className="w-24 h-24 mb-6" mouseX={orbX.get() / 28} mouseY={orbY.get() / 28} />
+          </motion.div>
 
-            {/* HEADER AREA: Slogan Focus & Acronym Identity */}
-            <div className="flex flex-col items-center mb-10 text-center">
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="mb-8"
-              ></motion.div>
+          <h1 className="text-3xl font-black text-white mb-2 tracking-wide text-center">SASE 310</h1>
+          <p className="text-slate-400 text-sm text-center mb-8">
+            Sistema de Acompañamiento y Seguimiento Escolar
+          </p>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="group flex flex-col items-center select-none"
-              >
-                <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
-                  <motion.div style={{ x: orbXSpring, y: orbYSpring }}>
-                    <SasinLoginOrb
-                      className="w-24 h-24 sm:w-32 sm:h-32"
-                      mouseX={orbX.get() / 28}
-                      mouseY={orbY.get() / 28}
-                    />
-                  </motion.div>
-                  <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
-                    SASE
-                  </h1>
-                </div>
-
-                <div className="flex flex-col items-center gap-3">
-                  <p className="text-[10px] md:text-[11px] font-black text-blue-500/80 uppercase tracking-widest max-w-[320px] leading-relaxed">
-                    SISTEMA SASE-310
-                  </p>
-                  <div className="flex items-center justify-center gap-4 mt-4 select-none">
-                    <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
-                      BUILD CENTRAL
-                    </span>
-                    <div className="h-[1px] w-4 bg-blue-500/20" />
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.4em]">
-                      CREDENCIALES DE ACCESO
-                    </p>
-                    <div className="h-[1px] w-4 bg-blue-500/20" />
-                    <span className="text-[7px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
-                      PROTOCOLO 2026
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
+          <form className="w-full space-y-5" onSubmit={handleLogin}>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                Correo Electronico
+              </label>
+              <div className="relative">
+                <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">email</span>
+                <input
+                  type="email"
+                  placeholder="docente@escuela.edu.mx"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
+                  required
+                />
+              </div>
             </div>
 
-            {/* FORM AREA */}
-            <form onSubmit={handleLogin} className="space-y-6 relative z-10">
-              {/* Identity Field */}
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="space-y-2"
-              >
-                <label
-                  htmlFor="login-username"
-                  className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1 flex items-center gap-2"
-                >
-                  USUARIO
-                </label>
-                <div className="relative group/input">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-blue-500 transition-colors text-xl">
-                    fingerprint
-                  </span>
-                  <input
-                    id="login-username"
-                    name="login-username"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="input-sase pl-12 h-14 !bg-white/[0.02] !border-white/5 focus:!border-blue-500/40 text-sm"
-                    placeholder="USUARIO"
-                    title="Ingrese su usuario o correo"
-                    autoComplete="username"
-                    required
-                  />
-                </div>
-              </motion.div>
-
-              {/* Password Field */}
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="space-y-2"
-              >
-                <div className="flex justify-between items-center px-1 relative mb-1">
-                  <label
-                    htmlFor="login-password"
-                    className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2"
-                  >
-                    CONTRASEÑA
-                  </label>
-                  <span className="text-blue-500/70 text-[8px] font-black uppercase tracking-widest">
-                    Acceso institucional
-                  </span>
-                </div>
-                <div className="relative group/input">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-blue-500 transition-colors text-xl">
-                    key
-                  </span>
-                  <input
-                    id="login-password"
-                    name="login-password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="input-sase pl-12 pr-12 h-14 !bg-white/[0.02] !border-white/5 focus:!border-blue-500/40 text-sm"
-                    placeholder="••••••••"
-                    title="Ingrese su clave de seguridad"
-                    autoComplete="current-password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-xl">
-                      {showPassword ? "visibility_off" : "visibility"}
-                    </span>
-                  </button>
-                </div>
-              </motion.div>
-
-              {/* Action Area */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="pt-2 flex flex-col gap-4"
-              >
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                Contraseña
+              </label>
+              <div className="relative">
+                <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">lock</span>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
+                  required
+                />
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-sase-primary w-full h-14 group overflow-hidden"
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center"
+                  aria-label="Mostrar u ocultar contraseña"
                 >
-                  <div className="glass-shine opacity-40"></div>
-                  <AnimatePresence mode="wait">
-                    {loading ? (
-                      <motion.span
-                        key="loading"
-                        className="material-symbols-outlined animate-spin text-2xl text-white"
-                      >
-                        autorenew
-                      </motion.span>
-                    ) : (
-                      <motion.div
-                        key="default"
-                        className="flex items-center justify-center gap-3"
-                      >
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                          ENTRAR AL SISTEMA
-                        </span>
-                        <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
-                          arrow_forward
-                        </span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </button>
-
-                <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center gap-2 cursor-pointer group">
-                    <input
-                      id="remember-me"
-                      name="remember-me"
-                      type="checkbox"
-                      title="Recordar mis credenciales"
-                      className="size-4 rounded border-white/10 bg-white/5 checked:bg-blue-500 transition-all cursor-pointer"
-                    />
-                    <span className="text-[10px] text-slate-500 group-hover:text-slate-400 font-bold uppercase tracking-widest transition-colors">
-                      Recordarme
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowRecovery(true);
-                      setRecoveryStep(1);
-                    }}
-                    className="text-[10px] text-blue-400/80 hover:text-blue-400 font-black uppercase tracking-widest transition-colors hover:underline"
-                  >
-                    ¿Olvidó su clave?
-                  </button>
-                </div>
-              </motion.div>
-            </form>
-
-            {/* SECONDARY ACTIONS */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="mt-8 pt-8 border-t border-white/[0.05] flex flex-col items-center gap-6 relative z-10"
-            >
-              <div className="flex items-center gap-8 justify-center w-full">
-                <div className="flex flex-col items-center gap-1 opacity-20">
-                  <p className="text-[7px] font-black text-white uppercase tracking-[0.3em]">
-                    Build Central
-                  </p>
-                  <div className="h-[1px] w-8 bg-white" />
-                </div>
-                <div className="px-4 py-1.5 bg-white/[0.02] border border-white/5 rounded-full">
-                  <span className="text-[8px] font-black text-blue-500/40 uppercase tracking-[0.5em]">
-                    v3.10 PREMIUM
+                  <span className="material-icons text-sm">
+                    {showPassword ? "visibility_off" : "visibility"}
                   </span>
-                </div>
-                <div className="flex flex-col items-center gap-1 opacity-20">
-                  <p className="text-[7px] font-black text-white uppercase tracking-[0.3em]">
-                    Protocol 2026
-                  </p>
-                  <div className="h-[1px] w-8 bg-white" />
-                </div>
+                </button>
               </div>
+            </div>
 
-              <div className="grid grid-cols-1 gap-4 w-full"></div>
-            </motion.div>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading}
+              className="w-full mt-6 py-3 rounded-xl bg-blue-600 text-white font-bold tracking-wide shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] transition-all min-h-[48px]"
+            >
+              {loading ? "Verificando acceso..." : "Acceder al sistema"}
+            </motion.button>
+          </form>
+
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setShowRecovery(true);
+                setRecoveryStep(1);
+              }}
+              className="text-xs text-blue-400/80 hover:text-blue-400 font-semibold transition-colors"
+            >
+              ¿Olvido su clave?
+            </button>
           </div>
-        </div>
+
+          <div className="mt-6 text-center">
+            <p className="text-xs text-slate-500">
+              ¿No tienes acceso? Solicita tu invitacion en Direccion.
+            </p>
+          </div>
+        </GlassCard>
       </motion.div>
 
-      {/* --- RECOVERY MODAL (LIQUID GLASS) --- */}
       <AnimatePresence>
         {showRecovery && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md">
@@ -398,16 +205,14 @@ export const Login: React.FC<LoginProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="size-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
-                      <span className="material-symbols-outlined text-blue-400">
-                        key_visualizer
-                      </span>
+                      <span className="material-icons text-blue-400">key_visualizer</span>
                     </div>
                     <div>
                       <h3 className="text-xl font-black text-white italic tracking-tighter uppercase">
-                        Recuperar Acceso
+                        Recuperar acceso
                       </h3>
                       <p className="text-[9px] font-black text-slate-500 tracking-[0.3em] uppercase">
-                        Security_Vault_v3
+                        Boveda de seguridad v3
                       </p>
                     </div>
                   </div>
@@ -415,25 +220,18 @@ export const Login: React.FC<LoginProps> = ({
                     onClick={() => setShowRecovery(false)}
                     className="size-8 rounded-full border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-all"
                   >
-                    <span className="material-symbols-outlined text-xl">
-                      close
-                    </span>
+                    <span className="material-icons text-xl">close</span>
                   </button>
                 </div>
 
                 {recoveryStep === 1 && (
                   <div className="space-y-6 animate-fade-in">
                     <p className="text-xs text-slate-400 font-medium leading-relaxed">
-                      Ingrese su{" "}
-                      <span className="text-white font-bold">
-                        Matrícula Escolar
-                      </span>{" "}
-                      o <span className="text-white font-bold">CURP</span> para
-                      iniciar el protocolo de desafío.
+                      Ingrese su <span className="text-white font-bold">Matricula escolar</span> o <span className="text-white font-bold">CURP</span> para iniciar el protocolo de desafio.
                     </p>
                     <div className="space-y-2">
                       <label htmlFor="recovery-identifier" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                        Identificador Institucional
+                        Identificador institucional
                       </label>
                       <input
                         id="recovery-identifier"
@@ -453,7 +251,7 @@ export const Login: React.FC<LoginProps> = ({
                     <button
                       onClick={async () => {
                         if (!recoveryData.identifier) {
-                          toast.error("Ingrese una identificación válida");
+                          toast.error("Ingrese una identificacion valida");
                           return;
                         }
                         setLoading(true);
@@ -467,19 +265,15 @@ export const Login: React.FC<LoginProps> = ({
                             .single();
 
                           if (error || !data) {
-                            toast.error(
-                              "Identidad no encontrada en el registro oficial",
-                            );
+                            toast.error("Identidad no encontrada en el registro oficial");
                             setLoading(false);
                             return;
                           }
 
-                          toast.success(
-                            `Protocolo activado para: ${data.nombre_completo}`,
-                          );
+                          toast.success(`Protocolo activado para: ${data.nombre_completo}`);
                           setRecoveryStep(2);
                         } catch (err) {
-                          toast.error("Error en el enlace de validación");
+                          toast.error("Error en el enlace de validacion");
                         } finally {
                           setLoading(false);
                         }
@@ -488,17 +282,13 @@ export const Login: React.FC<LoginProps> = ({
                       className="btn-sase-primary w-full h-14 flex items-center justify-center gap-3"
                     >
                       {loading ? (
-                        <span className="material-symbols-outlined animate-spin">
-                          autorenew
-                        </span>
+                        <span className="material-icons animate-spin">autorenew</span>
                       ) : (
                         <>
                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                            Validar Identidad
+                            Validar identidad
                           </span>
-                          <span className="material-symbols-outlined text-sm">
-                            verified_user
-                          </span>
+                          <span className="material-icons text-sm">verified_user</span>
                         </>
                       )}
                     </button>
@@ -508,8 +298,7 @@ export const Login: React.FC<LoginProps> = ({
                 {recoveryStep === 2 && (
                   <div className="space-y-6 animate-fade-in">
                     <p className="text-xs text-slate-400 font-medium leading-relaxed">
-                      Responda a los desafíos de seguridad configurados en su
-                      registro.
+                      Responda a los desafios de seguridad configurados en su registro.
                     </p>
 
                     <div className="space-y-4">
@@ -551,12 +340,9 @@ export const Login: React.FC<LoginProps> = ({
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => setRecoveryStep(3)}
-                      className="btn-sase-primary w-full h-14"
-                    >
+                    <button onClick={() => setRecoveryStep(3)} className="btn-sase-primary w-full h-14">
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                        Verificar Respuestas
+                        Verificar respuestas
                       </span>
                     </button>
                   </div>
@@ -565,13 +351,13 @@ export const Login: React.FC<LoginProps> = ({
                 {recoveryStep === 3 && (
                   <div className="space-y-6 animate-fade-in">
                     <p className="text-xs text-emerald-400/80 font-bold uppercase tracking-widest bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10 text-center">
-                      ✓ Identidad Verificada Correctamente
+                      ✓ Identidad verificada correctamente
                     </p>
 
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <label htmlFor="recovery-new-password" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                          Nueva Contraseña
+                          Nueva contraseña
                         </label>
                         <input
                           id="recovery-new-password"
@@ -592,7 +378,7 @@ export const Login: React.FC<LoginProps> = ({
                       </div>
                       <div className="space-y-2">
                         <label htmlFor="recovery-confirm-password" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                          Confirmar Nueva Contraseña
+                          Confirmar nueva contraseña
                         </label>
                         <input
                           id="recovery-confirm-password"
@@ -615,13 +401,13 @@ export const Login: React.FC<LoginProps> = ({
 
                     <button
                       onClick={() => {
-                        toast.success("Contraseña actualizada con éxito");
+                        toast.success("Contraseña actualizada con exito");
                         setShowRecovery(false);
                       }}
                       className="btn-sase-primary w-full h-14"
                     >
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white italic">
-                        Restablecer Acceso
+                        Restablecer acceso
                       </span>
                     </button>
                   </div>
@@ -632,22 +418,19 @@ export const Login: React.FC<LoginProps> = ({
         )}
       </AnimatePresence>
 
-      {/* TACTICAL METRIC DECORATION */}
       <div className="fixed bottom-10 right-10 flex items-center gap-4 opacity-10 select-none">
         <div className="text-right">
           <p className="text-[8px] font-black text-white uppercase tracking-widest">
-            Uplink Status
+            Estado de enlace
           </p>
-          <p className="text-[10px] font-mono text-blue-400">
-            ENCRYPTED_AES256
-          </p>
+          <p className="text-[10px] font-mono text-blue-400">CIFRADO_AES256</p>
         </div>
         <div className="size-10 border-2 border-white/20 rounded-lg flex items-center justify-center">
-          <span className="material-symbols-outlined text-white animate-pulse">
-            security
-          </span>
+          <span className="material-icons text-white animate-pulse">security</span>
         </div>
       </div>
     </div>
   );
 };
+
+export default Login;

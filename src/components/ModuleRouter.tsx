@@ -16,13 +16,12 @@ export const LoadingSpinner = () => (
 const DashboardHoy = React.lazy(() => import("./DashboardHoy").then(m => ({ default: m.DashboardHoy })));
 const DashboardDocente = React.lazy(() => import("./dashboards/DashboardDocente").then(m => ({ default: m.DashboardDocente })));
 const DashboardPrefectura = React.lazy(() => import("./dashboards/DashboardPrefectura").then((m) => ({ default: m.DashboardPrefectura })));
-const DashboardMedico = React.lazy(() => import("./dashboards/DashboardMedico"));
+const DashboardSalud = React.lazy(() => import("./dashboards/DashboardSalud").then((m) => ({ default: m.DashboardSalud })));
 const DashboardOrientacion = React.lazy(() => import("./dashboards/DashboardOrientacion").then((m) => ({ default: m.DashboardOrientacion })));
 const DashboardTrabajoSocial = React.lazy(() => import("./dashboards/DashboardTrabajoSocial").then((m) => ({ default: m.DashboardTrabajoSocial })));
 const DashboardSecretaria = React.lazy(() => import("./dashboards/DashboardSecretaria").then((m) => ({ default: m.DashboardSecretaria })));
 const DashboardDireccion = React.lazy(() => import("./dashboards/DashboardDireccion").then((m) => ({ default: m.DashboardDireccion })));
 const DashboardSubdireccion = React.lazy(() => import("./dashboards/DashboardSubdireccion").then((m) => ({ default: m.DashboardSubdireccion })));
-const DashboardUDEII = React.lazy(() => import("./dashboards/DashboardUDEII").then((m) => ({ default: m.DashboardUDEII })));
 const DashboardLectura = React.lazy(() => import("./dashboards/DashboardLectura"));
 const DashboardDeveloper = React.lazy(() => import("./dashboards/DashboardDeveloper").then((m) => ({ default: m.DashboardDeveloper })));
 const DashboardIntelligence = React.lazy(() => import("./dashboards/DashboardIntelligence").then((m) => ({ default: m.DashboardIntelligence })));
@@ -93,9 +92,9 @@ export const ModuleRouter: React.FC = () => {
           case UserRole.TRABAJO_SOCIAL:
             return <DashboardTrabajoSocial />;
           case UserRole.MEDICO_ESCOLAR:
-            return <DashboardMedico />;
+            return <DashboardSalud />;
           case UserRole.UDEII:
-            return <DashboardUDEII />;
+            return <DashboardSalud />;
           case UserRole.PROMOTORA_LECTURA:
             return <DashboardLectura />;
           case UserRole.SECRETARIA:

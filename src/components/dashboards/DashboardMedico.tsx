@@ -122,7 +122,7 @@ export const DashboardMedico = () => {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">
-                UNIT_04 // HEALTH_DPT
+                UNIDAD 04 // AREA DE SALUD
               </span>
               <span className="size-1 bg-slate-700 rounded-full"></span>
               <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
@@ -130,9 +130,9 @@ export const DashboardMedico = () => {
               </span>
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
-              MEDICAL{" "}
+              ESTACION{" "}
               <span className="text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
-                STATION
+                MEDICA
               </span>
             </h1>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
@@ -156,7 +156,7 @@ export const DashboardMedico = () => {
                 className="size-1.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"
               />
               <span className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.3em]">
-                HEALTH_CORE_ACTIVE
+                NUCLEO DE SALUD ACTIVO
               </span>
             </div>
           </div>
@@ -194,8 +194,8 @@ export const DashboardMedico = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">
-                    DATA_STREAM:{" "}
-                    <span className="text-emerald-500">CLINICAL_LOGS</span>
+                    FLUJO DE DATOS:{" "}
+                    <span className="text-emerald-500">REGISTROS CLINICOS</span>
                   </h3>
                   <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">
                     FLUJO CONTINUO DE REGISTROS DE ATENCIÓN MÉDICA
@@ -215,19 +215,19 @@ export const DashboardMedico = () => {
                 <thead>
                   <tr className="bg-white/[0.02] text-slate-500 text-[9px] uppercase font-black border-b border-white/5">
                     <th className="px-8 py-5 tracking-[0.2em] italic">
-                      TS_STAMP
+                      HORA
                     </th>
                     <th className="px-8 py-5 tracking-[0.2em] italic">
-                      SUBJECT_NAME
+                      ALUMNO
                     </th>
                     <th className="px-8 py-5 tracking-[0.2em] italic text-center">
-                      ZONE
+                      GRUPO
                     </th>
                     <th className="px-8 py-5 tracking-[0.2em] italic">
-                      LOG_TYPE
+                      TIPO
                     </th>
                     <th className="px-8 py-5 text-right tracking-[0.2em] italic">
-                      OPS
+                      ACCIONES
                     </th>
                   </tr>
                 </thead>
@@ -241,7 +241,7 @@ export const DashboardMedico = () => {
                               query_stats
                             </span>
                             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">
-                              NO_DATA_CURRENTLY_REGISTERED
+                              SIN REGISTROS EN ESTE MOMENTO
                             </p>
                           </div>
                         </td>
@@ -315,7 +315,7 @@ export const DashboardMedico = () => {
               </div>
               <div>
                 <h4 className="text-[11px] font-black text-rose-500 uppercase tracking-[0.4em] mb-1 italic">
-                  URGENT_MONITOR
+                  MONITOREO URGENTE
                 </h4>
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 bg-rose-500 rounded-full animate-ping"></span>
@@ -367,7 +367,7 @@ export const DashboardMedico = () => {
               </div>
               <div>
                 <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] italic">
-                  SUPPLY_CHAIN
+                  CADENA DE SUMINISTRO
                 </h3>
                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
                   ESTADO DEL BOTIQUÍN

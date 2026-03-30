@@ -10,9 +10,11 @@ import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
 import { SaseSplineOrb } from "./SaseSplineOrb";
+import AIOrbAssistant from "./ai/AIOrbAssistant";
 import { LiquidGlassFilters } from "./ui/LiquidGlassFilters";
 import { QuickRegister } from "./ui/QuickRegister";
 import { motion, AnimatePresence } from "framer-motion";
+import { EncuestaPulso } from "./onboarding/EncuestaPulso";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-red-900 border-none",
@@ -233,7 +235,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <NavItem
               id="nav-dashboard"
               icon="dashboard"
-              label="Dashboard"
+              label="Tablero"
               active={currentModule === AppModule.DASHBOARD}
               onClick={() => {
                 setCurrentModule(AppModule.DASHBOARD);
@@ -275,7 +277,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             />
 
             {/* FASES AVANZADAS: Desbloquear módulos complejos progresivamente (Excepto para administrativos/prefectura que necesitan todo) */}
-            {(!isPhase1 || !isDocente || currentUserRole === UserRole.PREFECTURA) && (
+            {(!isPhase1 || (currentUserRole !== UserRole.DOCENTE && currentUserRole !== UserRole.DOCENTE_TUTOR)) && (
               <>
                 <NavItem
                   id="nav-agenda"
@@ -364,7 +366,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </>
             )}
 
-            {(currentUserRole === UserRole.SYSTEM_ADMIN || currentUserRole === UserRole.DEVELOPER) && (
+            {(currentUserRole === UserRole.SYSTEM_ADMIN || 
+              currentUserRole === UserRole.DEVELOPER || 
+              currentUserRole === UserRole.PREFECTURA ||
+              currentUserRole === UserRole.DIRECTIVO ||
+              currentUserRole === UserRole.SUBDIRECCION) && (
               <NavItem
                 id="nav-bitacora"
                 icon="history"
@@ -382,7 +388,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             {!isSidebarCollapsed && (
               <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mt-6 mb-4">
-                Soporte & Ayuda
+                Soporte y Ayuda
               </span>
             )}
 
@@ -438,7 +444,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <button
               id="sidebar-feedback"
               onClick={() => setIsFeedbackOpen(true)}
-              title="Enviar comentarios, sugerencias o reportar errores"
+               title="Enviar comentarios, sugerencias o reportar errores"
               className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-xl transition-all group"
             >
               <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">
@@ -658,21 +664,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </div>
         </main>
 
-        {/* Floating IA-SASE Core - Hidden on HOME to avoid duplication */}
-        {currentModule !== AppModule.HOME && (
-          <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
-            <button
-              onClick={() => setIsAssistantOpen(!isAssistantOpen)}
-              className="relative focus:outline-none group active:scale-95 transition-transform"
-              title="Interactuar con IA-SASE"
-            >
-              <SaseSplineOrb
-                state={neuralCoreState}
-                className="w-[110px] h-[110px] cursor-pointer"
-              />
-            </button>
-          </div>
-        )}
+        {/* Sasito IA: siempre presente en todas las pantallas */}
+        <AIOrbAssistant status={assistantStatus} hideFloating={false} />
+        <EncuestaPulso />
       </div>
 
       <QuickRegister />
@@ -716,7 +710,7 @@ const NavItem: React.FC<{
       id={id}
       onClick={onClick}
       title={collapsed ? label : ""}
-      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group my-1 border ${
+      className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
           ? `bg-white/95 backdrop-blur-md ${activeTextClass} shadow-[0_8px_30px_rgba(0,0,0,0.2)] font-black border-white/20 scale-[1.02]`
           : "text-white/60 hover:bg-white/10 hover:text-white font-bold border-transparent"

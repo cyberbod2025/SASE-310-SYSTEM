@@ -24,8 +24,6 @@ export const AppShell = () => {
       <React.Suspense fallback={<LoadingSpinner />}>
         {isWelcome && showRadar ? (
           <RadarEscolar onComplete={() => setShowRadar(false)} />
-        ) : isWelcome ? (
-          <DashboardHoy />
         ) : (
           <Layout>
             <MainContent />

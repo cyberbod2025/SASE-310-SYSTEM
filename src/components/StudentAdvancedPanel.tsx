@@ -400,7 +400,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   icon: "ecg_heart",
                   label: "Clínico / Conductual",
                 },
-                { id: "LEGAL", icon: "gavel", label: "Legal & Protocolos" },
+                { id: "LEGAL", icon: "gavel", label: "Legal y Protocolos" },
               ] as const
             )
               .filter((tab) => tab.id !== "CLINICAL" || canViewClinical)

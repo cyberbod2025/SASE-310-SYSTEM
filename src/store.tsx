@@ -23,6 +23,7 @@ interface AppContextType {
   // Auth & Roles
   currentUserRole: UserRole;
   currentUserProfile: any | null;
+  userCreatedAt: string | null;
   switchRole: (role: UserRole) => void;
   currentModule: any;
   setCurrentModule: any;
@@ -239,6 +240,7 @@ export const AppProvider: React.FC<{
       value={{
         ...auth,
         currentUserProfile: useAuth().profile,
+        userCreatedAt: auth.userCreatedAt,
         ...studentsSlice,
         ...ui,
         ...aiSystem,

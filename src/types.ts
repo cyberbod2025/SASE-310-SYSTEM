@@ -333,6 +333,7 @@ export enum AppModule {
   PLANEACION_NEM = "planeacion_nem",
   IA_SASE = "ia_sase",
   OBJETOS_RETENIDOS = "objetos_retenidos",
+  MANUAL_USUARIO = "manual_usuario",
 }
 
 export interface Group {

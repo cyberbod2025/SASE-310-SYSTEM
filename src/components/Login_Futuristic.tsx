@@ -183,7 +183,7 @@ export const Login: React.FC<LoginProps> = ({
         </div>
 
         <p className="text-center mt-12 text-[10px] text-slate-500 font-black uppercase tracking-[0.5em] select-none opacity-60 title-sase">
-          SASE v{VERSION.numero} • NUCLEUS
+          SASE v{VERSION.numero} • NUCLEO
         </p>
       </div>
 

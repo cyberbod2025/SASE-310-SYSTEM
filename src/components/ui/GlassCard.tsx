@@ -27,7 +27,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`glass-card-quantum relative overflow-hidden transition-all duration-500 liquid-glass ${onClick ? "cursor-pointer" : ""} ${className}`}
+      className={`glass-card-quantum relative overflow-hidden transition-all duration-500 liquid-glass gpu-accelerated ${onClick ? "cursor-pointer" : ""} ${className}`}
     >
       {/* 🔮 Glass Shine (Efecto de Destello Interno) */}
       <div className="glass-shine" />

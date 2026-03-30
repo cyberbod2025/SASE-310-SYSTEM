@@ -9,6 +9,7 @@ import { useAuth } from "../AuthProvider";
 import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
 import { PrintPreviewModal } from "../PrintPreviewModal";
 import toast from "react-hot-toast";
+import { GlassCard } from "../ui/GlassCard";
 
 // --- MICRO-COMPONENTS ---
 
@@ -211,302 +212,143 @@ export const DashboardOrientacion = () => {
   ).length;
 
   return (
-    <div className="p-4 lg:p-8 space-y-8 animate-fade-in max-w-[1600px] mx-auto pb-32">
-      {/* COMMAND CENTER HEADER */}
-      <div className="card-sase p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 border-white/5 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 rounded-full blur-[100px] -mr-40 -mt-40 group-hover:bg-amber-500/10 transition-colors duration-1000"></div>
-
-        <div className="flex items-center gap-6 relative z-10">
-          <div className="size-20 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center justify-center text-amber-500 shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-amber-500/10 animate-pulse"></div>
-            <span className="material-symbols-outlined text-4xl font-black relative z-10">
-              psychology
-            </span>
-          </div>
-          <div>
-            <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">
-              NÚCLEO DE <span className="text-amber-500">ORIENTACIÓN</span>
-            </h2>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3 italic">
-              CENTRO DE APOYO PSICOEDUCATIVO // SASE-310
-            </p>
-          </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex-1 p-6 lg:p-8 relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col"
+    >
+      <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+            Modulo padre
+          </p>
+          <p className="text-slate-200 text-sm font-semibold">
+            Atencion Integral del Estudiante
+          </p>
+          <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
+            Orientacion Educativa
+          </h1>
+          <p className="text-slate-400 text-sm">
+            Acompañamiento socioemocional, contencion y seguimiento del estudiante.
+          </p>
         </div>
-
-        <div className="flex flex-wrap items-center gap-4 relative z-10">
-          <button
+        <div className="flex flex-wrap gap-3">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={handlePrepareBitacora}
-            className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:text-white hover:bg-white/10 transition-all flex items-center gap-3 active:scale-95"
+            className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-xl">print</span>
-            BITÁCORA_PDF
-          </button>
-          <button
+            <span className="material-icons text-sm">print</span>
+            Generar bitacora institucional
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
-            className="px-8 py-4 bg-amber-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-600/20 hover:bg-amber-500 transition-all flex items-center gap-3 active:scale-95"
+            className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 transition-colors text-sm font-medium flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-xl">add_chart</span>
-            SOLICITAR_ESTATUS
-          </button>
+            <span className="material-icons text-sm">add_chart</span>
+            Solicitar actualizacion de seguimiento
+          </motion.button>
         </div>
       </div>
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <HolographicKPI
-          icon="group"
-          label="Población Bajo Monitoreo"
-          value={students.length}
-          trend="+0.2% Global"
-          color="indigo"
-          delay={0}
-        />
-        <HolographicKPI
-          icon="warning"
-          label="Casos en Intervención"
-          value={attentionRequired}
-          trend="Prioridad_01"
-          color="amber"
-          delay={1}
-        />
-        <HolographicKPI
-          icon="visibility"
-          label="En Seguimiento Profundo"
-          value={onObservation}
-          trend="Nominal"
-          color="emerald"
-          delay={2}
-        />
-        <HolographicKPI
-          icon="radar"
-          label="Patrones Críticos"
-          value={patternAlerts.length}
-          trend="IA_Detection"
-          color="rose"
-          delay={3}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        {/* CENTER COLUMN: PATTERN MONITOR */}
-        <div className="xl:col-span-2 space-y-8">
-          <div className="card-sase border-white/5 overflow-hidden flex flex-col group h-full">
-            <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between relative">
-              <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
-              <div className="flex items-center gap-4">
-                <div className="size-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 shadow-lg">
-                  <span className="material-symbols-outlined text-xl animate-pulse">
-                    radar
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] italic">
-                    MONITOR DE PATRONES{" "}
-                    <span className="text-amber-500">IA_CORE</span>
-                  </h3>
-                  <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
-                    ANÁLISIS DE RECURRENCIA CONDUCTUAL
-                  </p>
-                </div>
-              </div>
-              <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[9px] font-mono text-slate-500 uppercase tracking-widest">
-                STREAM_ACTIVE
-              </span>
-            </div>
-
-            <div className="divide-y divide-white/[0.02]">
-              <AnimatePresence>
-                {patternAlerts.length === 0 ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="p-20 text-center flex flex-col items-center gap-4 opacity-30"
-                  >
-                    <span className="material-symbols-outlined text-6xl text-slate-600">
-                      shield_with_heart
-                    </span>
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em]">
-                      Sin alertas de riesgo detectadas
-                    </p>
-                  </motion.div>
-                ) : (
-                  patternAlerts.map((s, idx) => (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      key={s.id}
-                      className="p-6 hover:bg-white/[0.02] transition-colors flex flex-col md:flex-row md:items-center gap-6 group/row"
-                    >
-                      <div className="flex items-center gap-6 flex-1">
-                        <div className="size-14 rounded-2xl bg-white/[0.03] border border-white/10 text-slate-500 flex items-center justify-center relative overflow-hidden group-hover/row:border-amber-500/30 transition-all">
-                          <span className="material-symbols-outlined text-2xl group-hover/row:scale-110 transition-transform">
-                            person_search
-                          </span>
-                          <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover/row:opacity-100 transition-opacity"></div>
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-1">
-                            <p className="font-black text-white text-base italic uppercase tracking-tighter group-hover/row:text-amber-400 transition-colors">
-                              {s.name}
-                            </p>
-                            <span className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[9px] font-black rounded uppercase">
-                              {s.group}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <span className="text-[9px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-2">
-                              <span className="size-1.5 bg-rose-500 rounded-full animate-ping"></span>
-                              ESTADO_ALERTA: PATRÓN DETECTADO
-                            </span>
-                            <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">
-                              ID: {s.matricula}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 relative z-10 mt-4 md:mt-0">
-                        <button
-                          onClick={() => {
-                            setSelectedStudent(s);
-                            setShowAdvancedPanel(true);
-                          }}
-                          className="px-5 py-2.5 bg-amber-600/10 border border-amber-500/20 text-amber-500 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-amber-600 hover:text-white transition-all active:scale-95 flex items-center gap-2"
-                        >
-                          <span className="material-symbols-outlined text-sm">
-                            psychology_alt
-                          </span>
-                          INTERVENIR
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleNotifyAcademicRisk(s.id, "patrón detectado")
-                          }
-                          className="px-5 py-2.5 bg-white/5 border border-white/10 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all active:scale-95"
-                        >
-                          NOTIFICAR
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: AGENDA & PROTOCOLS */}
-        <div className="space-y-8">
-          {/* PROTOCOL WIDGET */}
-          {supportProtocol && (
-            <div className="card-sase p-8 bg-rose-500/[0.02] border-rose-500/20 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-all">
-                <span className="material-symbols-outlined text-8xl rotate-12 text-rose-500">
-                  description
-                </span>
-              </div>
-              <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded text-[9px] font-black text-rose-500 uppercase tracking-widest">
-                    PROTOCOLO_CRÍTICO
-                  </span>
-                </div>
-                <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-2">
-                  {supportProtocol.titulo}
-                </h3>
-                <p className="text-slate-400 text-[10px] font-medium leading-relaxed mb-6 uppercase tracking-tight line-clamp-2">
-                  {supportProtocol.objetivo}
-                </p>
-                <button
-                  onClick={() => setShowProtocol(true)}
-                  className="w-full py-4 bg-rose-600 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-500 transition-all shadow-xl shadow-rose-600/20 active:scale-95 flex items-center justify-center gap-3"
-                >
-                  <span className="material-symbols-outlined text-lg">
-                    menu_book
-                  </span>
-                  EJECUTAR PROTOCOLO
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* AGENDA INTERFACE */}
-          <div className="card-sase p-8 border-white/5 relative overflow-hidden group min-h-[400px]">
-            <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3">
-                <span className="material-symbols-outlined text-amber-500 text-xl">
-                  calendar_today
-                </span>
-                AGENDA_INTERVENCIÓN
-              </h3>
-              <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 text-amber-500 text-[9px] font-black rounded border border-amber-500/20 tabular-nums uppercase tracking-widest overflow-hidden relative">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
+        <GlassCard icon="psychology" title="Casos en intervencion activa" className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mt-4 space-y-3">
+            <AnimatePresence>
+              {patternAlerts.length === 0 ? (
                 <motion.div
-                  animate={{ opacity: [0.4, 1, 0.4] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="size-1.5 bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]"
-                />
-                <span className="relative z-10">CORE_SYNC_ACTIVE</span>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-white/[0.02] border border-white/5 border-dashed rounded-3xl p-10 text-center flex flex-col items-center gap-4 opacity-40">
-                <span className="material-symbols-outlined text-5xl text-slate-700">
-                  event_busy
-                </span>
-                <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] italic">
-                  Sin citas registradas hoy
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 pt-4">
-                <button
-                  onClick={() => setModalOpen("APPOINTMENT")}
-                  className="p-5 bg-white/5 hover:bg-amber-600 hover:text-white rounded-2xl border border-white/5 transition-all text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-4 active:scale-95 group/btn"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="p-10 text-center text-slate-500"
                 >
-                  <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center group-hover/btn:bg-white/20">
-                    <span className="material-symbols-outlined">
-                      event_note
-                    </span>
-                  </div>
-                  AGENDAR CITATORIO
-                </button>
-                <button
-                  onClick={() => setModalOpen("INTERVIEW")}
-                  className="p-5 bg-white/5 hover:bg-indigo-600 hover:text-white rounded-2xl border border-white/5 transition-all text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-4 active:scale-95 group/btn"
-                >
-                  <div className="size-10 rounded-xl bg-white/5 flex items-center justify-center group-hover/btn:bg-white/20">
-                    <span className="material-symbols-outlined">
-                      history_edu
-                    </span>
-                  </div>
-                  INICIAR ENTREVISTA
-                </button>
-              </div>
+                  Sin alertas de riesgo registradas en el sistema.
+                </motion.div>
+              ) : (
+                patternAlerts.map((s, idx) => (
+                  <motion.div
+                    key={s.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors group"
+                  >
+                    <div className="flex justify-between items-start gap-4">
+                      <div>
+                        <h3 className="text-white font-medium text-sm">{s.name}</h3>
+                        <p className="text-slate-400 text-xs mt-1">
+                          Patron de riesgo socioemocional detectado
+                        </p>
+                        <p className="text-slate-500 text-xs mt-1">
+                          {s.group} · {s.matricula}
+                        </p>
+                      </div>
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
+                        Caso en seguimiento activo
+                      </span>
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setSelectedStudent(s);
+                          setShowAdvancedPanel(true);
+                        }}
+                        className="min-h-[48px] min-w-[48px] px-4 rounded-lg bg-amber-600/20 text-amber-300 text-sm font-medium hover:bg-amber-600/30 transition-colors flex items-center justify-center"
+                      >
+                        Iniciar intervencion
+                      </motion.button>
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleNotifyAcademicRisk(s.id, "patron detectado")}
+                        className="min-h-[48px] min-w-[48px] px-4 rounded-lg bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors flex items-center justify-center"
+                      >
+                        Notificar al equipo academico
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+          </div>
+        </GlassCard>
 
-              <div className="pt-8 border-t border-white/5 grid grid-cols-2 gap-8">
-                <div className="text-center">
-                  <p className="text-3xl font-black text-white italic tracking-tighter">
-                    14
-                  </p>
-                  <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1 italic">
-                    Logros_Mes
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-3xl font-black text-emerald-500 italic tracking-tighter">
-                    98%
-                  </p>
-                  <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1 italic">
-                    Tasa_Exito
-                  </p>
-                </div>
-              </div>
+        <GlassCard icon="family_restroom" title="Agenda de atencion" className="flex flex-col h-full">
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mt-4">
+            <div className="p-8 rounded-xl border border-white/5 bg-white/[0.02] text-center text-slate-500">
+              Sin citas programadas para el dia de hoy.
             </div>
           </div>
-        </div>
+
+          <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-1 gap-3">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setModalOpen("APPOINTMENT")}
+              className="w-full min-h-[48px] rounded-xl bg-emerald-500/20 text-emerald-300 text-sm font-bold hover:bg-emerald-500/30 transition-colors border border-emerald-500/30 flex items-center justify-center gap-2"
+            >
+              <span className="material-icons text-sm">add_alert</span>
+              Generar citatorio
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setModalOpen("INTERVIEW")}
+              className="w-full min-h-[48px] rounded-xl bg-white/5 text-slate-300 text-sm font-bold hover:bg-white/10 transition-colors border border-white/10 flex items-center justify-center gap-2"
+            >
+              <span className="material-icons text-sm">history_edu</span>
+              Registrar entrevista
+            </motion.button>
+            {supportProtocol && (
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowProtocol(true)}
+                className="w-full min-h-[48px] rounded-xl bg-rose-500/20 text-rose-300 text-sm font-bold hover:bg-rose-500/30 transition-colors border border-rose-500/30 flex items-center justify-center gap-2"
+              >
+                <span className="material-icons text-sm">menu_book</span>
+                Activar protocolo critico
+              </motion.button>
+            )}
+          </div>
+        </GlassCard>
       </div>
 
       {/* MODALS */}
@@ -527,18 +369,18 @@ export const DashboardOrientacion = () => {
       <GenericActionModal
         isOpen={modalOpen === "APPOINTMENT"}
         onClose={() => setModalOpen(null)}
-        title="Bóveda de Citatorios"
-        description="Gestión de reuniones con tutores legales"
+        title="Gestion de citatorios institucionales"
+        description="Gestion de reuniones con tutores legales"
         fields={[
           {
             name: "student",
-            label: "IDENTIFICADOR_UNIDAD (MATRÍCULA)",
+            label: "Matricula del alumno",
             type: "text",
             required: true,
           },
           {
             name: "reason",
-            label: "NATURALEZA_DEL_LLAMADO",
+            label: "Motivo del citatorio (descripcion breve)",
             type: "select",
             options: [
               "ALERTA_CONDUCTA",
@@ -550,7 +392,7 @@ export const DashboardOrientacion = () => {
           },
           {
             name: "date",
-            label: "VENTANA_TEMPORAL (FECHA/HORA)",
+            label: "Fecha y hora",
             type: "date",
             required: true,
           },
@@ -561,30 +403,30 @@ export const DashboardOrientacion = () => {
       <GenericActionModal
         isOpen={modalOpen === "INTERVIEW"}
         onClose={() => setModalOpen(null)}
-        title="Gestor de Entrevistas"
-        description="Registro táctico de intervenciones directas"
+        title="Registro de entrevistas institucionales"
+        description="Registro de intervencion directa"
         fields={[
           {
             name: "student",
-            label: "TARGET_ID (MATRÍCULA)",
+            label: "Matricula del alumno",
             type: "text",
             required: true,
           },
           {
             name: "reason",
-            label: "EJE_DE_INTERVENCIÓN",
+            label: "Motivo de atencion",
             type: "text",
             required: true,
           },
           {
             name: "notes",
-            label: "NOTAS_DE_CAMPO (CRÍTICO)",
+            label: "Notas de intervencion",
             type: "textarea",
             required: true,
           },
           {
             name: "result",
-            label: "DICTAMEN_ESTRATÉGICO",
+            label: "Resultado de la intervencion",
             type: "select",
             options: [
               "PROTOCOLO_ACTIVADO",
@@ -604,6 +446,6 @@ export const DashboardOrientacion = () => {
         title="BITÁCORA DE INTERVENCIÓN PSICOPEDAGÓGICA"
         initialHtml={previewContent}
       />
-    </div>
+    </motion.div>
   );
 };
