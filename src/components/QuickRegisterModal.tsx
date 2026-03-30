@@ -21,13 +21,17 @@ export const QuickRegisterModal: React.FC = () => {
   } = useApp();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<string>("");
+  const [selectedStudentName, setSelectedStudentName] = useState<string>("");
   const [type, setType] = useState<IncidentType>(quickRegisterType);
   const [description, setDescription] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [detectedProtocol, setDetectedProtocol] = useState<Protocol | null>(null);
   const [showProtocolModal, setShowProtocolModal] = useState(false);
   const [supportProtocols, setSupportProtocols] = useState<Protocol[]>([]);
+  // Si el modal abre con un tipo específico (retardo, uniforme...) lo colapsamos
+  const [showTypePicker, setShowTypePicker] = useState(false);
 
   // Filtros inteligentes
   const [selectedGrado, setSelectedGrado] = useState<string>("");
@@ -46,6 +50,8 @@ export const QuickRegisterModal: React.FC = () => {
   useEffect(() => {
     if (quickRegisterOpen) {
       setType(quickRegisterType);
+      // Si viene con tipo predefinido, ocultamos el picker (registro rápido = ya saben el tipo)
+      setShowTypePicker(quickRegisterType === IncidentType.CONDUCTA);
       const templates: Record<string, string> = {
         [IncidentType.CONDUCTA]: "[PROTOCOLO CONVIVENCIA] - ",
         [IncidentType.RETARDO]: "[SERVICIO PREFECTURA] - Ingreso tardío: ",
@@ -198,7 +204,9 @@ export const QuickRegisterModal: React.FC = () => {
     setQuickRegisterOpen(false);
     setIsSuccess(false);
     setSearchTerm("");
+    setShowDropdown(false);
     setSelectedStudentId("");
+    setSelectedStudentName("");
     setDescription("");
   };
 
@@ -258,48 +266,88 @@ export const QuickRegisterModal: React.FC = () => {
                 </div>
 
                 <div className="relative">
-                  <span className="material-symbols-outlined absolute left-4 top-3.5 text-slate-400 text-lg">search</span>
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Escribe nombre o matrícula..."
-                    className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  />
-                  {searchTerm.length > 1 && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto">
-                      {filteredStudents.map(s => (
-                        <button
-                          key={s.id}
-                          onClick={() => { setSelectedStudentId(s.id); setSearchTerm(s.name); }}
-                          className={`w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center gap-3 transition-colors ${selectedStudentId === s.id ? 'bg-blue-50' : ''}`}
-                        >
-                          <img src={s.avatar || "/SASE_ICON.png"} className="size-8 rounded-lg object-cover" alt="" />
-                          <div>
-                            <p className="text-xs font-black text-slate-800 uppercase italic">{s.name}</p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase">{s.group} • {s.matricula}</p>
-                          </div>
-                        </button>
-                      ))}
+                  {selectedStudentId ? (
+                    // Ficha del alumno seleccionado
+                    <div className="flex items-center gap-3 h-12 bg-blue-50 border border-blue-200 rounded-xl px-4">
+                      <span className="material-symbols-outlined text-blue-600 text-lg">person_check</span>
+                      <div className="flex-1">
+                        <p className="text-xs font-black text-blue-800 uppercase italic">{selectedStudentName}</p>
+                      </div>
+                      <button
+                        onClick={() => { setSelectedStudentId(""); setSelectedStudentName(""); setSearchTerm(""); setShowDropdown(false); }}
+                        className="text-blue-400 hover:text-red-500 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-lg">close</span>
+                      </button>
                     </div>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined absolute left-4 top-3.5 text-slate-400 text-lg">search</span>
+                      <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => { setSearchTerm(e.target.value); setShowDropdown(e.target.value.length > 1); }}
+                        onFocus={() => { if (searchTerm.length > 1) setShowDropdown(true); }}
+                        placeholder="Escribe nombre o matrícula..."
+                        className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      />
+                      {showDropdown && filteredStudents.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto">
+                          {filteredStudents.map(s => (
+                            <button
+                              key={s.id}
+                              onClick={() => {
+                                setSelectedStudentId(s.id);
+                                setSelectedStudentName(s.name);
+                                setSearchTerm("");
+                                setShowDropdown(false);
+                              }}
+                              className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center gap-3 transition-colors"
+                            >
+                              <img src={s.avatar || "/SASE_ICON.png"} className="size-8 rounded-lg object-cover" alt="" />
+                              <div>
+                                <p className="text-xs font-black text-slate-800 uppercase italic">{s.name}</p>
+                                <p className="text-[9px] font-bold text-slate-400 uppercase">{s.group} • {s.matricula}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
 
               {/* Tipo e Incidencia */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {Object.values(IncidentType).map((t) => (
+              {showTypePicker ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {Object.values(IncidentType).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setType(t)}
+                      className={`px-3 py-2 rounded-xl border text-[10px] font-black uppercase tracking-tight transition-all ${
+                        type === t ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
+                      }`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                // Tipo ya pre-seleccionado — mostrar etiqueta con opción de cambiar
+                <div className="flex items-center justify-between px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-blue-600 text-sm">label</span>
+                    <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest">Tipo: {type}</span>
+                  </div>
                   <button
-                    key={t}
-                    onClick={() => setType(t)}
-                    className={`px-3 py-2 rounded-xl border text-[10px] font-black uppercase tracking-tight transition-all ${
-                      type === t ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
-                    }`}
+                    onClick={() => setShowTypePicker(true)}
+                    className="text-[9px] font-black text-slate-400 hover:text-blue-600 uppercase tracking-widest transition-colors"
                   >
-                    {t}
+                    Cambiar
                   </button>
-                ))}
-              </div>
+                </div>
+              )}
 
               {/* Guías Rápidas */}
               <div className="flex flex-wrap gap-2">

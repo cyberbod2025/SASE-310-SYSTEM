@@ -32,65 +32,65 @@ const TYPE_CONFIG: Record<
 > = {
   institucional: {
     label: "Evento Institucional",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    border: "border-blue-100",
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/20",
     icon: "account_balance",
   },
   cita_padres: {
     label: "Cita con Padres",
-    color: "text-pink-600",
-    bg: "bg-pink-50",
-    border: "border-pink-100",
+    color: "text-pink-400",
+    bg: "bg-pink-500/10",
+    border: "border-pink-500/20",
     icon: "family_restroom",
   },
   jct: {
     label: "Consejo Técnico (JCT)",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-    border: "border-amber-100",
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
     icon: "groups",
   },
   reunion: {
     label: "Reunión de Plantilla",
-    color: "text-emerald-600",
-    bg: "bg-emerald-50",
-    border: "border-emerald-100",
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
     icon: "school",
   },
   entrega: {
     label: "Entrega de Boletas",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-    border: "border-purple-100",
+    color: "text-purple-400",
+    bg: "bg-purple-500/10",
+    border: "border-purple-500/20",
     icon: "description",
   },
   evento: {
     label: "Actividad Cultural",
-    color: "text-cyan-600",
-    bg: "bg-cyan-50",
-    border: "border-cyan-100",
+    color: "text-cyan-400",
+    bg: "bg-cyan-500/10",
+    border: "border-cyan-500/20",
     icon: "celebration",
   },
   evaluacion: {
     label: "Periodo Evaluación",
-    color: "text-indigo-600",
-    bg: "bg-indigo-50",
-    border: "border-indigo-100",
+    color: "text-indigo-400",
+    bg: "bg-indigo-500/10",
+    border: "border-indigo-500/20",
     icon: "fact_check",
   },
   festivo: {
     label: "Suspensión Labores",
-    color: "text-red-600",
-    bg: "bg-red-50",
-    border: "border-red-100",
+    color: "text-red-400",
+    bg: "bg-red-500/10",
+    border: "border-red-500/20",
     icon: "flag",
   },
   otro: {
     label: "Otros",
-    color: "text-slate-600",
-    bg: "bg-slate-50",
-    border: "border-slate-100",
+    color: "text-slate-400",
+    bg: "bg-white/5",
+    border: "border-white/10",
     icon: "event",
   },
 };
@@ -240,12 +240,12 @@ export const Agenda: React.FC = () => {
     const hasEvents = events.some((e) => e.date === dateStr);
 
     if (isSelected)
-      return "bg-blue-700 text-white shadow-lg shadow-blue-200 ring-4 ring-blue-50";
+      return "bg-blue-600 text-white shadow-lg shadow-blue-900/40 ring-2 ring-blue-500/40";
     if (isToday)
-      return "bg-blue-50 text-blue-700 font-black border border-blue-100";
+      return "bg-blue-500/10 text-blue-300 font-black border border-blue-500/20";
     return hasEvents
-      ? "bg-slate-50 text-slate-800 font-bold border border-slate-100"
-      : "text-slate-600 hover:bg-slate-50";
+      ? "bg-white/5 text-slate-200 font-bold border border-white/10"
+      : "text-slate-500 hover:bg-white/5 hover:text-white";
   };
 
   const filteredStudents = students.filter((s) =>
@@ -255,21 +255,21 @@ export const Agenda: React.FC = () => {
   return (
     <div className="flex-1 w-full space-y-8 animate-fade-in font-sans">
       {/* Institutional Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+      <div className="card-sase p-6 border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-5">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-            <span className="material-symbols-outlined text-blue-700 text-4xl">
+          <div className="bg-white/[0.03] p-4 rounded-2xl border border-white/10 shadow-sm">
+            <span className="material-symbols-outlined text-blue-400 text-4xl">
               calendar_today
             </span>
           </div>
           <div>
-            <h2 className="text-3xl font-black text-slate-800 tracking-tight uppercase italic tracking-tighter">
+            <h2 className="text-3xl font-black text-white tracking-tight uppercase italic tracking-tighter">
               Agenda Escolar
             </h2>
             <div className="flex items-center gap-3 mt-1 text-[11px] font-black uppercase tracking-widest text-slate-500">
               <span>Planificación Estratégica</span>
-              <span className="text-slate-200">|</span>
-              <span className="text-blue-600">
+              <span className="text-slate-700">|</span>
+              <span className="text-blue-400">
                 Ciclo {CICLO_ESCOLAR.labelCorto}
               </span>
             </div>
@@ -280,7 +280,7 @@ export const Agenda: React.FC = () => {
           onClick={() => {
             setShowModal(true);
           }}
-          className="px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center gap-3 active:scale-95 relative z-20 cursor-pointer"
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center gap-3 active:scale-95 relative z-20 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[20px]">
             add_circle
@@ -289,12 +289,12 @@ export const Agenda: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Calendar Card */}
-        <div className="lg:col-span-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-sm flex flex-col">
-          <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <button
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Calendar Card */}
+          <div className="lg:col-span-8 card-sase p-0 border-white/5 overflow-hidden flex flex-col">
+            <div className="px-8 py-6 border-b border-white/5 bg-white/[0.02] flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <button
                 onClick={() =>
                   setCurrentMonth(
                     new Date(
@@ -303,14 +303,14 @@ export const Agenda: React.FC = () => {
                     ),
                   )
                 }
-                className="size-10 rounded-full hover:bg-white text-slate-400 hover:text-blue-700 transition-all border border-transparent hover:border-slate-200 flex items-center justify-center"
-              >
-                <span className="material-symbols-outlined">chevron_left</span>
-              </button>
-              <h3 className="text-lg font-black text-slate-800 uppercase italic tracking-tighter w-48 text-center capitalize">
-                {monthLabel}
-              </h3>
-              <button
+                  className="size-10 rounded-full hover:bg-white/5 text-slate-500 hover:text-blue-400 transition-all border border-transparent hover:border-white/10 flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+                <h3 className="text-lg font-black text-white uppercase italic tracking-tighter w-48 text-center capitalize">
+                  {monthLabel}
+                </h3>
+                <button
                 onClick={() =>
                   setCurrentMonth(
                     new Date(
@@ -319,41 +319,41 @@ export const Agenda: React.FC = () => {
                     ),
                   )
                 }
-                className="size-10 rounded-full hover:bg-white text-slate-400 hover:text-blue-700 transition-all border border-transparent hover:border-slate-200 flex items-center justify-center"
-              >
-                <span className="material-symbols-outlined">chevron_right</span>
-              </button>
+                  className="size-10 rounded-full hover:bg-white/5 text-slate-500 hover:text-blue-400 transition-all border border-transparent hover:border-white/10 flex items-center justify-center"
+                >
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+              </div>
+              <div className="hidden md:flex items-center gap-4">
+                {Object.entries(TYPE_CONFIG)
+                  .slice(0, 4)
+                  .map(([key, cfg]) => (
+                    <div key={key} className="flex items-center gap-2">
+                      <span className={`size-2 ${cfg.bg} ${cfg.border} border rounded-full`}></span>
+                      <span className="text-[10px] font-black text-slate-500 uppercase">
+                        {cfg.label}
+                      </span>
+                    </div>
+                  ))}
+              </div>
             </div>
-            <div className="hidden md:flex items-center gap-4">
-              {Object.entries(TYPE_CONFIG)
-                .slice(0, 4)
-                .map(([key, cfg]) => (
-                  <div key={key} className="flex items-center gap-2">
-                    <span className={`size-2 ${cfg.bg} ${cfg.border} border rounded-full`}></span>
-                    <span className="text-[10px] font-black text-slate-500 uppercase">
-                      {cfg.label}
-                    </span>
+
+            <div className="p-8">
+              <div className="grid grid-cols-7 gap-4 mb-4">
+                {["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"].map((d) => (
+                  <div
+                    key={d}
+                    className="text-center text-xs font-black text-slate-500 tracking-widest"
+                  >
+                    {d}
                   </div>
                 ))}
-            </div>
-          </div>
-
-          <div className="p-8">
-            <div className="grid grid-cols-7 gap-4 mb-4">
-              {["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"].map((d) => (
-                <div
-                  key={d}
-                  className="text-center text-xs font-black text-slate-500 tracking-widest"
-                >
-                  {d}
-                </div>
-              ))}
-            </div>
-            {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-700"></div>
               </div>
-            ) : (
+              {loading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+                </div>
+              ) : (
               <div className="grid grid-cols-7 gap-4">
                 {days.map((day, i) => (
                   <button
@@ -393,27 +393,27 @@ export const Agenda: React.FC = () => {
         </div>
 
         {/* Selected Activity Sidebar */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm p-8 pb-10 min-h-[500px]">
-            <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm text-blue-700">
-                event
-              </span>
-              Actividades del Día
-            </h3>
+          <div className="lg:col-span-4 space-y-6">
+            <div className="card-sase border-white/5 p-8 pb-10 min-h-[500px]">
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm text-blue-400">
+                  event
+                </span>
+                Actividades del Día
+              </h3>
 
             <div className="space-y-4">
               {loading ? (
                 <div className="animate-pulse space-y-3">
-                  <div className="h-16 bg-slate-100 rounded-2xl"></div>
-                  <div className="h-16 bg-slate-100 rounded-2xl"></div>
+                  <div className="h-16 bg-white/5 rounded-2xl"></div>
+                  <div className="h-16 bg-white/5 rounded-2xl"></div>
                 </div>
               ) : selectedDateEvents.length === 0 ? (
                 <div className="py-20 text-center">
-                  <span className="material-symbols-outlined text-slate-100 text-6xl mb-4">
+                  <span className="material-symbols-outlined text-white/10 text-6xl mb-4">
                     event_busy
                   </span>
-                  <p className="text-[11px] font-black text-slate-300 uppercase tracking-widest italic">
+                  <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest italic">
                     Agenda libre de compromisos
                   </p>
                 </div>
@@ -423,7 +423,7 @@ export const Agenda: React.FC = () => {
                   return (
                     <div
                       key={event.id}
-                      className={`p-5 rounded-[1.5rem] border ${cfg.border} ${cfg.bg} group hover:scale-[1.02] transition-all cursor-pointer shadow-sm shadow-black/5`}
+                      className={`p-5 rounded-[1.5rem] border ${cfg.border} ${cfg.bg} group hover:scale-[1.02] transition-all cursor-pointer shadow-sm shadow-black/20`}
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div className={`flex items-center gap-2 ${cfg.color}`}>
@@ -435,36 +435,36 @@ export const Agenda: React.FC = () => {
                           </span>
                         </div>
                         {event.time && (
-                          <span className="text-[10px] font-black text-slate-400 bg-white/50 px-2 py-0.5 rounded-full border border-white/80">
+                          <span className="text-[10px] font-black text-slate-400 bg-white/10 px-2 py-0.5 rounded-full border border-white/10">
                             {event.time}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm font-black text-slate-800 uppercase italic tracking-tight mb-2">
+                      <p className="text-sm font-black text-white uppercase italic tracking-tight mb-2">
                         {event.title}
                       </p>
                       {event.alumno_nombre && (
-                        <div className="flex items-center gap-2 mb-2 bg-white/40 p-2 rounded-xl border border-white/60">
-                          <span className="material-symbols-outlined text-emerald-600 text-xs">
+                        <div className="flex items-center gap-2 mb-2 bg-white/5 p-2 rounded-xl border border-white/10">
+                          <span className="material-symbols-outlined text-emerald-400 text-xs">
                             person
                           </span>
-                          <span className="text-[10px] font-bold text-emerald-800">
+                          <span className="text-[10px] font-bold text-emerald-300">
                             Alumno: {event.alumno_nombre}
                           </span>
                         </div>
                       )}
                       {event.para_todos_maestros && (
                         <div className="flex items-center gap-2 mb-2 bg-indigo-500/10 p-2 rounded-xl border border-indigo-500/20">
-                          <span className="material-symbols-outlined text-indigo-600 text-xs">
+                          <span className="material-symbols-outlined text-indigo-400 text-xs">
                             notifications_active
                           </span>
-                          <span className="text-[9px] font-black text-indigo-700 uppercase">
+                          <span className="text-[9px] font-black text-indigo-300 uppercase">
                             Notificar a plantilla docente
                           </span>
                         </div>
                       )}
                       {event.description && (
-                        <p className="text-[10px] text-slate-600 mt-2 font-medium leading-relaxed italic border-t border-black/5 pt-3">
+                        <p className="text-[10px] text-slate-400 mt-2 font-medium leading-relaxed italic border-t border-white/10 pt-3">
                           {event.description}
                         </p>
                       )}
@@ -479,22 +479,22 @@ export const Agenda: React.FC = () => {
 
       {/* Modal Premium e Institucional */}
       {showModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-white/20 animate-scale-up">
-            <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/80">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-fade-in">
+          <div className="rounded-[2.5rem] shadow-2xl w-full max-w-lg overflow-hidden border border-white/10 animate-scale-up bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl">
+            <div className="p-8 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
               <div className="flex items-center gap-3">
-                <div className="bg-blue-700 p-2 rounded-xl text-white">
+                <div className="bg-blue-600 p-2 rounded-xl text-white">
                   <span className="material-symbols-outlined text-lg">
                     edit_calendar
                   </span>
                 </div>
-                <h3 className="text-xl font-black text-slate-800 uppercase italic tracking-tighter">
+                <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">
                   Nueva Actividad Institucional
                 </h3>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="size-10 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-100 transition-all flex items-center justify-center shadow-sm"
+                className="size-10 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition-all flex items-center justify-center shadow-sm"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -508,7 +508,7 @@ export const Agenda: React.FC = () => {
                 <input
                   type="text"
                   autoFocus
-                  className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-5 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:italic placeholder:font-normal"
+                  className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-5 text-sm font-bold text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:italic placeholder:font-normal placeholder:text-slate-500"
                   placeholder="Ej. Reunión de Consejo Técnico..."
                   value={newEvent.title || ""}
                   onChange={(e) =>
@@ -524,7 +524,7 @@ export const Agenda: React.FC = () => {
                   </label>
                   <input
                     type="date"
-                    className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-5 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+                    className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-5 text-sm font-bold text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
                     value={newEvent.date}
                     onChange={(e) =>
                       setNewEvent({ ...newEvent, date: e.target.value })
@@ -537,7 +537,7 @@ export const Agenda: React.FC = () => {
                   </label>
                   <input
                     type="time"
-                    className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-5 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+                    className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-5 text-sm font-bold text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
                     value={newEvent.time || ""}
                     onChange={(e) =>
                       setNewEvent({ ...newEvent, time: e.target.value })
@@ -567,8 +567,8 @@ export const Agenda: React.FC = () => {
                       }
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all text-left ${
                         newEvent.type === key
-                          ? `${cfg.bg} ${cfg.border} ${cfg.color} ring-2 ring-current ring-offset-2 scale-95`
-                          : "bg-white border-slate-100 text-slate-400 hover:border-slate-300"
+                          ? `${cfg.bg} ${cfg.border} ${cfg.color} ring-2 ring-current scale-95`
+                          : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
                       }`}
                     >
                       <span className="material-symbols-outlined text-lg">
@@ -584,7 +584,7 @@ export const Agenda: React.FC = () => {
 
               {newEvent.type === "cita_padres" && (
                 <div className="space-y-2 animate-fade-in opacity-100">
-                  <label className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] ml-1">
+                  <label className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] ml-1">
                     Vincular Alumno (Cita con Padres)
                   </label>
                   <div className="relative">
@@ -593,14 +593,14 @@ export const Agenda: React.FC = () => {
                     </span>
                     <input
                       type="text"
-                      className="w-full h-12 bg-emerald-50/30 border border-emerald-200 rounded-xl pl-12 pr-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
+                      className="w-full h-12 bg-white/5 border border-emerald-500/20 rounded-xl pl-12 pr-4 text-sm font-bold text-white focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all"
                       placeholder="Buscar alumno..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
                   {searchTerm && (
-                    <div className="bg-white border border-slate-200 rounded-xl mt-1 max-h-40 overflow-y-auto shadow-xl relative z-[120]">
+                    <div className="bg-[#0B1120] border border-white/10 rounded-xl mt-1 max-h-40 overflow-y-auto shadow-xl relative z-[120]">
                       {filteredStudents.length > 0 ? (
                         filteredStudents.map((s) => (
                           <button
@@ -614,7 +614,7 @@ export const Agenda: React.FC = () => {
                               });
                               setSearchTerm("");
                             }}
-                            className="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 transition-colors border-b border-slate-50 last:border-0"
+                            className="w-full text-left px-4 py-3 hover:bg-white/5 flex items-center gap-3 transition-colors border-b border-white/5 last:border-0"
                           >
                             <img
                               src={s.avatar}
@@ -622,29 +622,29 @@ export const Agenda: React.FC = () => {
                               alt=""
                             />
                             <div>
-                              <p className="text-xs font-black text-slate-800 uppercase italic">
+                              <p className="text-xs font-black text-white uppercase italic">
                                 {s.name}
                               </p>
-                              <p className="text-[9px] font-bold text-slate-400 uppercase">
+                              <p className="text-[9px] font-bold text-slate-500 uppercase">
                                 {s.group} • {s.matricula}
                               </p>
                             </div>
                           </button>
                         ))
                       ) : (
-                        <div className="p-4 text-center text-[10px] font-bold text-slate-400 uppercase italic">
+                        <div className="p-4 text-center text-[10px] font-bold text-slate-500 uppercase italic">
                           No se encontraron alumnos
                         </div>
                       )}
                     </div>
                   )}
                   {newEvent.alumno_nombre && (
-                    <div className="mt-2 flex items-center justify-between bg-emerald-50 p-3 rounded-xl border border-emerald-100 italic">
+                    <div className="mt-2 flex items-center justify-between bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 italic">
                       <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-emerald-600 text-sm">
+                        <span className="material-symbols-outlined text-emerald-400 text-sm">
                           person_check
                         </span>
-                        <span className="text-xs font-black text-emerald-800 uppercase">
+                        <span className="text-xs font-black text-emerald-300 uppercase">
                           {newEvent.alumno_nombre}
                         </span>
                       </div>
@@ -657,7 +657,7 @@ export const Agenda: React.FC = () => {
                             alumno_nombre: undefined,
                           })
                         }
-                        className="text-emerald-400 hover:text-emerald-600 transition-colors"
+                        className="text-emerald-400 hover:text-emerald-300 transition-colors"
                       >
                         <span className="material-symbols-outlined text-sm">
                           cancel
@@ -668,16 +668,35 @@ export const Agenda: React.FC = () => {
                 </div>
               )}
 
-              <div 
-                className="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100 hover:border-blue-200 transition-colors cursor-pointer" 
-                onClick={() => setNewEvent({ ...newEvent, para_todos_maestros: !newEvent.para_todos_maestros })}
+              <div
+                className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/10 hover:border-blue-500/30 transition-colors cursor-pointer"
+                onClick={() =>
+                  setNewEvent({
+                    ...newEvent,
+                    para_todos_maestros: !newEvent.para_todos_maestros,
+                  })
+                }
               >
-                <div className={`size-6 rounded-lg flex items-center justify-center border-2 transition-all ${newEvent.para_todos_maestros ? 'bg-blue-600 border-blue-600 scale-110 shadow-lg shadow-blue-600/20' : 'bg-white border-slate-200'}`}>
-                  {newEvent.para_todos_maestros && <span className="material-symbols-outlined text-white text-[16px]">check</span>}
+                <div
+                  className={`size-6 rounded-lg flex items-center justify-center border-2 transition-all ${
+                    newEvent.para_todos_maestros
+                      ? "bg-blue-600 border-blue-600 scale-110 shadow-lg shadow-blue-600/20"
+                      : "bg-white/5 border-white/10"
+                  }`}
+                >
+                  {newEvent.para_todos_maestros && (
+                    <span className="material-symbols-outlined text-white text-[16px]">
+                      check
+                    </span>
+                  )}
                 </div>
                 <div>
-                  <p className="text-[10px] font-black text-slate-800 uppercase tracking-widest leading-none">Notificar a toda la plantilla docente</p>
-                  <p className="text-[9px] text-slate-400 font-bold uppercase mt-1">Este evento se registrará en la agenda de todos los maestros.</p>
+                  <p className="text-[10px] font-black text-white uppercase tracking-widest leading-none">
+                    Notificar a toda la plantilla docente
+                  </p>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase mt-1">
+                    Este evento se registrará en la agenda de todos los maestros.
+                  </p>
                 </div>
               </div>
 
@@ -686,7 +705,7 @@ export const Agenda: React.FC = () => {
                   Notas de Referencia
                 </label>
                 <textarea
-                  className="w-full h-24 bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:italic resize-none"
+                  className="w-full h-24 bg-white/5 border border-white/10 rounded-xl p-5 text-sm font-bold text-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:italic placeholder:text-slate-500 resize-none"
                   placeholder="Instrucciones o detalles clave..."
                   value={newEvent.description || ""}
                   onChange={(e) =>
@@ -699,14 +718,14 @@ export const Agenda: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 h-14 bg-slate-100 hover:bg-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl transition-all"
+                  className="flex-1 h-14 bg-white/5 hover:bg-white/10 text-slate-300 font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl transition-all border border-white/10"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveEvent}
-                  className="flex-[2] h-14 bg-blue-700 hover:bg-blue-800 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-200 transition-all flex items-center justify-center gap-3"
+                  className="flex-[2] h-14 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-3"
                 >
                   <span className="material-symbols-outlined text-[18px]">
                     check_circle

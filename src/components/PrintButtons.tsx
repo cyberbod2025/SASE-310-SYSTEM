@@ -262,7 +262,6 @@ export const printContent = (title: string, htmlContent: string) => {
             <div class="official-location">Turno Vespertino • Iztapalapa, CDMX</div>
             <div class="official-motto">"La Educación para un México Mejor"</div>
           </div>
-          <img src="${rightLogo}" alt="Logo Institucional" class="official-logo" />
         </div>
         
         <div class="header-meta">

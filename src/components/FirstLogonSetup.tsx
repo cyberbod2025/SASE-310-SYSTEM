@@ -116,11 +116,14 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
+                  <label htmlFor="setup-new-password" className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
                     Nueva Contraseña
                   </label>
                   <input
+                    id="setup-new-password"
+                    name="setup-new-password"
                     type="password"
+                    autoComplete="new-password"
                     value={formData.newPassword}
                     onChange={(e) =>
                       setFormData({ ...formData, newPassword: e.target.value })
@@ -130,11 +133,14 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
+                  <label htmlFor="setup-confirm-password" className="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
                     Confirmar Contraseña
                   </label>
                   <input
+                    id="setup-confirm-password"
+                    name="setup-confirm-password"
                     type="password"
+                    autoComplete="new-password"
                     value={formData.confirmPassword}
                     onChange={(e) =>
                       setFormData({
@@ -175,10 +181,12 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
 
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white uppercase tracking-widest pl-1 block">
+                  <label htmlFor="setup-q1" className="text-[10px] font-black text-white uppercase tracking-widest pl-1 block">
                     Pregunta 1: {securityQuestions[0]}
                   </label>
                   <input
+                    id="setup-q1"
+                    name="setup-q1"
                     type="text"
                     value={formData.q1}
                     onChange={(e) =>
@@ -188,10 +196,12 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white uppercase tracking-widest pl-1 block">
+                  <label htmlFor="setup-q2" className="text-[10px] font-black text-white uppercase tracking-widest pl-1 block">
                     Pregunta 2: {securityQuestions[2]}
                   </label>
                   <input
+                    id="setup-q2"
+                    name="setup-q2"
                     type="text"
                     value={formData.q2}
                     onChange={(e) =>
@@ -201,10 +211,12 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white uppercase tracking-widest pl-1 block">
+                  <label htmlFor="setup-q3" className="text-[10px] font-black text-white uppercase tracking-widest pl-1 block">
                     Pregunta 3: {securityQuestions[3]}
                   </label>
                   <input
+                    id="setup-q3"
+                    name="setup-q3"
                     type="text"
                     value={formData.q3}
                     onChange={(e) =>
@@ -248,11 +260,14 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                   </h4>
 
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
+                    <label htmlFor="setup-curp" className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
                       CURP (Requerido)
                     </label>
                     <input
+                      id="setup-curp"
+                      name="setup-curp"
                       type="text"
+                      autoComplete="off"
                       maxLength={18}
                       value={formData.curp}
                       onChange={(e) =>
@@ -267,11 +282,14 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
+                    <label htmlFor="setup-phone" className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
                       Teléfono Celular
                     </label>
                     <input
+                      id="setup-phone"
+                      name="setup-phone"
                       type="tel"
+                      autoComplete="tel"
                       value={formData.phone}
                       onChange={(e) =>
                         setFormData({ ...formData, phone: e.target.value })
@@ -282,10 +300,12 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
+                    <label htmlFor="setup-dob" className="text-[9px] font-black text-blue-400 uppercase tracking-widest pl-1 block">
                       Fecha de Nacimiento
                     </label>
                     <input
+                      id="setup-dob"
+                      name="setup-dob"
                       type="date"
                       value={formData.dob}
                       onChange={(e) =>

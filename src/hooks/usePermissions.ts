@@ -8,9 +8,11 @@ export const usePermissions = () => {
 
   // Obtener permisos base del rol
   const rolePermissions = useMemo(() => {
+    const roleKey = (currentUserRole as string)?.toLowerCase();
     return (
-      PERMISOS_POR_ROL[currentUserRole as string] ||
-      PERMISOS_POR_ROL[UserRole.GUEST]
+      PERMISOS_POR_ROL[roleKey] ||
+      PERMISOS_POR_ROL[UserRole.GUEST] ||
+      PERMISOS_POR_ROL["guest"]
     );
   }, [currentUserRole]);
 

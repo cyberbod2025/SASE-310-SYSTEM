@@ -42,14 +42,15 @@ export const FeedbackWidget = () => {
 
       if (error) {
         console.warn("Feedback table might be missing:", error);
-        // Fallback: Just toast success for UI demo purposes
-        toast.error("Error al enviar (Tabla no existe).");
+        toast.error("Error al enviar. Intenta de nuevo.", { duration: 4000 });
+        setIsSending(false);
+        return;
       } else {
-        toast.success("¡Gracias! Tu sugerencia ha sido recibida.");
+        toast.success("¡Gracias! Tu sugerencia ha sido recibida.", { duration: 4000 });
       }
     } catch (err) {
       console.error(err);
-      toast.success("Feedback registrado localmente (Demo).");
+      // Sin toast adicional en catch para evitar mensajes duplicados
     }
 
     setIsSending(false);
