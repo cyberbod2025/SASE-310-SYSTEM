@@ -89,6 +89,15 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
 
   return (
     <div className="fixed inset-0 z-[200] bg-[#020408] flex items-center justify-center p-6 font-sans overflow-hidden">
+      <div className="absolute top-6 right-6 z-20 flex gap-3">
+        <button
+          type="button"
+          onClick={() => setIsFeedbackOpen(true)}
+          className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-[11px] font-black uppercase tracking-[0.2em] text-slate-100 hover:bg-white/15 hover:border-blue-400/50 transition-all"
+        >
+          Feedback
+        </button>
+      </div>
       {/* Background Ambience */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-[120px]" />
