@@ -1,15 +1,83 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useApp } from "../store";
 import { supabase } from "../supabase/client";
 import { toast } from "react-hot-toast";
+import { AppModule, UserRole } from "../types";
 
 export const FeedbackWidget = () => {
   // We get user directly from supabase auth when submitting
 
-  const { isFeedbackOpen, setIsFeedbackOpen } = useApp();
+  const {
+    isFeedbackOpen,
+    setIsFeedbackOpen,
+    currentModule,
+    currentUserRole,
+    addNotification,
+  } = useApp();
+
+  type IssueTag =
+    | "boton"
+    | "menu"
+    | "datos"
+    | "rendimiento"
+    | "sugerencia";
+
   const [type, setType] = useState<"bug" | "suggestion" | "ux">("bug");
+  const [issueTag, setIssueTag] = useState<IssueTag>("boton");
   const [comment, setComment] = useState("");
   const [isSending, setIsSending] = useState(false);
+
+  const moduleLabels: Record<AppModule, string> = useMemo(
+    () => ({
+      [AppModule.HOME]: "Selección de módulo",
+      [AppModule.WELCOME]: "Portada",
+      [AppModule.DASHBOARD]: "Dashboard",
+      [AppModule.AGENDA]: "Agenda",
+      [AppModule.REPORTES]: "Reportes",
+      [AppModule.NOTIFICATIONS]: "Centro de notificaciones",
+      [AppModule.EXPEDIENTES]: "Expedientes",
+      [AppModule.BITACORA]: "Bitácora de auditoría",
+      [AppModule.SOLICITUDES]: "Solicitudes",
+      [AppModule.REPORTES_DOCENTES]: "Reportes Docentes",
+      [AppModule.INSCRIPCIONES]: "Admisión",
+      [AppModule.ARCHIVO]: "Archivo",
+      [AppModule.PROTOCOLOS]: "Protocolos",
+      [AppModule.APROBACIONES_PERSONAL]: "Aprobaciones de personal",
+      [AppModule.CALIFICACIONES]: "Calificaciones",
+      [AppModule.DOCUMENTACION]: "Documentación",
+      [AppModule.MIS_GRUPOS]: "Mis grupos",
+      [AppModule.SUBDIRECCION]: "Subdirección",
+      [AppModule.DEVELOPER]: "Panel Técnico",
+      [AppModule.PLANEACION_NEM]: "Planeación NEM",
+      [AppModule.ASISTENCIA]: "Asistencia",
+      [AppModule.OBJETOS_RETENIDOS]: "Objetos retenidos",
+      [AppModule.IA_SASE]: "Terminal IA",
+      [AppModule.NOT_FOUND]: "No encontrado",
+      [AppModule.REGISTRO_PERSONAL]: "Registro de personal",
+      [AppModule.TRABAJO_SOCIAL_TRACKER]: "Casos Trabajo Social",
+      [AppModule.SALUD]: "Salud",
+      [AppModule.UDEII_TRACKER]: "Inclusión UDEII",
+      [AppModule.LECTURA_TRACKER]: "Lectura",
+      [AppModule.MANUAL_USUARIO]: "Manual de usuario",
+    }),
+    [],
+  );
+
+  const issueLabels: Record<IssueTag, string> = {
+    boton: "Un botón no funciona",
+    menu: "Un menú se queda abierto",
+    datos: "No guarda o no muestra datos",
+    rendimiento: "Lentitud o pantalla saturada",
+    sugerencia: "Propuesta de mejora",
+  };
+
+  useEffect(() => {
+    if (isFeedbackOpen) {
+      setIssueTag("boton");
+      setType("bug");
+      setComment("");
+    }
+  }, [isFeedbackOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +92,19 @@ export const FeedbackWidget = () => {
     const currentUrl = window.location.href;
     const userAgent = navigator.userAgent;
 
+    const contextoAutomatico = [
+      `Módulo/Dashboard: ${moduleLabels[currentModule] || "Sin módulo"}`,
+      `Ruta: ${window.location.pathname}`,
+      `Rol: ${currentUserRole}`,
+      `Etiqueta rápida: ${issueLabels[issueTag]}`,
+      `Pantalla: ${window.innerWidth}x${window.innerHeight}`,
+    ].join(" | ");
+
+    const comentarioConContexto = `${comment.trim()}
+
+[Contexto automático]
+${contextoAutomatico}`;
+
     // Persist to Supabase (bypassing strict type check for pilot)
     try {
       const { error } = await (
@@ -33,7 +114,7 @@ export const FeedbackWidget = () => {
           user_id: user?.id,
           email: user?.email,
           type,
-          comment,
+          comment: comentarioConContexto,
           url: currentUrl,
           user_agent: userAgent,
           created_at: new Date().toISOString(),
@@ -53,6 +134,23 @@ export const FeedbackWidget = () => {
       // Sin toast adicional en catch para evitar mensajes duplicados
     }
 
+    try {
+      await addNotification({
+        title: "Nuevo feedback recibido",
+        message: `${moduleLabels[currentModule] || "Módulo"}: ${issueLabels[issueTag]} (${currentUserRole})`,
+        type: type === "bug" ? "error" : "warning",
+        targetRole: UserRole.DEVELOPER,
+      });
+      await addNotification({
+        title: "Feedback para revisión",
+        message: `${issueLabels[issueTag]} en ${moduleLabels[currentModule] || "módulo"}. Revisa la bitácora de feedback.`,
+        type: "warning",
+        targetRole: UserRole.SUBDIRECCION,
+      });
+    } catch (notifyErr) {
+      console.warn("No se pudo notificar al equipo", notifyErr);
+    }
+
     setIsSending(false);
     setComment("");
     setIsFeedbackOpen(false);
@@ -63,7 +161,7 @@ export const FeedbackWidget = () => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#0b0e14] border border-white/20 rounded-2xl shadow-2xl p-6 w-full max-w-md animate-scale-in">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/30">
               <span className="material-symbols-outlined text-blue-500">
@@ -90,6 +188,24 @@ export const FeedbackWidget = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 gap-2 text-[11px] text-slate-300 bg-white/5 border border-white/10 rounded-xl p-3">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm text-blue-400">map</span>
+              <span className="font-bold">Módulo actual:</span>
+              <span className="text-slate-200">{moduleLabels[currentModule] || "Sin módulo"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm text-amber-400">badge</span>
+              <span className="font-bold">Rol:</span>
+              <span className="text-slate-200">{currentUserRole}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm text-emerald-400">link</span>
+              <span className="font-bold">Ruta:</span>
+              <span className="text-slate-200 truncate">{window.location.pathname}</span>
+            </div>
+          </div>
+
           <div className="flex gap-2 p-1 bg-black/40 rounded-xl border border-white/5">
             <button
               type="button"
@@ -130,6 +246,32 @@ export const FeedbackWidget = () => {
             >
               Diseño
             </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {(
+              [
+                { key: "boton", label: issueLabels.boton },
+                { key: "menu", label: issueLabels.menu },
+                { key: "datos", label: issueLabels.datos },
+                { key: "rendimiento", label: issueLabels.rendimiento },
+                { key: "sugerencia", label: issueLabels.sugerencia },
+              ] as { key: IssueTag; label: string }[]
+            ).map((issue) => (
+              <button
+                key={issue.key}
+                type="button"
+                onClick={() => setIssueTag(issue.key)}
+                className={`text-left px-3 py-2 rounded-lg border text-[11px] transition-all ${
+                  issueTag === issue.key
+                    ? "bg-blue-600/20 border-blue-500/40 text-white"
+                    : "bg-black/30 border-white/5 text-slate-400 hover:text-white hover:border-white/20"
+                }`}
+              >
+                <span className="font-bold block">{issue.label}</span>
+                <span className="text-[10px] text-slate-500">Se registra automáticamente</span>
+              </button>
+            ))}
           </div>
 
           <textarea
