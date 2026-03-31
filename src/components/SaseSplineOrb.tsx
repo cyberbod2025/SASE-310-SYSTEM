@@ -1,7 +1,10 @@
-import React, { Suspense, useState, useEffect } from "react";
-import Spline from "@splinetool/react-spline";
+import React, { Suspense, useState, useEffect, lazy } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { SystemState } from "../types/systemState";
+
+const LazySpline = lazy(() =>
+  import("@splinetool/react-spline").then((mod) => ({ default: mod.default })),
+);
 
 interface SaseSplineOrbProps {
   state: SystemState;
@@ -90,7 +93,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
               <div className="w-8 h-8 border-2 border-white/5 border-t-white/40 rounded-full animate-spin" />
             </div>
           }>
-          <Spline 
+          <LazySpline 
             scene="/sase-orb.splinecode"
             className={`w-full h-full transform scale-125 transition-all duration-1000 ${isInteracting ? 'brightness-125' : 'brightness-100'}`}
           />
