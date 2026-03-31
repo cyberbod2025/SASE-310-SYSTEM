@@ -32,6 +32,9 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
     return () => window.removeEventListener("mousemove", handleMove);
   }, []);
 
+  const eyeOffsetX = Math.max(-8, Math.min(8, mousePos.x * 12));
+  const eyeOffsetY = Math.max(-4, Math.min(4, mousePos.y * 8));
+
   return (
     <div className={`relative flex items-center justify-center overflow-hidden rounded-full transition-all duration-700 ${className || "w-64 h-64"}`}>
       
@@ -80,20 +83,55 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
         </svg>
       </div>
 
-      {/* 3. Contenedor de la Cara Neural (Spline) */}
-      <div className="relative w-[92%] h-[92%] z-10 group bg-transparent">
-        <Suspense fallback={
-          <div className="w-full h-full flex items-center justify-center bg-slate-900/20 rounded-full animate-pulse">
-            <div className="w-8 h-8 border-2 border-white/5 border-t-white/40 rounded-full animate-spin" />
-          </div>
-        }>
+        {/* 3. Contenedor de la Cara Neural (Spline) */}
+        <div className="relative w-[92%] h-[92%] z-10 group bg-transparent">
+          <Suspense fallback={
+            <div className="w-full h-full flex items-center justify-center bg-slate-900/20 rounded-full animate-pulse">
+              <div className="w-8 h-8 border-2 border-white/5 border-t-white/40 rounded-full animate-spin" />
+            </div>
+          }>
           <Spline 
             scene="/sase-orb.splinecode"
             className={`w-full h-full transform scale-125 transition-all duration-1000 ${isInteracting ? 'brightness-125' : 'brightness-100'}`}
           />
-        </Suspense>
+          </Suspense>
 
-        {/* 4. ELIMINADO: OJOS INTERACTIVOS ESTABAN AQUÍ */}
+          {/* 4. Capa facial mínima para mantener a Sasin visible incluso si el modelo tarda */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+            <div className="relative w-1/2 h-1/2 flex items-center justify-center">
+              {/* Ojos */}
+              <div
+                className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)]"
+                style={{
+                  left: "35%",
+                  top: "40%",
+                  transform: `translate(${eyeOffsetX}px, ${eyeOffsetY}px)`,
+                  boxShadow: `0 0 12px ${color}55`,
+                }}
+              />
+              <div
+                className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)]"
+                style={{
+                  right: "35%",
+                  top: "40%",
+                  transform: `translate(${eyeOffsetX}px, ${eyeOffsetY}px)`,
+                  boxShadow: `0 0 12px ${color}55`,
+                }}
+              />
+
+              {/* Boca / indicador de estado */}
+              <div
+                className="absolute h-1.5 rounded-full"
+                style={{
+                  bottom: "32%",
+                  left: "30%",
+                  right: "30%",
+                  background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
+                  boxShadow: `0 0 14px ${color}66`,
+                }}
+              />
+            </div>
+          </div>
 
         {/* 5. Capas de Color Adaptativas (Inundan el modelo 3D) */}
         {/* Capa 1: Tinte Base */}
