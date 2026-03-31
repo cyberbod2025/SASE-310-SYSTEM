@@ -154,7 +154,7 @@ export const Login: React.FC<LoginProps> = ({
 
           <form className="w-full space-y-5" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              <label htmlFor="login-email" className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
                Correo electrónico
               </label>
               <div className="relative">
@@ -166,8 +166,11 @@ export const Login: React.FC<LoginProps> = ({
                   placeholder="usuario@sase.mx"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                  id="login-email"
+                  name="email"
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
                   required
+                  autoComplete="email"
                 />
               </div>
               <p className="text-[11px] text-slate-500">
@@ -176,7 +179,7 @@ export const Login: React.FC<LoginProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              <label htmlFor="login-password" className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
                Contraseña
               </label>
               <div className="relative">
@@ -188,8 +191,11 @@ export const Login: React.FC<LoginProps> = ({
                   placeholder="Contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  id="login-password"
+                  name="password"
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
                   required
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -286,12 +292,12 @@ export const Login: React.FC<LoginProps> = ({
                        Ingresa tu <span className="text-white font-bold">CURP</span> para iniciar el protocolo de desafío.
                     </p>
                     <div className="space-y-2">
-                      <label htmlFor="recovery-identifier" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                       <label htmlFor="recovery-identifier" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
                          CURP
-                      </label>
-                      <input
-                        id="recovery-identifier"
-                        name="recovery-identifier"
+                       </label>
+                       <input
+                         id="recovery-identifier"
+                         name="recovery-identifier"
                         autoComplete="username"
                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white font-mono uppercase tracking-widest outline-none focus:border-blue-500/40 transition-all"
                         placeholder="CURP EN MAYÚSCULAS"
@@ -498,7 +504,7 @@ export const Login: React.FC<LoginProps> = ({
               </div>
 
               <form onSubmit={handleFeedbackSubmit} className="space-y-3">
-                <div className="flex gap-2 text-[11px] font-bold uppercase tracking-widest">
+                <div className="flex gap-2 text-[11px] font-bold uppercase tracking-widest" role="group" aria-label="Tipo de feedback">
                   <button
                     type="button"
                     onClick={() => setFeedbackType("bug")}
