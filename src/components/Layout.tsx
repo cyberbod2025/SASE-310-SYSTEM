@@ -506,7 +506,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3 flex-wrap justify-end">
             {/* Quick Report Button */}
             <button
               id="quick-register-btn"
