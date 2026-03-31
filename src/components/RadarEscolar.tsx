@@ -6,7 +6,7 @@ import { CaseState, AppModule } from "../types";
 export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
   onComplete,
 }) => {
-  const { students, setCurrentModule } = useApp();
+  const { students, setCurrentModule, setIsFeedbackOpen } = useApp();
   const [loading, setLoading] = useState(true);
 
   // UX: Información visible en menos de 5 segundos.
@@ -233,6 +233,14 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
           <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
             IA-SASE Agent Monitoreando
           </p>
+
+          <button
+            type="button"
+            onClick={() => setIsFeedbackOpen(true)}
+            className="text-[11px] font-semibold text-blue-300 hover:text-white underline underline-offset-4"
+          >
+            Enviar feedback de esta vista
+          </button>
         </motion.div>
       </motion.div>
 
