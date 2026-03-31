@@ -125,6 +125,15 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
           <h1 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter uppercase leading-none drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">
             RADAR ESCOLAR <span className="text-blue-500">—</span> HOY
           </h1>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsFeedbackOpen(true)}
+              className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-[11px] font-black uppercase tracking-[0.25em] text-slate-100 hover:bg-white/15 hover:border-blue-400/50 transition-all"
+            >
+              Feedback
+            </button>
+          </div>
         </div>
 
         {/* Indicators Grid */}
@@ -239,17 +248,17 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
             </div>
           </button>
 
-          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
-            IA-SASE Agent Monitoreando
-          </p>
-
           <button
             type="button"
             onClick={() => setIsFeedbackOpen(true)}
-            className="text-[11px] font-semibold text-blue-300 hover:text-white underline underline-offset-4"
+            className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-[11px] font-black uppercase tracking-[0.2em] text-slate-100 hover:bg-white/15 hover:border-blue-400/50 transition-all"
           >
-            Enviar feedback de esta vista
+            Feedback de esta vista
           </button>
+
+          <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
+            IA-SASE Agent Monitoreando
+          </p>
         </motion.div>
       </motion.div>
 
