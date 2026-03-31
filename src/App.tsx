@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { AppProvider } from "./store";
 import { Toaster } from "react-hot-toast";
 import { UserRole } from "./types";
@@ -8,6 +8,7 @@ import { LoadingSpinner } from "./components/ModuleRouter";
 import { GlobalModals } from "./components/GlobalModals";
 import { DocumentRenderer } from "./components/DocumentRenderer";
 import { AppShell } from "./components/AppShell";
+import LaboratorioUI from "./pages/LaboratorioUI";
 
 const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
 const SASEIntroAnimation = React.lazy(() => import("./components/SASEIntroAnimation").then(m => ({ default: m.SASEIntroAnimation })));
@@ -35,6 +36,16 @@ const App: React.FC = () => {
   } | null>(null);
   
   const { session, loading } = useAuth();
+
+  const showLab = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("lab") === "ui";
+  }, []);
+
+  if (showLab) {
+    return <LaboratorioUI />;
+  }
 
   // Handle direct links (e.g., ?registro=true)
   React.useEffect(() => {
