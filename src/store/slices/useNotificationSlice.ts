@@ -27,6 +27,10 @@ const mapDbNotification = (row: {
   };
 };
 
+type AddNotificationOptions = {
+  silent?: boolean;
+};
+
 export const useNotificationSlice = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
@@ -40,6 +44,7 @@ export const useNotificationSlice = () => {
 
   const addNotification = async (
     data: Omit<Notification, "id" | "read" | "time">,
+    options?: AddNotificationOptions,
   ) => {
     try {
       const payload = {
@@ -64,7 +69,9 @@ export const useNotificationSlice = () => {
       );
     } catch (err) {
       console.error("Error creando notificación", err);
-      toast.error("No se pudo crear la notificación");
+      if (!options?.silent) {
+        toast.error("No se pudo crear la notificación");
+      }
     }
   };
 

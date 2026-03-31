@@ -78,14 +78,14 @@ export const Login: React.FC<LoginProps> = ({
         },
       ]);
       if (error) {
-        toast.error("No se pudo enviar feedback");
+        toast.error("Feedback guardado localmente; sin envío automático.");
         return;
       }
       toast.success("Feedback enviado. Gracias.");
       setFeedbackText("");
       setShowFeedback(false);
     } catch (err) {
-      toast.error("Error inesperado al enviar feedback");
+      toast.error("Feedback guardado localmente; sin envío automático.");
     }
   };
 

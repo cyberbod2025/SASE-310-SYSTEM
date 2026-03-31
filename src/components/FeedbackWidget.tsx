@@ -140,13 +140,13 @@ ${contextoAutomatico}`;
         message: `${moduleLabels[currentModule] || "Módulo"}: ${issueLabels[issueTag]} (${currentUserRole})`,
         type: type === "bug" ? "error" : "warning",
         targetRole: UserRole.DEVELOPER,
-      });
+      }, { silent: true });
       await addNotification({
         title: "Feedback para revisión",
         message: `${issueLabels[issueTag]} en ${moduleLabels[currentModule] || "módulo"}. Revisa la bitácora de feedback.`,
         type: "warning",
         targetRole: UserRole.SUBDIRECCION,
-      });
+      }, { silent: true });
     } catch (notifyErr) {
       console.warn("No se pudo notificar al equipo", notifyErr);
     }
