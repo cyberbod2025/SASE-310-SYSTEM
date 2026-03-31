@@ -18,7 +18,12 @@ export const LaboratorioUI: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1120] text-white p-6 md:p-10 space-y-8">
+    <div className="min-h-screen bg-[#0b1120] text-white p-6 md:p-10 space-y-8 relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-blue-500/15 blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-purple-500/10 blur-[110px]" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[90%] h-[70%] bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_45%)]" />
+      </div>
       <Toaster position="top-center" />
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -64,7 +69,11 @@ export const LaboratorioUI: React.FC = () => {
         </div>
       </div>
 
-      <form onSubmit={enviar} className="grid gap-4 bg-white/5 border border-white/10 p-6 rounded-2xl">
+      <form
+        onSubmit={enviar}
+        className="grid gap-4 bg-white/5/0 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-[0_20px_80px_rgba(0,0,0,0.35)]"
+        style={{ backgroundColor: "rgba(15,20,35,0.65)" }}
+      >
         <div className="space-y-2">
           <label htmlFor="lab-correo" className="text-xs font-semibold uppercase tracking-wider text-slate-200">
             Correo institucional
@@ -208,7 +217,7 @@ export const LaboratorioUI: React.FC = () => {
         </div>
       </form>
 
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 backdrop-blur-xl shadow-[0_20px_70px_rgba(0,0,0,0.25)]" style={{ backgroundColor: "rgba(15,20,35,0.6)" }}>
         <p className="text-[11px] uppercase tracking-[0.25em] text-slate-400 font-black mb-3">
           Lista scroll
         </p>
@@ -226,8 +235,8 @@ export const LaboratorioUI: React.FC = () => {
       </div>
 
       {mostrarModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#0b0e14] border border-white/10 rounded-2xl p-6 w-full max-w-md space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
+          <div className="bg-[#0b0e14]/80 border border-white/10 rounded-2xl p-6 w-full max-w-md space-y-4 shadow-[0_30px_120px_rgba(0,0,0,0.55)] backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.3em] text-blue-300 font-black">Modal</p>
