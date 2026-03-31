@@ -4,6 +4,7 @@ import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SasinLoginOrb } from "./SasinLoginOrb";
 import { GlassCard } from "./ui/GlassCard";
+import { useApp } from "../store";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -17,6 +18,7 @@ export const Login: React.FC<LoginProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { setIsFeedbackOpen } = useApp();
 
   const orbX = useMotionValue(0);
   const orbY = useMotionValue(0);
@@ -116,30 +118,37 @@ export const Login: React.FC<LoginProps> = ({
           <form className="w-full space-y-5" onSubmit={handleLogin}>
             <div className="space-y-2">
               <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Correo Electronico
+               Correo electrónico
               </label>
               <div className="relative">
-                <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">email</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base" aria-hidden>
+                  ✉️
+                </span>
                 <input
                   type="email"
-                  placeholder="docente@escuela.edu.mx"
+                  placeholder="usuario@sase.mx"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
                   required
                 />
               </div>
+              <p className="text-[11px] text-slate-500">
+                Usa tu correo institucional @sase.mx
+              </p>
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Contraseña
+               Contraseña
               </label>
               <div className="relative">
-                <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">lock</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base" aria-hidden>
+                  🔒
+                </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
+                  placeholder="Contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
@@ -151,8 +160,8 @@ export const Login: React.FC<LoginProps> = ({
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center"
                   aria-label="Mostrar u ocultar contraseña"
                 >
-                  <span className="material-icons text-sm">
-                    {showPassword ? "visibility_off" : "visibility"}
+                  <span className="text-base" aria-hidden>
+                    {showPassword ? "🙈" : "👁"}
                   </span>
                 </button>
               </div>
@@ -180,6 +189,15 @@ export const Login: React.FC<LoginProps> = ({
             >
               ¿Olvido su clave?
             </button>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => setIsFeedbackOpen(true)}
+                className="text-[11px] text-slate-400 hover:text-white font-semibold underline underline-offset-4"
+              >
+                Enviar feedback desde aquí
+              </button>
+            </div>
           </div>
 
           <div className="mt-6 text-center">
@@ -204,8 +222,8 @@ export const Login: React.FC<LoginProps> = ({
               <div className="relative z-10 space-y-8">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
-                      <span className="material-icons text-blue-400">key_visualizer</span>
+                    <div className="size-10 rounded-xl bg-blue-500/20 flex items-center justify-center border border-blue-500/30 text-blue-200 text-lg">
+                      🔑
                     </div>
                     <div>
                       <h3 className="text-xl font-black text-white italic tracking-tighter uppercase">
@@ -218,27 +236,28 @@ export const Login: React.FC<LoginProps> = ({
                   </div>
                   <button
                     onClick={() => setShowRecovery(false)}
-                    className="size-8 rounded-full border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-all"
+                    className="size-8 rounded-full border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/5 transition-all text-lg"
+                    aria-label="Cerrar recuperación"
                   >
-                    <span className="material-icons text-xl">close</span>
+                    ×
                   </button>
                 </div>
 
                 {recoveryStep === 1 && (
                   <div className="space-y-6 animate-fade-in">
                     <p className="text-xs text-slate-400 font-medium leading-relaxed">
-                      Ingrese su <span className="text-white font-bold">Matricula escolar</span> o <span className="text-white font-bold">CURP</span> para iniciar el protocolo de desafio.
+                       Ingresa tu <span className="text-white font-bold">CURP</span> para iniciar el protocolo de desafío.
                     </p>
                     <div className="space-y-2">
                       <label htmlFor="recovery-identifier" className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                        Identificador institucional
+                         CURP
                       </label>
                       <input
                         id="recovery-identifier"
                         name="recovery-identifier"
                         autoComplete="username"
                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white font-mono uppercase tracking-widest outline-none focus:border-blue-500/40 transition-all"
-                        placeholder="MAT-XXXX-XXXX"
+                        placeholder="CURP EN MAYÚSCULAS"
                         value={recoveryData.identifier}
                         onChange={(e) =>
                           setRecoveryData({
@@ -256,13 +275,11 @@ export const Login: React.FC<LoginProps> = ({
                         }
                         setLoading(true);
                         try {
-                          const { data, error } = await supabase
-                            .from("perfiles_usuario")
-                            .select("nombre_completo, curp, matricula_sase")
-                            .or(
-                              `matricula_sase.eq.${recoveryData.identifier},curp.eq.${recoveryData.identifier}`,
-                            )
-                            .single();
+                           const { data, error } = await supabase
+                             .from("perfiles_usuario")
+                             .select("nombre_completo, curp")
+                             .eq("curp", recoveryData.identifier)
+                             .single();
 
                           if (error || !data) {
                             toast.error("Identidad no encontrada en el registro oficial");
@@ -279,16 +296,16 @@ export const Login: React.FC<LoginProps> = ({
                         }
                       }}
                       disabled={loading}
-                      className="btn-sase-primary w-full h-14 flex items-center justify-center gap-3"
+                       className="btn-sase-primary w-full h-14 flex items-center justify-center gap-3"
                     >
                       {loading ? (
-                        <span className="material-icons animate-spin">autorenew</span>
+                        <span className="animate-spin" aria-hidden>⟳</span>
                       ) : (
                         <>
                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">
                             Validar identidad
                           </span>
-                          <span className="material-icons text-sm">verified_user</span>
+                          <span aria-hidden className="text-base">✔</span>
                         </>
                       )}
                     </button>
