@@ -4,7 +4,6 @@ import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SasinLoginOrb } from "./SasinLoginOrb";
 import { GlassCard } from "./ui/GlassCard";
-import { useApp } from "../store";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -18,7 +17,9 @@ export const Login: React.FC<LoginProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { setIsFeedbackOpen } = useApp();
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackType, setFeedbackType] = useState<"bug" | "sugerencia">("bug");
+  const [feedbackText, setFeedbackText] = useState("");
 
   const orbX = useMotionValue(0);
   const orbY = useMotionValue(0);
@@ -51,6 +52,42 @@ export const Login: React.FC<LoginProps> = ({
     q1: "¿Nombre de su primera escuela primaria?",
     q2: "¿Titulo de su libro favorito?",
   });
+
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const comentario = feedbackText.trim();
+    if (!comentario) {
+      toast.error("Escribe tu comentario");
+      return;
+    }
+
+    const currentUrl = window.location.href;
+    const userAgent = navigator.userAgent;
+    const contexto = `Pantalla: Login | Usuario: ${username || "sin usuario"}`;
+
+    try {
+      const { error } = await (supabase.from("system_feedback" as any) as any).insert([
+        {
+          user_id: null,
+          email: username || null,
+          type: feedbackType,
+          comment: `${comentario}\n\n[Contexto automático]\n${contexto}`,
+          url: currentUrl,
+          user_agent: userAgent,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      if (error) {
+        toast.error("No se pudo enviar feedback");
+        return;
+      }
+      toast.success("Feedback enviado. Gracias.");
+      setFeedbackText("");
+      setShowFeedback(false);
+    } catch (err) {
+      toast.error("Error inesperado al enviar feedback");
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -192,7 +229,7 @@ export const Login: React.FC<LoginProps> = ({
             <div className="mt-3">
               <button
                 type="button"
-                onClick={() => setIsFeedbackOpen(true)}
+                onClick={() => setShowFeedback(true)}
                 className="text-[11px] text-slate-400 hover:text-white font-semibold underline underline-offset-4"
               >
                 Enviar feedback desde aquí
@@ -430,6 +467,77 @@ export const Login: React.FC<LoginProps> = ({
                   </div>
                 )}
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showFeedback && (
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="w-full max-w-md bg-[#0b0e14] border border-white/10 rounded-2xl shadow-2xl p-6 space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-blue-400 font-black uppercase tracking-[0.3em]">
+                    Feedback rápido
+                  </p>
+                  <h4 className="text-white font-black text-lg">Login SASE</h4>
+                </div>
+                <button
+                  onClick={() => setShowFeedback(false)}
+                  className="size-8 rounded-full border border-white/10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+                  aria-label="Cerrar feedback"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleFeedbackSubmit} className="space-y-3">
+                <div className="flex gap-2 text-[11px] font-bold uppercase tracking-widest">
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackType("bug")}
+                    className={`flex-1 py-2 rounded-xl border ${
+                      feedbackType === "bug"
+                        ? "bg-red-600/20 border-red-400/40 text-white"
+                        : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Error
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFeedbackType("sugerencia")}
+                    className={`flex-1 py-2 rounded-xl border ${
+                      feedbackType === "sugerencia"
+                        ? "bg-blue-600/20 border-blue-400/40 text-white"
+                        : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Sugerencia
+                  </button>
+                </div>
+
+                <textarea
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-blue-400 min-h-[120px]"
+                  placeholder="Describe el error o mejora que ves en el login"
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-xl bg-blue-600 text-white font-black uppercase tracking-[0.2em] hover:bg-blue-500 transition-all"
+                >
+                  Enviar feedback
+                </button>
+              </form>
             </motion.div>
           </div>
         )}
