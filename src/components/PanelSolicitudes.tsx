@@ -364,7 +364,7 @@ export const PanelSolicitudes: React.FC = () => {
             <h3 className="font-bold text-lg">Solicitudes de Documentos</h3>
             <button
               onClick={() => setActiveTab("nuevo")}
-              className="px-4 py-2 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-lg shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-black/5 shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-sm">
                 add_circle
@@ -427,7 +427,7 @@ export const PanelSolicitudes: React.FC = () => {
                           {sol.asignadoNombre}
                         </p>
                         {sol.fechaLimite && (
-                          <div className="mt-3 inline-flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-lg border border-amber-100">
+                          <div className="mt-3 inline-flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-2xl border border-amber-100">
                             <span className="material-symbols-outlined text-[14px] text-amber-600">
                               event
                             </span>
@@ -503,7 +503,7 @@ export const PanelSolicitudes: React.FC = () => {
                 <div key={com.id} className="p-4">
                   <div className="flex items-start gap-3">
                     <div
-                      className={`p-2 rounded-lg ${
+                      className={`p-2 rounded-2xl ${
                         com.tipo === "urgente"
                           ? "bg-red-100 text-red-600"
                           : com.tipo === "evento"
@@ -565,7 +565,7 @@ export const PanelSolicitudes: React.FC = () => {
                   onChange={(e) =>
                     setNewSolicitud({ ...newSolicitud, tipo: e.target.value })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                 >
                   <option value="">Seleccionar...</option>
                   {TIPOS_DOCUMENTO.map((tipo) => (
@@ -588,7 +588,7 @@ export const PanelSolicitudes: React.FC = () => {
                       asignadoA: e.target.value,
                     })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                 >
                   <option value="">Seleccionar secretario...</option>
                   {SECRETARIOS.filter((s) => s.id !== "gaby").map((sec) => (
@@ -615,7 +615,7 @@ export const PanelSolicitudes: React.FC = () => {
                 <select
                   value={newSolicitud.alumnoId}
                   onChange={(e) => handleSelectStudent(e.target.value)}
-                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                 >
                   <option value="">Sin alumno específico</option>
                   {students.map((s) => (
@@ -648,7 +648,7 @@ export const PanelSolicitudes: React.FC = () => {
                         prioridad: e.target.value as any,
                       })
                     }
-                    className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                    className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                   >
                     <option value="baja">Baja</option>
                     <option value="normal">Normal</option>
@@ -669,7 +669,7 @@ export const PanelSolicitudes: React.FC = () => {
                         fechaLimite: e.target.value,
                       })
                     }
-                    className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                    className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                   />
                 </div>
               </div>
@@ -687,14 +687,14 @@ export const PanelSolicitudes: React.FC = () => {
                     })
                   }
                   rows={3}
-                  className="w-full p-2 border border-border-color rounded-lg text-sm resize-none text-gray-900 bg-white"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm resize-none text-gray-900 bg-white"
                   placeholder="Detalles adicionales..."
                 />
               </div>
 
               <button
                 onClick={handleCreateSolicitud}
-                className="w-full py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary-hover transition-colors"
+                className="w-full py-2 bg-primary text-white rounded-2xl font-bold hover:bg-primary-hover transition-colors"
               >
                 Enviar Solicitud
               </button>
@@ -727,7 +727,7 @@ export const PanelSolicitudes: React.FC = () => {
                       tipo: e.target.value as any,
                     })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                 >
                   <option value="comunicado">Comunicado General</option>
                   <option value="evento">Evento</option>
@@ -749,7 +749,7 @@ export const PanelSolicitudes: React.FC = () => {
                       titulo: e.target.value,
                     })
                   }
-                  className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                   placeholder="Asunto del comunicado..."
                 />
               </div>
@@ -796,7 +796,7 @@ export const PanelSolicitudes: React.FC = () => {
                           fechaEvento: e.target.value,
                         })
                       }
-                      className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                      className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                     />
                   </div>
                   <div>
@@ -812,7 +812,7 @@ export const PanelSolicitudes: React.FC = () => {
                           horaEvento: e.target.value,
                         })
                       }
-                      className="w-full p-2 border border-border-color rounded-lg text-sm text-gray-900 bg-white"
+                      className="w-full p-2 border border-border-color rounded-2xl text-sm text-gray-900 bg-white"
                     />
                   </div>
                 </div>
@@ -831,14 +831,14 @@ export const PanelSolicitudes: React.FC = () => {
                     })
                   }
                   rows={3}
-                  className="w-full p-2 border border-border-color rounded-lg text-sm resize-none text-gray-900 bg-white"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm resize-none text-gray-900 bg-white"
                   placeholder="Contenido del comunicado..."
                 />
               </div>
 
               <button
                 onClick={handleCreateComunicado}
-                className="w-full py-2 bg-purple-600 text-white rounded-lg font-bold hover:bg-purple-700 transition-colors"
+                className="w-full py-2 bg-purple-600 text-white rounded-2xl font-bold hover:bg-purple-700 transition-colors"
               >
                 Enviar Comunicado
               </button>

@@ -159,7 +159,7 @@ export const ObjetosRetenidos: React.FC = () => {
                         setObservacionesEntrega("");
                         setFechaDevolucion(new Date().toISOString().split("T")[0]);
                       }}
-                      className="px-4 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors text-sm font-medium"
+                      className="px-4 py-2 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-colors text-sm font-medium"
                     >
                       Devolver
                     </motion.button>

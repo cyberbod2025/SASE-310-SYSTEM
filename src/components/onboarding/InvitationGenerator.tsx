@@ -488,7 +488,7 @@ export const InvitationGenerator: React.FC = () => {
         <button
           onClick={handleInvite}
           disabled={isInviting}
-          className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-emerald-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98] disabled:opacity-60"
+          className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-black/5 shadow-emerald-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98] disabled:opacity-60"
           title="Enviar invitación segura por correo institucional"
         >
           <span className="material-symbols-outlined text-[20px]">mark_email_read</span>
@@ -496,7 +496,7 @@ export const InvitationGenerator: React.FC = () => {
         </button>
         <button
           onClick={handlePrint}
-          className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
+          className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-black/5 shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
           title="Generar e imprimir carta de credenciales oficial"
         >
           <span className="material-symbols-outlined text-[20px]">print</span>

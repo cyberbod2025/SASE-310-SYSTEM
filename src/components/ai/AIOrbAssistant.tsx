@@ -630,7 +630,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
             </div>
             {/* Label SIEMPRE visible */}
             <div className="flex flex-col items-center">
-              <span className="px-2.5 py-1 bg-slate-900/70 border border-violet-500/25 rounded-lg text-[8px] font-black text-violet-300/90 uppercase tracking-widest backdrop-blur-xl">
+              <span className="px-2.5 py-1 bg-slate-900/70 border border-violet-500/25 rounded-2xl text-[8px] font-black text-violet-300/90 uppercase tracking-widest backdrop-blur-xl">
                 SUGERENCIAS
               </span>
             </div>

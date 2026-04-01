@@ -551,7 +551,7 @@ export const Login: React.FC<LoginProps> = ({
           </p>
           <p className="text-[10px] font-mono text-blue-400">CIFRADO_AES256</p>
         </div>
-        <div className="size-10 border-2 border-white/20 rounded-lg flex items-center justify-center">
+        <div className="size-10 border-2 border-white/20 rounded-2xl flex items-center justify-center">
           <span className="material-icons text-white animate-pulse">security</span>
         </div>
       </div>

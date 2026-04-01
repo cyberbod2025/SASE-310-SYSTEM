@@ -267,7 +267,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   <div
                     className={`size-2.5 rounded-full transition-all ${
                       fase === f
-                        ? "bg-blue-400 shadow-lg shadow-blue-400/50 scale-125"
+                        ? "bg-blue-400 shadow-xl shadow-black/5 shadow-blue-400/50 scale-125"
                         : i <
                             ["datos", "generando", "revision", "listo"].indexOf(
                               fase,
@@ -538,7 +538,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
             <div className="space-y-5 animate-fade-in">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="size-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <div className="size-8 bg-emerald-100 rounded-2xl flex items-center justify-center">
                     <span className="material-symbols-outlined text-emerald-600 text-lg">
                       edit_note
                     </span>
@@ -571,7 +571,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                         setMejorando(false);
                       }
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-blue-600 bg-blue-50 border border-blue-200 uppercase tracking-widest hover:bg-blue-100 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-3 py-2 text-[9px] font-black text-blue-600 bg-blue-50 border border-blue-200 uppercase tracking-widest hover:bg-blue-100 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="IA mejora la redacción manteniendo objetividad institucional"
                   >
                     <span
@@ -600,7 +600,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                         setMejorando(false);
                       }
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-indigo-600 bg-indigo-50 border border-indigo-200 uppercase tracking-widest hover:bg-indigo-100 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-3 py-2 text-[9px] font-black text-indigo-600 bg-indigo-50 border border-indigo-200 uppercase tracking-widest hover:bg-indigo-100 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="Hace el texto más formal e institucional"
                   >
                     <span className="material-symbols-outlined text-sm">
@@ -624,7 +624,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                         setMejorando(false);
                       }
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 uppercase tracking-widest hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-3 py-2 text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 uppercase tracking-widest hover:bg-emerald-100 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="Resume el texto manteniendo datos clave"
                   >
                     <span className="material-symbols-outlined text-sm">
@@ -639,7 +639,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                       setContenidoEditado("");
                       setCambiosIA([]);
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-100 rounded-lg transition-colors"
+                    className="px-3 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-100 rounded-2xl transition-colors"
                     title="Volver a los datos"
                   >
                     ← Volver
@@ -657,7 +657,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     {cambiosIA.map((c, i) => (
                       <span
                         key={i}
-                        className="text-[10px] text-blue-700 bg-white px-2 py-1 rounded-lg border border-blue-100 font-medium"
+                        className="text-[10px] text-blue-700 bg-white px-2 py-1 rounded-2xl border border-blue-100 font-medium"
                       >
                         ✓ {c}
                       </span>
@@ -704,7 +704,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
           {fase === "listo" && (
             <div className="space-y-5 animate-fade-in">
               <div className="flex items-center gap-3 mb-4">
-                <div className="size-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <div className="size-8 bg-emerald-100 rounded-2xl flex items-center justify-center">
                   <span className="material-symbols-outlined text-emerald-600 text-lg">
                     check_circle
                   </span>
@@ -746,7 +746,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
               <button
                 disabled={!datos.descripcion.trim()}
                 onClick={handleGenerarBorrador}
-                className="px-8 py-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg disabled:opacity-40 transition-all flex items-center gap-2"
+                className="px-8 py-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 disabled:opacity-40 transition-all flex items-center gap-2"
                 title="Generar borrador con inteligencia artificial"
               >
                 <span className="material-symbols-outlined text-lg">
@@ -759,7 +759,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
             {fase === "revision" && (
               <button
                 onClick={handleGenerarFinal}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-all flex items-center gap-2"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 transition-all flex items-center gap-2"
                 title="Generar documento final con formato institucional"
               >
                 <span className="material-symbols-outlined text-lg">

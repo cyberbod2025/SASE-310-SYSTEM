@@ -304,7 +304,7 @@ export const QuickRegisterModal: React.FC = () => {
                               }}
                               className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center gap-3 transition-colors"
                             >
-                              <img src={s.avatar || "/SASE_ICON.png"} className="size-8 rounded-lg object-cover" alt="" />
+                              <img src={s.avatar || "/SASE_ICON.png"} className="size-8 rounded-2xl object-cover" alt="" />
                               <div>
                                 <p className="text-xs font-black text-slate-800 uppercase italic">{s.name}</p>
                                 <p className="text-[9px] font-bold text-slate-400 uppercase">{s.group} • {s.matricula}</p>
@@ -390,7 +390,7 @@ export const QuickRegisterModal: React.FC = () => {
                       checked={generarCitatorio} 
                       onChange={(e) => setGenerarCitatorio(e.target.checked)} 
                     />
-                    <div className={`size-5 rounded-md border-2 transition-all flex items-center justify-center ${generarCitatorio ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
+                    <div className={`size-5 rounded-2xl border-2 transition-all flex items-center justify-center ${generarCitatorio ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
                       {generarCitatorio && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
                     </div>
                     <span className="font-bold">Agendar Citatorio en Agenda Escolar</span>
@@ -398,8 +398,8 @@ export const QuickRegisterModal: React.FC = () => {
                   
                   {generarCitatorio && (
                     <div className="ml-8 grid grid-cols-2 gap-4 animate-fade-in">
-                      <input type="date" value={fechaCitatorio} onChange={(e) => setFechaCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-lg px-3 outline-none" />
-                      <input type="time" value={horaCitatorio} onChange={(e) => setHoraCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-lg px-3 outline-none" />
+                      <input type="date" value={fechaCitatorio} onChange={(e) => setFechaCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-2xl px-3 outline-none" />
+                      <input type="time" value={horaCitatorio} onChange={(e) => setHoraCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-2xl px-3 outline-none" />
                     </div>
                   )}
 
@@ -410,7 +410,7 @@ export const QuickRegisterModal: React.FC = () => {
                       checked={generarActa} 
                       onChange={(e) => setGenerarActa(e.target.checked)} 
                     />
-                    <div className={`size-5 rounded-md border-2 transition-all flex items-center justify-center ${generarActa ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
+                    <div className={`size-5 rounded-2xl border-2 transition-all flex items-center justify-center ${generarActa ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
                       {generarActa && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
                     </div>
                     <span className="font-bold">Generar Acta / Hoja de Acuerdos</span>
@@ -418,8 +418,8 @@ export const QuickRegisterModal: React.FC = () => {
 
                   {generarActa && (
                     <div className="ml-8 flex gap-4 animate-fade-in">
-                      <button onClick={() => setTipoActa("hechos")} className={`px-4 py-2 rounded-lg border text-[10px] font-black uppercase ${tipoActa === "hechos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Acta de Hechos</button>
-                      <button onClick={() => setTipoActa("acuerdos")} className={`px-4 py-2 rounded-lg border text-[10px] font-black uppercase ${tipoActa === "acuerdos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Hoja de Acuerdos</button>
+                      <button onClick={() => setTipoActa("hechos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "hechos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Acta de Hechos</button>
+                      <button onClick={() => setTipoActa("acuerdos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "acuerdos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Hoja de Acuerdos</button>
                     </div>
                   )}
                 </div>
@@ -435,7 +435,7 @@ export const QuickRegisterModal: React.FC = () => {
               {detectedProtocol && (
                 <button 
                   onClick={() => setShowProtocolModal(true)}
-                  className="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-amber-200 flex items-center gap-3"
+                  className="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-black/5 shadow-amber-200 flex items-center gap-3"
                 >
                   <span className="material-symbols-outlined">security</span>
                   Activar Protocolo: {detectedProtocol.titulo}
@@ -451,7 +451,7 @@ export const QuickRegisterModal: React.FC = () => {
             <div className="flex gap-4">
               <button 
                 onClick={handleClose}
-                className="flex-1 h-14 bg-slate-100 hover:bg-slate-200 text-slate-500 font-black text-xs uppercase tracking-widest rounded-2xl transition-all"
+                className="flex-1 h-14 btn-sase-secondary"
               >
                 Cancelar
               </button>

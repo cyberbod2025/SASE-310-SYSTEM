@@ -107,7 +107,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
             </div>
 
             <div className="flex items-center gap-3 mt-1.5 mb-3">
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-lg border border-white/5">
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-2xl border border-white/5">
                 {student.matricula}
               </span>
               <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">

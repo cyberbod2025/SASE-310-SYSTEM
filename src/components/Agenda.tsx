@@ -262,7 +262,7 @@ export const Agenda: React.FC = () => {
     const hasEvents = events.some((e) => e.date === dateStr);
 
     if (isSelected)
-      return "bg-blue-600 text-white shadow-lg shadow-blue-900/40 ring-2 ring-blue-500/40";
+      return "bg-blue-600 text-white shadow-xl shadow-black/5 shadow-blue-900/40 ring-2 ring-blue-500/40";
     if (isToday)
       return "bg-blue-500/10 text-blue-300 font-black border border-blue-500/20";
     return hasEvents
@@ -302,7 +302,7 @@ export const Agenda: React.FC = () => {
           onClick={() => {
             setShowModal(true);
           }}
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-blue-500/20 flex items-center gap-3 active:scale-95 relative z-20 cursor-pointer"
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-black/5 shadow-blue-500/20 flex items-center gap-3 active:scale-95 relative z-20 cursor-pointer"
         >
           <span className="material-symbols-outlined text-[20px]">
             add_circle
@@ -653,7 +653,7 @@ export const Agenda: React.FC = () => {
                           >
                             <img
                               src={s.avatar}
-                              className="size-8 rounded-lg object-cover"
+                              className="size-8 rounded-2xl object-cover"
                               alt=""
                             />
                             <div>
@@ -713,9 +713,9 @@ export const Agenda: React.FC = () => {
                 }
               >
                 <div
-                  className={`size-6 rounded-lg flex items-center justify-center border-2 transition-all ${
+                  className={`size-6 rounded-2xl flex items-center justify-center border-2 transition-all ${
                     newEvent.para_todos_maestros
-                      ? "bg-blue-600 border-blue-600 scale-110 shadow-lg shadow-blue-600/20"
+                      ? "bg-blue-600 border-blue-600 scale-110 shadow-xl shadow-black/5 shadow-blue-600/20"
                       : "bg-white/5 border-white/10"
                   }`}
                 >

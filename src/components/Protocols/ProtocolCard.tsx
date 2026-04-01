@@ -53,7 +53,7 @@ export const ProtocolCard: React.FC<ProtocolCardProps> = ({
       <div className="p-5">
         <div className="flex items-start gap-4 mb-3">
           <div
-            className={`p-3 rounded-lg ${colorClass} bg-opacity-20 text-white min-w-[80px] flex items-center justify-center`}
+            className={`p-3 rounded-2xl ${colorClass} bg-opacity-20 text-white min-w-[80px] flex items-center justify-center`}
           >
             <span className="text-[10px] font-black uppercase tracking-widest leading-none text-center">
               {getProtocolLabel(protocol.icono)}

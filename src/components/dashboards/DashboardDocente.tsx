@@ -286,7 +286,7 @@ export const DashboardDocente = () => {
                       setIsQuickReportOpen(true);
                     }}
                     title="Realizar un reporte masivo de incidencias para los alumnos seleccionados"
-                    className="bg-rose-600 hover:bg-rose-500 text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] flex items-center gap-2 shadow-lg shadow-rose-600/20 transition-all active:scale-95"
+                    className="bg-rose-600 hover:bg-rose-500 text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] flex items-center gap-2 shadow-xl shadow-black/5 shadow-rose-600/20 transition-all active:scale-95"
                   >
                     <span className="material-symbols-outlined text-sm">
                       campaign
@@ -416,7 +416,7 @@ export const DashboardDocente = () => {
                 <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-500">
                   <span className="material-symbols-outlined">groups</span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-lg">
+                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   {students.length}
                 </h3>
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
@@ -445,7 +445,7 @@ export const DashboardDocente = () => {
                     assignment_turned_in
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-lg">
+                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   98%
                 </h3>
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
@@ -471,7 +471,7 @@ export const DashboardDocente = () => {
                     notification_important
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-lg">
+                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   3
                 </h3>
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
@@ -496,7 +496,7 @@ export const DashboardDocente = () => {
                     auto_awesome
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-lg">
+                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   {students.reduce(
                     (acc, s) => acc + (s.gamificacion?.total_puntos || 0),
                     0,
@@ -618,7 +618,7 @@ export const DashboardDocente = () => {
                 <div className="flex gap-2">
                   <button
                     title="Filtrar listado de alumnos"
-                    className="p-2 rounded-lg hover:bg-white/5 text-slate-600 hover:text-white transition-colors"
+                    className="p-2 rounded-2xl hover:bg-white/5 text-slate-600 hover:text-white transition-colors"
                   >
                     <span className="material-symbols-outlined text-lg">
                       filter_list
@@ -626,7 +626,7 @@ export const DashboardDocente = () => {
                   </button>
                   <button
                     title="Buscar alumno en el grupo"
-                    className="p-2 rounded-lg hover:bg-white/5 text-slate-600 hover:text-white transition-colors"
+                    className="p-2 rounded-2xl hover:bg-white/5 text-slate-600 hover:text-white transition-colors"
                   >
                     <span className="material-symbols-outlined text-lg">
                       search
@@ -655,7 +655,7 @@ export const DashboardDocente = () => {
                       >
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="size-8 rounded-lg bg-white/[0.03] border border-white/10 overflow-hidden">
+                            <div className="size-8 rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
                               <img
                                 src={student.avatar}
                                 alt={student.name}
@@ -929,7 +929,7 @@ export const DashboardDocente = () => {
             </div>
 
             <button
-              className="px-6 py-3 bg-emerald-600 text-white font-black text-[10px] uppercase tracking-[0.15em] hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/20 rounded-xl flex items-center gap-2 active:scale-95"
+              className="px-6 py-3 bg-emerald-600 text-white font-black text-[10px] uppercase tracking-[0.15em] hover:bg-emerald-500 transition-all shadow-xl shadow-black/5 shadow-emerald-600/20 rounded-xl flex items-center gap-2 active:scale-95"
               onClick={saveAttendance}
               title="Guardar los cambios en el pase de lista de hoy"
             >
@@ -988,7 +988,7 @@ export const DashboardDocente = () => {
                               handleAttendanceChange(student.id, "P")
                             }
                             title="Marcar como Presente"
-                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "P" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
+                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "P" ? "bg-emerald-500 text-white shadow-xl shadow-black/5 shadow-emerald-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
                           >
                             P
                           </button>
@@ -997,7 +997,7 @@ export const DashboardDocente = () => {
                               handleAttendanceChange(student.id, "R")
                             }
                             title="Marcar como Retardo"
-                            className={`px-5 py-2.5 text-[10px] font-black border-l border-r border-white/10 transition-all ${currentStatus === "R" ? "bg-amber-500 text-white shadow-lg shadow-amber-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
+                            className={`px-5 py-2.5 text-[10px] font-black border-l border-r border-white/10 transition-all ${currentStatus === "R" ? "bg-amber-500 text-white shadow-xl shadow-black/5 shadow-amber-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
                           >
                             R
                           </button>
@@ -1006,7 +1006,7 @@ export const DashboardDocente = () => {
                               handleAttendanceChange(student.id, "F")
                             }
                             title="Marcar como Falta"
-                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "F" ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
+                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "F" ? "bg-rose-500 text-white shadow-xl shadow-black/5 shadow-rose-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
                           >
                             F
                           </button>
@@ -1101,7 +1101,7 @@ export const DashboardDocente = () => {
                     >
                       <td className="p-4 border-r border-white/[0.03]">
                         <div className="flex items-center gap-3">
-                          <div className="size-8 rounded-lg bg-white/[0.03] border border-white/10 overflow-hidden">
+                          <div className="size-8 rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
                             <img
                               src={s.avatar}
                               alt={`Foto de ${s.name}`}

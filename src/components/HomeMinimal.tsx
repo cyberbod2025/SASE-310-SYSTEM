@@ -31,7 +31,7 @@ export const HomeMinimal: React.FC<HomeMinimalProps> = ({ user, onLogout }) => {
           </p>
         </div>
 
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700 text-left">
+        <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-700 text-left">
           <p className="text-xs text-slate-500 uppercase font-bold mb-1">
             Usuario Autenticado
           </p>

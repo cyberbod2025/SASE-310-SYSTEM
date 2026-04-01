@@ -58,7 +58,7 @@ export const PanelAdvertencias: React.FC<PanelAdvertenciasProps> = ({
             {incidenciasPrevias.resumen.map((r, i) => (
               <p
                 key={i}
-                className="text-[10px] text-blue-600 font-medium bg-white/50 px-3 py-1.5 rounded-lg border border-blue-100"
+                className="text-[10px] text-blue-600 font-medium bg-white/50 px-3 py-1.5 rounded-2xl border border-blue-100"
               >
                 {r}
               </p>
@@ -83,7 +83,7 @@ export const PanelAdvertencias: React.FC<PanelAdvertenciasProps> = ({
             {criticas.map((a, i) => (
               <div
                 key={i}
-                className="bg-white/80 border border-rose-100 rounded-lg p-3"
+                className="bg-white/80 border border-rose-100 rounded-2xl p-3"
               >
                 <p className="text-[10px] font-bold text-rose-800">{a.texto}</p>
                 <p className="text-[10px] text-rose-600 mt-1 italic">
@@ -110,7 +110,7 @@ export const PanelAdvertencias: React.FC<PanelAdvertenciasProps> = ({
             {warnings.map((a, i) => (
               <div
                 key={i}
-                className="bg-white/80 border border-amber-100 rounded-lg p-3"
+                className="bg-white/80 border border-amber-100 rounded-2xl p-3"
               >
                 <p className="text-[10px] font-bold text-amber-800">
                   {a.texto}

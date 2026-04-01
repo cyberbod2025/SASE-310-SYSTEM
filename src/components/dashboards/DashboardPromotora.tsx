@@ -48,19 +48,19 @@ export const DashboardPromotora = () => {
         <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-inner">
           <button
             onClick={() => setActiveTab("AVANCES")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "AVANCES" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "AVANCES" ? "bg-emerald-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
           >
             Avances
           </button>
           <button
             onClick={() => setActiveTab("EVENTOS")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVENTOS" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVENTOS" ? "bg-emerald-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
           >
             Eventos
           </button>
           <button
             onClick={() => setActiveTab("EVIDENCIAS")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVIDENCIAS" ? "bg-emerald-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVIDENCIAS" ? "bg-emerald-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
           >
             Evidencias
           </button>
@@ -228,7 +228,7 @@ const EventRow = ({ title, time, room }: any) => (
         </p>
       </div>
     </div>
-    <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+    <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-2xl border border-emerald-500/20">
       {time}
     </span>
   </div>

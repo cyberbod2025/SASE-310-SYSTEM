@@ -166,7 +166,7 @@ ${contextoAutomatico}`;
             onClick={() => setIsFeedbackOpen(false)}
             title="Descartar y cerrar ventana"
             aria-label="Cerrar ventana de sugerencias"
-            className="size-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+            className="size-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl transition-all"
           >
             <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
@@ -197,9 +197,9 @@ ${contextoAutomatico}`;
               onClick={() => setType("bug")}
               title="Reportar un error técnico o fallo en el sistema"
               aria-label="Tipo: Error"
-              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-2xl transition-all ${
                 type === "bug"
-                  ? "bg-red-500 text-white shadow-lg shadow-red-500/20"
+                  ? "bg-red-500 text-white shadow-xl shadow-black/5 shadow-red-500/20"
                   : "text-slate-500 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -210,9 +210,9 @@ ${contextoAutomatico}`;
               onClick={() => setType("suggestion")}
               title="Proponer una nueva funcionalidad o mejora"
               aria-label="Tipo: Sugerencia"
-              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-2xl transition-all ${
                 type === "suggestion"
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                  ? "bg-blue-600 text-white shadow-xl shadow-black/5 shadow-blue-600/20"
                   : "text-slate-500 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -223,9 +223,9 @@ ${contextoAutomatico}`;
               onClick={() => setType("ux")}
               title="Comentar sobre la interfaz o facilidad de uso (UX/UI)"
               aria-label="Tipo: Diseño"
-              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all ${
+              className={`flex-1 py-2 text-[10px] font-black uppercase tracking-wider rounded-2xl transition-all ${
                 type === "ux"
-                  ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
+                  ? "bg-purple-600 text-white shadow-xl shadow-black/5 shadow-purple-600/20"
                   : "text-slate-500 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -247,7 +247,7 @@ ${contextoAutomatico}`;
                 key={issue.key}
                 type="button"
                 onClick={() => setIssueTag(issue.key)}
-                className={`text-left px-3 py-2 rounded-lg border text-[11px] transition-all ${
+                className={`text-left px-3 py-2 rounded-2xl border text-[11px] transition-all ${
                   issueTag === issue.key
                     ? "bg-blue-600/20 border-blue-500/40 text-white"
                     : "bg-black/30 border-white/5 text-slate-400 hover:text-white hover:border-white/20"
@@ -277,7 +277,7 @@ ${contextoAutomatico}`;
           <button
             type="submit"
             disabled={isSending}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all disabled:opacity-50 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-lg shadow-blue-600/20 group"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all disabled:opacity-50 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-black/5 shadow-blue-600/20 group"
           >
             {isSending ? "Enviando Sugerencia..." : "Enviar Sugerencia"}
             <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">

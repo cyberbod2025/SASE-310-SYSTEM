@@ -86,7 +86,7 @@ export const AvisoUsoResponsable: React.FC<AvisoUsoResponsableProps> = ({
           <button
             onClick={onAccept}
             id="btn-aceptar-acceso-sensible"
-            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:shadow-lg hover:shadow-blue-500/25 transition-all active:scale-95 flex items-center justify-center gap-2"
+            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 hover:shadow-blue-500/25 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-sm">
               verified_user

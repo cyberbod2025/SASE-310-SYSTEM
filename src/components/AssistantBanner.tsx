@@ -196,7 +196,7 @@ export const AssistantBanner: React.FC<{
             {/* Botón Dashboard siempre visible */}
             <button
               onClick={() => setCurrentModule(AppModule.DASHBOARD)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all border bg-blue-600/20 border-blue-500/40 text-blue-400 hover:bg-blue-600/30 hover:border-blue-400 uppercase tracking-widest hover:translate-y-[-1px] active:translate-y-[0px] shadow-lg shadow-blue-500/10"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all border bg-blue-600/20 border-blue-500/40 text-blue-400 hover:bg-blue-600/30 hover:border-blue-400 uppercase tracking-widest hover:translate-y-[-1px] active:translate-y-[0px] shadow-xl shadow-black/5 shadow-blue-500/10"
             >
               <span className="material-symbols-outlined text-[16px]">
                 dashboard

@@ -16,7 +16,7 @@ export const TestGlowCard: React.FC = () => {
         </div>
         <motion.button
           whileTap={{ scale: 0.95 }}
-          className="w-fit rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-cyan-500/30"
+          className="w-fit rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-black/5 shadow-cyan-500/30"
         >
           Ver Detalles
         </motion.button>

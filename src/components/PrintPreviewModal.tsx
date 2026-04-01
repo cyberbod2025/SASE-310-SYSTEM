@@ -63,9 +63,9 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
               <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/5">
                 <button
                   onClick={() => setViewMode("preview")}
-                  className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
                     viewMode === "preview"
-                      ? "bg-amber-600 text-white shadow-lg"
+                      ? "bg-amber-600 text-white shadow-xl shadow-black/5"
                       : "text-slate-500 hover:text-slate-300"
                   }`}
                 >
@@ -73,9 +73,9 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
                 </button>
                 <button
                   onClick={() => setViewMode("editor")}
-                  className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
                     viewMode === "editor"
-                      ? "bg-amber-600 text-white shadow-lg"
+                      ? "bg-amber-600 text-white shadow-xl shadow-black/5"
                       : "text-slate-500 hover:text-slate-300"
                   }`}
                 >

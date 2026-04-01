@@ -153,9 +153,9 @@ export const ProtocolsView: React.FC = () => {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setFilterType("all")}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
               filterType === "all"
-                ? "bg-white text-black shadow-md"
+                ? "bg-white text-black shadow-xl shadow-black/5"
                 : "text-slate-400 hover:text-white hover:bg-white/5"
             }`}
             title="Mostrar todos los protocolos disponibles"
@@ -164,9 +164,9 @@ export const ProtocolsView: React.FC = () => {
           </button>
           <button
             onClick={() => setFilterType("convivencia")}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
               filterType === "convivencia"
-                ? "bg-red-500 text-white shadow-md"
+                ? "bg-red-500 text-white shadow-xl shadow-black/5"
                 : "text-slate-400 hover:text-red-300 hover:bg-white/5"
             }`}
             title="Filtrar por protocolos de convivencia escolar"
@@ -175,9 +175,9 @@ export const ProtocolsView: React.FC = () => {
           </button>
           <button
             onClick={() => setFilterType("salud")}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
               filterType === "salud"
-                ? "bg-orange-500 text-white shadow-md"
+                ? "bg-orange-500 text-white shadow-xl shadow-black/5"
                 : "text-slate-400 hover:text-orange-300 hover:bg-white/5"
             }`}
             title="Filtrar por protocolos de salud y primeros auxilios"
@@ -186,9 +186,9 @@ export const ProtocolsView: React.FC = () => {
           </button>
           <button
             onClick={() => setFilterType("proteccion_civil")}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
               filterType === "proteccion_civil"
-                ? "bg-blue-500 text-white shadow-md"
+                ? "bg-blue-500 text-white shadow-xl shadow-black/5"
                 : "text-slate-400 hover:text-blue-300 hover:bg-white/5"
             }`}
             title="Filtrar por protocolos de proteccion civil y emergencias"
@@ -197,9 +197,9 @@ export const ProtocolsView: React.FC = () => {
           </button>
           <button
             onClick={() => setFilterType("apoyo")}
-            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+            className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
               filterType === "apoyo"
-                ? "bg-purple-600 text-white shadow-md"
+                ? "bg-purple-600 text-white shadow-xl shadow-black/5"
                 : "text-slate-400 hover:text-purple-300 hover:bg-white/5"
             }`}
             title="Filtrar por protocolos de apoyo socioemocional"
@@ -241,7 +241,7 @@ export const ProtocolsView: React.FC = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedProtocol(proto)}
-                  className="px-4 py-2 rounded-lg bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium"
+                  className="px-4 py-2 rounded-2xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium"
                 >
                   Ver detalle
                 </motion.button>

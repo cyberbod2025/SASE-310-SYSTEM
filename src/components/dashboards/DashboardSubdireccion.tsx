@@ -23,7 +23,7 @@ const TacticalKPI = ({ label, value, icon, color, trend }: any) => {
       <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.02] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:opacity-[0.05] transition-opacity"></div>
       <div className="flex justify-between items-start mb-4">
         <div
-          className={`p-2 rounded-lg border ${colors[color]} bg-transparent`}
+          className={`p-2 rounded-2xl border ${colors[color]} bg-transparent`}
         >
           <span className="material-symbols-outlined text-xl">{icon}</span>
         </div>

@@ -56,7 +56,7 @@ export const BitacoraAuditoria: React.FC = () => {
       {/* Header Institucional */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-5">
-          <div className="size-16 backdrop-blur-3xl bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 shadow-lg border border-white/10">
+          <div className="size-16 backdrop-blur-3xl bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 shadow-xl shadow-black/5 border border-white/10">
             <span className="material-symbols-outlined text-3xl">policy</span>
           </div>
           <div>
@@ -73,7 +73,7 @@ export const BitacoraAuditoria: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchAuditLog}
-            className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 hover:text-white transition-all font-bold text-xs uppercase tracking-widest shadow-lg active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 hover:text-white transition-all font-bold text-xs uppercase tracking-widest shadow-xl shadow-black/5 active:scale-95"
             title="Sincronizar y actualizar bitácora de auditoría"
           >
             <span className="material-symbols-outlined text-xl">refresh</span>
@@ -166,7 +166,7 @@ export const BitacoraAuditoria: React.FC = () => {
               >
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-2">
-                    <div className="size-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[9px]">
+                    <div className="size-7 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[9px]">
                       {(entry.user_role || "S").charAt(0)}
                     </div>
                     <div>
@@ -282,7 +282,7 @@ export const BitacoraAuditoria: React.FC = () => {
                     </td>
                     <td className="px-8 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[10px]">
+                        <div className="size-8 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[10px]">
                           {(entry.user_role || "S").charAt(0)}
                         </div>
                         <div>
@@ -346,9 +346,9 @@ const StatCard: React.FC<{
   };
 
   return (
-    <div className="bg-[#0b121a]/60 p-6 rounded-[2rem] border border-white/5 shadow-lg backdrop-blur-3xl flex items-center gap-5 hover:border-white/10 transition-all group">
+    <div className="bg-[#0b121a]/60 p-6 rounded-[2rem] border border-white/5 shadow-xl shadow-black/5 backdrop-blur-3xl flex items-center gap-5 hover:border-white/10 transition-all group">
       <div
-        className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-lg group-hover:scale-110 transition-transform duration-500`}
+        className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-xl shadow-black/5 group-hover:scale-110 transition-transform duration-500`}
       >
         <span className="material-symbols-outlined text-2xl">{icon}</span>
       </div>
@@ -379,7 +379,7 @@ const ActionBadge: React.FC<{ type: string }> = ({ type }) => {
 
   return (
     <span
-      className={`px-3 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest ${
+      className={`px-3 py-1 rounded-2xl border text-[10px] font-black uppercase tracking-widest ${
         styles[type] || "bg-slate-50 text-slate-500"
       }`}
     >

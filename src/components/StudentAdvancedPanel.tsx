@@ -282,7 +282,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
         {/* BOTÓN CERRAR (Visible y Claro) */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-[70] p-3 md:p-2 bg-white/80 backdrop-blur-md text-slate-500 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-lg border border-slate-200 group active:scale-95"
+          className="absolute top-4 right-4 z-[70] p-3 md:p-2 bg-white/80 backdrop-blur-md text-slate-500 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-xl shadow-black/5 border border-slate-200 group active:scale-95"
           title="Cerrar Expediente"
         >
           <span className="material-symbols-outlined text-2xl md:text-xl group-hover:rotate-90 duration-300">
@@ -345,7 +345,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {student.isDistancia && (
-                <span className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-lg uppercase flex items-center gap-1.5 shadow-sm">
+                <span className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-2xl uppercase flex items-center gap-1.5 shadow-sm">
                   <span className="material-symbols-outlined text-[14px]">
                     wifi
                   </span>
@@ -353,14 +353,14 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 </span>
               )}
               {student.bapInfo?.hasBAP && (
-                <span className="px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 text-[10px] font-bold rounded-lg uppercase flex items-center gap-1.5 shadow-sm">
+                <span className="px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 text-[10px] font-bold rounded-2xl uppercase flex items-center gap-1.5 shadow-sm">
                   <span className="material-symbols-outlined text-[14px]">
                     psychology
                   </span>
                   BAP
                 </span>
               )}
-              <span className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 text-[10px] font-bold rounded-lg uppercase shadow-sm">
+              <span className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 text-[10px] font-bold rounded-2xl uppercase shadow-sm">
                 Activo 2026
               </span>
             </div>
@@ -409,7 +409,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   title={`Ver información ${tab.label}`}
-                  className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wide transition-all duration-200 ${
+                  className={`flex-1 py-2 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wide transition-all duration-200 ${
                     activeTab === tab.id
                       ? "bg-white text-slate-800 shadow-sm border border-slate-200"
                       : "text-slate-400 hover:bg-white/50 hover:text-slate-600"
@@ -544,7 +544,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                     <div className="relative z-10">
                       <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-4">
-                          <div className="size-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-white shadow-lg shadow-indigo-500/20">
+                          <div className="size-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-white shadow-xl shadow-black/5 shadow-indigo-500/20">
                             <span className="material-symbols-outlined text-3xl">
                               sports_esports
                             </span>
@@ -578,7 +578,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             <span className="material-symbols-outlined text-amber-300 text-xl drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]">
                               stars
                             </span>
-                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-lg">
+                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-xl shadow-black/5">
                               {student.gamificacion.total_puntos}
                             </span>
                           </div>
@@ -592,7 +592,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             <span className="material-symbols-outlined text-cyan-300 text-xl drop-shadow-[0_0_8px_rgba(103,232,249,0.5)]">
                               qr_code_scanner
                             </span>
-                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-lg">
+                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-xl shadow-black/5">
                               {student.gamificacion.escaneos_realizados}
                             </span>
                           </div>
@@ -697,7 +697,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setShowIncidentForm(true)}
-                      className="px-4 py-1.5 bg-rose-600 text-white text-[10px] font-black rounded-lg uppercase shadow-sm hover:bg-rose-700 transition-all flex items-center gap-2"
+                      className="px-4 py-1.5 bg-rose-600 text-white text-[10px] font-black rounded-2xl uppercase shadow-sm hover:bg-rose-700 transition-all flex items-center gap-2"
                       title="Registrar nueva incidencia o reporte clínico/conductual"
                     >
                       <span className="material-symbols-outlined text-sm">
@@ -741,7 +741,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                           }`}
                         ></div>
 
-                        <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+                        <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-xl shadow-black/5 transition-shadow group">
                           <div className="flex justify-between items-start mb-2">
                             <span
                               className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wide border ${
@@ -757,7 +757,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleWhatsAppIncident(inc)}
-                                className={`p-1.5 rounded-lg transition-all flex items-center gap-1.5 border ${
+                                className={`p-1.5 rounded-2xl transition-all flex items-center gap-1.5 border ${
                                   inc.notificado_whatsapp 
                                     ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
                                     : "bg-slate-50 text-slate-400 border-slate-200 hover:bg-emerald-500 hover:text-white hover:border-emerald-400"
@@ -781,7 +781,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                               </span>
                             </div>
                           </div>
-                          <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-100">
+                          <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-3 rounded-2xl border border-slate-100">
                             {inc.description}
                           </p>
 
@@ -832,7 +832,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               <div className="h-full flex flex-col overflow-hidden">
                 <div className="mb-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl flex justify-between items-center shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="bg-white p-2 rounded-lg border border-blue-200 text-blue-600 shadow-sm">
+                    <div className="bg-white p-2 rounded-2xl border border-blue-200 text-blue-600 shadow-sm">
                       <span className="material-symbols-outlined text-2xl">
                         smart_toy
                       </span>
@@ -849,7 +849,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   {canPrintSensitive && (
                     <button
                       onClick={() => setShowAIGenerator(true)}
-                      className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white hover:shadow-md transition-all px-4 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 shadow-sm"
+                      className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white hover:shadow-xl shadow-black/5 transition-all px-4 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 shadow-sm"
                       title="Abrir asistente de IA para redactar documentos institucionales"
                     >
                       Generar Nuevo
@@ -890,7 +890,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                         {canPrintSensitive && (
                           <button
                             onClick={() => handlePrintDoc(doc)}
-                            className="text-slate-300 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-all"
+                            className="text-slate-300 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-2xl transition-all"
                             title="Imprimir"
                           >
                             <span className="material-symbols-outlined text-[20px]">
@@ -899,7 +899,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                           </button>
                         )}
                       </div>
-                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-2">
+                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 mt-2">
                         <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed font-mono">
                           {doc.contenido}
                         </p>
@@ -938,7 +938,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={() => handleContactTutor("call")}
-                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
+                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-2xl py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
               >
                 <span className="material-symbols-outlined text-[16px]">
                   call
@@ -955,7 +955,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                     student.id,
                   );
                 }}
-                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
+                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-2xl py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
               >
                 <span className="material-symbols-outlined text-[16px]">
                   mail
@@ -1055,7 +1055,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 className={`w-full p-3 rounded-xl border transition-all flex items-center gap-3 group text-left ${
                   student.isDistancia
                     ? "bg-amber-50 border-amber-200 text-amber-700 shadow-inner"
-                    : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm hover:shadow-md"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm hover:shadow-xl shadow-black/5"
                 }`}
               >
                 <div
@@ -1083,7 +1083,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               {canPrintSensitive && (
                 <button
                   onClick={() => setShowExpediente(true)}
-                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-xl shadow-black/5 group text-left"
                 >
                   <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-indigo-100 group-hover:border-indigo-200 group-hover:text-indigo-600 flex items-center justify-center transition-colors">
                     <span className="material-symbols-outlined text-[18px]">
@@ -1105,7 +1105,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               {canPrintSensitive && (
                 <button
                   onClick={() => toast("Abrir modal de citatorio")} // Placeholder funcional
-                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-xl shadow-black/5 group text-left"
                 >
                   <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-rose-100 group-hover:border-rose-200 group-hover:text-rose-600 flex items-center justify-center transition-colors">
                     <span className="material-symbols-outlined text-[18px]">
@@ -1126,7 +1126,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               {/* Imprimir Kardex */}
               <button
                 onClick={() => toast("Imprimiendo Kardex...")}
-                className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-cyan-50 hover:border-cyan-200 hover:text-cyan-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-cyan-50 hover:border-cyan-200 hover:text-cyan-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-xl shadow-black/5 group text-left"
               >
                 <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-cyan-100 group-hover:border-cyan-200 group-hover:text-cyan-600 flex items-center justify-center transition-colors">
                   <span className="material-symbols-outlined text-[18px]">
@@ -1271,7 +1271,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                                 photo: null,
                               }));
                             }}
-                            className="absolute top-2 right-2 size-6 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg"
+                            className="absolute top-2 right-2 size-6 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-black/5"
                           >
                             <span className="material-symbols-outlined text-xs">
                               close
@@ -1303,7 +1303,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 <button
                   onClick={handleSaveIncident}
                   disabled={isSaving}
-                  className="flex-[2] py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-[2] py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-rose-700 transition-all shadow-xl shadow-black/5 shadow-rose-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isSaving ? (
                     <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

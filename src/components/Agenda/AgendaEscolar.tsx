@@ -181,13 +181,13 @@ export const AgendaEscolar = () => {
           <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-600/[0.03] blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
           <div className="flex justify-between items-center mb-8 relative z-10">
-            <button onClick={handlePrevMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-all">
+            <button onClick={handlePrevMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-2xl text-slate-400 hover:text-white transition-all">
               <span className="material-symbols-outlined">chevron_left</span>
             </button>
             <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-widest italic drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
               {monthName}
             </h3>
-            <button onClick={handleNextMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-all">
+            <button onClick={handleNextMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-2xl text-slate-400 hover:text-white transition-all">
               <span className="material-symbols-outlined">chevron_right</span>
             </button>
           </div>
