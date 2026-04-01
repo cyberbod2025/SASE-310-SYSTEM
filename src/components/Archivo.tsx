@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
 import { supabase } from "../supabase/client";
-import { CaseState, Solicitud, SolicitudPriority } from "../types";
+import { CaseState, CaseLabels, CaseLabels, Solicitud, SolicitudPriority } from "../types";
 import toast from "react-hot-toast";
 
 import { useAuth } from "./AuthProvider";
@@ -277,7 +277,7 @@ export const Archivo: React.FC = () => {
                                       : "bg-rose-500"
                                 }`}
                               ></div>
-                              {s.caseState}
+                              {CaseLabels[s.caseState]}
                             </span>
                           </td>
                           <td className="px-6 py-5 text-right">

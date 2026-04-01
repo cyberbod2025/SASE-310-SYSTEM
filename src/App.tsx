@@ -9,7 +9,6 @@ import { GlobalModals } from "./components/GlobalModals";
 import { DocumentRenderer } from "./components/DocumentRenderer";
 import { AppShell } from "./components/AppShell";
 import LaboratorioUI from "./pages/LaboratorioUI";
-import PanelAvanzado from "./pages/PanelAvanzado";
 
 const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
 const SASEIntroAnimation = React.lazy(() => import("./components/SASEIntroAnimation").then(m => ({ default: m.SASEIntroAnimation })));
@@ -46,10 +45,6 @@ const App: React.FC = () => {
 
   if (labParam === "ui") {
     return <LaboratorioUI />;
-  }
-
-  if (labParam === "panel") {
-    return <PanelAvanzado />;
   }
 
   // Handle direct links (e.g., ?registro=true)

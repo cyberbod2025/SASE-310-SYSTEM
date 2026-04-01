@@ -1,10 +1,6 @@
-import React, { Suspense, useState, useEffect, lazy } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { SystemState } from "../types/systemState";
-
-const LazySpline = lazy(() =>
-  import("@splinetool/react-spline").then((mod) => ({ default: mod.default })),
-);
 
 interface SaseSplineOrbProps {
   state: SystemState;
@@ -14,15 +10,42 @@ interface SaseSplineOrbProps {
 
 // SASE Official Color Palette (Semaforo Logic)
 const stateColors: Record<SystemState, string> = {
-  normal: "#fbbf24",    // Gold (Estable / Dorado Institucional)
+  normal: "#3b82f6",    // Blue (Neural Link / Calm) - Switched from yellow to follow new institutional blue
   warning: "#f59e0b",   // Amber (Observado / Patron Detectado)
   alert: "#ef4444",     // Red (En Análisis / Intervención)
-  thinking: "#3b82f6",  // Blue (Processing / Neural Link)
+  thinking: "#8b5cf6",  // Purple/Blue (Processing)
 };
 
+/**
+ * SaseSplineOrb (v4.5 - CSS/Motion Standard)
+ * REFACTOR: Removed Spline dependency for performance and stability.
+ * Uses pure CSS gradients and Framer Motion for the neural effect.
+ */
 export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, isInteracting }) => {
   const color = stateColors[state] || stateColors.normal;
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [blink, setBlink] = useState(false);
+  const blinkTimeout = useRef<number | undefined>(undefined);
+  const blinkResetTimeout = useRef<number | undefined>(undefined);
+
+  // Animación de parpadeo aleatoria
+  useEffect(() => {
+    const scheduleBlink = () => {
+      const delay = 3000 + Math.random() * 5000;
+      blinkTimeout.current = window.setTimeout(() => {
+        setBlink(true);
+        blinkResetTimeout.current = window.setTimeout(() => {
+          setBlink(false);
+          scheduleBlink();
+        }, 150);
+      }, delay);
+    };
+    scheduleBlink();
+    return () => {
+      if (blinkTimeout.current) clearTimeout(blinkTimeout.current);
+      if (blinkResetTimeout.current) clearTimeout(blinkResetTimeout.current);
+    };
+  }, []);
 
   // Seguimiento del Mouse para los Ojos de IA-SASE
   useEffect(() => {
@@ -41,138 +64,95 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
   return (
     <div className={`relative flex items-center justify-center overflow-hidden rounded-full transition-all duration-700 ${className || "w-64 h-64"}`}>
       
-      {/* 1. Capa de Atmosfera / Resplandor de Conciencia */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={state}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ 
-            opacity: 1, 
-            scale: isInteracting ? 1.1 : 1,
-            filter: isInteracting ? "blur(100px)" : "blur(80px)"
-          }}
-          exit={{ opacity: 0, scale: 1.1 }}
-          transition={{ duration: 1.2, ease: "circOut" }}
-          className="absolute inset-0 rounded-full"
-          style={{ 
-            background: `radial-gradient(circle, ${color}44 0%, transparent 70%)` 
-          }}
-        />
-      </AnimatePresence>
+      {/* 1. Nucleus Background (CSS Alternative to Spline) */}
+      <motion.div
+        animate={{
+          backgroundColor: `${color}11`,
+          boxShadow: `inset 0 0 100px ${color}33, 0 0 30px ${state === 'thinking' ? '#8b5cf6' : color}44`,
+        }}
+        className="absolute inset-0 rounded-full"
+      />
 
-      {/* 2. Tactical HUD Overlay - Interfaz Institucional */}
-      <div className="absolute inset-0 z-30 pointer-events-none opacity-50">
-        <svg className="w-full h-full" viewBox="0 0 200 200">
-          <defs>
-            <filter id="glow-sase">
-              <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          
-          {/* Anillos de Datos Circundantes */}
-          <motion.circle 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            style={{ originX: "100px", originY: "100px" }}
-            cx="100" cy="100" r="95" 
-            fill="none" stroke={color} strokeWidth="0.5" strokeDasharray="1 15" 
-          />
-          
-          <circle cx="100" cy="100" r="90" fill="none" stroke={color} strokeWidth="1" strokeDasharray="30 170" opacity="0.2" filter="url(#glow-sase)" />
-        </svg>
-      </div>
+      {/* 2. Fractal Energy / Plasma (Motion) */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 0.9, 1.1, 1],
+          rotate: [0, 90, 180, 270, 360],
+          opacity: state === 'thinking' ? [0.4, 0.7, 0.4] : [0.2, 0.4, 0.2]
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-[-20%] blur-[40px] rounded-full opacity-30"
+        style={{
+          background: `conic-gradient(from 0deg, ${color}, transparent, ${color}cc, transparent)`
+        }}
+      />
 
-        {/* 3. Contenedor de la Cara Neural (Spline) */}
-        <div className="relative w-[92%] h-[92%] z-10 group bg-transparent">
-          <Suspense fallback={
-            <div className="w-full h-full flex items-center justify-center bg-slate-900/20 rounded-full animate-pulse">
-              <div className="w-8 h-8 border-2 border-white/5 border-t-white/40 rounded-full animate-spin" />
+      {/* 3. Detailed Sasin Neural Face Layers */}
+      <div className="relative w-full h-full z-20 flex items-center justify-center">
+        <div className="relative w-1/2 h-1/2 flex items-center justify-center">
+          <div className="flex gap-[25%] items-center w-full justify-center">
+            
+            {/* Left Eye */}
+            <div className="relative flex items-center justify-center" style={{ width: "22%", aspectRatio: "1" }}>
+              <div className="absolute inset-0 rounded-full bg-slate-900 border border-white/10" 
+                style={{ background: `radial-gradient(circle, ${color}99 0%, #0f172a 100%)` }} />
+              <motion.div
+                animate={{ 
+                  x: eyeOffsetX * 0.4, 
+                  y: blink ? 0 : eyeOffsetY * 0.4, 
+                  scaleY: blink ? 0.05 : 1 
+                }}
+                transition={{ type: "spring", stiffness: 250, damping: 25 }}
+                className="absolute rounded-full bg-white shadow-[0_0_10px_white]"
+                style={{ width: "40%", height: "40%" }}
+              />
             </div>
-          }>
-          <LazySpline 
-            scene="/sase-orb.splinecode"
-            className={`w-full h-full transform scale-125 transition-all duration-1000 ${isInteracting ? 'brightness-125' : 'brightness-100'}`}
-          />
-          </Suspense>
 
-          {/* 4. Capa facial mínima para mantener a Sasin visible incluso si el modelo tarda */}
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div className="relative w-1/2 h-1/2 flex items-center justify-center">
-              {/* Ojos */}
-              <div
-                className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)]"
-                style={{
-                  left: "35%",
-                  top: "40%",
-                  transform: `translate(${eyeOffsetX}px, ${eyeOffsetY}px)`,
-                  boxShadow: `0 0 12px ${color}55`,
+            {/* Right Eye */}
+            <div className="relative flex items-center justify-center" style={{ width: "22%", aspectRatio: "1" }}>
+              <div className="absolute inset-0 rounded-full bg-slate-900 border border-white/10" 
+                style={{ background: `radial-gradient(circle, ${color}99 0%, #0f172a 100%)` }} />
+              <motion.div
+                animate={{ 
+                  x: eyeOffsetX * 0.4, 
+                  y: blink ? 0 : eyeOffsetY * 0.4, 
+                  scaleY: blink ? 0.05 : 1 
                 }}
-              />
-              <div
-                className="absolute w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)]"
-                style={{
-                  right: "35%",
-                  top: "40%",
-                  transform: `translate(${eyeOffsetX}px, ${eyeOffsetY}px)`,
-                  boxShadow: `0 0 12px ${color}55`,
-                }}
-              />
-
-              {/* Boca / indicador de estado */}
-              <div
-                className="absolute h-1.5 rounded-full"
-                style={{
-                  bottom: "32%",
-                  left: "30%",
-                  right: "30%",
-                  background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-                  boxShadow: `0 0 14px ${color}66`,
-                }}
+                transition={{ type: "spring", stiffness: 250, damping: 25 }}
+                className="absolute rounded-full bg-white shadow-[0_0_10px_white]"
+                style={{ width: "40%", height: "40%" }}
               />
             </div>
           </div>
 
-        {/* 5. Capas de Color Adaptativas (Inundan el modelo 3D) */}
-        {/* Capa 1: Tinte Base */}
-        <motion.div
-          animate={{ 
-            backgroundColor: `${color}33`,
-            boxShadow: `inset 0 0 100px ${color}44, 0 0 60px ${color}33`
-          }}
-          transition={{ duration: 1 }}
-          style={{ mixBlendMode: "overlay" }}
-          className="absolute inset-0 pointer-events-none rounded-full border border-white/[0.08]"
-        />
-        
-        {/* Capa 2: Brillo Central / Saturación */}
-        <motion.div
-          animate={{ 
-            background: `radial-gradient(circle, ${color}66 0%, transparent 60%)`,
-          }}
-          transition={{ duration: 1 }}
-          style={{ mixBlendMode: "screen" }}
-          className="absolute inset-0 pointer-events-none rounded-full opacity-60"
-        />
-
-        {/* Línea de Escaneo Horizontal (Latido Vital) */}
-        <motion.div 
-          animate={{ 
-            top: ["10%", "90%", "10%"], 
-            opacity: [0, 0.4, 0],
-            backgroundColor: color
-          }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-[20%] right-[20%] h-[1px] z-50 blur-[2px]"
-        />
+          {/* Mouth / Pulse Line */}
+          <motion.div
+            animate={{
+              width: state === 'thinking' ? ["10%", "30%", "10%"] : "20%",
+              opacity: [0.3, 0.6, 0.3]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute h-[1px] rounded-full"
+            style={{
+              bottom: "35%",
+              background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
+              boxShadow: `0 0 8px ${color}aa`,
+            }}
+          />
+        </div>
       </div>
 
-      <style>{`
-        .spline-watermark { display: none !important; }
-      `}</style>
+      {/* 4. HUD / Tactical Overlay */}
+      <svg className="absolute inset-0 z-30 pointer-events-none opacity-30" viewBox="0 0 200 200">
+        <motion.circle 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          style={{ originX: "100px", originY: "100px" }}
+          cx="100" cy="100" r="95" 
+          fill="none" stroke={color} strokeWidth="0.3" strokeDasharray="2 10" 
+        />
+        <circle cx="100" cy="100" r="88" fill="none" stroke={color} strokeWidth="0.5" strokeDasharray="30 170" opacity="0.4" />
+      </svg>
     </div>
   );
 };

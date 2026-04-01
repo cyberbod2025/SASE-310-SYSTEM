@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../store";
-import { Student, UserRole, CaseState } from "../types";
+import { Student, UserRole, CaseState, CaseLabels } from "../types";
 import { getPrivacySafeAttributes } from "../utils/saseUtils";
 
 interface StudentCardProps {
@@ -58,7 +58,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
             <motion.div
               layoutId={`status-${student.id}`}
               className={`absolute -bottom-1 -right-1 size-7 rounded-full border-4 border-slate-950 flex items-center justify-center ${statusColor} shadow-xl shadow-black/50`}
-              title={`Estado: ${student.caseState}`}
+              title={`Estado: ${CaseLabels[student.caseState]}`}
             >
               <span className="material-symbols-outlined text-[12px] text-white font-black">
                 {student.caseState === CaseState.PATRON_DETECTADO ? "warning" : 

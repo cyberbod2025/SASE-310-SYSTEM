@@ -162,7 +162,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   }, [aiSystemState, autoNavigate, highlightedModule, setCurrentModule, clearHighlight]);
 
   return (
-    <div className="flex h-screen w-full bg-[#0B1120] text-slate-200 overflow-hidden font-sans select-none">
+    <div className="flex h-screen w-full bg-slate-50 text-slate-800 overflow-hidden font-sans select-none">
       <TutorialController />
       
       {/* 🔮 Inyectar Filtros SVG Globales para Liquid Glass */}
@@ -176,22 +176,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         />
       )}
 
-      {/* Sidebar - Premium Crystal Glass */}
+      {/* Sidebar - Premium Crystal Glass (Light Edition) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-[#06182a]/40 !backdrop-blur-[60px] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/10 md:relative md:translate-x-0 shadow-[20px_0_80px_-15px_rgba(0,0,0,0.6)] ${
+        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-white/60 !backdrop-blur-[60px] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-slate-200 md:relative md:translate-x-0 shadow-[10px_0_40px_-15px_rgba(0,0,0,0.05)] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full relative overflow-hidden">
-          {/* Internal Glow - Tactical Crystal Effect */}
-          <div className="absolute top-[-5%] left-[-10%] w-[120%] h-[30%] bg-cyan-500/15 blur-[100px] pointer-events-none animate-pulse-slow"></div>
-          <div className="absolute bottom-[20%] right-[-20%] w-[100%] h-[30%] bg-violet-600/10 blur-[120px] pointer-events-none"></div>
-          <div className="absolute top-[40%] left-[-10%] w-[50%] h-[20%] bg-blue-500/10 blur-[80px] pointer-events-none animate-pulse"></div>
+          {/* Internal Glow - Subtle Institutional Effect */}
+          <div className="absolute top-[-5%] left-[-10%] w-[120%] h-[30%] bg-blue-500/5 blur-[100px] pointer-events-none animate-pulse-slow"></div>
+          <div className="absolute bottom-[20%] right-[-20%] w-[100%] h-[30%] bg-slate-200/20 blur-[120px] pointer-events-none"></div>
+          <div className="absolute top-[40%] left-[-10%] w-[50%] h-[20%] bg-blue-400/5 blur-[80px] pointer-events-none animate-pulse"></div>
 
-          {/* Profile Section */}
           <div
             id="sidebar-logo"
-            className={`p-6 border-b border-white/5 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
+            className={`p-6 border-b border-slate-100 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
           >
             <div className="flex items-center gap-4">
               <div className="relative group">
@@ -200,12 +199,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   src={roleImages[currentUserRole]}
                   alt={`Perfil de ${currentUserRole}`}
                   title={`Usuario: ${displayUserName}`}
-                  className={`rounded-2xl border border-white/10 shadow-2xl relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
+                  className={`rounded-2xl border border-slate-200 shadow-lg relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
                 />
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex-1 min-w-0 animate-fade-in">
-                  <h3 className="text-[10px] font-black text-white truncate uppercase tracking-widest title-sase">
+                  <h3 className="text-[10px] font-black text-slate-800 truncate uppercase tracking-widest title-sase">
                     {displayUserName}
                   </h3>
                   <div className="flex flex-col gap-0.5 mt-0.5">
@@ -408,18 +407,18 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           {/* Fase 2: Sistema Buddy (Mentor asignado) */}
           {onboardingPhase === 'PHASE_2' && !isSidebarCollapsed && (
             <div className="mx-4 mt-6 p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/20 animate-fade-in-up">
-                <p className="text-[9px] text-emerald-400 font-bold mb-2 uppercase tracking-[0.2em]">Buddy Asignado</p>
+                <p className="text-[9px] text-emerald-600 font-bold mb-2 uppercase tracking-[0.2em]">Buddy Asignado</p>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                      <span className="material-icons text-emerald-400 text-sm">person</span>
+                      <span className="material-icons text-emerald-600 text-sm">person</span>
                   </div>
-                  <p className="text-[11px] text-slate-300 font-medium">Prof. Roberto M.</p>
+                  <p className="text-[11px] text-slate-600 font-medium">Prof. Roberto M.</p>
                 </div>
             </div>
           )}
 
           {/* Footer Sidebar */}
-          <div className="p-4 border-t border-white/5 space-y-3 relative z-10">
+          <div className="p-4 border-t border-slate-100 space-y-3 relative z-10">
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
               title={
@@ -432,7 +431,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   ? "Expandir barra lateral"
                   : "Colapsar barra lateral"
               }
-              className="hidden md:flex items-center justify-center w-full py-2 bg-white/[0.03] hover:bg-white/[0.08] text-slate-500 hover:text-white rounded-xl transition-all"
+              className="hidden md:flex items-center justify-center w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-xl transition-all"
             >
               <span className="material-symbols-outlined text-lg">
                 {isSidebarCollapsed
@@ -445,7 +444,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               id="sidebar-feedback"
               onClick={() => setIsFeedbackOpen(true)}
                title="Enviar comentarios, sugerencias o reportar errores"
-              className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-xl transition-all group"
+              className="flex items-center justify-center w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all group"
             >
               <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">
                 feedback
@@ -464,7 +463,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               }}
               title="Cerrar sesión de forma segura"
               aria-label="Cerrar sesión"
-              className="flex items-center justify-center w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition-all group"
+              className="flex items-center justify-center w-full py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all group"
             >
               <span className="material-symbols-outlined text-lg group-hover:rotate-180 transition-transform duration-500">
                 logout
@@ -481,11 +480,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
-        {/* Header - Glassmorphism Sticky */}
-        <header className="h-20 glass-card-quantum !rounded-none !border-b !border-white/5 !border-t-0 !border-l-0 !border-r-0 !bg-[#0b0e14]/50 flex items-center justify-between px-6 shrink-0 z-40 relative">
+        {/* Header - Glassmorphism Sticky (Light) */}
+        <header className="h-20 glass-card-quantum !rounded-none !border-b !border-slate-200 !border-t-0 !border-l-0 !border-r-0 !bg-white/70 flex items-center justify-between px-6 shrink-0 z-40 relative">
           <div className="flex items-center gap-6">
             <button
-              className="md:hidden size-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-400"
+              className="md:hidden size-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-700 shadow-sm hover:bg-slate-100"
               onClick={() => setIsSidebarOpen(true)}
               title="Abrir menú de navegación"
               aria-label="Abrir menú lateral"
@@ -495,12 +494,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <h2 className="text-[11px] font-black text-slate-100 uppercase tracking-[0.4em] title-sase">
+                <h2 className="text-[11px] font-black text-slate-800 uppercase tracking-[0.4em] title-sase">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
-                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">SISTEMA_SASE_310</span>
+                  <span className="text-blue-600 group-hover:text-blue-500 transition-colors uppercase">SISTEMA_SASE_310</span>
                 </h2>
               </div>
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                 Estatus: Operativo • v{VERSION.numero}
               </p>
             </div>
@@ -521,7 +520,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <span className="ml-2">REPORTE RÁPIDO</span>
             </button>
 
-            <div className="h-8 w-px bg-white/10 mx-2 hidden md:block"></div>
+            <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block"></div>
 
             {/* Notification & Alerts */}
             <div
@@ -539,7 +538,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 className={`size-10 flex items-center justify-center rounded-xl border transition-all ${
                   unreadCount > 0
                     ? "bg-blue-500/10 border-blue-500/30 text-blue-500 animate-pulse-soft"
-                    : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+                    : "bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-sm"
                 }`}
               >
                 <div className="relative">
@@ -547,31 +546,31 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                     notifications
                   </span>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border-2 border-[#0b0e14]"></span>
+                    <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border-2 border-white"></span>
                   )}
                 </div>
               </button>
 
               {/* Notifications Dropdown (moved inside container for better ref handling) */}
               {showNotifications && (
-                <div className="absolute top-14 right-0 w-80 md:w-96 z-50 animate-fade-in-up overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/80 glass-dropdown">
-                  <div className="p-4 border-b border-white/5 flex justify-between items-center">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <div className="absolute top-14 right-0 w-80 md:w-96 z-50 animate-fade-in-up overflow-hidden rounded-2xl border border-slate-200 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.25)] glass-dropdown">
+                  <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
+                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
                       Alertas del Sistema
                     </span>
                     {unreadCount > 0 && (
-                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-500 rounded text-[9px] font-black">
+                      <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-[9px] font-black border border-blue-100">
                         {unreadCount}
                       </span>
                     )}
                   </div>
-                  <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-2">
+                  <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-2 bg-white">
                     {visibleNotifications.length === 0 ? (
-                      <div className="py-12 text-center opacity-40">
-                        <span className="material-symbols-outlined text-4xl block mb-2">
+                      <div className="py-12 text-center opacity-60">
+                        <span className="material-symbols-outlined text-4xl block mb-2 text-slate-400">
                           notifications_off
                         </span>
-                        <p className="text-[10px] font-black uppercase tracking-widest">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                           Sin notificaciones
                         </p>
                       </div>
@@ -579,7 +578,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                       visibleNotifications.map((notif) => (
                         <div
                           key={notif.id}
-                          className={`p-4 rounded-xl mb-2 transition-all cursor-pointer ${notif.read ? "bg-white/[0.02] opacity-60" : "bg-white/5 hover:bg-white/[0.08]"}`}
+                          className={`p-4 rounded-xl mb-2 transition-all cursor-pointer border ${notif.read ? "bg-slate-50 border-slate-200 opacity-75" : "bg-white border-slate-200 hover:bg-slate-50"}`}
                           onClick={() => {
                             markNotificationRead(notif.id);
                             if (notif.actionModule)
@@ -589,20 +588,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                         >
                           <div className="flex gap-3">
                             <div
-                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-500/20 text-red-500" : notif.type === "warning" ? "bg-amber-500/20 text-amber-400" : "bg-blue-500/20 text-blue-500"}`}
+                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-100 text-red-600" : notif.type === "warning" ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600"}`}
                             >
                               <span className="material-symbols-outlined text-sm">
                                 {notif.type === "error" ? "report" : notif.type === "warning" ? "warning" : "info"}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-[11px] font-black text-white uppercase truncate">
+                              <h4 className="text-[11px] font-black text-slate-900 uppercase truncate">
                                 {notif.title}
                               </h4>
-                              <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">
+                              <p className="text-[10px] text-slate-600 mt-0.5 line-clamp-2">
                                 {notif.message}
                               </p>
-                              <span className="text-[8px] text-slate-600 mt-2 block uppercase tracking-widest font-black">
+                              <span className="text-[8px] text-slate-500 mt-2 block uppercase tracking-widest font-black">
                                 {notif.time}
                               </span>
                             </div>
@@ -712,9 +711,9 @@ const NavItem: React.FC<{
       title={collapsed ? label : ""}
       className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
-          ? `bg-white/95 backdrop-blur-md ${activeTextClass} shadow-[0_8px_30px_rgba(0,0,0,0.2)] font-black border-white/20 scale-[1.02]`
-          : "text-white/60 hover:bg-white/10 hover:text-white font-bold border-transparent"
-      } ${highlighted ? "shadow-[0_0_25px_rgba(59,130,246,0.35)] border-blue-500/40 bg-blue-500/10 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
+          ? `bg-blue-50/80 backdrop-blur-md ${activeTextClass} shadow-lg font-black border-blue-200 scale-[1.02]`
+          : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 font-bold border-transparent"
+      } ${highlighted ? "shadow-[0_0_25px_rgba(59,130,246,0.25)] border-blue-500/20 bg-blue-500/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span
         className={`material-symbols-outlined text-[20px] transition-transform ${

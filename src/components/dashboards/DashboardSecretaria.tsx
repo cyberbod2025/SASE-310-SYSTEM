@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../../store";
 import toast from "react-hot-toast";
-import { CaseState, AppModule, Student, IncidentType } from "../../types";
+import { CaseState, CaseLabels, AppModule, Student, IncidentType } from "../../types";
 import { Inscripciones } from "../Inscripciones";
 import { Archivo } from "../Archivo";
 import { CICLO_ESCOLAR } from "../../config/sase.config";
@@ -1244,7 +1244,7 @@ export const DashboardSecretaria = () => {
                             }`}
                           >
                             <span className="size-1.5 rounded-full bg-current animate-pulse"></span>
-                            {student.caseState}
+                            {CaseLabels[student.caseState]}
                           </span>
                         </td>
                         <td className="px-8 py-5">

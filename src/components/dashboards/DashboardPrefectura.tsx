@@ -5,7 +5,7 @@ import { useApp } from "../../store";
 import {
   IncidentType,
   AppModule,
-  CaseState,
+  CaseState, CaseLabels,
 } from "../../types";
 import { printContent } from "../PrintButtons";
 
@@ -795,7 +795,7 @@ export const DashboardPrefectura = () => {
                         Estado
                       </p>
                       <p className="text-[10px] font-black text-amber-400 uppercase mt-2">
-                        {selectedStudent.caseState || CaseState.CERRADO}
+                        {CaseLabels[selectedStudent.caseState || CaseState.CERRADO]}
                       </p>
                     </div>
                   </div>
