@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../store";
-import { CaseState, IncidentType, UserRole, AppModule } from "../types";
+import { CaseState, CaseLabels, IncidentType, UserRole, AppModule } from "../types";
 import { printContent } from "./PrintButtons";
 import { anonymizeName } from "../utils/saseUtils";
 import { GlassCard } from "./ui/GlassCard";
@@ -369,7 +369,7 @@ export const Reportes: React.FC = () => {
                       : s.caseState === CaseState.OBSERVADO
                         ? "blue"
                         : "red"
-                  }">${s.caseState}</span></td>
+                  }">${CaseLabels[s.caseState]}</span></td>
                   <td>${s.incidents.length}</td>
                 </tr>
               `,
@@ -738,7 +738,7 @@ export const Reportes: React.FC = () => {
                       </td>
                       <td className="py-3 px-3">{s.matricula}</td>
                       <td className="py-3 px-3">{s.group}</td>
-                      <td className="py-3 px-3">{s.caseState}</td>
+                      <td className="py-3 px-3">{CaseLabels[s.caseState]}</td>
                       <td className="py-3 px-3">{s.incidents.length}</td>
                     </tr>
                   ))}

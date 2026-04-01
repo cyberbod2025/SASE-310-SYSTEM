@@ -17,7 +17,11 @@ export const Login: React.FC<LoginProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get("feedback") === "1";
+  });
   const [feedbackType, setFeedbackType] = useState<"bug" | "sugerencia">("bug");
   const [feedbackText, setFeedbackText] = useState("");
 
@@ -132,9 +136,9 @@ export const Login: React.FC<LoginProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0B1120] flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div className="min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/5 rounded-full blur-[100px] pointer-events-none"></div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -147,15 +151,15 @@ export const Login: React.FC<LoginProps> = ({
             <SasinLoginOrb className="w-24 h-24 mb-6" mouseX={orbX.get() / 28} mouseY={orbY.get() / 28} />
           </motion.div>
 
-          <h1 className="text-3xl font-black text-white mb-2 tracking-wide text-center">SASE 310</h1>
-          <p className="text-slate-400 text-sm text-center mb-8">
+          <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-wide text-center uppercase title-sase">SASE 310</h1>
+          <p className="text-slate-500 text-sm text-center mb-8 font-medium">
             Sistema de Acompañamiento y Seguimiento Escolar
           </p>
 
           <form className="w-full space-y-5" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <label htmlFor="login-email" className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
-               Correo electrónico
+              <label htmlFor="login-email" className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">
+               Correo institucional
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base" aria-hidden>
@@ -168,7 +172,7 @@ export const Login: React.FC<LoginProps> = ({
                   onChange={(e) => setUsername(e.target.value)}
                   id="login-email"
                   name="email"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[48px]"
                   required
                   autoComplete="email"
                 />
@@ -179,7 +183,7 @@ export const Login: React.FC<LoginProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="login-password" className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+              <label htmlFor="login-password" className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">
                Contraseña
               </label>
               <div className="relative">
@@ -188,12 +192,12 @@ export const Login: React.FC<LoginProps> = ({
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Contraseña"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   id="login-password"
                   name="password"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-10 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all text-sm min-h-[48px]"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-10 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[48px]"
                   required
                   autoComplete="current-password"
                 />
@@ -232,15 +236,6 @@ export const Login: React.FC<LoginProps> = ({
             >
               ¿Olvido su clave?
             </button>
-            <div className="mt-3">
-              <button
-                type="button"
-                onClick={() => setShowFeedback(true)}
-                className="text-[11px] text-slate-400 hover:text-white font-semibold underline underline-offset-4"
-              >
-                Enviar feedback desde aquí
-              </button>
-            </div>
           </div>
 
           <div className="mt-6 text-center">

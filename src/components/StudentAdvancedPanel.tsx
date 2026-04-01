@@ -6,7 +6,7 @@ import {
   Incident,
   DocumentoInstitucional,
   UserRole,
-  CaseState,
+  CaseState, CaseLabels,
   IncidentType,
 } from "../types";
 import { useApp } from "../store";
@@ -305,7 +305,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             <div
               className={`absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm whitespace-nowrap ${statusColor}`}
             >
-              {student.caseState.replace("_", " ")}
+              {CaseLabels[student.caseState]}
             </div>
           </div>
 

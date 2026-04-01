@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 
 import { useAuth } from "./components/AuthProvider";
 import { UserRole, AuditActionType, AppModule } from "./types";
-import { OrbState } from "./utils/estadoSistema";
+
 import { supabase } from "./supabase/client";
 
 // Import Slices
@@ -58,7 +58,7 @@ interface AppContextType {
   setIsFeedbackOpen: any;
   assistantStatus: any;
   setAssistantStatus: any;
-  systemState: OrbState;
+  systemState: SystemState;
   aiSystemState: SystemState;
   systemMessage: string | null;
   setSystemState: (state: SystemState, message?: string) => void;
@@ -147,26 +147,8 @@ export const AppProvider: React.FC<{
 
   // 6. UI State Slice
   const ui = useUiSlice(user, auth.currentUserRole, studentsSlice.students);
-  const legacyToSystemState = (state: OrbState): SystemState => {
-    switch (state) {
-      case "red":
-        return "alert";
-      case "yellow":
-        return "warning";
-      case "thinking":
-        return "thinking";
-      case "blue":
-        return "thinking";
-      case "green":
-        return "normal";
-      case "gold":
-        return "normal";
-      default:
-        return "normal";
-    }
-  };
 
-  const aiSystem = useSystemStateSlice(legacyToSystemState(ui.systemState));
+  const aiSystem = useSystemStateSlice(ui.systemState);
 
   // Compatibility functions for missing ones in slices
   const updateStudentAudit = async (studentId: string, modifiedBy: string) => {

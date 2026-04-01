@@ -235,18 +235,7 @@ export const useStudentsSlice = (
         const newIncidents = [newIncidentLocal, ...s.incidents];
         escalationResult = evaluateEscalation(newIncidentLocal, s.incidents);
 
-        let newState = s.caseState;
-        if (newIncidents.length >= 3 && s.caseState === CaseState.OBSERVADO) {
-          newState = CaseState.PATRON_DETECTADO;
-          addNotification({
-            title: "🚨 PATRÓN DE RIESGO DETECTADO",
-            message: `El estudiante ${s.name} ha alcanzado el umbral de 3 incidencias.`,
-            type: "error",
-            targetRole: UserRole.ORIENTACION,
-            actionModule: AppModule.REPORTES,
-          });
-        }
-        return { ...s, incidents: newIncidents, caseState: newState };
+        return { ...s, incidents: newIncidents };
       }),
     );
 

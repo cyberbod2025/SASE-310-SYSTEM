@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
-import { SaseSplineOrb } from "./SaseSplineOrb";
+import { SasitoCopilot } from "./SasitoCopilot";
 import type { SystemState } from "../types/systemState";
 import { UserRole, AppModule, CaseState } from "../types";
-import { calcularEstadoSistema, OrbState } from "../utils/estadoSistema";
 
 /**
  * IA-SASE Agent Component
@@ -20,23 +19,15 @@ export const IASaseAgent: React.FC = () => {
     openQuickRegister,
   } = useApp();
 
-  // Mapeo entre el semáforo institucional (OrbState) y el visualizador de núcleo (SystemState)
-  const orbState = React.useMemo((): SystemState => {
-    switch (systemState) {
-      case "thinking": return "thinking";
-      case "red": return "alert";
-      case "yellow": return "warning";
-      default: return "normal";
-    }
-  }, [systemState]);
+  // El orbe ya recibe el SystemState directamente desde el store
+  const orbState = systemState;
 
   // Texto descriptivo del estado para accesibilidad/clima
   const stateLabel = React.useMemo(() => {
     switch (systemState) {
-      case "red": return "CRÍTICO";
-      case "yellow": return "ALERTA";
+      case "alert": return "CRÍTICO";
+      case "warning": return "ALERTA";
       case "thinking": return "PROCESANDO";
-      case "gold": return "NORMAL";
       default: return "ESTABLE";
     }
   }, [systemState]);
@@ -187,10 +178,10 @@ export const IASaseAgent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* El Núcleo / Cara Neural 3D */}
-        <SaseSplineOrb
-          state={orbState}
-          isInteracting={isAssistantOpen}
+        {/* El Núcleo / Cara Neural 3D (New Sasito Copilot) */}
+        <SasitoCopilot
+          systemState={orbState}
+          isWidgetMode={true}
           className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-[0_0_40px_rgba(59,130,246,0.3)]"
         />
 
@@ -207,12 +198,12 @@ export const IASaseAgent: React.FC = () => {
         </AnimatePresence>
 
         {/* Alerta Visual para Estados Críticos */}
-        {(systemState === "red" || systemState === "yellow") && (
+        {(systemState === "alert" || systemState === "warning") && (
           <motion.div
             animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
             transition={{ duration: 1.5, repeat: Infinity }}
             className={`absolute inset-0 rounded-full border-2 ${
-              systemState === "red" ? "border-red-500" : "border-yellow-500"
+              systemState === "alert" ? "border-red-500" : "border-yellow-500"
             } pointer-events-none`}
           />
         )}

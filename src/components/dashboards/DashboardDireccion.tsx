@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
-import { CaseState, AppModule } from "../../types";
+import { CaseState, CaseLabels, AppModule } from "../../types";
 import { supabase } from "../../supabase/client";
 import { startProductTour } from "../TourGuide";
 import { printContent } from "../PrintButtons";
@@ -361,7 +361,7 @@ export const DashboardDireccion = () => {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-white font-medium text-sm">{risk.name}</p>
-                      <p className="text-slate-500 text-xs mt-1">{risk.group} · {risk.caseState}</p>
+                      <p className="text-slate-500 text-xs mt-1">{risk.group} · {CaseLabels[risk.caseState]}</p>
                     </div>
                     <motion.button
                       whileTap={{ scale: 0.95 }}
