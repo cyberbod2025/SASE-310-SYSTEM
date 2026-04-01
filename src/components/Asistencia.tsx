@@ -160,19 +160,19 @@ export const Asistencia: React.FC = () => {
                 <div className="col-span-6 md:col-span-4 flex justify-center gap-2">
                   <button
                     onClick={() => handleRegister(student, "presente")}
-                    className="w-10 h-10 rounded-lg flex items-center justify-center border transition-all duration-300 font-medium text-sm bg-emerald-500/10 border-emerald-400/30 text-emerald-400 hover:bg-emerald-500/20"
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center border transition-all duration-300 font-medium text-sm bg-emerald-500/10 border-emerald-400/30 text-emerald-400 hover:bg-emerald-500/20"
                   >
                     P
                   </button>
                   <button
                     onClick={() => handleRegister(student, "retardo")}
-                    className="w-10 h-10 rounded-lg flex items-center justify-center border transition-all duration-300 font-medium text-sm bg-amber-500/10 border-amber-400/30 text-amber-400 hover:bg-amber-500/20"
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center border transition-all duration-300 font-medium text-sm bg-amber-500/10 border-amber-400/30 text-amber-400 hover:bg-amber-500/20"
                   >
                     R
                   </button>
                   <button
                     onClick={() => handleRegister(student, "falta")}
-                    className="w-10 h-10 rounded-lg flex items-center justify-center border transition-all duration-300 font-medium text-sm bg-rose-500/10 border-rose-400/30 text-rose-400 hover:bg-rose-500/20"
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center border transition-all duration-300 font-medium text-sm bg-rose-500/10 border-rose-400/30 text-rose-400 hover:bg-rose-500/20"
                   >
                     F
                   </button>

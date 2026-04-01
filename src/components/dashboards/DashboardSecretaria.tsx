@@ -503,7 +503,7 @@ export const DashboardSecretaria = () => {
                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
                   Pendientes
                 </span>
-                <span className="text-2xl font-black text-amber-500 italic tabular-nums tracking-tighter drop-shadow-lg">
+                <span className="text-2xl font-black text-amber-500 italic tabular-nums tracking-tighter drop-shadow-xl shadow-black/5">
                   08
                 </span>
               </div>
@@ -511,7 +511,7 @@ export const DashboardSecretaria = () => {
                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
                   En Proceso
                 </span>
-                <span className="text-2xl font-black text-cyan-500 italic tabular-nums tracking-tighter drop-shadow-lg">
+                <span className="text-2xl font-black text-cyan-500 italic tabular-nums tracking-tighter drop-shadow-xl shadow-black/5">
                   12
                 </span>
               </div>
@@ -542,7 +542,7 @@ export const DashboardSecretaria = () => {
                 <h3 className="text-white/50 font-black text-[9px] uppercase tracking-[0.3em] italic">
                   Total Matrícula
                 </h3>
-                <p className="text-4xl font-black text-white tabular-nums mt-1 italic tracking-tighter drop-shadow-lg scale-95 group-hover/total:scale-100 transition-transform duration-500 origin-left">
+                <p className="text-4xl font-black text-white tabular-nums mt-1 italic tracking-tighter drop-shadow-xl shadow-black/5 scale-95 group-hover/total:scale-100 transition-transform duration-500 origin-left">
                   {students.length}
                 </p>
               </div>
@@ -556,7 +556,7 @@ export const DashboardSecretaria = () => {
             {/* Quick Entry Button (Magic Register) */}
             <button
               onClick={() => setShowQuickAccess(true)}
-              className="w-full mt-4 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-3 active:scale-95 group overflow-hidden relative"
+              className="w-full mt-4 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl shadow-xl shadow-black/5 shadow-emerald-500/20 transition-all flex items-center justify-center gap-3 active:scale-95 group overflow-hidden relative"
               title="Registrar rápidamente la entrada de alumnos sin credencial o con retardo"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
@@ -656,7 +656,7 @@ export const DashboardSecretaria = () => {
                         {g.groupId}
                       </span>
                       <div className="text-right">
-                        <p className="text-[22px] font-black text-cyan-400 tabular-nums leading-none tracking-tighter drop-shadow-lg scale-95 group-hover/stat:scale-100 transition-transform duration-500">
+                        <p className="text-[22px] font-black text-cyan-400 tabular-nums leading-none tracking-tighter drop-shadow-xl shadow-black/5 scale-95 group-hover/stat:scale-100 transition-transform duration-500">
                           {g.count}
                         </p>
                         <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
@@ -720,7 +720,7 @@ export const DashboardSecretaria = () => {
                   Intervención departamentos externos
                 </p>
               </div>
-              <span className="px-3 py-1.5 bg-rose-500/10 text-rose-500 text-[10px] font-black rounded-md border border-rose-500/20 tabular-nums drop-shadow-sm">
+              <span className="px-3 py-1.5 bg-rose-500/10 text-rose-500 text-[10px] font-black rounded-2xl border border-rose-500/20 tabular-nums drop-shadow-sm">
                 {notices.filter((n) => !n.resolved).length}
               </span>
             </div>
@@ -911,7 +911,7 @@ export const DashboardSecretaria = () => {
                                 </span>
                                 <div className="flex items-center gap-3">
                                   {countDiff > 0 && (
-                                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg border border-emerald-500/30 animate-pulse">
+                                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-1 rounded-2xl border border-emerald-500/30 animate-pulse">
                                       +{countDiff} ASIGNADOS
                                     </span>
                                   )}
@@ -1089,7 +1089,7 @@ export const DashboardSecretaria = () => {
                         <img
                           src={student.avatar}
                           alt={student.name}
-                          className="size-14 rounded-2xl border border-white/10 shadow-lg"
+                          className="size-14 rounded-2xl border border-white/10 shadow-xl shadow-black/5"
                         />
                         <div className="flex-1">
                           <h4 className="font-black text-white uppercase italic text-sm leading-tight">
@@ -1235,7 +1235,7 @@ export const DashboardSecretaria = () => {
                         </td>
                         <td className="px-8 py-5">
                           <span
-                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black border uppercase tracking-widest ${
+                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl text-[10px] font-black border uppercase tracking-widest ${
                               student.caseState === CaseState.CERRADO
                                 ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                                 : student.caseState === CaseState.OBSERVADO
@@ -1476,7 +1476,7 @@ export const DashboardSecretaria = () => {
                               }
                               title="Registrar entrada sin credencial (Incidencia automática)"
                               aria-label={`Registrar entrada sin credencial para ${student.name}`}
-                              className="px-4 py-2.5 bg-rose-500/10 text-rose-500 rounded-xl text-[9px] font-black uppercase border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all shadow-lg active:scale-95"
+                              className="px-4 py-2.5 bg-rose-500/10 text-rose-500 rounded-xl text-[9px] font-black uppercase border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all shadow-xl shadow-black/5 active:scale-95"
                             >
                               S/ CRED
                             </button>
@@ -1486,7 +1486,7 @@ export const DashboardSecretaria = () => {
                               }
                               title="Registrar retardo oficial (Incidencia automática)"
                               aria-label={`Registrar retardo para ${student.name}`}
-                              className="px-4 py-2.5 bg-amber-500/10 text-amber-500 rounded-xl text-[9px] font-black uppercase border border-amber-500/20 hover:bg-amber-500 hover:text-white transition-all shadow-lg active:scale-95"
+                              className="px-4 py-2.5 bg-amber-500/10 text-amber-500 rounded-xl text-[9px] font-black uppercase border border-amber-500/20 hover:bg-amber-500 hover:text-white transition-all shadow-xl shadow-black/5 active:scale-95"
                             >
                               RETARDO
                             </button>

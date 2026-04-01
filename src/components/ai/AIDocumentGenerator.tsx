@@ -204,7 +204,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
               <div className="flex gap-4">
                 <button
                   onClick={() => setGeneratedContent("")}
-                  className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-200 transition-all"
+                  className="flex-1 py-4 btn-sase-secondary"
                 >
                   Regresar
                 </button>

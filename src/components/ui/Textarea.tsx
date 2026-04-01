@@ -19,8 +19,8 @@ export function Textarea({
 }: TextareaProps) {
   const baseStyles =
     variant === "dark"
-      ? "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none transition-all focus:border-blue-500/50 focus:bg-white/10 focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-500 resize-none"
-      : "w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 text-sm font-bold outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-400 resize-none";
+      ? "w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white text-sm font-medium outline-none transition-all duration-300 ease-in-out focus:border-[#B799FF] focus:bg-white/10 focus:ring-4 focus:ring-[#B799FF]/20 placeholder:text-slate-500 resize-none"
+      : "w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-800 text-sm font-bold outline-none transition-all duration-300 ease-in-out focus:border-[#B799FF] focus:ring-4 focus:ring-[#B799FF]/20 placeholder:text-slate-400 resize-none";
 
   const errorStyles = error
     ? "border-red-400 focus:border-red-400 focus:ring-red-500/20"

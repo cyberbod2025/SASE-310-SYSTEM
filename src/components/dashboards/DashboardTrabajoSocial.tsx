@@ -180,19 +180,19 @@ export const DashboardTrabajoSocial = () => {
         <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-inner">
           <button
             onClick={() => setActiveTab("justificantes")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-orange-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
           >
             Justificantes
           </button>
           <button
             onClick={() => setActiveTab("riesgos")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-orange-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
           >
             Riesgos ({dropoutRisk.length})
           </button>
           <button
             onClick={() => setActiveTab("comunidad")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-orange-600 text-white shadow-lg" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
           >
             Análisis Comunidad
           </button>
@@ -288,7 +288,7 @@ export const DashboardTrabajoSocial = () => {
                 }
               >
                 <div
-                  className={`size-6 rounded-lg border-2 flex items-center justify-center transition-all ${justForm.distal ? "bg-orange-500 border-orange-500" : "border-slate-600"}`}
+                  className={`size-6 rounded-2xl border-2 flex items-center justify-center transition-all ${justForm.distal ? "bg-orange-500 border-orange-500" : "border-slate-600"}`}
                 >
                   {justForm.distal && (
                     <span className="material-symbols-outlined text-white text-sm">
@@ -485,7 +485,7 @@ export const DashboardTrabajoSocial = () => {
                   <div className="size-14 bg-[#0a0f18] border border-white/10 rounded-2xl flex items-center justify-center text-rose-500 text-2xl font-black italic">
                     {s.name.charAt(0)}
                   </div>
-                  <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg animate-pulse">
+                  <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-2xl animate-pulse">
                     Seguimiento familiar en proceso
                   </span>
                 </div>

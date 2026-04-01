@@ -120,9 +120,9 @@ export const DashboardDeveloper = () => {
               Salida del sistema
             </h3>
             <div className="flex gap-2">
-              <span className="size-2 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50"></span>
-              <span className="size-2 rounded-full bg-amber-500 shadow-lg shadow-amber-500/50"></span>
-              <span className="size-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50"></span>
+              <span className="size-2 rounded-full bg-rose-500 shadow-xl shadow-black/5 shadow-rose-500/50"></span>
+              <span className="size-2 rounded-full bg-amber-500 shadow-xl shadow-black/5 shadow-amber-500/50"></span>
+              <span className="size-2 rounded-full bg-emerald-500 shadow-xl shadow-black/5 shadow-emerald-500/50"></span>
             </div>
           </div>
           <ConsoleLog logs={logs} />
@@ -171,7 +171,7 @@ export const DashboardDeveloper = () => {
               <p className="text-xs text-white/70 italic mb-4">
                 "Predictive pattern analysis for student dropout - Model V2.4"
               </p>
-              <button className="w-full py-2 bg-indigo-600 text-[10px] font-black uppercase rounded-lg shadow-lg">
+              <button className="w-full py-2 bg-indigo-600 text-[10px] font-black uppercase rounded-2xl shadow-xl shadow-black/5">
                 Run Simulation
               </button>
             </div>
@@ -180,7 +180,7 @@ export const DashboardDeveloper = () => {
                 "Automated scheduling for 1,200 students with 40 teacher
                 constraints"
               </p>
-              <button className="w-full py-2 bg-slate-800 text-[10px] font-black uppercase rounded-lg border border-white/10">
+              <button className="w-full py-2 bg-slate-800 text-[10px] font-black uppercase rounded-2xl border border-white/10">
                 Compute Matrix
               </button>
             </div>

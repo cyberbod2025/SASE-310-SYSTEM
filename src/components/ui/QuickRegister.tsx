@@ -64,7 +64,7 @@ export const QuickRegister = () => {
                   }}
                   className={`w-full flex items-center gap-4 p-3 rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 ${action.glow} ${action.border} group cursor-pointer`}
                 >
-                  <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center transition-transform group-hover:scale-110">
+                  <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center transition-transform group-hover:scale-110">
                     <span className={`material-icons ${action.color}`}>
                       {action.icon}
                     </span>

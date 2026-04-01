@@ -278,7 +278,7 @@ export const DashboardEnfermeria = () => {
                           className="hover:bg-emerald-500/[0.02] transition-colors group/row border-l-2 border-transparent hover:border-emerald-500/40"
                         >
                           <td className="px-8 py-6">
-                            <span className="text-emerald-500 font-mono text-xs tabular-nums tracking-tighter bg-emerald-500/5 px-3 py-1.5 rounded-lg border border-emerald-500/10 shadow-[0_0_10px_rgba(16,185,129,0.05)]">
+                            <span className="text-emerald-500 font-mono text-xs tabular-nums tracking-tighter bg-emerald-500/5 px-3 py-1.5 rounded-2xl border border-emerald-500/10 shadow-[0_0_10px_rgba(16,185,129,0.05)]">
                               {new Date(visit.date).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -299,7 +299,7 @@ export const DashboardEnfermeria = () => {
                             </div>
                           </td>
                           <td className="px-8 py-6 text-center">
-                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-lg text-[9px] font-black text-slate-400 uppercase group-hover/row:border-emerald-500/30 transition-colors tracking-widest">
+                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-2xl text-[9px] font-black text-slate-400 uppercase group-hover/row:border-emerald-500/30 transition-colors tracking-widest">
                               {visit.group}
                             </span>
                           </td>
@@ -549,7 +549,7 @@ const HealthMetricCard = ({ label, value, trend, color, icon }: any) => {
 
       <div className="flex items-center gap-5 relative z-10">
         <div
-          className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-lg group-hover:scale-110 transition-transform duration-500 backdrop-blur-sm`}
+          className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-xl shadow-black/5 group-hover:scale-110 transition-transform duration-500 backdrop-blur-sm`}
         >
           <span className="material-symbols-outlined text-2xl font-black">
             {icon}
@@ -559,13 +559,13 @@ const HealthMetricCard = ({ label, value, trend, color, icon }: any) => {
           <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
             {label}
           </p>
-          <p className="text-4xl font-black text-white tabular-nums italic tracking-tighter drop-shadow-lg scale-95 group-hover:scale-100 transition-transform duration-500 origin-left">
+          <p className="text-4xl font-black text-white tabular-nums italic tracking-tighter drop-shadow-xl shadow-black/5 scale-95 group-hover:scale-100 transition-transform duration-500 origin-left">
             {value.toString().padStart(2, "0")}
           </p>
         </div>
       </div>
       <div className="text-right relative z-10">
-        <div className="text-[9px] font-black px-2 py-0.5 rounded-md border bg-black/40 border-white/10 text-slate-400 group-hover:text-white transition-colors tabular-nums drop-shadow-sm">
+        <div className="text-[9px] font-black px-2 py-0.5 rounded-2xl border bg-black/40 border-white/10 text-slate-400 group-hover:text-white transition-colors tabular-nums drop-shadow-sm">
           {trend}
         </div>
       </div>
@@ -612,14 +612,14 @@ const InventoryList = ({
                 <div className="flex items-center gap-3 bg-[#0a0f18] border border-white/10 rounded-xl p-1.5 shadow-xl group-hover/item:border-emerald-500/30 transition-all">
                   <button
                     onClick={() => onUpdate(item.id, -1)}
-                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-lg text-slate-500 hover:text-white transition-all active:scale-90"
+                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-2xl text-slate-500 hover:text-white transition-all active:scale-90"
                   >
                     <span className="material-symbols-outlined text-sm">
                       remove
                     </span>
                   </button>
                   <span
-                    className={`text-[10px] font-black min-w-[70px] text-center px-3 py-1.5 rounded-lg border tabular-nums italic ${
+                    className={`text-[10px] font-black min-w-[70px] text-center px-3 py-1.5 rounded-2xl border tabular-nums italic ${
                       isLow
                         ? "text-rose-500 bg-rose-500/10 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
                         : "text-emerald-500 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
@@ -629,7 +629,7 @@ const InventoryList = ({
                   </span>
                   <button
                     onClick={() => onUpdate(item.id, 1)}
-                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-lg text-slate-500 hover:text-white transition-all active:scale-90"
+                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-2xl text-slate-500 hover:text-white transition-all active:scale-90"
                   >
                     <span className="material-symbols-outlined text-sm">
                       add

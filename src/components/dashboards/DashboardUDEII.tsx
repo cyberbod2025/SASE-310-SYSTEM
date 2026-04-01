@@ -71,7 +71,7 @@ export const DashboardUDEII = () => {
               </span>
               MONITOR DE BARRERAS (BAP)
             </h3>
-            <span className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-slate-500">
+            <span className="px-3 py-1 bg-white/5 rounded-2xl text-[9px] font-black text-slate-500">
               {studentsWithBAP.length} casos activos
             </span>
           </div>

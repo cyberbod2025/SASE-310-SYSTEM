@@ -58,7 +58,7 @@ export const IASaseAgent: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-[20px] right-[20px] z-[5000] flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-[5000] flex flex-col items-end">
       {/* Panel de Acciones Rápidas (El 'Pensamiento' de la IA) */}
       <AnimatePresence>
         {isAssistantOpen && (

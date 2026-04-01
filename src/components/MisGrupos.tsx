@@ -123,7 +123,7 @@ export const MisGrupos: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-lg p-8 text-white">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-xl shadow-black/5 p-8 text-white">
         <div className="flex items-center gap-4 mb-2">
           <span className="material-symbols-outlined text-5xl">groups</span>
           <div>
@@ -142,7 +142,7 @@ export const MisGrupos: React.FC = () => {
             <button
               key={grupo.id}
               onClick={() => setGrupoSeleccionado(grupo.id)}
-              className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all text-left group"
+              className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-xl shadow-black/5 hover:border-blue-300 transition-all text-left group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div>

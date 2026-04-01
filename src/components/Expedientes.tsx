@@ -91,7 +91,7 @@ export const Expedientes: React.FC = () => {
               >
                 <img
                   src={s.avatar}
-                  className="size-14 rounded-xl border-2 border-white shadow-md object-cover"
+                  className="size-14 rounded-xl border-2 border-white shadow-xl shadow-black/5 object-cover"
                   alt=""
                 />
                 <div className="flex-1 min-w-0">

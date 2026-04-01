@@ -149,14 +149,14 @@ export const GenericActionModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-100 rounded-xl transition-colors"
+              className="px-5 py-2.5 btn-sase-secondary"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-colors shadow-xl shadow-black/5 shadow-blue-200 disabled:opacity-50 flex items-center gap-2"
             >
               {loading && (
                 <span className="material-symbols-outlined animate-spin text-[18px]">

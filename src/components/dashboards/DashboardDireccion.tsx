@@ -65,7 +65,7 @@ const HolographicKPI = ({
         )}
       </div>
       <div className="relative z-10">
-        <h4 className="text-3xl font-black text-white tracking-tighter italic mb-1 drop-shadow-lg">
+        <h4 className="text-3xl font-black text-white tracking-tighter italic mb-1 drop-shadow-xl shadow-black/5">
           {value}
         </h4>
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-slate-400 transition-colors">
@@ -366,7 +366,7 @@ export const DashboardDireccion = () => {
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setCurrentModule(AppModule.EXPEDIENTES)}
-                      className="min-h-[48px] min-w-[48px] px-4 rounded-lg bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors"
+                      className="min-h-[48px] min-w-[48px] px-4 rounded-2xl bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors"
                     >
                       Consultar expediente institucional
                     </motion.button>

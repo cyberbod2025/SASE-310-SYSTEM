@@ -53,7 +53,7 @@ const HolographicKPI = ({
           <span className="material-symbols-outlined text-xl">{icon}</span>
         </div>
         {trend && (
-          <span className="text-[10px] font-black px-2 py-0.5 rounded-lg border border-white/10 bg-white/5 text-slate-400 uppercase tracking-tighter">
+          <span className="text-[10px] font-black px-2 py-0.5 rounded-2xl border border-white/10 bg-white/5 text-slate-400 uppercase tracking-tighter">
             {trend}
           </span>
         )}
@@ -294,14 +294,14 @@ export const DashboardOrientacion = () => {
                           setSelectedStudent(s);
                           setShowAdvancedPanel(true);
                         }}
-                        className="min-h-[48px] min-w-[48px] px-4 rounded-lg bg-amber-600/20 text-amber-300 text-sm font-medium hover:bg-amber-600/30 transition-colors flex items-center justify-center"
+                        className="min-h-[48px] min-w-[48px] px-4 rounded-2xl bg-amber-600/20 text-amber-300 text-sm font-medium hover:bg-amber-600/30 transition-colors flex items-center justify-center"
                       >
                         Iniciar intervencion
                       </motion.button>
                       <motion.button
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleNotifyAcademicRisk(s.id, "patron detectado")}
-                        className="min-h-[48px] min-w-[48px] px-4 rounded-lg bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors flex items-center justify-center"
+                        className="min-h-[48px] min-w-[48px] px-4 rounded-2xl bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors flex items-center justify-center"
                       >
                         Notificar al equipo academico
                       </motion.button>

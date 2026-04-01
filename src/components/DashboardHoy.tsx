@@ -238,7 +238,7 @@ export const DashboardHoy = () => {
                 <div className="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(192,132,252,0.8)]"></div>
                 <p className="text-slate-200 font-medium">{task}</p>
               </div>
-              <span className="text-sm font-medium text-slate-500 bg-white/5 px-3 py-1 rounded-lg border border-white/10">
+              <span className="text-sm font-medium text-slate-500 bg-white/5 px-3 py-1 rounded-2xl border border-white/10">
                 {10 + index}:00 h
               </span>
             </motion.div>

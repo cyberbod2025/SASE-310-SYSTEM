@@ -522,7 +522,7 @@ export const Reportes: React.FC = () => {
                     onClick={() => setSelectedReport(opt.id as ReportType)}
                     className={`w-full text-left px-3 py-2 rounded-xl border transition-all ${
                       selectedReport === opt.id
-                        ? `${reportColors[opt.color]} shadow-lg`
+                        ? `${reportColors[opt.color]} shadow-xl shadow-black/5`
                         : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
                     }`}
                   >
@@ -583,7 +583,7 @@ export const Reportes: React.FC = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handlePrintReport}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm"
               >
                 <span className="material-icons text-sm">print</span>
                 Imprimir

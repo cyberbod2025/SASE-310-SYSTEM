@@ -17,20 +17,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { EncuestaPulso } from "./onboarding/EncuestaPulso";
 
 const roleColors: Record<UserRole, string> = {
-  [UserRole.DIRECTIVO]: "bg-red-900 border-none",
-  [UserRole.SUBDIRECCION]: "bg-orange-800 border-none",
-  [UserRole.DOCENTE]: "bg-blue-600 border-none",
-  [UserRole.DOCENTE_TUTOR]: "bg-blue-700 border-none",
-  [UserRole.PREFECTURA]: "bg-orange-600 border-none",
-  [UserRole.ORIENTACION]: "bg-emerald-600 border-none",
-  [UserRole.TRABAJO_SOCIAL]: "bg-purple-600 border-none",
-  [UserRole.MEDICO_ESCOLAR]: "bg-red-600 border-none",
-  [UserRole.SECRETARIA]: "bg-cyan-600 border-none",
-  [UserRole.UDEII]: "bg-indigo-600 border-none",
-  [UserRole.PROMOTORA_LECTURA]: "bg-pink-600 border-none",
-  [UserRole.GUEST]: "bg-slate-800 border-none",
-  [UserRole.DEVELOPER]: "bg-slate-900 border-none border-r border-white/5",
-  [UserRole.SYSTEM_ADMIN]: "bg-indigo-950 border-none",
+  [UserRole.DIRECTIVO]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.SUBDIRECCION]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.DOCENTE]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.DOCENTE_TUTOR]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.PREFECTURA]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.ORIENTACION]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.TRABAJO_SOCIAL]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.MEDICO_ESCOLAR]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.SECRETARIA]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.UDEII]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.PROMOTORA_LECTURA]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.GUEST]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.DEVELOPER]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.SYSTEM_ADMIN]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
 };
 
 const roleImages: Record<UserRole, string> = {
@@ -162,7 +162,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   }, [aiSystemState, autoNavigate, highlightedModule, setCurrentModule, clearHighlight]);
 
   return (
-    <div className="flex h-screen w-full bg-slate-50 text-slate-800 overflow-hidden font-sans select-none">
+    <div 
+      data-sasito-state={neuralCoreState}
+      className="flex h-screen w-full bg-slate-50 text-slate-800 overflow-hidden font-sans select-none"
+    >
       <TutorialController />
       
       {/* 🔮 Inyectar Filtros SVG Globales para Liquid Glass */}
@@ -178,7 +181,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       {/* Sidebar - Premium Crystal Glass (Light Edition) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-white/60 !backdrop-blur-[60px] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-slate-200 md:relative md:translate-x-0 shadow-[10px_0_40px_-15px_rgba(0,0,0,0.05)] ${
+        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-white/60 !backdrop-blur-[60px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-slate-200 md:relative md:translate-x-0 shadow-[10px_0_40px_-15px_rgba(0,0,0,0.05)] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -199,7 +202,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   src={roleImages[currentUserRole]}
                   alt={`Perfil de ${currentUserRole}`}
                   title={`Usuario: ${displayUserName}`}
-                  className={`rounded-2xl border border-slate-200 shadow-lg relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
+                  className={`rounded-2xl border border-slate-200 shadow-xl shadow-black/5 relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
                 />
               </div>
               {!isSidebarCollapsed && (
@@ -588,7 +591,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                         >
                           <div className="flex gap-3">
                             <div
-                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-100 text-red-600" : notif.type === "warning" ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600"}`}
+                              className={`size-8 rounded-2xl flex items-center justify-center ${notif.type === "error" ? "bg-red-100 text-red-600" : notif.type === "warning" ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600"}`}
                             >
                               <span className="material-symbols-outlined text-sm">
                                 {notif.type === "error" ? "report" : notif.type === "warning" ? "warning" : "info"}
@@ -711,9 +714,9 @@ const NavItem: React.FC<{
       title={collapsed ? label : ""}
       className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
-          ? `bg-blue-50/80 backdrop-blur-md ${activeTextClass} shadow-lg font-black border-blue-200 scale-[1.02]`
+          ? `bg-[#E6D9FF] backdrop-blur-md text-[#6D28D9] shadow-xl shadow-black/5 font-black border-[#B799FF]/30 scale-[1.02]`
           : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 font-bold border-transparent"
-      } ${highlighted ? "shadow-[0_0_25px_rgba(59,130,246,0.25)] border-blue-500/20 bg-blue-500/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
+      } ${highlighted ? "shadow-[0_0_25px_rgba(183,153,255,0.25)] border-[#B799FF]/20 bg-[#B799FF]/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span
         className={`material-symbols-outlined text-[20px] transition-transform ${

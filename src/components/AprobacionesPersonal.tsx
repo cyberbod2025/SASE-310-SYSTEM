@@ -398,13 +398,13 @@ export const AprobacionesPersonal: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-[9px] font-black uppercase tracking-widest">
-                  <div className="bg-white/5 p-2 rounded-lg text-white/40">
+                  <div className="bg-white/5 p-2 rounded-2xl text-white/40">
                     CURP:{" "}
                     <span className="text-white/70">
                       {solicitud.curp.slice(0, 10)}...
                     </span>
                   </div>
-                  <div className="bg-white/5 p-2 rounded-lg text-white/40">
+                  <div className="bg-white/5 p-2 rounded-2xl text-white/40">
                     Enviado:{" "}
                     <span className="text-white/70">
                       {new Date(solicitud.created_at).toLocaleDateString()}

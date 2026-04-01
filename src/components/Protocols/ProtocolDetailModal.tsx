@@ -194,7 +194,7 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
             <div className="space-y-6">
               {/* Alert Mode Banner if warnings exist */}
               {steps.some((s) => s.es_advertencia) && (
-                <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex gap-3 items-center text-red-200 text-sm mb-6">
+                <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex gap-3 items-center text-red-200 text-sm mb-6">
                   <span className="material-symbols-outlined text-red-500">
                     warning
                   </span>
@@ -286,7 +286,7 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
               e.stopPropagation();
               onClose();
             }}
-            className="bg-white text-slate-900 px-6 py-2 rounded-lg font-bold hover:bg-gray-200 transition-colors flex items-center gap-2 relative z-20 cursor-pointer"
+            className="bg-white text-slate-900 px-6 py-2 rounded-2xl font-bold hover:bg-gray-200 transition-colors flex items-center gap-2 relative z-20 cursor-pointer"
             title="He leído y comprendido los pasos del protocolo"
           >
             <span className="material-symbols-outlined pointer-events-none">

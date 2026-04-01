@@ -44,7 +44,7 @@ export const LaboratorioUI: React.FC = () => {
           </button>
           <button
             onClick={() => setMostrarModal(true)}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-black shadow-lg shadow-blue-600/30"
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-black shadow-xl shadow-black/5 shadow-blue-600/30"
           >
             Abrir modal
           </button>
@@ -52,7 +52,7 @@ export const LaboratorioUI: React.FC = () => {
       </header>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl p-4 bg-gradient-to-br from-blue-600/20 via-blue-500/10 to-transparent border border-blue-500/30 shadow-lg">
+        <div className="rounded-2xl p-4 bg-gradient-to-br from-blue-600/20 via-blue-500/10 to-transparent border border-blue-500/30 shadow-xl shadow-black/5">
           <p className="text-[10px] uppercase tracking-[0.25em] text-blue-200 font-black">Riesgo</p>
           <h3 className="text-xl font-black">Semáforo</h3>
           <p className="text-slate-300 text-sm">Estado: Patrón detectado</p>
@@ -196,7 +196,7 @@ export const LaboratorioUI: React.FC = () => {
         <div className="flex gap-3 flex-wrap">
           <button
             type="submit"
-            className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-black shadow-lg shadow-blue-600/30"
+            className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-black shadow-xl shadow-black/5 shadow-blue-600/30"
           >
             Enviar
           </button>

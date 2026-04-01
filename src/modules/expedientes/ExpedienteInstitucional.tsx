@@ -456,7 +456,7 @@ export function ExpedienteInstitucional({
                         </div>
                         <div 
                           onClick={() => evento.tipo === "documento" && handleVerDocumento(evento)}
-                          className={`w-[calc(100%-3.5rem)] bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-all ${evento.tipo === "documento" ? "cursor-pointer hover:border-indigo-300 hover:shadow-md hover:bg-indigo-50/10" : "hover:shadow-md"}`}
+                          className={`w-[calc(100%-3.5rem)] bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-all ${evento.tipo === "documento" ? "cursor-pointer hover:border-indigo-300 hover:shadow-xl shadow-black/5 hover:bg-indigo-50/10" : "hover:shadow-xl shadow-black/5"}`}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -567,7 +567,7 @@ export function ExpedienteInstitucional({
                                   <span>{obj.responsableNombre || "Responsable no definido"}</span>
                                 </div>
                               </div>
-                              <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                              <span className={`px-2.5 py-1 rounded-2xl text-[9px] font-black uppercase tracking-widest border ${
                                 obj.estado === "retenido"
                                   ? "text-amber-600 border-amber-200 bg-amber-50"
                                   : "text-emerald-600 border-emerald-200 bg-emerald-50"
@@ -605,7 +605,7 @@ export function ExpedienteInstitucional({
                           analizando ||
                           (incidencias.length === 0 && documentos.length === 0)
                         }
-                        className="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-200 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                        className="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-200 transition-colors flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {analizando ? (
                           <>
@@ -676,7 +676,7 @@ export function ExpedienteInstitucional({
           <div className="bg-white rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
             <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="size-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <div className="size-10 bg-indigo-100 rounded-2xl flex items-center justify-center">
                   <span className="material-symbols-outlined text-indigo-600">description</span>
                 </div>
                 <div>
@@ -700,7 +700,7 @@ export function ExpedienteInstitucional({
                 ) : (
                   <button
                     onClick={handleGuardarDocumento}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-xl shadow-black/5 shadow-green-600/20"
                   >
                     <span className="material-symbols-outlined text-sm">save</span>
                     Guardar Cambios
@@ -708,7 +708,7 @@ export function ExpedienteInstitucional({
                 )}
                 <button
                   onClick={() => printContent(documentoSeleccionado.titulo, documentoSeleccionado.contenido)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-black/5 shadow-blue-600/20"
                 >
                   <span className="material-symbols-outlined text-sm">print</span>
                   Imprimir
@@ -716,7 +716,7 @@ export function ExpedienteInstitucional({
                 <div className="w-px h-6 bg-slate-200 mx-2" />
                 <button
                   onClick={() => setDocumentoSeleccionado(null)}
-                  className="p-2 hover:bg-slate-200 rounded-lg transition-colors text-slate-400 hover:text-slate-600"
+                  className="p-2 hover:bg-slate-200 rounded-2xl transition-colors text-slate-400 hover:text-slate-600"
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>

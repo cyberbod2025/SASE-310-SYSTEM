@@ -328,7 +328,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                     setDocentesSeleccionados([]);
                   }
                 }}
-                className="w-full p-3 border border-border-color rounded-lg text-sm"
+                className="w-full p-3 border border-border-color rounded-2xl text-sm"
               >
                 <option value="">Buscar alumno...</option>
                 {students.map((s) => (
@@ -339,7 +339,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               </select>
 
               {selectedStudentData && (
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                <div className="mt-4 p-4 bg-blue-50 rounded-2xl border border-blue-100">
                   <div className="flex items-center gap-3">
                     <div className="size-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
                       {selectedStudentData.name.substring(0, 2)}
@@ -376,7 +376,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
             <div className="p-4 space-y-3">
               <button
                 onClick={() => toggleTipoReporte("academico")}
-                className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
                   tipoReporte.includes("academico")
                     ? "border-blue-500 bg-blue-50"
                     : "border-gray-200 hover:border-blue-300"
@@ -408,7 +408,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
 
               <button
                 onClick={() => toggleTipoReporte("conductual")}
-                className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
+                className={`w-full p-4 rounded-2xl border-2 text-left transition-all ${
                   tipoReporte.includes("conductual")
                     ? "border-orange-500 bg-orange-50"
                     : "border-gray-200 hover:border-orange-300"
@@ -446,7 +446,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                   value={observaciones}
                   onChange={(e) => setObservaciones(e.target.value)}
                   rows={3}
-                  className="w-full p-2 border border-border-color rounded-lg text-sm resize-none"
+                  className="w-full p-2 border border-border-color rounded-2xl text-sm resize-none"
                   placeholder="Contexto adicional para los docentes..."
                 />
               </div>
@@ -476,7 +476,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                 <>
                   <button
                     onClick={selectAllDocentes}
-                    className="w-full mb-3 py-2 text-sm font-bold text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                    className="w-full mb-3 py-2 text-sm font-bold text-primary hover:bg-primary/5 rounded-2xl transition-colors"
                   >
                     {docentesSeleccionados.length === docentesDisponibles.length
                       ? "Deseleccionar todos"
@@ -487,7 +487,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                       <button
                         key={doc.nombre}
                         onClick={() => toggleDocente(doc.nombre)}
-                        className={`w-full p-3 rounded-lg border text-left transition-all flex items-center gap-3 ${
+                        className={`w-full p-3 rounded-2xl border text-left transition-all flex items-center gap-3 ${
                           docentesSeleccionados.includes(doc.nombre)
                             ? "border-green-500 bg-green-50"
                             : "border-gray-200 hover:border-green-300"
@@ -526,7 +526,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                   tipoReporte.length === 0 ||
                   docentesSeleccionados.length === 0
                 }
-                className="w-full py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
                 <span className="material-symbols-outlined">send</span>
                 Enviar a {docentesSeleccionados.length} docente(s)
@@ -566,12 +566,12 @@ export const SolicitudReportesDocentes: React.FC = () => {
                         </p>
                         <div className="flex gap-2 mt-2">
                           {sol.tipoReporte.includes("academico") && (
-                            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-black rounded-lg border border-blue-200 uppercase tracking-widest shadow-sm">
+                            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-black rounded-2xl border border-blue-200 uppercase tracking-widest shadow-sm">
                               ACADÉMICO
                             </span>
                           )}
                           {sol.tipoReporte.includes("conductual") && (
-                            <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-black rounded-lg border border-orange-200 uppercase tracking-widest shadow-sm">
+                            <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-black rounded-2xl border border-orange-200 uppercase tracking-widest shadow-sm">
                               CONDUCTUAL
                             </span>
                           )}
@@ -624,13 +624,13 @@ export const SolicitudReportesDocentes: React.FC = () => {
                     onClick={() => setSelectedCompleted(sol.id)}
                     className={`w-full p-4 rounded-xl border text-left transition-all ${
                       selectedCompleted === sol.id
-                        ? "bg-blue-600 border-blue-500 text-white shadow-lg"
+                        ? "bg-blue-600 border-blue-500 text-white shadow-xl shadow-black/5"
                         : "bg-white border-slate-200 text-slate-600 hover:border-blue-300"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`size-8 rounded-lg flex items-center justify-center ${selectedCompleted === sol.id ? "bg-white/20" : "bg-blue-50 text-blue-600"}`}
+                        className={`size-8 rounded-2xl flex items-center justify-center ${selectedCompleted === sol.id ? "bg-white/20" : "bg-blue-50 text-blue-600"}`}
                       >
                         <span className="material-symbols-outlined text-lg">
                           description
@@ -821,13 +821,13 @@ export const SolicitudReportesDocentes: React.FC = () => {
                             ))}
                           </div>
                           <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
-                            <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-black uppercase hover:bg-slate-50 transition-all flex items-center gap-2">
+                            <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-2xl text-xs font-black uppercase hover:bg-slate-50 transition-all flex items-center gap-2">
                               <span className="material-symbols-outlined text-sm">
                                 print
                               </span>
                               Imprimir Expediente
                             </button>
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-black uppercase hover:bg-blue-700 transition-all shadow-md flex items-center gap-2">
+                            <button className="px-4 py-2 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase hover:bg-blue-700 transition-all shadow-xl shadow-black/5 flex items-center gap-2">
                               <span className="material-symbols-outlined text-sm">
                                 ios_share
                               </span>
@@ -887,7 +887,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               ].map((pregunta, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl"
                 >
                   <span className="text-sm">{pregunta}</span>
                   <div className="flex gap-4">
@@ -923,7 +923,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                 </div>
               ))}
               <textarea
-                className="w-full p-3 border border-gray-200 rounded-lg text-sm mt-2"
+                className="w-full p-3 border border-gray-200 rounded-2xl text-sm mt-2"
                 rows={2}
                 placeholder="Observaciones académicas adicionales..."
               />
@@ -936,12 +936,12 @@ export const SolicitudReportesDocentes: React.FC = () => {
               <span className="material-symbols-outlined">psychology</span>
               Comportamiento en Clase
             </h4>
-            <div className="p-3 bg-gray-50 rounded-lg mb-3">
+            <div className="p-3 bg-gray-50 rounded-2xl mb-3">
               <p className="text-sm mb-3">
                 El alumno muestra una actitud en clase:
               </p>
               <div className="flex flex-wrap gap-3">
-                <label className="flex items-center gap-2 px-4 py-2 border-2 border-red-200 rounded-lg cursor-pointer hover:border-red-400 transition-colors">
+                <label className="flex items-center gap-2 px-4 py-2 border-2 border-red-200 rounded-2xl cursor-pointer hover:border-red-400 transition-colors">
                   <input
                     type="radio"
                     name="actitud"
@@ -951,7 +951,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                     😠 Agresiva/Grosera
                   </span>
                 </label>
-                <label className="flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+                <label className="flex items-center gap-2 px-4 py-2 border-2 border-gray-200 rounded-2xl cursor-pointer hover:border-gray-400 transition-colors">
                   <input
                     type="radio"
                     name="actitud"
@@ -961,7 +961,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                     😐 Indiferente/Neutral
                   </span>
                 </label>
-                <label className="flex items-center gap-2 px-4 py-2 border-2 border-green-200 rounded-lg cursor-pointer hover:border-green-400 transition-colors">
+                <label className="flex items-center gap-2 px-4 py-2 border-2 border-green-200 rounded-2xl cursor-pointer hover:border-green-400 transition-colors">
                   <input
                     type="radio"
                     name="actitud"
@@ -974,7 +974,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               </div>
             </div>
             <textarea
-              className="w-full p-3 border border-gray-200 rounded-lg text-sm"
+              className="w-full p-3 border border-gray-200 rounded-2xl text-sm"
               rows={2}
               placeholder="Observaciones conductuales adicionales..."
             />
@@ -987,7 +987,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               Comunicación con Padres/Tutores
             </h4>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
                 <span className="text-sm">
                   ¿Usted ha enviado mensajes escritos a casa del alumno?
                 </span>
@@ -1010,7 +1010,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                   </label>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
                 <span className="text-sm">
                   ¿Ha recibido respuesta de los padres/tutores?
                 </span>
@@ -1034,7 +1034,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                 </div>
               </div>
               <textarea
-                className="w-full p-3 border border-gray-200 rounded-lg text-sm"
+                className="w-full p-3 border border-gray-200 rounded-2xl text-sm"
                 rows={2}
                 placeholder="Observaciones sobre la comunicación con familia..."
               />

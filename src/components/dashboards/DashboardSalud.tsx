@@ -144,7 +144,7 @@ export const DashboardSalud = () => {
                         setSelectedStudent(s);
                         setModalOpen(true);
                       }}
-                      className="min-h-[48px] min-w-[48px] px-3 rounded-lg bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium"
+                      className="min-h-[48px] min-w-[48px] px-3 rounded-2xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium"
                     >
                       Ajustes razonables
                     </motion.button>
@@ -161,7 +161,7 @@ export const DashboardSalud = () => {
                           },
                         })
                       }
-                      className="min-h-[48px] min-w-[48px] px-3 rounded-lg bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 transition-colors text-sm font-medium"
+                      className="min-h-[48px] min-w-[48px] px-3 rounded-2xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 transition-colors text-sm font-medium"
                     >
                       Generar reporte
                     </motion.button>

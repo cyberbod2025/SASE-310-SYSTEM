@@ -67,7 +67,7 @@ const HolographicKPI = ({
         )}
       </div>
       <div className="relative z-10">
-        <h4 className="text-2xl font-black text-white tracking-tighter italic mb-0.5 drop-shadow-lg">
+        <h4 className="text-2xl font-black text-white tracking-tighter italic mb-0.5 drop-shadow-xl shadow-black/5">
           {value}
         </h4>
         <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-slate-400 transition-colors">
@@ -305,7 +305,7 @@ export const DashboardPrefectura = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-black rounded-lg border border-emerald-500/20 tabular-nums uppercase tracking-widest">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-black rounded-2xl border border-emerald-500/20 tabular-nums uppercase tracking-widest">
               <motion.div
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -658,7 +658,7 @@ export const DashboardPrefectura = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="text-[9px] font-black px-2 py-1 bg-white/5 border border-white/5 rounded-lg text-slate-500 uppercase">
+                        <span className="text-[9px] font-black px-2 py-1 bg-white/5 border border-white/5 rounded-2xl text-slate-500 uppercase">
                           {item.group}
                         </span>
                         <button
@@ -669,7 +669,7 @@ export const DashboardPrefectura = () => {
                               data: item,
                             })
                           }
-                          className="size-8 bg-white/5 hover:bg-amber-600 hover:text-white rounded-lg flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
+                          className="size-8 bg-white/5 hover:bg-amber-600 hover:text-white rounded-2xl flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
                         >
                           <span className="material-symbols-outlined text-sm">
                             print

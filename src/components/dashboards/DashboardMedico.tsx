@@ -256,7 +256,7 @@ export const DashboardMedico = () => {
                           className="hover:bg-emerald-500/[0.02] transition-colors group/row border-l-2 border-transparent hover:border-emerald-500/40"
                         >
                           <td className="px-8 py-6">
-                            <span className="text-emerald-500 font-mono text-xs tabular-nums tracking-tighter bg-emerald-500/5 px-3 py-1.5 rounded-lg border border-emerald-500/10">
+                            <span className="text-emerald-500 font-mono text-xs tabular-nums tracking-tighter bg-emerald-500/5 px-3 py-1.5 rounded-2xl border border-emerald-500/10">
                               {new Date(visit.date).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -275,7 +275,7 @@ export const DashboardMedico = () => {
                             </div>
                           </td>
                           <td className="px-8 py-6 text-center">
-                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-lg text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-2xl text-[9px] font-black text-slate-400 uppercase tracking-widest">
                               {visit.group}
                             </span>
                           </td>
@@ -448,7 +448,7 @@ const InventoryList = ({ items, onUpdate }: any) => (
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => onUpdate(item.id, -1)}
-                  className="size-6 bg-white/5 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
+                  className="size-6 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors"
                 >
                   -
                 </button>
@@ -457,7 +457,7 @@ const InventoryList = ({ items, onUpdate }: any) => (
                 </span>
                 <button
                   onClick={() => onUpdate(item.id, 1)}
-                  className="size-6 bg-white/5 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
+                  className="size-6 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors"
                 >
                   +
                 </button>

@@ -133,7 +133,7 @@ const CheckboxSase = ({ id, label, checked, onChange, onRead }: any) => {
   return (
     <div className="flex items-center gap-4 group/box select-none outline-none">
       <div
-        className="flex items-center gap-4 cursor-pointer outline-none flex-1 focus:ring-2 focus:ring-blue-500/20 rounded-lg p-1 -ml-1"
+        className="flex items-center gap-4 cursor-pointer outline-none flex-1 focus:ring-2 focus:ring-blue-500/20 rounded-2xl p-1 -ml-1"
         onClick={() => onChange(!checked)}
         onKeyDown={handleKeyDown}
         role="checkbox"
@@ -142,7 +142,7 @@ const CheckboxSase = ({ id, label, checked, onChange, onRead }: any) => {
         tabIndex={0}
       >
         <div
-          className={`size-5 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
+          className={`size-5 rounded-2xl border-2 flex items-center justify-center transition-all duration-300 ${
             checked
               ? "bg-blue-600 border-blue-600 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
               : "border-white/10 group-hover/box:border-white/30 bg-white/5 group-focus-visible:border-blue-500/50"

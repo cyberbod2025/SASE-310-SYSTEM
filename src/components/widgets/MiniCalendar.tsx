@@ -67,7 +67,7 @@ export const MiniCalendar: React.FC<{
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onSelectDate?.(dateStr)}
-              className={`aspect-square flex items-center justify-center text-[10px] font-bold rounded-lg transition-colors ${
+              className={`aspect-square flex items-center justify-center text-[10px] font-bold rounded-2xl transition-colors ${
                 isToday
                   ? "bg-blue-600 text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]"
                   : "text-slate-400 hover:bg-white/5 hover:text-white"

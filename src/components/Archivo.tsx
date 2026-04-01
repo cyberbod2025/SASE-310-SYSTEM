@@ -249,18 +249,18 @@ export const Archivo: React.FC = () => {
                             </div>
                           </td>
                           <td className="px-6 py-5">
-                            <span className="font-mono text-xs font-bold text-slate-500 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+                            <span className="font-mono text-xs font-bold text-slate-500 bg-white/5 px-3 py-1.5 rounded-2xl border border-white/5">
                               {s.matricula}
                             </span>
                           </td>
                           <td className="px-6 py-5">
-                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-lg text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-2xl text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                               {s.group}
                             </span>
                           </td>
                           <td className="px-6 py-5">
                             <span
-                              className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-[10px] font-bold border uppercase tracking-widest ${
+                              className={`inline-flex items-center gap-2 px-3 py-1 rounded-2xl text-[10px] font-bold border uppercase tracking-widest ${
                                 s.caseState === CaseState.CERRADO
                                   ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                                   : s.caseState === CaseState.OBSERVADO
@@ -364,7 +364,7 @@ export const Archivo: React.FC = () => {
                               href={getFileUrl(file.name)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-slate-500 group-hover:text-blue-400 transition-colors p-2 hover:bg-blue-500/10 rounded-lg"
+                              className="text-slate-500 group-hover:text-blue-400 transition-colors p-2 hover:bg-blue-500/10 rounded-2xl"
                             >
                               <span className="material-symbols-outlined text-sm">
                                 open_in_new
