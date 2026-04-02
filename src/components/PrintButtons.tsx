@@ -73,7 +73,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
           </head>
           <body>
             <div class="header">
-              <div class="header-title">SASE-310 • ${title}</div>
+              <div class="header-title">SASE-310 • ${DOMPurify.sanitize(title)}</div>
               <div class="header-date">${new Date().toLocaleDateString(
                 "es-MX",
                 {
@@ -277,7 +277,7 @@ export const printContent = (title: string, htmlContent: string) => {
           })}</div>
         </div>
         
-        <div class="report-title">${title}</div>
+        <div class="report-title">${DOMPurify.sanitize(title)}</div>
         
         ${sanitizedContent}
         

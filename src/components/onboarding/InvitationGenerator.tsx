@@ -290,8 +290,9 @@ export const InvitationGenerator: React.FC = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
-    const emailValue = inviteEmail.trim().toLowerCase() || "usuario@sase.mx";
-    const roleLabel = RoleLabels[selectedRole];
+    const emailValue = DOMPurify.sanitize(inviteEmail.trim().toLowerCase() || "usuario@sase.mx");
+    const roleLabel = DOMPurify.sanitize(RoleLabels[selectedRole]);
+    const safeCustomName = DOMPurify.sanitize(customName);
     const details = roleDetails[selectedRole];
 
     const content = `
@@ -339,7 +340,7 @@ export const InvitationGenerator: React.FC = () => {
           </div>
 
           <div class="content">
-            <p>Estimado(a) <strong>${customName || roleLabel}</strong>,</p>
+            <p>Estimado(a) <strong>${safeCustomName || roleLabel}</strong>,</p>
             <p>Se formaliza su acceso al ecosistema digital <strong>SASE-310</strong>. Este sistema es el centro de operaciones técnicas y pedagógicas de nuestro plantel.</p>
             
             <div class="credentials-box">
@@ -400,7 +401,7 @@ export const InvitationGenerator: React.FC = () => {
       </html>
     `;
 
-    printWindow.document.write(DOMPurify.sanitize(content));
+    printWindow.document.write(content);
     printWindow.document.close();
   };
 
