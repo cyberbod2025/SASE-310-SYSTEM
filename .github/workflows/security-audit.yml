@@ -112,11 +112,18 @@ jobs:
         with:
           version: latest
 
+      - name: Start Supabase (Local Environment)
+        run: |
+          echo "🚀 Starting local database for audit..."
+          # Usamos --hidden para evitar ruido, pero garantizamos que el motor esté listo
+          supabase db start --debug 2>&1 | grep -v "Downloading" || true
+
       - name: Run Database Lint (Local Migration Check)
         run: |
           echo "🔍 Auditing database migrations and schema consistency..."
-          supabase db lint --local --fail-on error
-          echo "✅ Database schema passes security and integrity checks."
+          # Ahora sí podemos lintar porque el motor está activo
+          supabase db lint --local --fail-on warning
+          echo "✅ Database schema passes all security and integrity standards."
 
       - name: Report Status
         run: |
