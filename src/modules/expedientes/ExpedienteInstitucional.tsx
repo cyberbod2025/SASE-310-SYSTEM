@@ -382,7 +382,7 @@ export function ExpedienteInstitucional({
               <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight">
                 Expediente Institucional
               </h2>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs text-slate-700 font-medium">
                 {alumno.nombre} — Grupo {alumno.grupo}
               </p>
             </div>
@@ -402,7 +402,7 @@ export function ExpedienteInstitucional({
             </button>
             <button
               onClick={onClose}
-              className="p-2.5 hover:bg-slate-200 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
+              className="p-2.5 hover:bg-slate-200 rounded-xl transition-colors text-slate-600 hover:text-slate-600"
             >
               <span className="material-symbols-outlined">close</span>
             </button>
@@ -416,7 +416,7 @@ export function ExpedienteInstitucional({
               <span className="material-symbols-outlined text-indigo-500 animate-spin text-4xl mb-4">
                 progress_activity
               </span>
-              <p className="text-sm font-black text-slate-400 uppercase tracking-widest">
+              <p className="text-sm font-black text-slate-600 uppercase tracking-widest">
                 Recopilando historial institucional...
               </p>
             </div>
@@ -424,7 +424,7 @@ export function ExpedienteInstitucional({
             <>
               {/* LÍNEA DE TIEMPO (Izquierda) */}
               <div className="w-full md:w-[40%] lg:w-1/3 border-r border-slate-100 bg-slate-50/50 p-6 overflow-y-auto custom-scrollbar">
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <h3 className="text-xs font-black text-slate-600 uppercase tracking-widest mb-6 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">
                     history
                   </span>
@@ -436,7 +436,7 @@ export function ExpedienteInstitucional({
                     <span className="material-symbols-outlined text-slate-300 text-3xl mb-2">
                       history_toggle_off
                     </span>
-                    <p className="text-xs text-slate-400 font-medium tracking-wide">
+                    <p className="text-xs text-slate-600 font-medium tracking-wide">
                       No hay historial registrado.
                     </p>
                   </div>
@@ -459,7 +459,7 @@ export function ExpedienteInstitucional({
                           className={`w-[calc(100%-3.5rem)] bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-all ${evento.tipo === "documento" ? "cursor-pointer hover:border-indigo-300 hover:shadow-xl shadow-black/5 hover:bg-indigo-50/10" : "hover:shadow-xl shadow-black/5"}`}
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
                               {evento.fecha}
                             </span>
                             <div className="flex items-center gap-2">
@@ -478,7 +478,7 @@ export function ExpedienteInstitucional({
                           <h4 className={`text-xs font-bold mb-1 ${evento.tipo === "documento" ? "text-indigo-700" : "text-slate-700"}`}>
                             {evento.titulo}
                           </h4>
-                          <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
+                          <p className="text-[10px] text-slate-700 leading-relaxed font-medium">
                             {evento.descripcion}
                           </p>
                         </div>
@@ -499,7 +499,7 @@ export function ExpedienteInstitucional({
                       </span>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
                         Incidencias
                       </p>
                       <p className="text-2xl font-black text-slate-800">
@@ -514,7 +514,7 @@ export function ExpedienteInstitucional({
                       </span>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
                         Documentos
                       </p>
                       <p className="text-2xl font-black text-slate-800">
@@ -535,7 +535,7 @@ export function ExpedienteInstitucional({
                         Custodia de Objetos
                       </h3>
                     </div>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
                       {objetosRetenidos.length} registros
                     </span>
                   </div>
@@ -545,7 +545,7 @@ export function ExpedienteInstitucional({
                         <span className="material-symbols-outlined text-slate-300 text-3xl mb-2">
                           inventory
                         </span>
-                        <p className="text-xs text-slate-400 font-medium tracking-wide">
+                        <p className="text-xs text-slate-600 font-medium tracking-wide">
                           Sin objetos retenidos registrados.
                         </p>
                       </div>
@@ -558,10 +558,10 @@ export function ExpedienteInstitucional({
                                 <p className="text-sm font-black text-slate-800 uppercase tracking-tight">
                                   {obj.objeto}
                                 </p>
-                                <p className="text-[11px] text-slate-500 font-medium mt-1">
+                                <p className="text-[11px] text-slate-700 font-medium mt-1">
                                   {obj.motivo}
                                 </p>
-                                <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                                <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-700 font-semibold uppercase tracking-widest">
                                   <span>{new Date(obj.fecha).toLocaleDateString("es-MX")}</span>
                                   <span>•</span>
                                   <span>{obj.responsableNombre || "Responsable no definido"}</span>
@@ -576,7 +576,7 @@ export function ExpedienteInstitucional({
                               </span>
                             </div>
                             {obj.fechaDevolucion && (
-                              <div className="mt-3 text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
+                              <div className="mt-3 text-[10px] text-slate-700 font-semibold uppercase tracking-widest">
                                 Devuelto: {new Date(obj.fechaDevolucion).toLocaleDateString("es-MX")} {obj.entregadoA ? `— ${obj.entregadoA}` : ""}
                               </div>
                             )}
@@ -636,7 +636,7 @@ export function ExpedienteInstitucional({
                           ))}
                       </div>
                     ) : (
-                      <div className="h-full flex flex-col items-center justify-center text-slate-400 gap-3 py-6 text-center">
+                      <div className="h-full flex flex-col items-center justify-center text-slate-600 gap-3 py-6 text-center">
                         <span className="material-symbols-outlined text-4xl opacity-50">
                           analytics
                         </span>
@@ -683,7 +683,7 @@ export function ExpedienteInstitucional({
                   <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
                     {documentoSeleccionado.titulo}
                   </h3>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                  <p className="text-[10px] text-slate-700 font-bold uppercase tracking-widest">
                     Expediente Institucional — {alumno.nombre}
                   </p>
                 </div>
@@ -716,7 +716,7 @@ export function ExpedienteInstitucional({
                 <div className="w-px h-6 bg-slate-200 mx-2" />
                 <button
                   onClick={() => setDocumentoSeleccionado(null)}
-                  className="p-2 hover:bg-slate-200 rounded-2xl transition-colors text-slate-400 hover:text-slate-600"
+                  className="p-2 hover:bg-slate-200 rounded-2xl transition-colors text-slate-600 hover:text-slate-600"
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>

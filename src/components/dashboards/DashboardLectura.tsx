@@ -19,7 +19,7 @@ export const DashboardLectura = () => {
   return (
     <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-pink-500/30">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 pb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
           <div className="size-16 bg-[#0a0f18] border border-pink-500/30 rounded-2xl flex items-center justify-center text-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.15)] relative overflow-hidden backdrop-blur-xl">
             <span className="material-symbols-outlined text-4xl">
@@ -44,22 +44,22 @@ export const DashboardLectura = () => {
           </div>
         </div>
 
-        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-inner">
+        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
           <button
             onClick={() => setActiveTab("PROYECTOS")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "PROYECTOS" ? "bg-pink-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "PROYECTOS" ? "bg-pink-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Proyectos
           </button>
           <button
             onClick={() => setActiveTab("EVENTOS")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVENTOS" ? "bg-pink-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVENTOS" ? "bg-pink-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Círculos
           </button>
           <button
             onClick={() => setActiveTab("EVIDENCIAS")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVIDENCIAS" ? "bg-pink-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVIDENCIAS" ? "bg-pink-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Portafolio
           </button>
@@ -98,7 +98,7 @@ export const DashboardLectura = () => {
           )}
 
           {activeTab === "EVENTOS" && (
-            <div className="card-sase border-white/5 bg-[#0a0f18]/40 overflow-hidden divide-y divide-white/5 animate-slide-up">
+            <div className="card-sase border-slate-100 bg-[#0a0f18]/40 overflow-hidden divide-y divide-white/5 animate-slide-up">
               <EventRow
                 title="Círculo de Lectura: Realismo Mágico"
                 time="11:30 AM"
@@ -179,7 +179,7 @@ export const DashboardLectura = () => {
 // -- HELPER COMPONENTS --
 
 const ProjectCard = ({ title, pct, date, status }: any) => (
-  <div className="card-sase p-6 border-white/5 bg-[#0a0f18]/30 group hover:border-pink-500/30 transition-all">
+  <div className="card-sase p-6 border-slate-100 bg-[#0a0f18]/30 group hover:border-pink-500/30 transition-all">
     <div className="flex justify-between items-start mb-6">
       <h4 className="text-sm font-black text-white uppercase italic tracking-tighter">
         {title}
@@ -189,7 +189,7 @@ const ProjectCard = ({ title, pct, date, status }: any) => (
       </span>
     </div>
     <div className="flex items-center justify-between mb-2">
-      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+      <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">
         {status}
       </span>
       <span className="text-[10px] font-black text-white italic">{pct}%</span>
@@ -207,7 +207,7 @@ const ProjectCard = ({ title, pct, date, status }: any) => (
 const EventRow = ({ title, time, room }: any) => (
   <div className="p-6 flex items-center justify-between group hover:bg-pink-500/[0.02] transition-colors">
     <div className="flex items-center gap-5">
-      <div className="size-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-500 group-hover:text-pink-400 transition-colors">
+      <div className="size-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-700 group-hover:text-pink-400 transition-colors">
         <span className="material-symbols-outlined">auto_stories</span>
       </div>
       <div>
@@ -226,7 +226,7 @@ const EventRow = ({ title, time, room }: any) => (
 );
 
 const EvidenceThumb = ({ label, type }: any) => (
-  <div className="card-sase p-6 border-white/5 bg-[#0a0f18]/20 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all">
+  <div className="card-sase p-6 border-slate-100 bg-[#0a0f18]/20 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all">
     <div className="size-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 mb-3 group-hover:text-pink-500">
       <span className="material-symbols-outlined text-3xl">book_2</span>
     </div>
@@ -238,8 +238,8 @@ const EvidenceThumb = ({ label, type }: any) => (
 );
 
 const ImpactStat = ({ label, value, color }: any) => (
-  <div className="flex items-end justify-between border-b border-white/5 pb-4">
-    <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">
+  <div className="flex items-end justify-between border-b border-slate-100 pb-4">
+    <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">
       {label}
     </span>
     <span

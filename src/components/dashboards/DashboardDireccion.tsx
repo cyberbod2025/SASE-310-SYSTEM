@@ -47,7 +47,7 @@ const HolographicKPI = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay * 0.1 }}
-      className={`card-sase p-6 border ${colors[color]} relative overflow-hidden group hover:bg-white/[0.03] transition-all`}
+      className={`card-sase p-6 border ${colors[color]} relative overflow-hidden group hover:bg-slate-100 transition-all`}
     >
       <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.03] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="flex justify-between items-start mb-4 relative z-10">
@@ -58,22 +58,22 @@ const HolographicKPI = ({
         </div>
         {trend && (
           <span
-            className={`text-[10px] font-black px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-slate-400 uppercase tracking-tighter`}
+            className={`text-[10px] font-black px-2 py-0.5 rounded-full border border-slate-200 bg-white/5 text-slate-600 uppercase tracking-tighter`}
           >
             {trend}
           </span>
         )}
       </div>
       <div className="relative z-10">
-        <h4 className="text-3xl font-black text-white tracking-tighter italic mb-1 drop-shadow-xl shadow-black/5">
+        <h4 className="text-3xl font-black text-slate-900 tracking-tighter italic mb-1 drop-shadow-xl shadow-black/5">
           {value}
         </h4>
-        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] group-hover:text-slate-400 transition-colors">
+        <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] group-hover:text-slate-600 transition-colors">
           {label}
         </p>
       </div>
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-current to-transparent opacity-20"></div>
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
     </motion.div>
   );
 };
@@ -112,14 +112,14 @@ const SystemStabilityRadar = ({
   const current = config[status] || config.nominal;
 
   return (
-    <div className="card-sase p-8 border-white/5 bg-white/[0.01] relative overflow-hidden group min-h-[220px] flex flex-col justify-between">
+    <div className="card-sase p-8 border-slate-100 bg-white/[0.01] relative overflow-hidden group min-h-[220px] flex flex-col justify-between">
       <motion.div
         animate={{ top: ["-10%", "110%"] }}
         transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
         className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent pointer-events-none z-0"
       />
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/[0.02] to-transparent pointer-events-none"></div>
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
 
       <div className="flex justify-between items-center relative z-10">
         <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ const SystemStabilityRadar = ({
             {current.label}
           </span>
         </div>
-        <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-1 rounded border border-white/5">
+        <span className="text-[9px] font-mono text-slate-700 uppercase tracking-widest bg-white/5 px-2 py-1 rounded border border-slate-100">
           OP_ESTABILIDAD_V3
         </span>
       </div>
@@ -142,7 +142,7 @@ const SystemStabilityRadar = ({
           {activeCases.toString().padStart(2, "0")}
         </h3>
         <div className="flex flex-col">
-          <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+          <span className="text-xs font-black text-slate-600 uppercase tracking-widest">
             Casos Criticos
           </span>
           <span className="text-[10px] text-slate-600 font-bold uppercase mt-1">
@@ -304,7 +304,7 @@ export const DashboardDireccion = () => {
           <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
             Vision sistemica institucional
           </h1>
-          <p className="text-slate-400 text-sm">
+          <p className="text-slate-600 text-sm">
             Auditoria institucional, toma de decisiones estrategicas y cierre de casos escalados.
           </p>
         </div>
@@ -324,7 +324,7 @@ export const DashboardDireccion = () => {
             <span className="material-icons">groups</span>
           </div>
           <div>
-            <p className="text-slate-400 text-xs uppercase tracking-wider font-semibold">Poblacion total atendida</p>
+            <p className="text-slate-600 text-xs uppercase tracking-wider font-semibold">Poblacion total atendida</p>
             <p className="text-2xl font-bold text-white mt-1">{students.length}</p>
           </div>
         </GlassCard>
@@ -333,7 +333,7 @@ export const DashboardDireccion = () => {
             <span className="material-icons">report</span>
           </div>
           <div>
-            <p className="text-slate-400 text-xs uppercase tracking-wider font-semibold">Casos criticos activos</p>
+            <p className="text-slate-600 text-xs uppercase tracking-wider font-semibold">Casos criticos activos</p>
             <p className="text-2xl font-bold text-white mt-1">{criticalCases.length}</p>
           </div>
         </GlassCard>
@@ -342,7 +342,7 @@ export const DashboardDireccion = () => {
             <span className="material-icons">campaign</span>
           </div>
           <div>
-            <p className="text-slate-400 text-xs uppercase tracking-wider font-semibold">Comunicados institucionales activos</p>
+            <p className="text-slate-600 text-xs uppercase tracking-wider font-semibold">Comunicados institucionales activos</p>
             <p className="text-2xl font-bold text-white mt-1">{dbComunicados.length}</p>
           </div>
         </GlassCard>
@@ -352,16 +352,16 @@ export const DashboardDireccion = () => {
         <GlassCard icon="gavel" title="Casos escalados a Direccion" className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto custom-scrollbar mt-4 space-y-3">
             {combinedAlerts.length === 0 ? (
-              <div className="p-10 text-center text-slate-500">
+              <div className="p-10 text-center text-slate-700">
                 No se registran casos escalados en este momento.
               </div>
             ) : (
               combinedAlerts.map((risk) => (
-                <div key={risk.id} className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                <div key={risk.id} className="p-4 rounded-xl border border-slate-100 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-white font-medium text-sm">{risk.name}</p>
-                      <p className="text-slate-500 text-xs mt-1">{risk.group} · {CaseLabels[risk.caseState]}</p>
+                      <p className="text-slate-700 text-xs mt-1">{risk.group} · {CaseLabels[risk.caseState]}</p>
                     </div>
                     <motion.button
                       whileTap={{ scale: 0.95 }}
@@ -380,16 +380,16 @@ export const DashboardDireccion = () => {
         <GlassCard icon="policy" title="Auditoria de protocolos institucionales" className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto custom-scrollbar mt-4 space-y-3">
             {dbComunicados.length === 0 ? (
-              <div className="p-10 text-center text-slate-500">
+              <div className="p-10 text-center text-slate-700">
                 No hay comunicados institucionales registrados.
               </div>
             ) : (
               dbComunicados.map((com) => (
-                <div key={com.id} className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                <div key={com.id} className="p-4 rounded-xl border border-slate-100 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
                   <p className="text-white text-sm font-medium">
                     {com.titulo || "Comunicado institucional"}
                   </p>
-                  <p className="text-slate-500 text-xs mt-1">
+                  <p className="text-slate-700 text-xs mt-1">
                     {com.tipo || "Aviso institucional"}
                   </p>
                 </div>

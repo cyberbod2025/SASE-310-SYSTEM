@@ -164,7 +164,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div 
       data-sasito-state={neuralCoreState}
-      className="flex h-screen w-full bg-slate-50 text-slate-800 overflow-hidden font-sans select-none"
+      className="flex h-screen w-full bg-slate-50 text-slate-900 overflow-hidden font-sans select-none"
     >
       <TutorialController />
       
@@ -207,7 +207,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex-1 min-w-0 animate-fade-in">
-                  <h3 className="text-[10px] font-black text-slate-800 truncate uppercase tracking-widest title-sase">
+                  <h3 className="text-[10px] font-black text-slate-900 truncate uppercase tracking-widest title-sase">
                     {displayUserName}
                   </h3>
                   <div className="flex flex-col gap-0.5 mt-0.5">
@@ -229,7 +229,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar relative z-10"
           >
             {!isSidebarCollapsed && (
-              <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-4">
+              <span className="px-4 text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] block mb-4">
                 Operatividad
               </span>
             )}
@@ -389,7 +389,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             )}
 
             {!isSidebarCollapsed && (
-              <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mt-6 mb-4">
+              <span className="px-4 text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] block mt-6 mb-4">
                 Soporte y Ayuda
               </span>
             )}
@@ -434,7 +434,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   ? "Expandir barra lateral"
                   : "Colapsar barra lateral"
               }
-              className="hidden md:flex items-center justify-center w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-xl transition-all"
+              className="hidden md:flex items-center justify-center w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-xl transition-all"
             >
               <span className="material-symbols-outlined text-lg">
                 {isSidebarCollapsed
@@ -497,12 +497,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <h2 className="text-[11px] font-black text-slate-800 uppercase tracking-[0.4em] title-sase">
+                <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.4em] title-sase">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
                   <span className="text-blue-600 group-hover:text-blue-500 transition-colors uppercase">SISTEMA_SASE_310</span>
                 </h2>
               </div>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+              <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest mt-1">
                 Estatus: Operativo • v{VERSION.numero}
               </p>
             </div>
@@ -558,7 +558,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               {showNotifications && (
                 <div className="absolute top-14 right-0 w-80 md:w-96 z-50 animate-fade-in-up overflow-hidden rounded-2xl border border-slate-200 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.25)] glass-dropdown">
                   <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
-                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                    <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">
                       Alertas del Sistema
                     </span>
                     {unreadCount > 0 && (
@@ -604,7 +604,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                               <p className="text-[10px] text-slate-600 mt-0.5 line-clamp-2">
                                 {notif.message}
                               </p>
-                              <span className="text-[8px] text-slate-500 mt-2 block uppercase tracking-widest font-black">
+                              <span className="text-[8px] text-slate-700 mt-2 block uppercase tracking-widest font-black">
                                 {notif.time}
                               </span>
                             </div>
@@ -715,7 +715,7 @@ const NavItem: React.FC<{
       className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
           ? `bg-[#E6D9FF] backdrop-blur-md text-[#6D28D9] shadow-xl shadow-black/5 font-black border-[#B799FF]/30 scale-[1.02]`
-          : "text-slate-500 hover:bg-slate-100 hover:text-slate-800 font-bold border-transparent"
+          : "text-slate-700 hover:bg-slate-100 hover:text-slate-950 font-bold border-transparent"
       } ${highlighted ? "shadow-[0_0_25px_rgba(183,153,255,0.25)] border-[#B799FF]/20 bg-[#B799FF]/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span

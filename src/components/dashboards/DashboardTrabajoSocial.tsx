@@ -27,7 +27,7 @@ const SocialMetric = ({ label, value, icon, color, pct }: any) => {
           <span className="material-symbols-outlined text-xl">{icon}</span>
         </div>
         {pct && (
-          <span className="text-[10px] font-black px-2 py-0.5 rounded border border-white/10 bg-white/5 text-slate-500 italic">
+          <span className="text-[10px] font-black px-2 py-0.5 rounded border border-slate-200 bg-white/5 text-slate-700 italic">
             {pct}% DEL_TOTAL
           </span>
         )}
@@ -35,7 +35,7 @@ const SocialMetric = ({ label, value, icon, color, pct }: any) => {
       <h4 className="text-3xl font-black text-white italic tracking-tighter mb-1 leading-none">
         {value}
       </h4>
-      <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+      <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em] italic">
         {label}
       </p>
 
@@ -149,7 +149,7 @@ export const DashboardTrabajoSocial = () => {
   return (
     <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-orange-500/30">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 pb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
           <div className="size-16 bg-[#0a0f18] border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-500 shadow-2xl relative overflow-hidden backdrop-blur-xl">
             <span className="material-symbols-outlined text-4xl">
@@ -171,28 +171,28 @@ export const DashboardTrabajoSocial = () => {
             <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
               TRABAJO <span className="text-orange-500 italic">SOCIAL</span>
             </h2>
-            <p className="text-slate-400 text-sm mt-2">
+            <p className="text-slate-600 text-sm mt-2">
               Vinculacion familiar, analisis de contexto y seguimiento institucional.
             </p>
           </div>
         </div>
 
-        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 shadow-inner">
+        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
           <button
             onClick={() => setActiveTab("justificantes")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Justificantes
           </button>
           <button
             onClick={() => setActiveTab("riesgos")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Riesgos ({dropoutRisk.length})
           </button>
           <button
             onClick={() => setActiveTab("comunidad")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-500 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Análisis Comunidad
           </button>
@@ -202,7 +202,7 @@ export const DashboardTrabajoSocial = () => {
       {activeTab === "justificantes" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* TERMINAL GENERATOR */}
-          <div className="card-sase border-white/5 p-8 bg-[#0a0f18]/40 backdrop-blur-xl">
+          <div className="card-sase border-slate-100 p-8 bg-[#0a0f18]/40 backdrop-blur-xl">
             <h3 className="text-xs font-black text-orange-500 uppercase tracking-[0.3em] mb-8 italic flex items-center gap-3">
               <span className="material-symbols-outlined text-xl">
                 history_edu
@@ -212,11 +212,11 @@ export const DashboardTrabajoSocial = () => {
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
                   OBJETIVO_ESTUDIANTE
                 </label>
                 <select
-                  className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
+                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
                   value={justForm.student}
                   title="Seleccionar alumno para justificante"
                   onChange={(e) =>
@@ -234,7 +234,7 @@ export const DashboardTrabajoSocial = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                  <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
                     INICIO
                   </label>
                   <input
@@ -244,11 +244,11 @@ export const DashboardTrabajoSocial = () => {
                     onChange={(e) =>
                       setJustForm({ ...justForm, start: e.target.value })
                     }
-                    className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
+                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                  <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
                     FIN
                   </label>
                   <input
@@ -258,17 +258,17 @@ export const DashboardTrabajoSocial = () => {
                     onChange={(e) =>
                       setJustForm({ ...justForm, end: e.target.value })
                     }
-                    className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
+                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1 italic">
+                <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
                   NATURALEZA_DEL_MOTIVO
                 </label>
                 <select
-                  className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
+                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
                   value={justForm.reason}
                   title="Motivo del justificante"
                   onChange={(e) =>
@@ -282,7 +282,7 @@ export const DashboardTrabajoSocial = () => {
               </div>
 
               <div
-                className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${justForm.distal ? "bg-orange-600/10 border-orange-500/30" : "bg-white/5 border-white/10 opacity-50"}`}
+                className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${justForm.distal ? "bg-orange-600/10 border-orange-500/30" : "bg-white/5 border-slate-200 opacity-50"}`}
                 onClick={() =>
                   setJustForm({ ...justForm, distal: !justForm.distal })
                 }
@@ -300,7 +300,7 @@ export const DashboardTrabajoSocial = () => {
                   <p className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">
                     TRABAJO_A_DISTANCIA
                   </p>
-                  <p className="text-[8px] font-black text-slate-500 uppercase tracking-tighter italic">
+                  <p className="text-[8px] font-black text-slate-700 uppercase tracking-tighter italic">
                     NOTIFICAR_CUERPO_DOCENTE
                   </p>
                 </div>
@@ -308,7 +308,7 @@ export const DashboardTrabajoSocial = () => {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center ml-1">
-                  <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">
+                  <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest italic">
                     OBSERVACIONES_CAMPO
                   </label>
                   <VoiceInput
@@ -326,7 +326,7 @@ export const DashboardTrabajoSocial = () => {
                     setJustForm({ ...justForm, desc: e.target.value })
                   }
                   placeholder="DATOS_ADICIONALES..."
-                  className="w-full bg-[#05070a] border border-white/10 rounded-xl p-4 text-xs h-24 text-white resize-none outline-none focus:border-orange-500/50"
+                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs h-24 text-white resize-none outline-none focus:border-orange-500/50"
                 />
               </div>
 
@@ -341,9 +341,9 @@ export const DashboardTrabajoSocial = () => {
           </div>
 
           {/* HISTORY TABLE */}
-          <div className="lg:col-span-2 card-sase border-white/5 bg-[#0a0f18]/20 flex flex-col h-full">
-            <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
-              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] flex items-center gap-3 italic">
+          <div className="lg:col-span-2 card-sase border-slate-100 bg-[#0a0f18]/20 flex flex-col h-full">
+            <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between">
+              <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] flex items-center gap-3 italic">
                 <span className="material-symbols-outlined text-orange-500">
                   inventory
                 </span>
@@ -354,7 +354,7 @@ export const DashboardTrabajoSocial = () => {
             <div className="overflow-x-auto custom-scrollbar flex-1">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-white/5 text-slate-500 text-[9px] uppercase font-black border-b border-white/5 italic italic tracking-widest font-mono">
+                  <tr className="bg-white/5 text-slate-700 text-[9px] uppercase font-black border-b border-slate-100 italic italic tracking-widest font-mono">
                     <th className="px-8 py-5">FOLIO</th>
                     <th className="px-8 py-5">EXPEDIENTE</th>
                     <th className="px-8 py-5">VIGENCIA</th>
@@ -368,7 +368,7 @@ export const DashboardTrabajoSocial = () => {
                       key={j.id}
                       className="hover:bg-white/[0.02] transition-colors group"
                     >
-                      <td className="px-8 py-6 font-mono text-[10px] text-slate-500 font-bold">
+                      <td className="px-8 py-6 font-mono text-[10px] text-slate-700 font-bold">
                         {j.folio}
                       </td>
                       <td className="px-8 py-6">
@@ -379,13 +379,13 @@ export const DashboardTrabajoSocial = () => {
                           {j.group}
                         </p>
                       </td>
-                      <td className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase italic">
+                      <td className="px-8 py-6 text-[10px] font-black text-slate-600 uppercase italic">
                         {j.startDate}{" "}
                         <span className="text-white/20 px-1">/</span>{" "}
                         {j.endDate}
                       </td>
                       <td className="px-8 py-6">
-                        <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-[9px] font-black text-slate-400 uppercase tracking-widest italic group-hover:border-orange-500/40">
+                        <span className="px-2.5 py-1 rounded bg-white/5 border border-slate-200 text-[9px] font-black text-slate-600 uppercase tracking-widest italic group-hover:border-orange-500/40">
                           {j.reason}
                         </span>
                       </td>
@@ -442,7 +442,7 @@ export const DashboardTrabajoSocial = () => {
                 </span>
                 Casos en vinculacion activa
               </h3>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">
+              <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest italic">
                 Seguimiento familiar en proceso // {dropoutRisk.length} casos activos
               </p>
             </div>
@@ -466,7 +466,7 @@ export const DashboardTrabajoSocial = () => {
                   html,
                 });
               }}
-              className="px-6 py-3 bg-white/5 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all flex items-center gap-2 active:scale-95"
+              className="px-6 py-3 bg-white/5 border border-slate-200 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all flex items-center gap-2 active:scale-95"
             >
               <span className="material-symbols-outlined text-sm text-rose-400">
                 print
@@ -482,7 +482,7 @@ export const DashboardTrabajoSocial = () => {
                 className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.02] group relative overflow-hidden border-l-4 border-l-rose-600"
               >
                 <div className="flex justify-between items-start mb-6">
-                  <div className="size-14 bg-[#0a0f18] border border-white/10 rounded-2xl flex items-center justify-center text-rose-500 text-2xl font-black italic">
+                  <div className="size-14 bg-[#0a0f18] border border-slate-200 rounded-2xl flex items-center justify-center text-rose-500 text-2xl font-black italic">
                     {s.name.charAt(0)}
                   </div>
                   <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-2xl animate-pulse">
@@ -493,7 +493,7 @@ export const DashboardTrabajoSocial = () => {
                 <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1">
                   {s.name}
                 </h3>
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">
+                <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] mb-6">
                   FALTAS_DETECTADAS:{" "}
                   {
                     s.incidents.filter((i) => i.type === "Asistencia / Falta")
@@ -506,7 +506,7 @@ export const DashboardTrabajoSocial = () => {
                     <span className="material-symbols-outlined text-rose-500 text-lg">
                       error
                     </span>
-                    <p className="text-[10px] font-black text-slate-400 uppercase italic">
+                    <p className="text-[10px] font-black text-slate-600 uppercase italic">
                       Motivo de vinculacion
                     </p>
                   </div>
@@ -526,7 +526,7 @@ export const DashboardTrabajoSocial = () => {
                       setSelectedStudentId(s.id);
                       setIsModalOpen(true);
                     }}
-                    className="flex-1 py-3.5 bg-white/5 border border-white/10 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
+                    className="flex-1 py-3.5 bg-white/5 border border-slate-200 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
                   >
                     Registrar contacto o visita
                   </button>
@@ -537,7 +537,7 @@ export const DashboardTrabajoSocial = () => {
                         { icon: "📞" },
                       )
                     }
-                    className="size-12 bg-white/5 border border-white/10 text-slate-500 rounded-2xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95"
+                    className="size-12 bg-white/5 border border-slate-200 text-slate-700 rounded-2xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95"
                   >
                     <span className="material-symbols-outlined">call</span>
                   </button>
@@ -590,7 +590,7 @@ export const DashboardTrabajoSocial = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="card-sase p-10 bg-slate-900 border-white/5 relative overflow-hidden group">
+            <div className="card-sase p-10 bg-slate-900 border-slate-100 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-8xl text-orange-500">
                   online_prediction
@@ -602,7 +602,7 @@ export const DashboardTrabajoSocial = () => {
                 </span>
                 ANALISIS SOCIAL IA
               </h3>
-              <p className="text-slate-400 text-xs font-medium leading-relaxed uppercase italic max-w-lg mb-8">
+              <p className="text-slate-600 text-xs font-medium leading-relaxed uppercase italic max-w-lg mb-8">
                 EL ANÁLISIS DE INTERACCIÓN SOCIOECONÓMICA DETECTA UN PERFIL DE
                 COMUNIDAD CON FUERTE COHESIÓN FAMILIAR PERO BAJA CAPACIDAD
                 TÉCNICA. SE RECOMIENDA PRIORIZAR EL PROGRAMA DE BECAS DE
@@ -620,7 +620,7 @@ export const DashboardTrabajoSocial = () => {
               </div>
             </div>
 
-            <div className="card-sase p-10 border-2 border-dashed border-white/5 flex flex-col flex-col items-center justify-center text-center group">
+            <div className="card-sase p-10 border-2 border-dashed border-slate-100 flex flex-col flex-col items-center justify-center text-center group">
               <div className="size-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
                 <span className="material-symbols-outlined text-4xl">
                   analytics

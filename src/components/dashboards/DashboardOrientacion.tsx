@@ -43,7 +43,7 @@ const HolographicKPI = ({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: delay * 0.1 }}
-      className={`card-sase p-4 border ${colors[color]} relative overflow-hidden group hover:bg-white/[0.03] transition-all`}
+      className={`card-sase p-4 border ${colors[color]} relative overflow-hidden group hover:bg-slate-100 transition-all`}
     >
       <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.03] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:opacity-[0.06] transition-opacity"></div>
       <div className="flex justify-between items-start mb-4">
@@ -53,16 +53,16 @@ const HolographicKPI = ({
           <span className="material-symbols-outlined text-xl">{icon}</span>
         </div>
         {trend && (
-          <span className="text-[10px] font-black px-2 py-0.5 rounded-2xl border border-white/10 bg-white/5 text-slate-400 uppercase tracking-tighter">
+          <span className="text-[10px] font-black px-2 py-0.5 rounded-2xl border border-slate-200 bg-white/5 text-slate-600 uppercase tracking-tighter">
             {trend}
           </span>
         )}
       </div>
       <div>
-        <h4 className="text-3xl font-black text-white tracking-tighter italic mb-1">
+        <h4 className="text-3xl font-black text-slate-900 tracking-tighter italic mb-1">
           {value}
         </h4>
-        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+        <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] italic">
           {label}
         </p>
       </div>
@@ -219,7 +219,7 @@ export const DashboardOrientacion = () => {
     >
       <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+          <p className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
             Modulo padre
           </p>
           <p className="text-slate-200 text-sm font-semibold">
@@ -228,7 +228,7 @@ export const DashboardOrientacion = () => {
           <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
             Orientacion Educativa
           </h1>
-          <p className="text-slate-400 text-sm">
+          <p className="text-slate-600 text-sm">
             Acompañamiento socioemocional, contencion y seguimiento del estudiante.
           </p>
         </div>
@@ -236,7 +236,7 @@ export const DashboardOrientacion = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={handlePrepareBitacora}
-            className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium flex items-center gap-2"
+            className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-white/5 border border-slate-200 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium flex items-center gap-2"
           >
             <span className="material-icons text-sm">print</span>
             Generar bitacora institucional
@@ -260,7 +260,7 @@ export const DashboardOrientacion = () => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="p-10 text-center text-slate-500"
+                  className="p-10 text-center text-slate-700"
                 >
                   Sin alertas de riesgo registradas en el sistema.
                 </motion.div>
@@ -271,15 +271,15 @@ export const DashboardOrientacion = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors group"
+                    className="p-4 rounded-xl border border-slate-100 bg-white/[0.02] hover:bg-white/[0.05] transition-colors group"
                   >
                     <div className="flex justify-between items-start gap-4">
                       <div>
                         <h3 className="text-white font-medium text-sm">{s.name}</h3>
-                        <p className="text-slate-400 text-xs mt-1">
+                        <p className="text-slate-600 text-xs mt-1">
                           Patron de riesgo socioemocional detectado
                         </p>
-                        <p className="text-slate-500 text-xs mt-1">
+                        <p className="text-slate-700 text-xs mt-1">
                           {s.group} · {s.matricula}
                         </p>
                       </div>
@@ -315,12 +315,12 @@ export const DashboardOrientacion = () => {
 
         <GlassCard icon="family_restroom" title="Agenda de atencion" className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mt-4">
-            <div className="p-8 rounded-xl border border-white/5 bg-white/[0.02] text-center text-slate-500">
+            <div className="p-8 rounded-xl border border-slate-100 bg-white/[0.02] text-center text-slate-700">
               Sin citas programadas para el dia de hoy.
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-1 gap-3">
+          <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 gap-3">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setModalOpen("APPOINTMENT")}
@@ -332,7 +332,7 @@ export const DashboardOrientacion = () => {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setModalOpen("INTERVIEW")}
-              className="w-full min-h-[48px] rounded-xl bg-white/5 text-slate-300 text-sm font-bold hover:bg-white/10 transition-colors border border-white/10 flex items-center justify-center gap-2"
+              className="w-full min-h-[48px] rounded-xl bg-white/5 text-slate-300 text-sm font-bold hover:bg-white/10 transition-colors border border-slate-200 flex items-center justify-center gap-2"
             >
               <span className="material-icons text-sm">history_edu</span>
               Registrar entrevista
