@@ -33,12 +33,21 @@ export default [
       '@typescript-eslint': tsPlugin,
     },
     rules: {
-      ...reactHooksPlugin.configs.recommended.rules,
+      // Reglas recomendadas de React
+      ...reactPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
+      
+      // Reglas de Hooks (Mapeo manual para asegurar reconocimiento en V9)
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+
+      // Reglas de Refresh
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
+
+      // Accesibilidad y TypeScript
       'jsx-a11y/alt-text': 'error',
       'jsx-a11y/anchor-is-valid': 'warn',
     },
