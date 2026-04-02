@@ -11,7 +11,7 @@ export const DashboardIntelligence = () => {
         <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 tracking-tight mb-2">
           IA SASE: Terminal de Inteligencia
         </h1>
-        <p className="text-slate-400 text-lg font-medium">
+        <p className="text-slate-600 text-lg font-medium">
           Análisis de riesgo, incidencias y asistente de planeación.
         </p>
       </div>
@@ -27,7 +27,7 @@ export const DashboardIntelligence = () => {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)] flex-shrink-0">
                 <span className="material-icons text-white">smart_toy</span>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-4 max-w-[85%] backdrop-blur-sm">
+              <div className="bg-white/5 border border-slate-200 rounded-2xl rounded-tl-none p-4 max-w-[85%] backdrop-blur-sm">
                 <p className="text-slate-200 text-sm leading-relaxed">
                   ¡Hola! Soy tu asistente de inteligencia SASE. Puedo ayudarte a
                   analizar la distribución de riesgo en tus grupos, estructurar
@@ -56,11 +56,11 @@ export const DashboardIntelligence = () => {
             </div>
           </div>
 
-          <div className="p-4 border-t border-white/10 bg-black/20 flex items-center gap-3 relative z-10">
+          <div className="p-4 border-t border-slate-200 bg-black/20 flex items-center gap-3 relative z-10">
             <input
               type="text"
               placeholder="Escribe tu consulta o usa el micrófono..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-full py-3 px-5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-400 focus:bg-purple-500/5 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300"
+              className="flex-1 bg-white/5 border border-slate-200 rounded-full py-3 px-5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-400 focus:bg-purple-500/5 focus:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300"
             />
 
             <motion.button
@@ -102,7 +102,7 @@ export const DashboardIntelligence = () => {
                 <div className="text-4xl font-black text-red-400 drop-shadow-[0_0_10px_rgba(248,113,113,0.8)]">
                   12%
                 </div>
-                <p className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-semibold">
+                <p className="text-xs text-slate-600 mt-1 uppercase tracking-wider font-semibold">
                   Riesgo Alto
                 </p>
               </div>
@@ -131,7 +131,7 @@ export const DashboardIntelligence = () => {
                 <motion.div
                   key={index}
                   whileHover={{ x: 5, backgroundColor: "rgba(255,255,255,0.06)" }}
-                  className="p-3 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-between cursor-pointer transition-colors duration-300 group"
+                  className="p-3 rounded-xl border border-slate-100 bg-white/[0.02] flex items-center justify-between cursor-pointer transition-colors duration-300 group"
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -141,7 +141,7 @@ export const DashboardIntelligence = () => {
                       <p className="text-slate-200 text-sm font-medium">
                         {student.name}
                       </p>
-                      <p className="text-slate-500 text-xs">
+                      <p className="text-slate-700 text-xs">
                         {student.type}
                       </p>
                     </div>

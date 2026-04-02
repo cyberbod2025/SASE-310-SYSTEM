@@ -176,7 +176,7 @@ export const DashboardDocente = () => {
             <span className="text-[10px] font-black text-blue-400 tracking-[0.4em] uppercase">
               SEP // ESD_310
             </span>
-            <span className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.2em] italic">
+            <span className="text-[8px] font-bold text-slate-700 uppercase tracking-[0.2em] italic">
               "PRESIDENTES DE MÉXICO"
             </span>
           </div>
@@ -211,18 +211,18 @@ export const DashboardDocente = () => {
               <span className="text-[7px] font-black text-blue-400 tracking-[0.3em] leading-none mb-1 opacity-50 uppercase">
                 NUCLEO IA OPERATIVO
               </span>
-              <span className="text-lg font-black text-white italic tracking-tighter leading-none pulse-glow">
+              <span className="text-lg font-black text-slate-900 italic tracking-tighter leading-none pulse-glow">
                 SASE-310
               </span>
             </div>
 
             <div className="mt-6" id="docente-dashboard-title">
-              <h2 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase leading-none mb-1">
+              <h2 className="text-xl md:text-2xl font-black text-slate-900 italic tracking-tighter uppercase leading-none mb-1">
                 CENTRO <span className="text-blue-500">DE MANDO</span>
               </h2>
               <div className="flex items-center gap-2 justify-center opacity-30">
                 <span className="h-px w-4 bg-white/20"></span>
-                <span className="text-[7px] font-black text-slate-500 uppercase tracking-[0.3em] italic leading-tight">
+                <span className="text-[7px] font-black text-slate-700 uppercase tracking-[0.3em] italic leading-tight">
                   CENTRO DE MANDO DOCENTE
                 </span>
                 <span className="h-px w-4 bg-white/20"></span>
@@ -240,7 +240,7 @@ export const DashboardDocente = () => {
                     className={`px-4 py-2 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-2 ${
                       isActive
                         ? "bg-white/10 border-white/20 text-white shadow-[0_0_20px_rgba(59,130,246,0.25)]"
-                        : "bg-white/[0.03] border-white/10 text-slate-500 hover:text-white hover:border-white/20"
+                        : "bg-slate-100 border-slate-200 text-slate-700 hover:text-white hover:border-white/20"
                     }`}
                   >
                     <span
@@ -266,7 +266,7 @@ export const DashboardDocente = () => {
           <div className="col-span-12 xl:col-span-8">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-4">
-                <h2 className="text-sm font-black text-white uppercase tracking-[0.2em] italic">
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] italic">
                   MI_GRUPO
                 </h2>
                 {selectedStudentIds.size > 0 && (
@@ -298,7 +298,7 @@ export const DashboardDocente = () => {
                     type="text"
                     placeholder="Escriba nombre o matrícula..."
                     title="Filtrar por nombre o matrícula del alumno"
-                    className="bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-[10px] font-black outline-none focus:border-blue-500/40 focus:bg-white/[0.05] w-64 text-white placeholder-slate-600 uppercase tracking-widest transition-all"
+                    className="bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-[10px] font-black outline-none focus:border-blue-500/40 focus:bg-white/[0.05] w-64 text-white placeholder-slate-400 uppercase tracking-widest transition-all"
                   />
                 )}
               </div>
@@ -314,7 +314,7 @@ export const DashboardDocente = () => {
                     key={student.id}
                     className={`
                       card-sase transition-all hover:-translate-y-1 hover:shadow-xl group relative overflow-hidden cursor-pointer
-                      ${isSelected ? "ring-2 ring-blue-500 border-blue-500/30 bg-blue-500/[0.05]" : "border-white/5"}
+                      ${isSelected ? "ring-2 ring-blue-500 border-blue-500/30 bg-blue-500/[0.05]" : "border-slate-100"}
                       ${student.caseState === CaseState.PATRON_DETECTADO ? "border-amber-500/20" : ""}
                     `}
                   >
@@ -330,7 +330,7 @@ export const DashboardDocente = () => {
                             ? "Quitar selección"
                             : "Seleccionar alumno para reporte masivo"
                         }
-                        className={`size-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-blue-500 border-blue-500" : "border-white/20 bg-white/[0.03] hover:border-blue-400/50"}`}
+                        className={`size-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-blue-500 border-blue-500" : "border-white/20 bg-slate-100 hover:border-blue-400/50"}`}
                       >
                         {isSelected && (
                           <span className="material-symbols-outlined text-white text-sm font-bold">
@@ -356,7 +356,7 @@ export const DashboardDocente = () => {
                       onClick={() => setSelectedStudent(student)}
                       title={`Ver detalles completos de ${student.name}`}
                     >
-                      <div className="size-12 rounded-xl overflow-hidden border border-white/10 group-hover:border-blue-500/30 transition-colors">
+                      <div className="size-12 rounded-xl overflow-hidden border border-slate-200 group-hover:border-blue-500/30 transition-colors">
                         <img
                           src={student.avatar}
                           alt={student.name}
@@ -364,7 +364,7 @@ export const DashboardDocente = () => {
                         />
                       </div>
                       <div>
-                        <h3 className="text-xs font-black text-white uppercase tracking-tight group-hover:text-blue-400 transition-colors">
+                        <h3 className="text-xs font-black text-slate-800 uppercase tracking-tight group-hover:text-blue-700 transition-colors">
                           {student.name}
                         </h3>
                         <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-0.5 font-mono">
@@ -385,7 +385,7 @@ export const DashboardDocente = () => {
                     )}
 
                     {student.caseState !== CaseState.CERRADO && (
-                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
+                      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2">
                         <span className="size-1.5 bg-amber-400 rounded-full animate-ping"></span>
                         <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest">
                           SEGUIMIENTO_ACTIVO
@@ -416,13 +416,13 @@ export const DashboardDocente = () => {
                 <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-500">
                   <span className="material-symbols-outlined">groups</span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   {students.length}
                 </h3>
-                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
+                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-600 transition-colors">
                   TOTAL
                 </p>
-                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
               </motion.div>
 
               <motion.div
@@ -445,13 +445,13 @@ export const DashboardDocente = () => {
                     assignment_turned_in
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   98%
                 </h3>
-                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
+                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-600 transition-colors">
                   ASIST.
                 </p>
-                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
               </motion.div>
 
               <motion.div
@@ -471,13 +471,13 @@ export const DashboardDocente = () => {
                     notification_important
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   3
                 </h3>
-                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
+                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-600 transition-colors">
                   PEND.
                 </p>
-                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
               </motion.div>
 
               <motion.div
@@ -496,36 +496,36 @@ export const DashboardDocente = () => {
                     auto_awesome
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-white tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   {students.reduce(
                     (acc, s) => acc + (s.gamificacion?.total_puntos || 0),
                     0,
                   )}
                 </h3>
-                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-400 transition-colors">
+                <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-600 transition-colors">
                   GAMIFIC.
                 </p>
-                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
               </motion.div>
             </div>
 
             {/* Acciones Rápidas */}
-            <div className="card-sase p-6 border-white/5 relative overflow-hidden group/qa">
+            <div className="card-sase p-6 border-slate-100 relative overflow-hidden group/qa">
               {/* Scanning Line */}
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                 className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent pointer-events-none z-0"
               />
-              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover/qa:opacity-100 transition-opacity"></div>
-              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 italic relative z-10">
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover/qa:opacity-100 transition-opacity"></div>
+              <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] mb-4 italic relative z-10">
                 ACCIONES_RÁPIDAS
               </h3>
               <div className="space-y-3">
                 <button
                   onClick={() => setCurrentModule(AppModule.AGENDA)}
                   title="Acceder al calendario institucional para agendar actividades"
-                  className="w-full flex items-center gap-3 p-4 rounded-xl border border-white/5 hover:bg-white/[0.03] hover:border-blue-500/20 transition-all group text-left"
+                  className="w-full flex items-center gap-3 p-4 rounded-xl border border-slate-100 hover:bg-slate-100 hover:border-blue-500/20 transition-all group text-left"
                 >
                   <div className="p-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-500 transition-all">
                     <span className="material-symbols-outlined text-xl">
@@ -558,15 +558,15 @@ export const DashboardDocente = () => {
             </div>
 
             {/* Alerts Feed */}
-            <div className="card-sase flex flex-col max-h-[400px] p-0 border-white/5 overflow-hidden relative">
+            <div className="card-sase flex flex-col max-h-[400px] p-0 border-slate-100 overflow-hidden relative">
               {/* Scanning Line */}
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
                 transition={{ duration: 3.5, repeat: Infinity, ease: "linear" }}
                 className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-rose-500/20 to-transparent pointer-events-none z-10"
               />
-              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20"></div>
-              <div className="p-5 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20"></div>
+              <div className="p-5 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center">
                 <h3 className="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] italic flex items-center gap-2">
                   <span className="size-1.5 bg-rose-500 rounded-full animate-ping"></span>
                   BITÁCORA_ALERTAS
@@ -583,7 +583,7 @@ export const DashboardDocente = () => {
                     onClick={() => setSelectedStudent(s)}
                   >
                     <div className="flex justify-between items-start mb-1">
-                      <span className="text-[9px] font-mono font-black bg-white/5 text-slate-500 px-1.5 py-0.5 rounded group-hover:bg-blue-500/10 group-hover:text-blue-400 transition-colors">
+                      <span className="text-[9px] font-mono font-black bg-white/5 text-slate-700 px-1.5 py-0.5 rounded group-hover:bg-blue-500/10 group-hover:text-blue-400 transition-colors">
                         {s.matricula}
                       </span>
                       <span className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
@@ -597,7 +597,7 @@ export const DashboardDocente = () => {
                       <span className="material-symbols-outlined text-amber-400 text-sm">
                         warning
                       </span>
-                      <p className="text-[10px] text-slate-500 truncate font-black uppercase">
+                      <p className="text-[10px] text-slate-700 truncate font-black uppercase">
                         {s.incidents[0]?.description || "Seguimiento requerido"}
                       </p>
                     </div>
@@ -607,8 +607,8 @@ export const DashboardDocente = () => {
             </div>
 
             {/* LISTA DE ALUMNOS */}
-            <div className="card-sase overflow-hidden flex flex-col p-0 border-white/5">
-              <div className="p-5 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
+            <div className="card-sase overflow-hidden flex flex-col p-0 border-slate-100">
+              <div className="p-5 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center">
                 <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] italic flex items-center gap-2">
                   <span className="material-symbols-outlined text-blue-400 text-lg">
                     group
@@ -636,7 +636,7 @@ export const DashboardDocente = () => {
               </div>
               <div className="flex-1 overflow-y-auto custom-scrollbar max-h-[500px]">
                 <table className="w-full text-left">
-                  <thead className="sticky top-0 bg-slate-900/80 backdrop-blur-sm border-b border-white/5">
+                  <thead className="sticky top-0 bg-slate-900/80 backdrop-blur-sm border-b border-slate-100">
                     <tr>
                       <th className="p-4 text-[9px] font-black uppercase tracking-widest text-slate-600">
                         Alumno
@@ -655,7 +655,7 @@ export const DashboardDocente = () => {
                       >
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="size-8 rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
+                            <div className="size-8 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden">
                               <img
                                 src={student.avatar}
                                 alt={student.name}
@@ -714,20 +714,20 @@ export const DashboardDocente = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="card-sase w-full max-w-2xl border-white/10 relative overflow-hidden"
+              className="card-sase w-full max-w-2xl border-slate-200 relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-500"></div>
               <button
                 onClick={() => setSelectedStudent(null)}
                 title="Cerrar ventana de detalles"
-                className="absolute top-4 right-4 p-2 hover:bg-white/5 text-slate-500 hover:text-rose-400 transition-all rounded-xl"
+                className="absolute top-4 right-4 p-2 hover:bg-white/5 text-slate-700 hover:text-rose-400 transition-all rounded-xl"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
 
               <div className="p-8">
                 <div className="flex gap-6 mb-8">
-                  <div className="size-20 bg-white/[0.03] border border-white/10 rounded-2xl overflow-hidden">
+                  <div className="size-20 bg-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
                     <img
                       src={selectedStudent.avatar}
                       alt={selectedStudent.name}
@@ -741,18 +741,18 @@ export const DashboardDocente = () => {
                     <h2 className="text-2xl font-black text-white uppercase leading-none mb-1 italic tracking-tighter">
                       {selectedStudent.name}
                     </h2>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] font-mono">
+                    <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] font-mono">
                       {selectedStudent.matricula} • 3º "B"
                     </p>
                   </div>
                 </div>
 
-                <div className="card-sase p-6 border-white/5 mb-6">
-                  <h4 className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-4 pb-2 border-b border-white/5">
+                <div className="card-sase p-6 border-slate-100 mb-6">
+                  <h4 className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-4 pb-2 border-b border-slate-100">
                     MÉTRICAS_RÁPIDAS
                   </h4>
                   <div className="grid grid-cols-4 gap-4 text-center">
-                    <div className="border-r border-white/5">
+                    <div className="border-r border-slate-100">
                       <div className="text-2xl font-black text-white italic font-mono">
                         9.2
                       </div>
@@ -760,7 +760,7 @@ export const DashboardDocente = () => {
                         Promedio
                       </div>
                     </div>
-                    <div className="border-r border-white/5">
+                    <div className="border-r border-slate-100">
                       <div className="text-2xl font-black text-emerald-400 italic font-mono">
                         96%
                       </div>
@@ -768,7 +768,7 @@ export const DashboardDocente = () => {
                         Asistencia
                       </div>
                     </div>
-                    <div className="border-r border-white/5">
+                    <div className="border-r border-slate-100">
                       <div className="text-2xl font-black text-amber-400 italic font-mono">
                         {selectedStudent.incidents.length}
                       </div>
@@ -789,14 +789,14 @@ export const DashboardDocente = () => {
 
                 <div className="space-y-4">
                   <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2 italic">
-                    <span className="material-symbols-outlined text-slate-500 text-lg">
+                    <span className="material-symbols-outlined text-slate-700 text-lg">
                       history_edu
                     </span>
                     TRAYECTORIA_ESCOLAR
                   </h3>
-                  <div className="card-sase p-0 overflow-hidden border-white/5">
+                  <div className="card-sase p-0 overflow-hidden border-slate-100">
                     <table className="w-full text-xs text-left">
-                      <thead className="bg-white/[0.02] border-b border-white/5">
+                      <thead className="bg-white/[0.02] border-b border-slate-100">
                         <tr>
                           <th className="p-3 text-[9px] font-black text-slate-600 uppercase tracking-widest">
                             Fecha
@@ -813,13 +813,13 @@ export const DashboardDocente = () => {
                         {selectedStudent.incidents.length > 0 ? (
                           selectedStudent.incidents.map((inc: any) => (
                             <tr key={inc.id} className="hover:bg-white/[0.02]">
-                              <td className="p-3 text-slate-500 font-mono text-[10px]">
+                              <td className="p-3 text-slate-700 font-mono text-[10px]">
                                 15/01/2026
                               </td>
                               <td className="p-3 font-black text-white uppercase text-[10px]">
                                 {inc.type}
                               </td>
-                              <td className="p-3 text-slate-400 text-[10px]">
+                              <td className="p-3 text-slate-600 text-[10px]">
                                 {inc.description}
                               </td>
                             </tr>
@@ -861,7 +861,7 @@ export const DashboardDocente = () => {
             >
               <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-2xl opacity-50 group-hover:opacity-80 transition duration-500" />
 
-              <div className="relative rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-8 shadow-2xl backdrop-blur-2xl">
+              <div className="relative rounded-2xl border border-slate-200 bg-gradient-to-br from-white/10 to-white/5 p-8 shadow-2xl backdrop-blur-2xl">
                 <h2 className="text-2xl font-bold text-white mb-2">
                   Reporte Rápido
                 </h2>
@@ -879,7 +879,7 @@ export const DashboardDocente = () => {
                       onClick={() =>
                         handleBulkReport(comment.type, comment.label)
                       }
-                      className="p-3 rounded-xl border border-white/10 bg-white/5 hover:bg-blue-500/20 hover:border-blue-400 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-slate-200 font-medium text-sm flex items-center gap-2"
+                      className="p-3 rounded-xl border border-slate-200 bg-white/5 hover:bg-blue-500/20 hover:border-blue-400 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all text-slate-200 font-medium text-sm flex items-center gap-2"
                     >
                       <span className="material-icons text-blue-400 text-sm">
                         bolt
@@ -892,7 +892,7 @@ export const DashboardDocente = () => {
                 <div className="flex justify-end">
                   <button
                     onClick={() => setIsQuickReportOpen(false)}
-                    className="px-6 py-2 rounded-full border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                    className="px-6 py-2 rounded-full border border-slate-200 text-slate-600 hover:text-white hover:bg-white/10 transition-colors"
                   >
                     Cancelar
                   </button>
@@ -904,18 +904,18 @@ export const DashboardDocente = () => {
       </AnimatePresence>
 
       {activeTab === "ASISTENCIA" && (
-        <div className="card-sase border-white/5 overflow-hidden relative">
+        <div className="card-sase border-slate-100 overflow-hidden relative">
           {/* Scanning Line */}
           <motion.div
             animate={{ top: ["-10%", "110%"] }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent pointer-events-none z-10"
           />
-          <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20"></div>
-          <div className="p-6 border-b border-white/5 bg-white/[0.01] flex justify-between items-center relative">
+          <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20"></div>
+          <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center relative">
             <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
             <div className="pl-4">
-              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em] italic">
+              <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] italic">
                 PASE DE LISTA <span className="text-emerald-400">DIARIO</span>
               </h2>
               <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest mt-1">
@@ -963,7 +963,7 @@ export const DashboardDocente = () => {
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="size-10 bg-white/[0.03] border border-white/10 overflow-hidden shrink-0 rounded-xl">
+                          <div className="size-10 bg-slate-100 border border-slate-200 overflow-hidden shrink-0 rounded-xl">
                             <img
                               src={student.avatar}
                               alt={`Foto de ${student.name}`}
@@ -982,13 +982,13 @@ export const DashboardDocente = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="inline-flex border border-white/10 rounded-xl overflow-hidden">
+                        <div className="inline-flex border border-slate-200 rounded-xl overflow-hidden">
                           <button
                             onClick={() =>
                               handleAttendanceChange(student.id, "P")
                             }
                             title="Marcar como Presente"
-                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "P" ? "bg-emerald-500 text-white shadow-xl shadow-black/5 shadow-emerald-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
+                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "P" ? "bg-emerald-500 text-white shadow-xl shadow-black/5 shadow-emerald-500/30" : "bg-slate-100 text-slate-700 hover:bg-white/[0.06]"}`}
                           >
                             P
                           </button>
@@ -997,7 +997,7 @@ export const DashboardDocente = () => {
                               handleAttendanceChange(student.id, "R")
                             }
                             title="Marcar como Retardo"
-                            className={`px-5 py-2.5 text-[10px] font-black border-l border-r border-white/10 transition-all ${currentStatus === "R" ? "bg-amber-500 text-white shadow-xl shadow-black/5 shadow-amber-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
+                            className={`px-5 py-2.5 text-[10px] font-black border-l border-r border-slate-200 transition-all ${currentStatus === "R" ? "bg-amber-500 text-white shadow-xl shadow-black/5 shadow-amber-500/30" : "bg-slate-100 text-slate-700 hover:bg-white/[0.06]"}`}
                           >
                             R
                           </button>
@@ -1006,7 +1006,7 @@ export const DashboardDocente = () => {
                               handleAttendanceChange(student.id, "F")
                             }
                             title="Marcar como Falta"
-                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "F" ? "bg-rose-500 text-white shadow-xl shadow-black/5 shadow-rose-500/30" : "bg-white/[0.03] text-slate-500 hover:bg-white/[0.06]"}`}
+                            className={`px-5 py-2.5 text-[10px] font-black transition-all ${currentStatus === "F" ? "bg-rose-500 text-white shadow-xl shadow-black/5 shadow-rose-500/30" : "bg-slate-100 text-slate-700 hover:bg-white/[0.06]"}`}
                           >
                             F
                           </button>
@@ -1016,7 +1016,7 @@ export const DashboardDocente = () => {
                         <div className="relative">
                           <input
                             type="text"
-                            className="w-full bg-white/[0.03] border border-white/5 rounded-xl px-4 py-2.5 text-[10px] text-white outline-none focus:border-blue-500/40 focus:bg-white/[0.05] transition-all placeholder-slate-600 font-black uppercase tracking-widest"
+                            className="w-full bg-slate-100 border border-slate-100 rounded-xl px-4 py-2.5 text-[10px] text-white outline-none focus:border-blue-500/40 focus:bg-white/[0.05] transition-all placeholder-slate-400 font-black uppercase tracking-widest"
                             placeholder="Agregar nota..."
                             title={`Observación de asistencia para ${student.name}`}
                           />
@@ -1037,18 +1037,18 @@ export const DashboardDocente = () => {
       )}
 
       {activeTab === "CALIFICACIONES" && (
-        <div className="card-sase border-white/5 overflow-hidden relative">
+        <div className="card-sase border-slate-100 overflow-hidden relative">
           {/* Scanning Line */}
           <motion.div
             animate={{ top: ["-10%", "110%"] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: "linear" }}
             className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent pointer-events-none z-10"
           />
-          <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20"></div>
-          <div className="p-6 border-b border-white/5 bg-white/[0.01] flex justify-between items-center relative">
+          <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20"></div>
+          <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center relative">
             <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
             <div className="pl-4">
-              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em] italic flex items-center gap-3">
+              <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] italic flex items-center gap-3">
                 <span className="material-symbols-outlined text-amber-400 text-xl">
                   lock_clock
                 </span>
@@ -1067,7 +1067,7 @@ export const DashboardDocente = () => {
 
           <div className="overflow-hidden">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-white/[0.02] border-b border-white/5">
+              <thead className="bg-white/[0.02] border-b border-slate-100">
                 <tr>
                   <th className="p-4 text-[9px] font-black uppercase tracking-widest text-slate-600 w-1/3">
                     Alumno
@@ -1101,7 +1101,7 @@ export const DashboardDocente = () => {
                     >
                       <td className="p-4 border-r border-white/[0.03]">
                         <div className="flex items-center gap-3">
-                          <div className="size-8 rounded-2xl bg-white/[0.03] border border-white/10 overflow-hidden">
+                          <div className="size-8 rounded-2xl bg-slate-100 border border-slate-200 overflow-hidden">
                             <img
                               src={s.avatar}
                               alt={`Foto de ${s.name}`}
@@ -1114,10 +1114,10 @@ export const DashboardDocente = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="p-4 text-center font-mono font-black text-slate-400 text-sm border-r border-white/[0.03]">
+                      <td className="p-4 text-center font-mono font-black text-slate-600 text-sm border-r border-white/[0.03]">
                         {t1}
                       </td>
-                      <td className="p-4 text-center font-mono font-black text-slate-400 text-sm border-r border-white/[0.03]">
+                      <td className="p-4 text-center font-mono font-black text-slate-600 text-sm border-r border-white/[0.03]">
                         {t2}
                       </td>
                       <td className="p-4 text-center font-mono text-slate-600 text-sm border-r border-white/[0.03]">
@@ -1172,14 +1172,14 @@ export const DashboardDocente = () => {
                     <h2 className="text-xl font-black text-white uppercase tracking-tight">
                       Reporte Grupal
                     </h2>
-                    <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-black">
+                    <p className="text-xs text-slate-600 mt-1 uppercase tracking-widest font-black">
                       {selectedStudentIds.size} ALUMNOS SELECCIONADOS
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setIsQuickReportOpen(false)}
-                  className="text-slate-500 hover:text-white transition-colors"
+                  className="text-slate-700 hover:text-white transition-colors"
                 >
                   <span className="material-symbols-outlined">close</span>
                 </button>
@@ -1188,7 +1188,7 @@ export const DashboardDocente = () => {
               <div className="space-y-6">
                 {/* Comentarios Rápidos */}
                 <div>
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 block">
+                  <label className="text-xs font-black text-slate-600 uppercase tracking-widest mb-3 block">
                     Motivos Frecuentes
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -1198,7 +1198,7 @@ export const DashboardDocente = () => {
                         onClick={() =>
                           handleBulkReport(comment.type, comment.label)
                         }
-                        className="px-4 py-2 rounded-xl border border-white/5 bg-white/[0.02] text-white text-xs font-bold hover:bg-white/[0.08] hover:border-blue-500/30 hover:text-blue-400 transition-all text-left flex items-center gap-2"
+                        className="px-4 py-2 rounded-xl border border-slate-100 bg-white/[0.02] text-white text-xs font-bold hover:bg-white/[0.08] hover:border-blue-500/30 hover:text-blue-400 transition-all text-left flex items-center gap-2"
                       >
                         <span className="material-symbols-outlined text-sm opacity-50">
                           {comment.type === IncidentType.CONDUCTA
@@ -1213,8 +1213,8 @@ export const DashboardDocente = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/5">
-                  <p className="text-[10px] text-slate-500 text-center uppercase tracking-widest font-black">
+                <div className="pt-4 border-t border-slate-100">
+                  <p className="text-[10px] text-slate-700 text-center uppercase tracking-widest font-black">
                     El reporte se aplicará a todos los alumnos seleccionados al
                     hacer clic en el motivo.
                   </p>

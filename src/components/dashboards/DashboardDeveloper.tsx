@@ -7,9 +7,9 @@ import { supabase } from "../../supabase/client";
 // --- DEVELOPER HUD COMPONENTS ---
 
 const ConsoleLog = ({ logs }: { logs: string[] }) => (
-  <div className="bg-slate-950 font-mono text-[10px] p-4 rounded-xl border border-white/5 h-64 overflow-y-auto custom-scrollbar shadow-inner">
+  <div className="bg-slate-950 font-mono text-[10px] p-4 rounded-xl border border-slate-100 h-64 overflow-y-auto custom-scrollbar shadow-inner">
     {logs.map((log, i) => (
-      <div key={i} className="mb-1 border-b border-white/5 pb-1 last:border-0">
+      <div key={i} className="mb-1 border-b border-slate-100 pb-1 last:border-0">
         <span className="text-emerald-500 mr-2">
           [{new Date().toLocaleTimeString()}]
         </span>
@@ -30,7 +30,7 @@ const SystemStat = ({
   value: string | number;
   color: string;
 }) => (
-  <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col items-center justify-center text-center">
+  <div className="bg-white/5 border border-slate-200 p-4 rounded-xl flex flex-col items-center justify-center text-center">
     <span className={`text-2xl font-black mb-1 ${color}`}>{value}</span>
     <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em]">
       {label}
@@ -74,7 +74,7 @@ export const DashboardDeveloper = () => {
   return (
     <div className="min-h-full p-4 md:p-8 pb-32 bg-transparent text-white">
       {/* Dev Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-slate-200 pb-6">
         <div className="flex items-center gap-4">
           <div className="size-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center shadow-2xl shadow-indigo-600/20 ring-1 ring-white/20">
             <span className="material-symbols-outlined text-white">
@@ -94,7 +94,7 @@ export const DashboardDeveloper = () => {
         <div className="flex gap-3">
           <button
             onClick={handleForceRLSCheck}
-            className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase hover:bg-white/10 transition-all flex items-center gap-2"
+            className="px-4 py-2 bg-white/5 border border-slate-200 rounded-xl text-[10px] font-black uppercase hover:bg-white/10 transition-all flex items-center gap-2"
           >
             <span className="material-symbols-outlined text-sm">security</span>
             Auditar RLS
@@ -114,7 +114,7 @@ export const DashboardDeveloper = () => {
         />
 
         {/* Row 2: Main Dev Area */}
-        <div className="lg:col-span-3 bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col">
+        <div className="lg:col-span-3 bg-white/5 border border-slate-200 rounded-2xl p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
               Salida del sistema
@@ -129,7 +129,7 @@ export const DashboardDeveloper = () => {
         </div>
 
         {/* Row 2 Right: Module Jump */}
-        <div className="bg-gradient-to-b from-indigo-900/20 to-transparent border border-white/10 rounded-2xl p-6 flex flex-col shadow-2xl">
+        <div className="bg-gradient-to-b from-indigo-900/20 to-transparent border border-slate-200 rounded-2xl p-6 flex flex-col shadow-2xl">
           <h3 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-6">
             Accesos rapidos
           </h3>
@@ -167,7 +167,7 @@ export const DashboardDeveloper = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-slate-900/50 rounded-xl border border-white/5 flex flex-col justify-between">
+            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-100 flex flex-col justify-between">
               <p className="text-xs text-white/70 italic mb-4">
                 "Predictive pattern analysis for student dropout - Model V2.4"
               </p>
@@ -175,16 +175,16 @@ export const DashboardDeveloper = () => {
                 Run Simulation
               </button>
             </div>
-            <div className="p-4 bg-slate-900/50 rounded-xl border border-white/5 flex flex-col justify-between">
+            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-100 flex flex-col justify-between">
               <p className="text-xs text-white/70 italic mb-4">
                 "Automated scheduling for 1,200 students with 40 teacher
                 constraints"
               </p>
-              <button className="w-full py-2 bg-slate-800 text-[10px] font-black uppercase rounded-2xl border border-white/10">
+              <button className="w-full py-2 bg-slate-800 text-[10px] font-black uppercase rounded-2xl border border-slate-200">
                 Compute Matrix
               </button>
             </div>
-            <div className="p-4 bg-slate-900/50 rounded-xl border border-white/10 border-dashed flex items-center justify-center opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
+            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-200 border-dashed flex items-center justify-center opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
               <span className="material-symbols-outlined text-3xl mb-1">
                 add_circle
               </span>

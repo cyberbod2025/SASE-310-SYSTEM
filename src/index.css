@@ -15,9 +15,9 @@
   --sase-success: #16a34a;
   --sase-surface: rgba(255, 255, 255, 0.8);
   --sase-border: rgba(0, 0, 0, 0.05);
-  --sase-text-head: #0f172a;
-  --sase-text-main: #334155;
-  --sase-text-muted: #64748b;
+  --sase-text-head: #020617; /* Slate 950 */
+  --sase-text-main: #0f172a; /* Slate 900 */
+  --sase-text-muted: #334155; /* Slate 700 */
 
   /* 🟣 Identidad Lavanda (Extensión) */
   --sase-lavanda: #B799FF;
@@ -39,7 +39,7 @@
 
   html,
   body {
-    @apply bg-slate-50 text-slate-800 antialiased;
+    @apply bg-slate-50 text-slate-900 antialiased;
     margin: 0;
     padding: 0;
     height: 100%;
@@ -51,7 +51,7 @@
   }
 
   body {
-    @apply text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900;
+    @apply text-slate-900 font-sans antialiased selection:bg-blue-100 selection:text-blue-900;
     margin: 0;
     overflow-x: hidden;
     min-height: 100vh;
@@ -126,7 +126,7 @@
   h4,
   h5,
   h6 {
-    @apply text-slate-900 font-bold tracking-tight uppercase;
+    @apply text-slate-950 font-bold tracking-tight uppercase;
   }
 
   input,

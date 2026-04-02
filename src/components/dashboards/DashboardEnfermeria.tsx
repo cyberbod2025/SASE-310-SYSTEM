@@ -126,17 +126,17 @@ export const DashboardEnfermeria = () => {
                 UNIDAD 01 // AREA DE ENFERMERIA
               </span>
               <span className="size-1 bg-slate-700 rounded-full"></span>
-              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
+              <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em]">
                 VERSION 4.2.0
               </span>
             </div>
-            <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
+            <h1 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase italic leading-none">
               ESTACION{" "}
               <span className="text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
                 MEDICA
               </span>
             </h1>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
+            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
               <span className="material-symbols-outlined text-[14px]">
                 shield_health
               </span>
@@ -146,7 +146,7 @@ export const DashboardEnfermeria = () => {
         </div>
 
         <div className="flex items-center gap-6 relative z-10">
-          <div className="text-right border-r border-white/5 pr-6">
+          <div className="text-right border-r border-slate-100 pr-6">
             <p className="text-lg font-black text-white uppercase tracking-tighter italic tabular-nums">
               {new Date().toLocaleTimeString("es-MX", { hour12: false })}
             </p>
@@ -202,7 +202,7 @@ export const DashboardEnfermeria = () => {
 
           {/* CLINICAL DATA TERMINAL */}
           <div className="card-sase border-emerald-500/10 overflow-hidden flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
-            <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between relative">
+            <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between relative">
               <div className="flex items-center gap-5">
                 <div className="size-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
                   <span className="material-symbols-outlined text-2xl font-black">
@@ -214,7 +214,7 @@ export const DashboardEnfermeria = () => {
                     FLUJO DE DATOS:{" "}
                     <span className="text-emerald-500">REGISTROS CLINICOS</span>
                   </h3>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">
+                  <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-1">
                     FLUJO CONTINUO DE REGISTROS DE ATENCIÓN
                   </p>
                 </div>
@@ -225,7 +225,7 @@ export const DashboardEnfermeria = () => {
                   </div>
                 <button
                   onClick={() => setCurrentModule(AppModule.REPORTES)}
-                  className="px-5 py-2.5 bg-white/[0.03] border border-white/10 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30 transition-all active:scale-95 shadow-xl"
+                  className="px-5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30 transition-all active:scale-95 shadow-xl"
                 >
                   EXPEDIENTE MAESTRO
                 </button>
@@ -235,7 +235,7 @@ export const DashboardEnfermeria = () => {
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-white/[0.02] text-slate-500 text-[9px] uppercase font-black border-b border-white/5">
+                  <tr className="bg-white/[0.02] text-slate-700 text-[9px] uppercase font-black border-b border-slate-100">
                     <th className="px-8 py-5 tracking-[0.2em] italic">
                       HORA
                     </th>
@@ -291,7 +291,7 @@ export const DashboardEnfermeria = () => {
                               <span className="font-black text-white text-sm italic uppercase tracking-tighter group-hover/row:text-emerald-400 transition-all duration-300">
                                 {visit.studentName}
                               </span>
-                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1.5 flex items-center gap-2">
+                              <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-1.5 flex items-center gap-2">
                                 <span className="size-1 bg-emerald-500/30 rounded-full"></span>
                                 SIG:{" "}
                                 {visit.studentId.substring(0, 8).toUpperCase()}
@@ -299,7 +299,7 @@ export const DashboardEnfermeria = () => {
                             </div>
                           </td>
                           <td className="px-8 py-6 text-center">
-                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-2xl text-[9px] font-black text-slate-400 uppercase group-hover/row:border-emerald-500/30 transition-colors tracking-widest">
+                            <span className="px-3 py-1 bg-[#0a0f18] border border-slate-200 rounded-2xl text-[9px] font-black text-slate-600 uppercase group-hover/row:border-emerald-500/30 transition-colors tracking-widest">
                               {visit.group}
                             </span>
                           </td>
@@ -312,7 +312,7 @@ export const DashboardEnfermeria = () => {
                             </div>
                           </td>
                           <td className="px-8 py-6 text-right">
-                            <button className="size-10 rounded-2xl bg-white/[0.03] border border-white/10 text-slate-500 flex items-center justify-center hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-90 shadow-2xl">
+                            <button className="size-10 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-90 shadow-2xl">
                               <span className="material-symbols-outlined text-[20px]">
                                 arrow_right_alt
                               </span>
@@ -354,7 +354,7 @@ export const DashboardEnfermeria = () => {
               </div>
             </div>
 
-            <p className="text-[11px] font-medium text-slate-400 leading-relaxed mb-8 uppercase tracking-tight">
+            <p className="text-[11px] font-medium text-slate-600 leading-relaxed mb-8 uppercase tracking-tight">
               SISTEMA DETECTÓ{" "}
               <span className="text-white font-black">
                 {activeAlertsCount} CASOS
@@ -379,7 +379,7 @@ export const DashboardEnfermeria = () => {
               </button>
               <button
                 onClick={() => setQuickRegisterOpen(true)}
-                className="w-full py-4 bg-white/[0.03] border border-white/10 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl hover:bg-white/[0.08] transition-all hover:border-white/20 active:scale-95"
+                className="w-full py-4 bg-slate-100 border border-slate-200 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl hover:bg-white/[0.08] transition-all hover:border-white/20 active:scale-95"
               >
                 REGISTRAR TRIAGE
               </button>
@@ -388,7 +388,7 @@ export const DashboardEnfermeria = () => {
 
           {/* INVENTORY TRACKER */}
           <div className="card-sase p-8 border-emerald-500/10 flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
-            <div className="flex items-center justify-between mb-10 pb-5 border-b border-white/5">
+            <div className="flex items-center justify-between mb-10 pb-5 border-b border-slate-100">
               <div className="flex items-center gap-4">
                 <div className="size-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-500">
                   <span className="material-symbols-outlined text-xl">
@@ -399,7 +399,7 @@ export const DashboardEnfermeria = () => {
                   <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] italic">
                   CADENA DE SUMINISTRO
                   </h3>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                  <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-0.5">
                     CONTROL DE STOCK CLÍNICO
                   </p>
                 </div>
@@ -414,7 +414,7 @@ export const DashboardEnfermeria = () => {
               onUpdate={updateSuministroStock}
             />
 
-            <div className="mt-10 pt-8 border-t border-white/5">
+            <div className="mt-10 pt-8 border-t border-slate-100">
               <button
                 onClick={() =>
                   toast("Solicitud de reabastecimiento enviada", { icon: "📦" })
@@ -485,7 +485,7 @@ const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => {
           >
             {icon}
           </span>
-          <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
+          <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] italic">
             {label}
           </span>
         </div>
@@ -520,7 +520,7 @@ const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => {
       </div>
 
       {/* Decorative corner accent */}
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
     </div>
   );
 };
@@ -538,7 +538,7 @@ const HealthMetricCard = ({ label, value, trend, color, icon }: any) => {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="card-sase p-6 border-white/5 bg-[#0a0f18]/30 flex items-center justify-between group hover:border-white/10 hover:bg-white/[0.03] transition-all cursor-default relative overflow-hidden"
+      className="card-sase p-6 border-slate-100 bg-[#0a0f18]/30 flex items-center justify-between group hover:border-slate-200 hover:bg-slate-100 transition-all cursor-default relative overflow-hidden"
     >
       {/* Scanning Line */}
       <motion.div
@@ -556,7 +556,7 @@ const HealthMetricCard = ({ label, value, trend, color, icon }: any) => {
           </span>
         </div>
         <div>
-          <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
+          <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] italic mb-1 opacity-80 group-hover:opacity-100 transition-opacity">
             {label}
           </p>
           <p className="text-4xl font-black text-white tabular-nums italic tracking-tighter drop-shadow-xl shadow-black/5 scale-95 group-hover:scale-100 transition-transform duration-500 origin-left">
@@ -565,13 +565,13 @@ const HealthMetricCard = ({ label, value, trend, color, icon }: any) => {
         </div>
       </div>
       <div className="text-right relative z-10">
-        <div className="text-[9px] font-black px-2 py-0.5 rounded-2xl border bg-black/40 border-white/10 text-slate-400 group-hover:text-white transition-colors tabular-nums drop-shadow-sm">
+        <div className="text-[9px] font-black px-2 py-0.5 rounded-2xl border bg-black/40 border-slate-200 text-slate-600 group-hover:text-white transition-colors tabular-nums drop-shadow-sm">
           {trend}
         </div>
       </div>
 
       {/* Decorative corner accent */}
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
     </motion.div>
   );
 };
@@ -602,17 +602,17 @@ const InventoryList = ({
             <div key={item.id} className="group/item">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-black text-slate-400 group-hover/item:text-white transition-colors uppercase tracking-widest italic">
+                  <span className="text-[11px] font-black text-slate-600 group-hover/item:text-white transition-colors uppercase tracking-widest italic">
                     {item.nombre}
                   </span>
                   <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-0.5">
                     REF_{item.id.substring(0, 6)}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 bg-[#0a0f18] border border-white/10 rounded-xl p-1.5 shadow-xl group-hover/item:border-emerald-500/30 transition-all">
+                <div className="flex items-center gap-3 bg-[#0a0f18] border border-slate-200 rounded-xl p-1.5 shadow-xl group-hover/item:border-emerald-500/30 transition-all">
                   <button
                     onClick={() => onUpdate(item.id, -1)}
-                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-2xl text-slate-500 hover:text-white transition-all active:scale-90"
+                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-2xl text-slate-700 hover:text-white transition-all active:scale-90"
                   >
                     <span className="material-symbols-outlined text-sm">
                       remove
@@ -629,7 +629,7 @@ const InventoryList = ({
                   </span>
                   <button
                     onClick={() => onUpdate(item.id, 1)}
-                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-2xl text-slate-500 hover:text-white transition-all active:scale-90"
+                    className="size-7 flex items-center justify-center hover:bg-white/5 rounded-2xl text-slate-700 hover:text-white transition-all active:scale-90"
                   >
                     <span className="material-symbols-outlined text-sm">
                       add
@@ -637,7 +637,7 @@ const InventoryList = ({
                   </button>
                 </div>
               </div>
-              <div className="w-full bg-[#0a0f18] rounded-full h-1.5 p-[2px] border border-white/5 relative overflow-hidden">
+              <div className="w-full bg-[#0a0f18] rounded-full h-1.5 p-[2px] border border-slate-100 relative overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(100, percentage)}%` }}
