@@ -6,7 +6,7 @@ Este documento es el registro oficial de salud técnica de **SASE-310**. Se actu
 
 | Dimensión | Estado | Última Verificación | Nota |
 | :--- | :--- | :--- | :--- |
-| **Seguridad DB (RLS)** | ✅ CUMPLIMIENTO TOTAL | 2026-04-01 | 11/11 vulnerabilidades resueltas. |
+| **Seguridad DB (RLS)** | ✅ CUMPLIMIENTO TOTAL | 2026-04-01 | Auditoría CI corregida (DB Start). |
 | **Integridad Build** | ✅ ESTABLE | 2026-04-01 | Build exitoso en 9.42s con Vite. |
 | **Vercel Sync** | ✅ DESPLEGADO | 2026-04-01 | Producción alineada con `main`. |
 | **Dependencias** | ✅ ACTUALIZADAS | 2026-04-01 | package.json restaurado y sano. |
