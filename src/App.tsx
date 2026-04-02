@@ -11,7 +11,7 @@ import { AppShell } from "./components/AppShell";
 import LaboratorioUI from "./pages/LaboratorioUI";
 
 const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
-const SASEIntroAnimation = React.lazy(() => import("./components/SASEIntroAnimation").then(m => ({ default: m.SASEIntroAnimation })));
+const IntroPlayer = React.lazy(() => import("./components/IntroPlayer").then(m => ({ default: m.IntroPlayer })));
 const FirstLogonSetup = React.lazy(() => import("./components/FirstLogonSetup").then(m => ({ default: m.FirstLogonSetup })));
 const RegistroPersonal = React.lazy(() => import("./components/RegistroPersonal").then(m => ({ default: m.RegistroPersonal })));
 
@@ -68,7 +68,7 @@ const App: React.FC = () => {
 
   if (showIntro) {
     return (
-      <SASEIntroAnimation
+      <IntroPlayer
         onComplete={() => {
           setShowIntro(false);
         }}
