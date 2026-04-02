@@ -1,5 +1,5 @@
--- Create a table for public profiles
-create table public.profiles (
+-- Create a table for public profiles (Sync with Core Schema)
+create table if not exists public.profiles (
   id uuid not null references auth.users on delete cascade,
   role text not null check (role in ('directivo', 'docente', 'docente_tutor', 'prefectura', 'orientacion', 'trabajo_social', 'enfermeria', 'secretaria')),
   nombre text,
