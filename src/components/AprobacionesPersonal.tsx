@@ -63,9 +63,18 @@ export const AprobacionesPersonal: React.FC = () => {
         directivo: "DIR",
       }[rol] || "PER";
 
-    // Using simple random suffix for now, can be replaced with
-    // sequence from DB if exact incremental order is required
-    const randomSuffix = crypto.getRandomValues(new Uint16Array(1))[0] % 900 + 100;
+    // Generar un sufijo aleatorio uniforme [100, 999] para evitar sesgos criptográficos (Audit CodeQL)
+    const getUniformSuffix = () => {
+      const range = 900; // 999 - 100 + 1
+      const maxSafeValue = 65536 - (65536 % range);
+      let val;
+      do {
+        val = crypto.getRandomValues(new Uint16Array(1))[0];
+      } while (val >= maxSafeValue);
+      return (val % range) + 100;
+    };
+
+    const randomSuffix = getUniformSuffix();
     return `SASE-${year}-${rolePrefix}-${randomSuffix}`;
   };
 
