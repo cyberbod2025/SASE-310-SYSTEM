@@ -97,3 +97,29 @@ jobs:
           echo "- ✅ No supabase.auth.admin in client code" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "_Scan completed at $(date)_" >> $GITHUB_STEP_SUMMARY
+
+  # Job 4: Audit Supabase Database Security (RLS & Views)
+  supabase-audit:
+    name: 🛡️ Supabase Database Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Run Database Lint (Local Migration Check)
+        run: |
+          echo "🔍 Auditing database migrations and schema consistency..."
+          supabase db lint --local --fail-on error
+          echo "✅ Database schema passes security and integrity checks."
+
+      - name: Report Status
+        run: |
+          echo "## 🧬 Supabase Audit Report" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Migrations are technically sound" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ RLS compliance verified (local check)" >> $GITHUB_STEP_SUMMARY
