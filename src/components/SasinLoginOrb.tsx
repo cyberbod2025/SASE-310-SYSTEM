@@ -78,8 +78,8 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
               <motion.div
                 animate={{ x: pupilX, y: blink ? 0 : pupilY, scaleY: blink ? 0.08 : 1 }}
                 transition={{ type: "spring", stiffness: 180, damping: 18 }}
-                className="absolute rounded-full bg-[#0b1222]"
-                style={{ width: "38%", height: "38%" }}
+                className="absolute rounded-full bg-white shadow-[0_0_12px_#fff,0_0_24px_#3b82f6] z-10"
+                style={{ width: "42%", height: "42%" }}
               />
               <div
                 className="absolute rounded-full bg-white opacity-80"

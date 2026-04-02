@@ -136,9 +136,10 @@ export const Login: React.FC<LoginProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/5 rounded-full blur-[100px] pointer-events-none"></div>
+    <div className="min-h-screen w-full bg-[#030712] flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-[2000ms]">
+      {/* Decorative localized light sources for contrast bridging */}
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -543,6 +544,18 @@ export const Login: React.FC<LoginProps> = ({
           </div>
         )}
       </AnimatePresence>
+
+      <div className="fixed bottom-10 left-10 flex items-center gap-4 group cursor-pointer" onClick={() => setShowFeedback(true)}>
+        <div className="size-10 border border-white/10 rounded-2xl flex items-center justify-center bg-white/5 hover:bg-blue-600/20 group-hover:border-blue-500/40 transition-all shadow-xl">
+          <span className="material-icons text-white/30 group-hover:text-blue-400 transition-colors">feedback</span>
+        </div>
+        <div className="text-left opacity-0 group-hover:opacity-100 transition-all transform -translate-x-2 group-hover:translate-x-0">
+          <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest">
+            Buzón de Mejora
+          </p>
+          <p className="text-[10px] font-mono text-white/40">Sugerencias o Errores</p>
+        </div>
+      </div>
 
       <div className="fixed bottom-10 right-10 flex items-center gap-4 opacity-10 select-none">
         <div className="text-right">
