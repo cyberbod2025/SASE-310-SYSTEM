@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import DOMPurify from "dompurify";
 import { UserRole, RoleLabels } from "../../types";
 import { useAuth } from "../AuthProvider";
+import { supabase } from "../../supabase/client";
 
 const QRCodeSVG = ({ url }: { url: string }) => {
   return (
@@ -43,22 +44,20 @@ export const InvitationGenerator: React.FC = () => {
 
     setIsInviting(true);
     try {
-      const response = await fetch("/api/auth/invite-staff", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          email,
+      const { data, error } = await supabase.functions.invoke("invite-staff", {
+        body: {
+          email: DOMPurify.sanitize(email),
           role: selectedRole,
-          fullName: customName.trim() || undefined,
-        }),
+          fullName: DOMPurify.sanitize(customName.trim() || undefined),
+        },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData?.error || "No se pudo enviar la invitación");
+      if (error) {
+        throw new Error(error.message || "No se pudo enviar la invitación");
+      }
+
+      if (data?.error) {
+        throw new Error(data.error || "No se pudo enviar la invitación");
       }
 
       toast.success("Invitación enviada al correo institucional");
@@ -401,7 +400,7 @@ export const InvitationGenerator: React.FC = () => {
       </html>
     `;
 
-    printWindow.document.write(content);
+    printWindow.document.write(DOMPurify.sanitize(content));
     printWindow.document.close();
   };
 
@@ -489,7 +488,7 @@ export const InvitationGenerator: React.FC = () => {
         <button
           onClick={handleInvite}
           disabled={isInviting}
-          className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-black/5 shadow-emerald-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98] disabled:opacity-60"
+          className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-emerald-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98] disabled:opacity-60"
           title="Enviar invitación segura por correo institucional"
         >
           <span className="material-symbols-outlined text-[20px]">mark_email_read</span>
@@ -497,7 +496,7 @@ export const InvitationGenerator: React.FC = () => {
         </button>
         <button
           onClick={handlePrint}
-          className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-black/5 shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
+          className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
           title="Generar e imprimir carta de credenciales oficial"
         >
           <span className="material-symbols-outlined text-[20px]">print</span>
