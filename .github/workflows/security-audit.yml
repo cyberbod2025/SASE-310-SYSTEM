@@ -115,14 +115,24 @@ jobs:
       - name: Start Supabase (Local Environment)
         run: |
           echo "🚀 Starting local database for audit..."
-          # Usamos --hidden para evitar ruido, pero garantizamos que el motor esté listo
+          # Arrancamos con un timeout de seguridad y silenciamos descargas de Docker
           supabase db start --debug 2>&1 | grep -v "Downloading" || true
+          
+          # ⏳ Espera táctica de 15 segundos para estabilización de red Docker
+          echo "⏳ Waiting for database services to stabilize..."
+          sleep 15
 
       - name: Run Database Lint (Local Migration Check)
         run: |
           echo "🔍 Auditing database migrations and schema consistency..."
-          # Ahora sí podemos lintar porque el motor está activo
-          supabase db lint --local --fail-on warning
+          # Intentamos conectar hasta 3 veces si falla la inicial
+          for i in {1..3}; do
+            supabase db lint --local --fail-on warning && break || {
+              if [ $i -eq 3 ]; then exit 1; fi
+              echo "🔄 Retry $i: Database not ready, waiting..."
+              sleep 10
+            }
+          done
           echo "✅ Database schema passes all security and integrity standards."
 
       - name: Report Status
