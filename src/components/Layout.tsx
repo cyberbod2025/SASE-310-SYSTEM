@@ -10,7 +10,7 @@ import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
 import { SaseSplineOrb } from "./SaseSplineOrb";
-import AIOrbAssistant from "./ai/AIOrbAssistant";
+import { SasitoAssistant } from "./ai/SasitoAssistant";
 import { LiquidGlassFilters } from "./ui/LiquidGlassFilters";
 import { QuickRegister } from "./ui/QuickRegister";
 import { motion, AnimatePresence } from "framer-motion";
@@ -187,9 +187,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       >
         <div className="flex flex-col h-full relative overflow-hidden">
           {/* Internal Glow - Subtle Institutional Effect */}
-          <div className="absolute top-[-5%] left-[-10%] w-[120%] h-[30%] bg-blue-500/5 blur-[100px] pointer-events-none animate-pulse-slow"></div>
-          <div className="absolute bottom-[20%] right-[-20%] w-[100%] h-[30%] bg-slate-200/20 blur-[120px] pointer-events-none"></div>
-          <div className="absolute top-[40%] left-[-10%] w-[50%] h-[20%] bg-blue-400/5 blur-[80px] pointer-events-none animate-pulse"></div>
+          <div className="absolute top-[-5%] left-[-10%] w-[120%] h-[30%] bg-blue-500/5 blur-[100px] pointer-events-none animate-pulse-slow -z-10"></div>
+          <div className="absolute bottom-[20%] right-[-20%] w-[100%] h-[30%] bg-slate-200/20 blur-[120px] pointer-events-none -z-10"></div>
+          <div className="absolute top-[40%] left-[-10%] w-[50%] h-[20%] bg-blue-400/5 blur-[80px] pointer-events-none animate-pulse -z-10"></div>
 
           <div
             id="sidebar-logo"
@@ -514,11 +514,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             >
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                title={
-                  unreadCount > 0
-                    ? `Tienes ${unreadCount} notificaciones pendientes`
-                    : "Ver notificaciones"
-                }
+                title="Ver notificaciones"
                 aria-label="Alternar panel de notificaciones"
                 className={`size-10 flex items-center justify-center rounded-xl border transition-all ${
                   unreadCount > 0
@@ -611,7 +607,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -50, opacity: 0 }}
-                className="absolute top-0 left-0 w-full bg-blue-600/20 border-b border-blue-500/30 backdrop-blur-xl z-30 px-6 py-4 flex items-center justify-center gap-6 shadow-2xl"
+                className="absolute top-0 left-0 w-full bg-blue-600/20 border-b border-blue-500/30 backdrop-blur-xl z-20 px-6 py-4 flex items-center justify-center gap-6 shadow-2xl"
               >
                 <div className="flex items-center gap-3">
                    <span className="material-icons text-blue-400 text-xl">info</span>
@@ -628,7 +624,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           {/* Disclaimer Sasito Zero UI en Fase 1 */}
           {isPhase1 && (
-             <div className="fixed bottom-28 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-[#131B2C]/80 backdrop-blur-md border border-white/10 z-20 shadow-2xl animate-fade-in">
+             <div className="fixed bottom-28 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-[#131B2C]/80 backdrop-blur-md border border-white/10 z-20 shadow-2xl animate-fade-in pointer-events-none select-none">
                 <p className="text-xs text-slate-300 text-center flex items-center gap-2">
                   <span className="size-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_#3b82f6]"></span>
                   Sasito es un asistente de detección, <strong className="text-white">nunca sustituye tu criterio humano</strong>.
@@ -642,14 +638,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </div>
 
           {/* Background Ambient Glow */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-600/[0.02] blur-[150px]"></div>
-            <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-indigo-600/[0.02] blur-[150px]"></div>
+          <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
+            <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-600/[0.02] blur-[150px] -z-10"></div>
+            <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-indigo-600/[0.02] blur-[150px] -z-10"></div>
           </div>
         </main>
 
         {/* Sasito IA: siempre presente en todas las pantallas */}
-        <AIOrbAssistant status={assistantStatus} hideFloating={false} />
+        <SasitoAssistant />
         <EncuestaPulso />
       </div>
 

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence, useSpring } from "motion/react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useSpring } from "framer-motion";
 import type { SystemState } from "../types/systemState";
 
 interface SaseSplineOrbProps {
@@ -8,30 +8,33 @@ interface SaseSplineOrbProps {
   isInteracting?: boolean;
 }
 
-/**
- * 🤖 SaseSplineOrb (v5.0 - Institutional Source Core)
- * RECOVERED FROM: sasito-ai-copilot/src/App.tsx
- * Pure CSS/Motion implementation of the official Sasito mascot.
- */
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  color: string;
+}
 
-const stateColors: Record<string, string> = {
-  normal: '#00ff00',      // Pure Neon Green (Calm)
-  warning: '#ffff00',     // Pure Neon Yellow (Attention)
-  alert: '#ff0000',       // Pure Neon Red (Alert)
-  thinking: '#ff8800',    // Pure Neon Gold/Orange (Processing)
-  rebooting: '#00ffff',   // Pure Neon Cyan
-};
-
-export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, isInteracting }) => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isZapping, setIsZapping] = useState(false);
+export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }) => {
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const particleIdRef = useRef(0);
   const sphereRef = useRef<HTMLDivElement>(null);
 
-  // Map institutional SystemState to SasitoState
-  const sasitoState = state === 'thinking' ? 'processing' : state;
-  const color = stateColors[state] || stateColors.normal;
+  // Map institutional states to official copilot colors
+  const getStateColor = (s: string) => {
+    switch (s) {
+      case 'normal': return '#00ff00';    // Pure Neon Green
+      case 'warning': return '#ffff00';   // Pure Neon Yellow
+      case 'alert': return '#ff0000';     // Pure Neon Red
+      case 'thinking': return '#ff8800';  // Pure Neon Gold/Orange
+      case 'rebooting': return '#00ffff'; // Pure Neon Cyan
+      default: return '#00ff00';
+    }
+  };
 
-  // Eye tracking values (Standardized stiffness/damping from source)
+  const color = getStateColor(state);
+
+  // Eye tracking values (Exact match from source)
   const eyeX = useSpring(0, { stiffness: 250, damping: 20 });
   const eyeY = useSpring(0, { stiffness: 250, damping: 20 });
 
@@ -54,6 +57,19 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
         
         eyeX.set(moveX);
         eyeY.set(moveY);
+
+        // --- NEW: Sasito Particle Sparks Generation ---
+        if (Math.random() > 0.85) {
+          const id = particleIdRef.current++;
+          const newParticle: Particle = { 
+            id, 
+            x: e.clientX, 
+            y: e.clientY, 
+            color: getStateColor(state) 
+          };
+          setParticles(prev => [...prev.slice(-15), newParticle]);
+          setTimeout(() => setParticles(prev => prev.filter(p => p.id !== id)), 1000);
+        }
       }
     };
 
@@ -61,58 +77,82 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [state, eyeX, eyeY]);
 
-  // Combined 3D Gradient (Replicated from source)
+  // Exact 3D Gradients from source - ENHANCED for higher fidelity
   const get3DGradient = (s: string) => {
-    const color = stateColors[s] || stateColors.normal;
-    if (s === 'thinking' || s === 'processing') {
-      return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 10%, transparent 40%),
+    const c = getStateColor(s);
+    if (s === 'thinking') {
+      return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.5) 15%, transparent 45%),
               repeating-conic-gradient(from 0deg at 50% 50%, #ff0000 0deg, #ff8800 10deg, #ffff00 20deg, #00ff00 30deg, #00ffff 40deg, #0000ff 50deg, #ff00ff 60deg, #ff0000 70deg),
-              radial-gradient(circle at 70% 70%, rgba(0,0,0,0.8) 0%, transparent 100%),
-              ${color}33`;
+              radial-gradient(circle at 70% 70%, rgba(0,0,0,0.9) 0%, transparent 100%),
+              ${c}44`;
     }
-    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 10%, transparent 40%),
-            radial-gradient(circle at 50% 50%, ${color} 0%, ${color}CC 40%, transparent 85%),
-            radial-gradient(circle at 70% 70%, rgba(0,0,0,0.8) 0%, transparent 100%),
-            linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.2) 100%),
-            ${color}33`;
+    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 15%, transparent 45%),
+            radial-gradient(circle at 50% 50%, ${c} 0%, ${c}EE 30%, rgba(0,0,0,0.5) 85%, transparent 100%),
+            radial-gradient(circle at 75% 75%, rgba(0,0,0,0.9) 0%, transparent 100%),
+            linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 40%, rgba(0,0,0,0.6) 100%),
+            ${c}15`;
   };
 
   return (
-    <div className={`relative flex items-center justify-center pointer-events-none select-none ${className || "w-64 h-64"}`}>
-      {/* SVG Filters for Fractal Effects */}
+    <>
+      <AnimatePresence>
+        {particles.map((p) => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 1, 0], scale: [0, 1, 0], y: p.y + 20 }}
+            style={{
+              position: 'fixed', left: p.x, top: p.y, width: '2px', height: '2px',
+              backgroundColor: 'white', borderRadius: '50%', pointerEvents: 'none', zIndex: 9999,
+              boxShadow: `0 0 10px ${p.color}`,
+            }}
+          />
+        ))}
+      </AnimatePresence>
+
+      <div className={`relative flex items-center justify-center pointer-events-none ${className || "w-[180px] h-[180px]"}`}>
       <svg className="hidden">
         <filter id="fractalNoise">
-          <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" result="noise" />
-          <feColorMatrix type="saturate" values="2" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
+          <feColorMatrix type="saturate" values="1.5" />
+          <feComposite operator="in" in2="SourceGraphic" />
+        </filter>
+        <filter id="subtleNoise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" result="noise" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0" />
           <feComposite operator="in" in2="SourceGraphic" />
         </filter>
       </svg>
 
-      {/* Main Container */}
       <motion.div
         ref={sphereRef}
         animate={{
-          y: [0, -15, 0],
+          y: [0, -12, 0],
           rotate: state === 'thinking' ? 360 : 0,
-          scale: state === 'warning' ? 1.1 : (state === 'thinking' ? 1.05 : 1),
-          boxShadow: [
-            `0 0 40px ${color}55`,
-            `0 0 80px ${color}33`,
-            `0 0 40px ${color}55`
-          ]
+          filter: state === 'thinking' 
+            ? ['saturate(1.8) hue-rotate(0deg) contrast(1.3)', 'saturate(1.8) hue-rotate(360deg) contrast(1.3)'] 
+            : 'saturate(1.4) hue-rotate(0deg) contrast(1.1)',
+          scale: state === 'warning' ? 1.08 : (state === 'thinking' ? 1.04 : 1),
+          background: get3DGradient(state),
+          boxShadow: `inset -25px -25px 50px rgba(0,0,0,0.8), 
+                      inset 25px 25px 50px rgba(255,255,255,0.25),
+                      0 0 100px ${state === 'thinking' ? 'rgba(255,255,255,0.4)' : color + '66'},
+                      0 0 30px ${state === 'thinking' ? 'rgba(255,255,255,0.6)' : color + '88'}`,
         }}
         transition={{
-          y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
-          rotate: { duration: state === 'thinking' ? 10 : 0, repeat: Infinity, ease: "linear" },
-          duration: 3, repeat: Infinity
+          y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+          rotate: { duration: state === 'thinking' ? 12 : 0, repeat: Infinity, ease: "linear" },
+          filter: { duration: state === 'thinking' ? 6 : 0, repeat: Infinity, ease: "linear" },
+          scale: { duration: 0.4 },
+          background: { duration: 1 },
+          boxShadow: { duration: 1 }
         }}
-        className="relative w-full h-full rounded-full flex items-center justify-center overflow-hidden backdrop-blur-md z-10 ring-1 ring-white/20"
+        className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden backdrop-blur-xl z-10 ring-2 ring-white/10"
         style={{
-          background: get3DGradient(state),
-          filter: state === 'thinking' ? 'url(#fractalNoise)' : 'none'
+          filter: state === 'thinking' ? 'url(#fractalNoise)' : 'url(#subtleNoise)'
         }}
       >
-        {/* Internal Circuits (Subtle) */}
+        {/* Internal Circuits (Verbatim) */}
         <div className="absolute inset-0 opacity-20">
           <svg width="100%" height="100%" viewBox="0 0 100 100">
             <motion.path
@@ -123,10 +163,19 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
               animate={{ opacity: [0.1, 0.5, 0.1], pathLength: [0, 1, 0] }}
               transition={{ duration: 3, repeat: Infinity }}
             />
+            <motion.circle
+              cx="50" cy="50" r="45"
+              stroke="white"
+              strokeWidth="0.2"
+              fill="none"
+              strokeDasharray="5,5"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            />
           </svg>
         </div>
 
-        {/* Energy Sparks (Processing & Alert) */}
+        {/* Energy Sparks (Verbatim) */}
         {(state === 'thinking' || state === 'alert') && (
           <div className="absolute inset-0 z-20">
             {[...Array(6)].map((_, i) => (
@@ -145,60 +194,60 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
                   repeatDelay: Math.random() * 0.3,
                   delay: i * 0.05
                 }}
-                className="absolute top-1/2 left-1/2 w-24 h-[1px] bg-white shadow-[0_0_12px_white,0_0_6px_cyan]"
+                className="absolute top-1/2 left-1/2 w-24 h-[2px] bg-white shadow-[0_0_20px_white,0_0_10px_cyan]"
               />
             ))}
           </div>
         )}
 
-        {/* OFFICIAL EYES (CSS Bars from Source) */}
+        {/* EYES (Verbatim Constants from sasito-ai-copilot) */}
         <motion.div 
           style={{ x: eyeX, y: eyeY }}
-          className="flex gap-8 -mt-6"
+          className="flex gap-8 -mt-10"
         >
           {[0, 1].map((i) => (
             <div key={i} className="relative">
               <motion.div
                 animate={{
                   height: state === 'rebooting' ? 2 : (state === 'warning' ? 48 : 36),
-                  scaleY: [1, 1, 0, 1, 1], // Natural blink
+                  scaleY: [1, 1, 0, 1, 1],
                 }}
                 transition={{
                   scaleY: { 
                     duration: state === 'warning' ? 1.2 : 4,
                     repeat: Infinity, 
-                    times: [0, 0.85, 0.88, 0.91, 1], 
+                    times: [0, 0.85, 0.88, 0.91, 1],
                     delay: i * 0.1 
                   },
                   height: { duration: 0.3 }
                 }}
-                className="w-5 bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,1),0_0_40px_rgba(255,255,255,0.4)]"
+                className="w-6 bg-white rounded-full shadow-[0_0_30px_rgba(255,255,255,1),0_0_60px_rgba(255,255,255,0.5)]"
               />
             </div>
           ))}
         </motion.div>
 
-        {/* Surface Reflection */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-40" />
       </motion.div>
 
-      {/* Holographic Aura & Geometric Energy Field (Aura from Source) */}
+      {/* Aura (Verbatim Layers from Source) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         {[...Array(3)].map((_, i) => (
           <motion.div
             key={i}
             animate={{
-              scale: [1, 1.25 + i * 0.1, 1],
-              opacity: [0.1, 0.3 - i * 0.05, 0.1],
-              rotate: i % 2 === 0 ? 360 : -360
+              scale: [1, 1.2 + i * 0.1, 1],
+              opacity: [0.15, 0.4 - i * 0.05, 0.15],
+              rotate: i % 2 === 0 ? 360 : -360,
+              boxShadow: `0 0 60px ${state === 'thinking' ? 'rgba(255,255,255,0.5)' : color + '44'}`,
             }}
             transition={{
-              duration: 10 + i * 2,
+              duration: 8 + i * 2,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
             }}
-            className="absolute w-[140%] h-[140%] rounded-full border border-white/10 blur-md"
-            style={{ 
+            className="absolute w-[240px] h-[240px] rounded-full border border-white/20 blur-md"
+            style={{
               background: state === 'thinking' 
                 ? `conic-gradient(from ${i * 90}deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)`
                 : `radial-gradient(circle, ${color}22 0%, transparent 70%)`
@@ -206,11 +255,15 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
           />
         ))}
 
-        {/* Geometric Hexagon Grid */}
+        {/* Geometric Hexagon Grid (Verbatim) */}
         <motion.div
-          animate={{ rotate: 360, opacity: [0.05, 0.15, 0.05] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute w-[180%] h-[180%] opacity-10"
+          animate={{
+            rotate: 360,
+            scale: [0.9, 1.1, 0.9],
+            opacity: [0.1, 0.4, 0.1]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          className="absolute w-[280px] h-[280px] opacity-20"
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <path
@@ -220,9 +273,17 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
               strokeWidth="0.5"
               strokeDasharray="2,2"
             />
+            <path
+              d="M 50,5 L 50,95 M 10,25 L 90,75 M 90,25 L 10,75"
+              fill="none"
+              stroke="white"
+              strokeWidth="0.2"
+              opacity="0.5"
+            />
           </svg>
         </motion.div>
       </div>
     </div>
-  );
+  </>
+);
 };

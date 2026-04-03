@@ -7,7 +7,7 @@ import React from 'react';
  */
 export const LiquidGlassFilters = () => {
   return (
-    <svg style={{ width: 0, height: 0, position: 'absolute' }} aria-hidden="true" focusable="false">
+    <svg style={{ width: 0, height: 0, position: 'absolute', pointerEvents: 'none' }} aria-hidden="true" focusable="false">
       <defs>
         <filter id="liquid-glass-refraction" x="-20%" y="-20%" width="140%" height="140%">
           {/* 1. Desenfoque base para la textura esmerilada */}

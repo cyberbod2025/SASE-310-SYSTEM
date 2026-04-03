@@ -37,7 +37,7 @@ export const IntroPlayer: React.FC<IntroPlayerProps> = ({ onComplete }) => {
 
       <video
         ref={videoRef}
-        className="w-full h-full object-cover pointer-events-none"
+        className="w-full h-full object-contain pointer-events-none"
         onEnded={handleVideoEnd}
         autoPlay
         muted

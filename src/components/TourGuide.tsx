@@ -24,9 +24,9 @@ export const startProductTour = (
       popover: {
         title: `NÚCLEO SASE-310: Hola, ${userName} 👋`,
         description:
-          "<div style='margin-bottom: 20px; display: flex; justify-content: center;'><div style='width: 60px; height: 60px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.3);'><span class='material-icons' style='color: #60a5fa; font-size: 32px;'>smart_toy</span></div></div>" +
-          "Soy la <b>IA de SASE-310</b>. Mi núcleo de procesamiento está listo para optimizar tu gestión escolar.<br><br>" +
-          "He calibrado tu entorno de trabajo. Permíteme guiarte por los protocolos clave de tu operación institucional.",
+          "<div style='margin-bottom: 20px; display: flex; justify-content: center;'><div style='width: 60px; height: 60px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.3);'><span class='material-icons' style='color: #60a5fa; font-size: 32px;'>auto_awesome</span></div></div>" +
+          "Soy <b>Sasito</b>, tu Copiloto IA. Mi núcleo de procesamiento está listo para optimizar tu gestión escolar.<br><br>" +
+          "He calibrado tu entorno de trabajo según tu rango. Permíteme guiarte por los protocolos clave para asegurar una operación institucional impecable.",
         side: "center",
         align: "center",
       },
@@ -232,7 +232,7 @@ export const startProductTour = (
     popover: {
       title: "Protocolo de Inducción Finalizado 🌟",
       description:
-        "Has sido sincronizado satisfactoriamente con el núcleo SASE-310. Explora con confianza, estás respaldado por inteligencia institucional.<br><br><i>Tu éxito es la paz de nuestra escuela.</i>",
+        "Has sido sincronizado satisfactoriamente con el núcleo SASE-310. Ahora tienes el control total de tu sector.<br><br>Recuerda que estaré siempre en la esquina inferior derecha para asistirte en tiempo real.<br><br><i>Tu éxito es la paz de nuestra escuela. ¡Adelante!</i>",
       side: "center",
       align: "center",
     },

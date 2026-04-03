@@ -1,1 +1,1 @@
-export type SystemState = "normal" | "warning" | "alert" | "thinking";
+export type SystemState = "normal" | "warning" | "alert" | "thinking" | "rebooting";
