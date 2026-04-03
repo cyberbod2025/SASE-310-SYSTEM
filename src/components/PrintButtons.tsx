@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import DOMPurify from "dompurify";
 
 interface PrintButtonsProps {
@@ -117,15 +118,19 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
 
   return (
     <div className="flex items-center gap-2">
-      <button
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={handlePrint}
         className="p-1.5 text-text-secondary hover:text-text-main hover:bg-gray-100 rounded transition-colors flex items-center"
         title="Imprimir Reporte"
       >
         <span className="material-icons text-[18px]">print</span>
         {!compact && <span className="ml-1 text-xs font-medium">Imprimir</span>}
-      </button>
-      <button
+      </motion.button>
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={handleExportPDF}
         className="p-1.5 text-text-secondary hover:text-blue-700 hover:bg-blue-50 rounded transition-colors flex items-center"
         title="Exportar PDF"
@@ -134,7 +139,7 @@ export const PrintButtons: React.FC<PrintButtonsProps> = ({
           picture_as_pdf
         </span>
         {!compact && <span className="ml-1 text-xs font-medium">PDF</span>}
-      </button>
+      </motion.button>
     </div>
   );
 };

@@ -58,9 +58,6 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
     orbBase = "14, 165, 233"; // Azul cielo imponente (Sky 500)
   }
 
-  // Gradiente 3D procedural estilo metal de alta densidad
-  const orbGradient = `radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9) 0%, rgba(${orbBase}, 1) 40%, rgba(30,58,138, 0.9) 80%, rgba(2,6,23,0.95) 100%)`;
-  const orbGlow = `rgba(${orbBase}, 0.8)`;
   const plasmaColor = `rgba(${orbBase}, 0.8)`;
 
   return (
@@ -73,54 +70,40 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
         className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-500`}
         style={{ opacity: phase >= 1 && phase < 3 ? 1 : 0 }}
       >
-        <div className="absolute w-[90vw] h-[90vw] sm:w-[900px] sm:h-[900px] rounded-full border-[20px] border-[#0ea5e9]/20 blur-[10px] animate-[water-in_1.2s_ease-in_forwards]"></div>
-        <div className="absolute w-[70vw] h-[70vw] sm:w-[700px] sm:h-[700px] rounded-full border-[15px] border-[#3b82f6]/30 blur-[8px] animate-[water-in_1.2s_ease-in_0.2s_forwards]"></div>
-        <div className="absolute w-[50vw] h-[50vw] sm:w-[500px] sm:h-[500px] rounded-full border-[10px] border-[#2563eb]/40 blur-[5px] animate-[water-in_1.2s_ease-in_0.4s_forwards]"></div>
+        <div className="absolute w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full border-[2px] border-[#0ea5e9]/40 blur-[2px] animate-[water-in_1.2s_ease-in_forwards] bg-gradient-to-tr from-[#0ea5e9]/0 via-[#0ea5e9]/20 to-[#0ea5e9]/0"></div>
+        <div className="absolute w-[60vw] h-[60vw] max-w-[450px] max-h-[450px] rounded-full border-[2px] border-[#3b82f6]/50 blur-[2px] animate-[water-in_1.2s_ease-in_0.2s_forwards] bg-gradient-to-tr from-[#3b82f6]/0 via-[#3b82f6]/25 to-[#3b82f6]/0"></div>
+        <div className="absolute w-[40vw] h-[40vw] max-w-[300px] max-h-[300px] rounded-full border-[2px] border-[#2563eb]/60 blur-[1px] animate-[water-in_1.2s_ease-in_0.4s_forwards] bg-gradient-to-tr from-[#2563eb]/0 via-[#2563eb]/30 to-[#2563eb]/0"></div>
       </div>
 
       <div
-        className={`relative z-10 flex flex-col items-center justify-center w-full h-full pointer-events-none transition-transform duration-1000`}
+        className={`relative z-10 flex flex-col items-center justify-center w-full h-full max-h-screen pointer-events-none transition-transform duration-1000 overflow-hidden`}
       >
         <div
-          className={`relative flex items-center justify-center transition-transform duration-1000 ${phase >= 7 ? "-translate-y-[15vh]" : ""} ${phase === 6 ? "animate-[shake_0.6s_ease-in-out]" : ""}`}
+          className={`relative flex items-center justify-center transition-transform duration-1000 ${phase >= 7 ? "-translate-y-[10vh]" : ""} ${phase === 6 ? "animate-[shake_0.6s_ease-in-out]" : ""}`}
         >
           <div
-            className={`relative flex items-center justify-center w-72 h-72 sm:w-[350px] sm:h-[350px] transition-all duration-[2000ms] ease-out ${phase >= 2 ? "opacity-100 scale-100" : "opacity-0 scale-0"} animate-[float_4s_ease-in-out_infinite]`}
+            className={`relative flex items-center justify-center w-64 h-64 sm:w-[320px] sm:h-[320px] transition-all duration-[2000ms] ease-out ${phase >= 2 ? "opacity-100 scale-100" : "opacity-0 scale-0"} animate-[float_4s_ease-in-out_infinite]`}
           >
             {/* Halos de Luz */}
             <div
-              className={`absolute inset-[-60px] rounded-full bg-blue-600/10 blur-3xl transition-all duration-[1500ms] ${phase >= 6 ? "opacity-100 scale-125" : "opacity-0 scale-90"}`}
+              className={`absolute inset-[-40px] rounded-full bg-blue-600/10 blur-3xl transition-all duration-[1500ms] ${phase >= 6 ? "opacity-100 scale-125" : "opacity-0 scale-90"}`}
             ></div>
             <div
-              className={`absolute inset-[-30px] rounded-full bg-indigo-500/20 blur-2xl transition-all duration-[1500ms] delay-100 ${phase >= 6 ? "opacity-100 scale-110" : "opacity-0 scale-90"}`}
+              className={`absolute inset-[-20px] rounded-full bg-indigo-500/20 blur-2xl transition-all duration-[1500ms] delay-100 ${phase >= 6 ? "opacity-100 scale-110" : "opacity-0 scale-90"}`}
             ></div>
 
             {/* Plasma rotando fino */}
             <div
-              className="absolute inset-[-15px] rounded-full border-[4px] border-transparent border-t-[4px] transition-colors duration-[800ms] animate-[spin_3s_linear_infinite]"
+              className="absolute inset-[-10px] rounded-full border-[2px] border-transparent border-t-[2px] transition-colors duration-[800ms] animate-[spin_3s_linear_infinite]"
               style={{ borderTopColor: plasmaColor }}
             ></div>
             <div
-              className="absolute inset-[-25px] rounded-full border-[4px] border-transparent border-r-[4px] transition-colors duration-[800ms] animate-[spin_5s_linear_infinite_reverse]"
+              className="absolute inset-[-20px] rounded-full border-[2px] border-transparent border-r-[2px] transition-colors duration-[800ms] animate-[spin_5s_linear_infinite_reverse]"
               style={{ borderRightColor: plasmaColor, opacity: 0.6 }}
             ></div>
-            <div
-              className="absolute inset-[-35px] rounded-full border-[2px] border-transparent border-b-[2px] transition-colors duration-[800ms] animate-[spin_7s_linear_infinite]"
-              style={{ borderBottomColor: plasmaColor, opacity: 0.3 }}
-            ></div>
-
-            {/* Fluidos / Plasma Levitando Imponente (phase >= 6) */}
-            <div
-              className={`absolute inset-[-120px] transition-opacity duration-[1500ms] ${phase >= 6 ? "opacity-100" : "opacity-0"}`}
-            >
-              <div className="absolute top-[10%] left-[0%] w-32 h-32 bg-blue-500/30 rounded-full blur-[40px] animate-[levitate_3s_ease-in-out_infinite]" />
-              <div className="absolute bottom-[0%] left-[80%] w-40 h-40 bg-indigo-600/30 rounded-full blur-[50px] animate-[levitate_4s_ease-in-out_infinite_0.5s]" />
-              <div className="absolute top-[80%] left-[10%] w-24 h-24 bg-blue-800/40 rounded-full blur-[35px] animate-[levitate_3.5s_ease-in-out_infinite_1s]" />
-              <div className="absolute top-[15%] left-[75%] w-36 h-36 bg-blue-400/20 rounded-full blur-[45px] animate-[levitate_4.5s_ease-in-out_infinite_0.2s]" />
-            </div>
 
             {/* El Orbe 3D Esfera Spline Official */}
-            <div className="relative w-full h-full rounded-full transition-all duration-[1200ms]">
+            <div className="relative w-full h-full rounded-full transition-all duration-[1200ms] shadow-2xl">
               <SaseSplineOrb 
                 state={
                   phase === 3 ? "normal" :
@@ -135,15 +118,15 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
         </div>
 
         <div
-          className={`flex flex-col items-center justify-center transition-all duration-[1200ms] ease-out absolute bottom-[15vh] w-full ${phase >= 7 ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}
+          className={`flex flex-col items-center justify-center transition-all duration-[1200ms] ease-out absolute bottom-[12vh] w-full ${phase >= 7 ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}
         >
           <h1
-            className="text-7xl md:text-9xl font-black tracking-widest text-white uppercase text-center leading-none"
+            className="text-6xl md:text-8xl font-black tracking-widest text-white uppercase text-center leading-none px-4 drop-shadow-2xl"
             style={{ textShadow: "0 10px 40px rgba(255,255,255,0.4)" }}
           >
             SASE
           </h1>
-          <h2 className="mt-6 text-sm md:text-2xl font-black tracking-[0.5em] text-[#FFD700] uppercase text-center drop-shadow-[0_2px_15px_rgba(255,215,0,0.6)] px-4 animate-[pulse-text_2s_ease-in-out_infinite]">
+          <h2 className="mt-4 text-[10px] md:text-xl font-bold md:font-black tracking-[0.3em] md:tracking-[0.5em] text-[#FFD700] uppercase text-center drop-shadow-[0_2px_15px_rgba(255,215,0,0.6)] px-6 animate-[pulse-text_2s_ease-in-out_infinite]">
             CONECTAMOS CONTIGO
           </h2>
         </div>

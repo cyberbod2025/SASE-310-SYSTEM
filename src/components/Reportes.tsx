@@ -106,6 +106,8 @@ export const Reportes: React.FC = () => {
     end: new Date().toISOString().split("T")[0],
   });
 
+  const [isPrinting, setIsPrinting] = useState(false);
+
   // Aggregate data for reports - Memoized ⚡
   const allIncidents = React.useMemo(() => {
     return students.flatMap((s) =>
@@ -153,307 +155,315 @@ export const Reportes: React.FC = () => {
   );
 
   const handlePrintReport = () => {
+    setIsPrinting(true);
     let htmlContent = "";
     let title = "";
 
-    switch (selectedReport) {
-      case "incidencias":
-        title = "Reporte de Incidencias Institucional";
-        htmlContent = `
-          <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 800px; margin: 0 auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px;">
-              <div style="display: flex; align-items: center; gap: 20px;">
-                <img src="/assets/branding/SASE.png" style="height: 60px;" />
-                <div style="border-left: 2px solid #cbd5e1; padding-left: 20px; height: 50px; display: flex; flex-direction: column; justify-content: center;">
-                  <h1 style="margin: 0; font-size: 20px; color: #1e293b; text-transform: uppercase;">${
-                    title
-                  }</h1>
-                  <p style="margin: 5px 0 0; font-size: 10px; color: #64748b; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">Sistema de Asistencia y Seguimiento Escolar</p>
+    setTimeout(() => {
+      switch (selectedReport) {
+        case "incidencias":
+          title = "Reporte de Incidencias Institucional";
+          htmlContent = `
+            <div style="font-family: Arial, sans-serif; color: #1e293b; max-width: 800px; margin: 0 auto;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px;">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                  <img src="/assets/branding/SASE.png" style="height: 60px;" />
+                  <div style="border-left: 2px solid #cbd5e1; padding-left: 20px; height: 50px; display: flex; flex-direction: column; justify-content: center;">
+                    <h1 style="margin: 0; font-size: 20px; color: #1e293b; text-transform: uppercase;">${
+                      title
+                    }</h1>
+                    <p style="margin: 5px 0 0; font-size: 10px; color: #64748b; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">Sistema de Asistencia y Seguimiento Escolar</p>
+                  </div>
                 </div>
+                <img src="/assets/branding/PILOTO.png" style="height: 60px;" />
               </div>
-              <img src="/assets/branding/PILOTO.png" style="height: 60px;" />
+              
+              <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+                <p style="margin: 0; font-size: 14px; font-weight: bold; color: #334155; text-transform: uppercase;">Período del Reporte:</p>
+                <h2 style="margin: 5px 0 0; font-size: 18px; color: #1e293b;">${dateRange.start} al ${dateRange.end}</h2>
+              </div>
+              <h3 style="font-size: 16px; border-left: 4px solid #1d4ed8; padding-left: 10px; margin-bottom: 20px; text-transform: uppercase;">Resumen por Categoría</h3>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 14px;">
+                <thead>
+                  <tr style="background: #f1f5f9; text-align: left;">
+                    <th style="padding: 12px; border: 1px solid #e2e8f0;">Tipo de Incidencia</th>
+                    <th style="padding: 12px; border: 1px solid #e2e8f0;">Cantidad Total</th>
+                    <th style="padding: 12px; border: 1px solid #e2e8f0;">Impacto (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">Retardos de Entrada</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.retardos}</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                      filteredIncidents.length > 0
+                        ? (
+                            (incidentsByType.retardos /
+                              filteredIncidents.length) *
+                            100
+                          ).toFixed(1)
+                        : 0
+                    }%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">Faltas de Uniforme</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.uniformes}</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                      filteredIncidents.length > 0
+                        ? (
+                            (incidentsByType.uniformes /
+                              filteredIncidents.length) *
+                            100
+                          ).toFixed(1)
+                        : 0
+                    }%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">Reportes de Conducta</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.conducta}</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                      filteredIncidents.length > 0
+                        ? (
+                            (incidentsByType.conducta /
+                              filteredIncidents.length) *
+                            100
+                          ).toFixed(1)
+                        : 0
+                    }%</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">Inasistencias Injustificadas</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.faltas}</td>
+                    <td style="padding: 12px; border: 1px solid #e2e8f0;">${
+                      filteredIncidents.length > 0
+                        ? (
+                            (incidentsByType.faltas / filteredIncidents.length) *
+                            100
+                          ).toFixed(1)
+                        : 0
+                    }%</td>
+                  </tr>
+                  <tr style="font-weight: bold; background: #e2e8f0;">
+                    <td style="padding: 12px; border: 1px solid #cbd5e1;">TOTAL GENERAL</td>
+                    <td style="padding: 12px; border: 1px solid #cbd5e1;">${filteredIncidents.length}</td>
+                    <td style="padding: 12px; border: 1px solid #cbd5e1;">100%</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h3 style="font-size: 16px; border-left: 4px solid #1d4ed8; padding-left: 10px; margin-bottom: 20px; text-transform: uppercase;">Desglose Detallado</h3>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                <thead>
+                  <tr style="background: #f1f5f9; text-align: left;">
+                    <th style="padding: 10px; border: 1px solid #e2e8f0;">Fecha</th>
+                    <th style="padding: 10px; border: 1px solid #e2e8f0;">Estudiante</th>
+                    <th style="padding: 10px; border: 1px solid #e2e8f0;">Grupo</th>
+                    <th style="padding: 10px; border: 1px solid #e2e8f0;">Categoría</th>
+                    <th style="padding: 10px; border: 1px solid #e2e8f0;">Observaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filteredIncidents
+                    .slice(0, 50)
+                    .map(
+                      (i) => `
+                    <tr>
+                      <td style="padding: 10px; border: 1px solid #e2e8f0;">${new Date(i.date).toLocaleDateString("es-MX")}</td>
+                      <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${anonymizeName(i.studentName)}</td>
+                      <td style="padding: 10px; border: 1px solid #e2e8f0;">${i.group}</td>
+                      <td style="padding: 10px; border: 1px solid #e2e8f0;">
+                        <span style="padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; background: ${
+                          i.type === IncidentType.RETARDO
+                            ? "#fef3c7"
+                            : i.type === IncidentType.CONDUCTA
+                              ? "#fee2e2"
+                              : "#dbeafe"
+                        }; color: ${
+                          i.type === IncidentType.RETARDO
+                            ? "#92400e"
+                            : i.type === IncidentType.CONDUCTA
+                              ? "#991b1b"
+                              : "#1e40af"
+                        }; text-transform: uppercase;">${i.type}</span>
+                      </td>
+                      <td style="padding: 10px; border: 1px solid #e2e8f0; color: #64748b;">${i.description}</td>
+                    </tr>
+                  `,
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+              ${
+                filteredIncidents.length > 50
+                  ? `<p style="color:#64748b; font-size:12px; margin-top: 20px; font-style: italic;">Mostrando los primeros 50 registros de un total de ${filteredIncidents.length}. Para el listado completo, consulte el sistema digital.</p>`
+                  : ""
+              }
+              <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 12px;">
+                Documento generado automáticamente por el Sistema SASE el ${new Date().toLocaleString("es-MX")}
+              </div>
             </div>
-            
-            <div style="background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
-              <p style="margin: 0; font-size: 14px; font-weight: bold; color: #334155; text-transform: uppercase;">Período del Reporte:</p>
-              <h2 style="margin: 5px 0 0; font-size: 18px; color: #1e293b;">${dateRange.start} al ${dateRange.end}</h2>
-            </div>
-            <h3 style="font-size: 16px; border-left: 4px solid #1d4ed8; padding-left: 10px; margin-bottom: 20px; text-transform: uppercase;">Resumen por Categoría</h3>
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 14px;">
+          `;
+          break;
+
+        case "estudiantes":
+          title = "Directorio de Estudiantes";
+          htmlContent = `
+            <h2>Total de Estudiantes: ${students.length}</h2>
+            <h3>Distribución por Estado</h3>
+            <table>
               <thead>
-                <tr style="background: #f1f5f9; text-align: left;">
-                  <th style="padding: 12px; border: 1px solid #e2e8f0;">Tipo de Incidencia</th>
-                  <th style="padding: 12px; border: 1px solid #e2e8f0;">Cantidad Total</th>
-                  <th style="padding: 12px; border: 1px solid #e2e8f0;">Impacto (%)</th>
-                </tr>
+                <tr><th>Estado</th><th>Cantidad</th><th>Porcentaje</th></tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Retardos de Entrada</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.retardos}</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
-                    filteredIncidents.length > 0
-                      ? (
-                          (incidentsByType.retardos /
-                            filteredIncidents.length) *
-                          100
-                        ).toFixed(1)
-                      : 0
-                  }%</td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Faltas de Uniforme</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.uniformes}</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
-                    filteredIncidents.length > 0
-                      ? (
-                          (incidentsByType.uniformes /
-                            filteredIncidents.length) *
-                          100
-                        ).toFixed(1)
-                      : 0
-                  }%</td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Reportes de Conducta</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.conducta}</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
-                    filteredIncidents.length > 0
-                      ? (
-                          (incidentsByType.conducta /
-                            filteredIncidents.length) *
-                          100
-                        ).toFixed(1)
-                      : 0
-                  }%</td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">Inasistencias Injustificadas</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${incidentsByType.faltas}</td>
-                  <td style="padding: 12px; border: 1px solid #e2e8f0;">${
-                    filteredIncidents.length > 0
-                      ? (
-                          (incidentsByType.faltas / filteredIncidents.length) *
-                          100
-                        ).toFixed(1)
-                      : 0
-                  }%</td>
-                </tr>
-                <tr style="font-weight: bold; background: #e2e8f0;">
-                  <td style="padding: 12px; border: 1px solid #cbd5e1;">TOTAL GENERAL</td>
-                  <td style="padding: 12px; border: 1px solid #cbd5e1;">${filteredIncidents.length}</td>
-                  <td style="padding: 12px; border: 1px solid #cbd5e1;">100%</td>
-                </tr>
+                <tr><td><span class="badge badge-green">Cerrado</span></td><td>${
+                  studentsByState.cerrados
+                }</td><td>${
+            students.length > 0
+              ? (
+                  (studentsByState.cerrados / students.length) *
+                  100
+                ).toFixed(1)
+              : 0
+          }%</td></tr>
+                <tr><td><span class="badge badge-blue">Observado</span></td><td>${
+                  studentsByState.observados
+                }</td><td>${
+            students.length > 0
+              ? (
+                  (studentsByState.observados / students.length) *
+                  100
+                ).toFixed(1)
+              : 0
+          }%</td></tr>
+                <tr><td><span class="badge badge-red">Patrón Detectado</span></td><td>${
+                  studentsByState.patron
+                }</td><td>${
+            students.length > 0
+              ? ((studentsByState.patron / students.length) * 100).toFixed(
+                  1,
+                )
+              : 0
+          }%</td></tr>
               </tbody>
             </table>
-
-            <h3 style="font-size: 16px; border-left: 4px solid #1d4ed8; padding-left: 10px; margin-bottom: 20px; text-transform: uppercase;">Desglose Detallado</h3>
-            <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <h3>Listado Completo</h3>
+            <table>
               <thead>
-                <tr style="background: #f1f5f9; text-align: left;">
-                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Fecha</th>
-                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Estudiante</th>
-                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Grupo</th>
-                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Categoría</th>
-                  <th style="padding: 10px; border: 1px solid #e2e8f0;">Observaciones</th>
+                <tr>
+                  <th>#</th>
+                  <th>Nombre</th>
+                  <th>Matrícula</th>
+                  <th>Grupo</th>
+                  <th>Estado</th>
+                  <th>Incidencias</th>
                 </tr>
               </thead>
               <tbody>
-                ${filteredIncidents
-                  .slice(0, 50)
+                ${students
                   .map(
-                    (i) => `
+                    (s, idx) => `
                   <tr>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0;">${new Date(i.date).toLocaleDateString("es-MX")}</td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">${anonymizeName(i.studentName)}</td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0;">${i.group}</td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0;">
-                      <span style="padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; background: ${
-                        i.type === IncidentType.RETARDO
-                          ? "#fef3c7"
-                          : i.type === IncidentType.CONDUCTA
-                            ? "#fee2e2"
-                            : "#dbeafe"
-                      }; color: ${
-                        i.type === IncidentType.RETARDO
-                          ? "#92400e"
-                          : i.type === IncidentType.CONDUCTA
-                            ? "#991b1b"
-                            : "#1e40af"
-                      }; text-transform: uppercase;">${i.type}</span>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0; color: #64748b;">${i.description}</td>
+                    <td>${idx + 1}</td>
+                    <td>${anonymizeName(s.name)}</td>
+                    <td>${s.matricula}</td>
+                    <td>${s.group}</td>
+                    <td><span class="badge badge-${
+                      s.caseState === CaseState.CERRADO
+                        ? "green"
+                        : s.caseState === CaseState.OBSERVADO
+                          ? "blue"
+                          : "red"
+                    }">${CaseLabels[s.caseState]}</span></td>
+                    <td>${s.incidents.length}</td>
                   </tr>
                 `,
                   )
                   .join("")}
               </tbody>
             </table>
-            ${
-              filteredIncidents.length > 50
-                ? `<p style="color:#64748b; font-size:12px; margin-top: 20px; font-style: italic;">Mostrando los primeros 50 registros de un total de ${filteredIncidents.length}. Para el listado completo, consulte el sistema digital.</p>`
-                : ""
-            }
-            <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 12px;">
-              Documento generado automáticamente por el Sistema SASE el ${new Date().toLocaleString("es-MX")}
-            </div>
-          </div>
-        `;
-        break;
+          `;
+          break;
 
-      case "estudiantes":
-        title = "Directorio de Estudiantes";
-        htmlContent = `
-          <h2>Total de Estudiantes: ${students.length}</h2>
-          <h3>Distribución por Estado</h3>
-          <table>
-            <thead>
-              <tr><th>Estado</th><th>Cantidad</th><th>Porcentaje</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><span class="badge badge-green">Cerrado</span></td><td>${
-                studentsByState.cerrados
-              }</td><td>${
-                students.length > 0
-                  ? (
-                      (studentsByState.cerrados / students.length) *
-                      100
-                    ).toFixed(1)
-                  : 0
-              }%</td></tr>
-              <tr><td><span class="badge badge-blue">Observado</span></td><td>${
-                studentsByState.observados
-              }</td><td>${
-                students.length > 0
-                  ? (
-                      (studentsByState.observados / students.length) *
-                      100
-                    ).toFixed(1)
-                  : 0
-              }%</td></tr>
-              <tr><td><span class="badge badge-red">Patrón Detectado</span></td><td>${
-                studentsByState.patron
-              }</td><td>${
-                students.length > 0
-                  ? ((studentsByState.patron / students.length) * 100).toFixed(
-                      1,
-                    )
-                  : 0
-              }%</td></tr>
-            </tbody>
-          </table>
-          <h3>Listado Completo</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Matrícula</th>
-                <th>Grupo</th>
-                <th>Estado</th>
-                <th>Incidencias</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${students
-                .map(
-                  (s, idx) => `
-                <tr>
-                  <td>${idx + 1}</td>
-                  <td>${anonymizeName(s.name)}</td>
-                  <td>${s.matricula}</td>
-                  <td>${s.group}</td>
-                  <td><span class="badge badge-${
-                    s.caseState === CaseState.CERRADO
-                      ? "green"
-                      : s.caseState === CaseState.OBSERVADO
-                        ? "blue"
-                        : "red"
-                  }">${CaseLabels[s.caseState]}</span></td>
-                  <td>${s.incidents.length}</td>
-                </tr>
-              `,
-                )
-                .join("")}
-            </tbody>
-          </table>
-        `;
-        break;
+        case "asistencia":
+          title = "Reporte de Asistencia";
+          const countsByType = filteredIncidents.reduce(
+            (acc, i) => {
+              if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
+              if (i.type === IncidentType.RETARDO) acc.retardos++;
+              return acc;
+            },
+            { faltas: 0, retardos: 0 },
+          );
 
-      case "asistencia":
-        title = "Reporte de Asistencia";
-        // Use memoized values instead of re-filtering
-        const faltasCount = incidentsByType.faltas;
-        const retardosCount = incidentsByType.retardos;
+          htmlContent = `
+            <h2>Período: ${dateRange.start} al ${dateRange.end}</h2>
+            <h3>Indicadores de Asistencia</h3>
+            <table>
+              <thead>
+                <tr><th>Indicador</th><th>Valor</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Total de Alumnos</td><td>${students.length}</td></tr>
+                <tr><td>Faltas Registradas</td><td>${countsByType.faltas}</td></tr>
+                <tr><td>Retardos Registrados</td><td>${countsByType.retardos}</td></tr>
+                <tr><td>Tasa de Asistencia Estimada</td><td>${
+                  students.length > 0
+                    ? (100 - (countsByType.faltas / (students.length * 5)) * 100).toFixed(
+                        1,
+                      )
+                    : 100
+                }%</td></tr>
+              </tbody>
+            </table>
+            <h3>Alumnos con Más Inasistencias</h3>
+            <table>
+              <thead>
+                <tr><th>Alumno</th><th>Grupo</th><th>Faltas</th><th>Retardos</th></tr>
+              </thead>
+              <tbody>
+                ${students
+                  .map((s) => {
+                    const sCounts = s.incidents.reduce(
+                      (acc, i) => {
+                        if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
+                        if (i.type === IncidentType.RETARDO) acc.retardos++;
+                        return acc;
+                      },
+                      { faltas: 0, retardos: 0 },
+                    );
+                    return { ...s, ...sCounts };
+                  })
+                  .filter((s) => s.faltas > 0 || s.retardos > 0)
+                  .sort((a, b) => b.faltas + b.retardos - (a.faltas + a.retardos))
+                  .slice(0, 20)
+                  .map(
+                    (s) => `
+                    <tr>
+                      <td>${anonymizeName(s.name)}</td>
+                      <td>${s.group}</td>
+                      <td>${s.faltas}</td>
+                      <td>${s.retardos}</td>
+                    </tr>
+                  `,
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          `;
+          break;
 
-        htmlContent = `
-          <h2>Período: ${dateRange.start} al ${dateRange.end}</h2>
-          <h3>Indicadores de Asistencia</h3>
-          <table>
-            <thead>
-              <tr><th>Indicador</th><th>Valor</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Total de Alumnos</td><td>${students.length}</td></tr>
-              <tr><td>Faltas Registradas</td><td>${faltasCount}</td></tr>
-              <tr><td>Retardos Registrados</td><td>${retardosCount}</td></tr>
-              <tr><td>Tasa de Asistencia Estimada</td><td>${
-                students.length > 0
-                  ? (100 - (faltasCount / (students.length * 5)) * 100).toFixed(
-                      1,
-                    )
-                  : 100
-              }%</td></tr>
-            </tbody>
-          </table>
-          <h3>Alumnos con Más Inasistencias</h3>
-          <table>
-            <thead>
-              <tr><th>Alumno</th><th>Grupo</th><th>Faltas</th><th>Retardos</th></tr>
-            </thead>
-            <tbody>
-              ${students
-                .map((s) => {
-                  // Optimization: Single pass reduction instead of multiple filters
-                  const counts = s.incidents.reduce(
-                    (acc, i) => {
-                      if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
-                      if (i.type === IncidentType.RETARDO) acc.retardos++;
-                      return acc;
-                    },
-                    { faltas: 0, retardos: 0 },
-                  );
-                  return { ...s, ...counts };
-                })
-                .filter((s) => s.faltas > 0 || s.retardos > 0)
-                .sort((a, b) => b.faltas + b.retardos - (a.faltas + a.retardos))
-                .slice(0, 20)
-                .map(
-                  (s) => `
-                  <tr>
-                    <td>${anonymizeName(s.name)}</td>
-                    <td>${s.group}</td>
-                    <td>${s.faltas}</td>
-                    <td>${s.retardos}</td>
-                  </tr>
-                `,
-                )
-                .join("")}
-            </tbody>
-          </table>
-        `;
-        break;
+        default:
+          title = "Reporte General";
+          htmlContent = "<p>Seleccione un tipo de reporte.</p>";
+      }
 
-      default:
-        title = "Reporte General";
-        htmlContent = "<p>Seleccione un tipo de reporte.</p>";
-    }
-
-    setPrintModal({
-      isOpen: true,
-      title,
-      html: htmlContent,
-    });
+      setPrintModal({
+        isOpen: true,
+        title,
+        html: htmlContent,
+      });
+      setIsPrinting(false);
+    }, 800);
   };
 
   const reportOptions = [
@@ -580,13 +590,23 @@ export const Reportes: React.FC = () => {
             </div>
             <div className="flex justify-end gap-3">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: isPrinting ? 1 : 1.05 }}
+                whileTap={{ scale: isPrinting ? 1 : 0.95 }}
+                disabled={isPrinting}
                 onClick={handlePrintReport}
-                className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm"
+                className={`flex items-center gap-2 px-4 py-2 rounded-2xl border transition-all text-sm ${isPrinting ? 'bg-blue-500/20 border-blue-500/50 text-blue-200' : 'bg-white/5 border-white/10 text-slate-300 hover:text-white hover:bg-white/10'}`}
               >
-                <span className="material-icons text-sm">print</span>
-                Imprimir
+                {isPrinting ? (
+                  <>
+                    <span className="material-icons text-sm animate-spin">sync</span>
+                    Preparando documento...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-icons text-sm">print</span>
+                    Generar Reporte
+                  </>
+                )}
               </motion.button>
             </div>
           </div>
