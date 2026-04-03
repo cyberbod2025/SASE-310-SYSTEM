@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useSpring } from "motion/react";
 import type { SystemState } from "../types/systemState";
 
 interface SaseSplineOrbProps {
@@ -8,151 +8,221 @@ interface SaseSplineOrbProps {
   isInteracting?: boolean;
 }
 
-// SASE Official Color Palette (Semaforo Logic)
-const stateColors: Record<SystemState, string> = {
-  normal: "#3b82f6",    // Blue (Neural Link / Calm) - Switched from yellow to follow new institutional blue
-  warning: "#f59e0b",   // Amber (Observado / Patron Detectado)
-  alert: "#ef4444",     // Red (En Análisis / Intervención)
-  thinking: "#8b5cf6",  // Purple/Blue (Processing)
+/**
+ * 🤖 SaseSplineOrb (v5.0 - Institutional Source Core)
+ * RECOVERED FROM: sasito-ai-copilot/src/App.tsx
+ * Pure CSS/Motion implementation of the official Sasito mascot.
+ */
+
+const stateColors: Record<string, string> = {
+  normal: '#00ff00',      // Pure Neon Green (Calm)
+  warning: '#ffff00',     // Pure Neon Yellow (Attention)
+  alert: '#ff0000',       // Pure Neon Red (Alert)
+  thinking: '#ff8800',    // Pure Neon Gold/Orange (Processing)
+  rebooting: '#00ffff',   // Pure Neon Cyan
 };
 
-/**
- * SaseSplineOrb (v4.5 - CSS/Motion Standard)
- * REFACTOR: Removed Spline dependency for performance and stability.
- * Uses pure CSS gradients and Framer Motion for the neural effect.
- */
 export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, isInteracting }) => {
-  const color = stateColors[state] || stateColors.normal;
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [blink, setBlink] = useState(false);
-  const blinkTimeout = useRef<number | undefined>(undefined);
-  const blinkResetTimeout = useRef<number | undefined>(undefined);
+  const [isZapping, setIsZapping] = useState(false);
+  const sphereRef = useRef<HTMLDivElement>(null);
 
-  // Animación de parpadeo aleatoria
+  // Map institutional SystemState to SasitoState
+  const sasitoState = state === 'thinking' ? 'processing' : state;
+  const color = stateColors[state] || stateColors.normal;
+
+  // Eye tracking values (Standardized stiffness/damping from source)
+  const eyeX = useSpring(0, { stiffness: 250, damping: 20 });
+  const eyeY = useSpring(0, { stiffness: 250, damping: 20 });
+
   useEffect(() => {
-    const scheduleBlink = () => {
-      const delay = 3000 + Math.random() * 5000;
-      blinkTimeout.current = window.setTimeout(() => {
-        setBlink(true);
-        blinkResetTimeout.current = window.setTimeout(() => {
-          setBlink(false);
-          scheduleBlink();
-        }, 150);
-      }, delay);
+    const handleMouseMove = (e: MouseEvent) => {
+      if (sphereRef.current) {
+        const rect = sphereRef.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        const sensitivity = state === 'alert' ? 6 : 10;
+        const maxMove = state === 'alert' ? 20 : 15;
+        
+        const moveX = (deltaX / (distance || 1)) * Math.min(distance / sensitivity, maxMove);
+        const moveY = (deltaY / (distance || 1)) * Math.min(distance / sensitivity, maxMove);
+        
+        eyeX.set(moveX);
+        eyeY.set(moveY);
+      }
     };
-    scheduleBlink();
-    return () => {
-      if (blinkTimeout.current) clearTimeout(blinkTimeout.current);
-      if (blinkResetTimeout.current) clearTimeout(blinkResetTimeout.current);
-    };
-  }, []);
 
-  // Seguimiento del Mouse para los Ojos de IA-SASE
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      setMousePos({ x, y });
-    };
-    window.addEventListener("mousemove", handleMove);
-    return () => window.removeEventListener("mousemove", handleMove);
-  }, []);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [state, eyeX, eyeY]);
 
-  const eyeOffsetX = Math.max(-8, Math.min(8, mousePos.x * 12));
-  const eyeOffsetY = Math.max(-4, Math.min(4, mousePos.y * 8));
+  // Combined 3D Gradient (Replicated from source)
+  const get3DGradient = (s: string) => {
+    const color = stateColors[s] || stateColors.normal;
+    if (s === 'thinking' || s === 'processing') {
+      return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 10%, transparent 40%),
+              repeating-conic-gradient(from 0deg at 50% 50%, #ff0000 0deg, #ff8800 10deg, #ffff00 20deg, #00ff00 30deg, #00ffff 40deg, #0000ff 50deg, #ff00ff 60deg, #ff0000 70deg),
+              radial-gradient(circle at 70% 70%, rgba(0,0,0,0.8) 0%, transparent 100%),
+              ${color}33`;
+    }
+    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 10%, transparent 40%),
+            radial-gradient(circle at 50% 50%, ${color} 0%, ${color}CC 40%, transparent 85%),
+            radial-gradient(circle at 70% 70%, rgba(0,0,0,0.8) 0%, transparent 100%),
+            linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.2) 100%),
+            ${color}33`;
+  };
 
   return (
-    <div className={`relative flex items-center justify-center overflow-hidden rounded-full transition-all duration-700 ${className || "w-64 h-64"}`}>
-      
-      {/* 1. Nucleus Background (CSS Alternative to Spline) */}
-      <motion.div
-        animate={{
-          backgroundColor: `${color}11`,
-          boxShadow: `inset 0 0 100px ${color}33, 0 0 30px ${state === 'thinking' ? '#8b5cf6' : color}44`,
-        }}
-        className="absolute inset-0 rounded-full"
-      />
+    <div className={`relative flex items-center justify-center pointer-events-none select-none ${className || "w-64 h-64"}`}>
+      {/* SVG Filters for Fractal Effects */}
+      <svg className="hidden">
+        <filter id="fractalNoise">
+          <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" result="noise" />
+          <feColorMatrix type="saturate" values="2" />
+          <feComposite operator="in" in2="SourceGraphic" />
+        </filter>
+      </svg>
 
-      {/* 2. Fractal Energy / Plasma (Motion) */}
+      {/* Main Container */}
       <motion.div
+        ref={sphereRef}
         animate={{
-          scale: [1, 1.2, 0.9, 1.1, 1],
-          rotate: [0, 90, 180, 270, 360],
-          opacity: state === 'thinking' ? [0.4, 0.7, 0.4] : [0.2, 0.4, 0.2]
+          y: [0, -15, 0],
+          rotate: state === 'thinking' ? 360 : 0,
+          scale: state === 'warning' ? 1.1 : (state === 'thinking' ? 1.05 : 1),
+          boxShadow: [
+            `0 0 40px ${color}55`,
+            `0 0 80px ${color}33`,
+            `0 0 40px ${color}55`
+          ]
         }}
-        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-[-20%] blur-[40px] rounded-full opacity-30"
+        transition={{
+          y: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+          rotate: { duration: state === 'thinking' ? 10 : 0, repeat: Infinity, ease: "linear" },
+          duration: 3, repeat: Infinity
+        }}
+        className="relative w-full h-full rounded-full flex items-center justify-center overflow-hidden backdrop-blur-md z-10 ring-1 ring-white/20"
         style={{
-          background: `conic-gradient(from 0deg, ${color}, transparent, ${color}cc, transparent)`
+          background: get3DGradient(state),
+          filter: state === 'thinking' ? 'url(#fractalNoise)' : 'none'
         }}
-      />
+      >
+        {/* Internal Circuits (Subtle) */}
+        <div className="absolute inset-0 opacity-20">
+          <svg width="100%" height="100%" viewBox="0 0 100 100">
+            <motion.path
+              d="M 20,50 L 40,50 L 50,40 L 60,50 L 80,50"
+              stroke="white"
+              strokeWidth="0.5"
+              fill="none"
+              animate={{ opacity: [0.1, 0.5, 0.1], pathLength: [0, 1, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
+          </svg>
+        </div>
 
-      {/* 3. Detailed Sasin Neural Face Layers */}
-      <div className="relative w-full h-full z-20 flex items-center justify-center">
-        <div className="relative w-1/2 h-1/2 flex items-center justify-center">
-          <div className="flex gap-[25%] items-center w-full justify-center">
-            
-            {/* Left Eye */}
-            <div className="relative flex items-center justify-center" style={{ width: "22%", aspectRatio: "1" }}>
-              <div className="absolute inset-0 rounded-full bg-slate-900 border border-white/10" 
-                style={{ background: `radial-gradient(circle, ${color}99 0%, #0f172a 100%)` }} />
+        {/* Energy Sparks (Processing & Alert) */}
+        {(state === 'thinking' || state === 'alert') && (
+          <div className="absolute inset-0 z-20">
+            {[...Array(6)].map((_, i) => (
               <motion.div
+                key={i}
                 animate={{ 
-                  x: eyeOffsetX * 0.4, 
-                  y: blink ? 0 : eyeOffsetY * 0.4, 
-                  scaleY: blink ? 0.05 : 1 
+                  opacity: [0, 1, 0],
+                  scaleX: [0, 1.5, 0],
+                  rotate: Math.random() * 360,
+                  x: Math.random() * 60 - 30,
+                  y: Math.random() * 60 - 30
                 }}
-                transition={{ type: "spring", stiffness: 250, damping: 25 }}
-                className="absolute rounded-full bg-white shadow-[0_0_10px_white]"
-                style={{ width: "40%", height: "40%" }}
-              />
-            </div>
-
-            {/* Right Eye */}
-            <div className="relative flex items-center justify-center" style={{ width: "22%", aspectRatio: "1" }}>
-              <div className="absolute inset-0 rounded-full bg-slate-900 border border-white/10" 
-                style={{ background: `radial-gradient(circle, ${color}99 0%, #0f172a 100%)` }} />
-              <motion.div
-                animate={{ 
-                  x: eyeOffsetX * 0.4, 
-                  y: blink ? 0 : eyeOffsetY * 0.4, 
-                  scaleY: blink ? 0.05 : 1 
+                transition={{ 
+                  duration: 0.1, 
+                  repeat: Infinity, 
+                  repeatDelay: Math.random() * 0.3,
+                  delay: i * 0.05
                 }}
-                transition={{ type: "spring", stiffness: 250, damping: 25 }}
-                className="absolute rounded-full bg-white shadow-[0_0_10px_white]"
-                style={{ width: "40%", height: "40%" }}
+                className="absolute top-1/2 left-1/2 w-24 h-[1px] bg-white shadow-[0_0_12px_white,0_0_6px_cyan]"
               />
-            </div>
+            ))}
           </div>
+        )}
 
-          {/* Mouth / Pulse Line */}
+        {/* OFFICIAL EYES (CSS Bars from Source) */}
+        <motion.div 
+          style={{ x: eyeX, y: eyeY }}
+          className="flex gap-8 -mt-6"
+        >
+          {[0, 1].map((i) => (
+            <div key={i} className="relative">
+              <motion.div
+                animate={{
+                  height: state === 'rebooting' ? 2 : (state === 'warning' ? 48 : 36),
+                  scaleY: [1, 1, 0, 1, 1], // Natural blink
+                }}
+                transition={{
+                  scaleY: { 
+                    duration: state === 'warning' ? 1.2 : 4,
+                    repeat: Infinity, 
+                    times: [0, 0.85, 0.88, 0.91, 1], 
+                    delay: i * 0.1 
+                  },
+                  height: { duration: 0.3 }
+                }}
+                className="w-5 bg-white rounded-full shadow-[0_0_25px_rgba(255,255,255,1),0_0_40px_rgba(255,255,255,0.4)]"
+              />
+            </div>
+          ))}
+        </motion.div>
+
+        {/* Surface Reflection */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-40" />
+      </motion.div>
+
+      {/* Holographic Aura & Geometric Energy Field (Aura from Source) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {[...Array(3)].map((_, i) => (
           <motion.div
+            key={i}
             animate={{
-              width: state === 'thinking' ? ["10%", "30%", "10%"] : "20%",
-              opacity: [0.3, 0.6, 0.3]
+              scale: [1, 1.25 + i * 0.1, 1],
+              opacity: [0.1, 0.3 - i * 0.05, 0.1],
+              rotate: i % 2 === 0 ? 360 : -360
             }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute h-[1px] rounded-full"
-            style={{
-              bottom: "35%",
-              background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-              boxShadow: `0 0 8px ${color}aa`,
+            transition={{
+              duration: 10 + i * 2,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="absolute w-[140%] h-[140%] rounded-full border border-white/10 blur-md"
+            style={{ 
+              background: state === 'thinking' 
+                ? `conic-gradient(from ${i * 90}deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)`
+                : `radial-gradient(circle, ${color}22 0%, transparent 70%)`
             }}
           />
-        </div>
-      </div>
+        ))}
 
-      {/* 4. HUD / Tactical Overlay */}
-      <svg className="absolute inset-0 z-30 pointer-events-none opacity-30" viewBox="0 0 200 200">
-        <motion.circle 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          style={{ originX: "100px", originY: "100px" }}
-          cx="100" cy="100" r="95" 
-          fill="none" stroke={color} strokeWidth="0.3" strokeDasharray="2 10" 
-        />
-        <circle cx="100" cy="100" r="88" fill="none" stroke={color} strokeWidth="0.5" strokeDasharray="30 170" opacity="0.4" />
-      </svg>
+        {/* Geometric Hexagon Grid */}
+        <motion.div
+          animate={{ rotate: 360, opacity: [0.05, 0.15, 0.05] }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute w-[180%] h-[180%] opacity-10"
+        >
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <path
+              d="M 50,5 L 90,25 L 90,75 L 50,95 L 10,75 L 10,25 Z"
+              fill="none"
+              stroke="white"
+              strokeWidth="0.5"
+              strokeDasharray="2,2"
+            />
+          </svg>
+        </motion.div>
+      </div>
     </div>
   );
 };

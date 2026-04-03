@@ -164,7 +164,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div 
       data-sasito-state={neuralCoreState}
-      className="flex h-screen w-full bg-slate-50 text-slate-900 overflow-hidden font-sans select-none"
+      className="flex h-screen w-full bg-[#0B1120] text-slate-200 overflow-hidden font-sans select-none"
     >
       <TutorialController />
       
@@ -181,7 +181,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       {/* Sidebar - Premium Crystal Glass (Light Edition) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-white/60 !backdrop-blur-[60px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-slate-200 md:relative md:translate-x-0 shadow-[10px_0_40px_-15px_rgba(0,0,0,0.05)] ${
+        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-[#0B1120]/60 !backdrop-blur-[60px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/10 md:relative md:translate-x-0 shadow-[10px_0_40px_-15px_rgba(0,0,0,0.4)] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -193,7 +193,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           <div
             id="sidebar-logo"
-            className={`p-6 border-b border-slate-100 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
+            className={`p-6 border-b border-white/5 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
           >
             <div className="flex items-center gap-4">
               <div className="relative group">
@@ -207,7 +207,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex-1 min-w-0 animate-fade-in">
-                  <h3 className="text-[10px] font-black text-slate-900 truncate uppercase tracking-widest title-sase">
+                  <h3 className="text-[10px] font-black text-white truncate uppercase tracking-widest title-sase">
                     {displayUserName}
                   </h3>
                   <div className="flex flex-col gap-0.5 mt-0.5">
@@ -229,7 +229,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar relative z-10"
           >
             {!isSidebarCollapsed && (
-              <span className="px-4 text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] block mb-4">
+              <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-4">
                 Operatividad
               </span>
             )}
@@ -333,25 +333,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   collapsed={isSidebarCollapsed}
                 />
 
-                {(currentUserRole === UserRole.DIRECTIVO ||
-                  currentUserRole === UserRole.SUBDIRECCION ||
-                  currentUserRole === UserRole.SYSTEM_ADMIN ||
-                  currentUserRole === UserRole.DEVELOPER) && (
-                  <NavItem
-                    id="nav-ia-sase"
-                    icon="neurology"
-                    label="Núcleo IA"
-                    active={currentModule === AppModule.IA_SASE}
-                    onClick={() => {
-                      setCurrentModule(AppModule.IA_SASE);
-                      setIsSidebarOpen(false);
-                    }}
-                    color={currentUserRole}
-                    highlighted={highlightedModule === AppModule.IA_SASE}
-                    collapsed={isSidebarCollapsed}
-                  />
-                )}
-
+ 
                 <NavItem
                   id="nav-protocolos"
                   icon="policy"
@@ -389,7 +371,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             )}
 
             {!isSidebarCollapsed && (
-              <span className="px-4 text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] block mt-6 mb-4">
+              <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mt-6 mb-4">
                 Soporte y Ayuda
               </span>
             )}
@@ -421,7 +403,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           )}
 
           {/* Footer Sidebar */}
-          <div className="p-4 border-t border-slate-100 space-y-3 relative z-10">
+          <div className="p-4 border-t border-white/5 space-y-3 relative z-10">
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
               title={
@@ -434,9 +416,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   ? "Expandir barra lateral"
                   : "Colapsar barra lateral"
               }
-              className="hidden md:flex items-center justify-center w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 rounded-xl transition-all"
+              className="hidden md:flex items-center justify-center w-full py-2 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl transition-all"
             >
-              <span className="material-symbols-outlined text-lg">
+              <span className="material-icons text-lg">
                 {isSidebarCollapsed
                   ? "side_navigation"
                   : "keyboard_double_arrow_left"}
@@ -447,9 +429,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               id="sidebar-feedback"
               onClick={() => setIsFeedbackOpen(true)}
                title="Enviar comentarios, sugerencias o reportar errores"
-              className="flex items-center justify-center w-full py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition-all group"
+              className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl transition-all group"
             >
-              <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">
+              <span className="material-icons text-lg group-hover:scale-110 transition-transform">
                 feedback
               </span>
               {!isSidebarCollapsed && (
@@ -466,9 +448,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               }}
               title="Cerrar sesión de forma segura"
               aria-label="Cerrar sesión"
-              className="flex items-center justify-center w-full py-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-all group"
+              className="flex items-center justify-center w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all group"
             >
-              <span className="material-symbols-outlined text-lg group-hover:rotate-180 transition-transform duration-500">
+              <span className="material-icons text-lg group-hover:rotate-180 transition-transform duration-500">
                 logout
               </span>
               {!isSidebarCollapsed && (
@@ -484,25 +466,25 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Header - Glassmorphism Sticky (Light) */}
-        <header className="h-20 glass-card-quantum !rounded-none !border-b !border-slate-200 !border-t-0 !border-l-0 !border-r-0 !bg-white/70 flex items-center justify-between px-6 shrink-0 z-40 relative">
+        <header className="h-20 glass-card-quantum !rounded-none !border-b !border-white/10 !border-t-0 !border-l-0 !border-r-0 !bg-[#0B1120]/70 flex items-center justify-between px-6 shrink-0 z-40 relative">
           <div className="flex items-center gap-6">
             <button
-              className="md:hidden size-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-700 shadow-sm hover:bg-slate-100"
+              className="md:hidden size-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-300 shadow-sm hover:bg-white/10"
               onClick={() => setIsSidebarOpen(true)}
               title="Abrir menú de navegación"
               aria-label="Abrir menú lateral"
             >
-              <span className="material-symbols-outlined">menu</span>
+              <span className="material-icons">menu</span>
             </button>
 
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <h2 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.4em] title-sase">
+                <h2 className="text-[11px] font-black text-white uppercase tracking-[0.4em] title-sase">
                   SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
-                  <span className="text-blue-600 group-hover:text-blue-500 transition-colors uppercase">SISTEMA_SASE_310</span>
+                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">SISTEMA_SASE_310</span>
                 </h2>
               </div>
-              <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest mt-1">
+              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">
                 Estatus: Operativo • v{VERSION.numero}
               </p>
             </div>
@@ -517,7 +499,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               aria-label="Generar reporte rápido"
               className="btn-premium-red hidden md:flex h-10 px-5"
             >
-              <span className="material-symbols-outlined text-lg">
+              <span className="material-icons text-lg">
                 emergency
               </span>
               <span className="ml-2">REPORTE RÁPIDO</span>
@@ -541,11 +523,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 className={`size-10 flex items-center justify-center rounded-xl border transition-all ${
                   unreadCount > 0
                     ? "bg-blue-500/10 border-blue-500/30 text-blue-500 animate-pulse-soft"
-                    : "bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-sm"
+                    : "bg-white border-slate-200 text-slate-600 hover:text-slate-200 hover:bg-slate-100 shadow-sm"
                 }`}
               >
                 <div className="relative">
-                  <span className="material-symbols-outlined">
+                  <span className="material-icons">
                     notifications
                   </span>
                   {unreadCount > 0 && (
@@ -558,7 +540,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               {showNotifications && (
                 <div className="absolute top-14 right-0 w-80 md:w-96 z-50 animate-fade-in-up overflow-hidden rounded-2xl border border-slate-200 shadow-[0_16px_40px_-18px_rgba(15,23,42,0.25)] glass-dropdown">
                   <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
-                    <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest">
+                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
                       Alertas del Sistema
                     </span>
                     {unreadCount > 0 && (
@@ -570,7 +552,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-2 bg-white">
                     {visibleNotifications.length === 0 ? (
                       <div className="py-12 text-center opacity-60">
-                        <span className="material-symbols-outlined text-4xl block mb-2 text-slate-400">
+                        <span className="material-icons text-4xl block mb-2 text-slate-400">
                           notifications_off
                         </span>
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
@@ -593,12 +575,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                             <div
                               className={`size-8 rounded-2xl flex items-center justify-center ${notif.type === "error" ? "bg-red-100 text-red-600" : notif.type === "warning" ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600"}`}
                             >
-                              <span className="material-symbols-outlined text-sm">
+                              <span className="material-icons text-sm">
                                 {notif.type === "error" ? "report" : notif.type === "warning" ? "warning" : "info"}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-[11px] font-black text-slate-900 uppercase truncate">
+                              <h4 className="text-[11px] font-black text-slate-200 uppercase truncate">
                                 {notif.title}
                               </h4>
                               <p className="text-[10px] text-slate-600 mt-0.5 line-clamp-2">
@@ -646,8 +628,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
           {/* Disclaimer Sasito Zero UI en Fase 1 */}
           {isPhase1 && (
-             <div className="fixed bottom-28 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-slate-900/40 border border-white/10 backdrop-blur-2xl z-20 shadow-2xl animate-fade-in">
-                <p className="text-xs text-slate-400 text-center flex items-center gap-2">
+             <div className="fixed bottom-28 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-[#131B2C]/80 backdrop-blur-md border border-white/10 z-20 shadow-2xl animate-fade-in">
+                <p className="text-xs text-slate-300 text-center flex items-center gap-2">
                   <span className="size-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_#3b82f6]"></span>
                   Sasito es un asistente de detección, <strong className="text-white">nunca sustituye tu criterio humano</strong>.
                 </p>
@@ -689,7 +671,7 @@ const NavItem: React.FC<{
   highlighted?: boolean;
 }> = ({ icon, label, active, onClick, id, color, collapsed, highlighted }) => {
   const textColors: Record<UserRole, string> = {
-    [UserRole.DIRECTIVO]: "text-slate-900",
+    [UserRole.DIRECTIVO]: "text-slate-200",
     [UserRole.SUBDIRECCION]: "text-orange-800",
     [UserRole.DOCENTE]: "text-blue-600",
     [UserRole.DOCENTE_TUTOR]: "text-blue-700",
@@ -700,12 +682,12 @@ const NavItem: React.FC<{
     [UserRole.SECRETARIA]: "text-cyan-600",
     [UserRole.UDEII]: "text-indigo-600",
     [UserRole.PROMOTORA_LECTURA]: "text-pink-600",
-    [UserRole.GUEST]: "text-slate-800",
+    [UserRole.GUEST]: "text-slate-300",
     [UserRole.DEVELOPER]: "text-black",
     [UserRole.SYSTEM_ADMIN]: "text-indigo-900",
   };
 
-  const activeTextClass = textColors[color as UserRole] || "text-slate-800";
+  const activeTextClass = textColors[color as UserRole] || "text-slate-300";
 
   return (
     <button
@@ -714,12 +696,12 @@ const NavItem: React.FC<{
       title={collapsed ? label : ""}
       className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
-          ? `bg-[#E6D9FF] backdrop-blur-md text-[#6D28D9] shadow-xl shadow-black/5 font-black border-[#B799FF]/30 scale-[1.02]`
-          : "text-slate-700 hover:bg-slate-100 hover:text-slate-950 font-bold border-transparent"
-      } ${highlighted ? "shadow-[0_0_25px_rgba(183,153,255,0.25)] border-[#B799FF]/20 bg-[#B799FF]/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
+          ? `bg-blue-500/10 backdrop-blur-md text-blue-400 shadow-xl shadow-black/20 font-black border-blue-500/30 scale-[1.02]`
+          : "text-slate-400 hover:bg-white/5 hover:text-white font-bold border-transparent"
+      } ${highlighted ? "shadow-[0_0_25px_rgba(59,130,246,0.2)] border-blue-500/20 bg-blue-500/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span
-        className={`material-symbols-outlined text-[20px] transition-transform ${
+        className={`material-icons text-[20px] transition-transform ${
           active ? "" : "group-hover:scale-110"
         }`}
       >
@@ -731,7 +713,7 @@ const NavItem: React.FC<{
             {label}
           </span>
           {active && (
-            <span className="ml-auto material-symbols-outlined text-[16px]">
+            <span className="ml-auto material-icons text-[16px]">
               chevron_right
             </span>
           )}

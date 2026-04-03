@@ -364,7 +364,7 @@ export const InvitationGenerator: React.FC = () => {
                   .map(
                     (f) => `
                   <div class="feature-item">
-                    <span class="material-symbols-outlined feature-icon">${f.icon}</span>
+                    <span class="material-icons feature-icon">${f.icon}</span>
                     <div class="feature-text">
                       <h4>${f.label}</h4>
                       <p>${f.desc}</p>
@@ -408,7 +408,7 @@ export const InvitationGenerator: React.FC = () => {
     <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-2xl mx-auto space-y-8 animate-fade-in">
       <div className="flex items-center gap-5">
         <div className="bg-blue-100/50 p-4 rounded-2xl text-blue-700 border border-blue-200/50">
-          <span className="material-symbols-outlined text-3xl">mail_lock</span>
+          <span className="material-icons text-3xl">mail_lock</span>
         </div>
         <div>
           <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase italic">
@@ -473,7 +473,7 @@ export const InvitationGenerator: React.FC = () => {
             Previsualización de Enlace
           </p>
           <p className="text-[11px] font-bold text-slate-500 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[16px] text-blue-600">
+            <span className="material-icons text-[16px] text-blue-600">
               link
             </span>
             {accessLink}
@@ -491,7 +491,7 @@ export const InvitationGenerator: React.FC = () => {
           className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-emerald-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98] disabled:opacity-60"
           title="Enviar invitación segura por correo institucional"
         >
-          <span className="material-symbols-outlined text-[20px]">mark_email_read</span>
+          <span className="material-icons text-[20px]">mark_email_read</span>
           {isInviting ? "Enviando Invitación" : "Enviar Invitación"}
         </button>
         <button
@@ -499,7 +499,7 @@ export const InvitationGenerator: React.FC = () => {
           className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-[0.2em] rounded-2xl shadow-lg shadow-blue-900/10 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
           title="Generar e imprimir carta de credenciales oficial"
         >
-          <span className="material-symbols-outlined text-[20px]">print</span>
+          <span className="material-icons text-[20px]">print</span>
           Imprimir Carta
         </button>
       </div>

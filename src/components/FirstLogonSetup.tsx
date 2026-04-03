@@ -99,7 +99,7 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
               className="space-y-6"
             >
               <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl flex items-start gap-4">
-                <span className="material-symbols-outlined text-yellow-500 text-2xl">
+                <span className="material-icons text-yellow-500 text-2xl">
                   warning
                 </span>
                 <div>
@@ -164,7 +164,7 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
               className="space-y-6"
             >
               <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl flex items-start gap-4">
-                <span className="material-symbols-outlined text-blue-500 text-2xl">
+                <span className="material-icons text-blue-500 text-2xl">
                   security
                 </span>
                 <div>
@@ -237,7 +237,7 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
               className="space-y-6"
             >
               <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl flex items-start gap-4 mb-6">
-                <span className="material-symbols-outlined text-emerald-500 text-2xl">
+                <span className="material-icons text-emerald-500 text-2xl">
                   verified_user
                 </span>
                 <div>
@@ -328,7 +328,7 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                     </label>
                     <div className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-slate-300 text-sm font-mono cursor-not-allowed flex justify-between">
                       SE-DOC-8409
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         lock
                       </span>
                     </div>
@@ -340,7 +340,7 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                     </label>
                     <div className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-slate-300 text-sm font-mono cursor-not-allowed flex justify-between">
                       XXX-XXXXXX-XXX
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         lock
                       </span>
                     </div>
@@ -353,7 +353,7 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
                     <div className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-slate-300 text-sm font-mono cursor-not-allowed flex justify-between relative overflow-hidden group">
                       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
                       15DES0310H / M
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         lock
                       </span>
                     </div>
@@ -402,7 +402,7 @@ export const FirstLogonSetup: React.FC<FirstLogonSetupProps> = ({
               }`}
             >
               {step === 3 ? "Guardar y Entrar al Sistema" : "Siguiente"}
-              <span className="material-symbols-outlined text-sm">
+              <span className="material-icons text-sm">
                 {step === 3 ? "check_circle" : "arrow_forward"}
               </span>
             </button>

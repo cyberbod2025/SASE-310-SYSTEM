@@ -217,7 +217,7 @@ export const QuickRegisterModal: React.FC = () => {
         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/80 sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <div className="bg-blue-600 p-2 rounded-xl text-white">
-              <span className="material-symbols-outlined text-lg">bolt</span>
+              <span className="material-icons text-lg">bolt</span>
             </div>
             <div>
               <h3 className="text-xl font-black text-slate-800 uppercase italic tracking-tighter">
@@ -229,7 +229,7 @@ export const QuickRegisterModal: React.FC = () => {
             </div>
           </div>
           <button onClick={handleClose} className="size-10 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-red-600 transition-all flex items-center justify-center">
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-icons">close</span>
           </button>
         </div>
 
@@ -269,7 +269,7 @@ export const QuickRegisterModal: React.FC = () => {
                   {selectedStudentId ? (
                     // Ficha del alumno seleccionado
                     <div className="flex items-center gap-3 h-12 bg-blue-50 border border-blue-200 rounded-xl px-4">
-                      <span className="material-symbols-outlined text-blue-600 text-lg">person_check</span>
+                      <span className="material-icons text-blue-600 text-lg">person_check</span>
                       <div className="flex-1">
                         <p className="text-xs font-black text-blue-800 uppercase italic">{selectedStudentName}</p>
                       </div>
@@ -277,12 +277,12 @@ export const QuickRegisterModal: React.FC = () => {
                         onClick={() => { setSelectedStudentId(""); setSelectedStudentName(""); setSearchTerm(""); setShowDropdown(false); }}
                         className="text-blue-400 hover:text-red-500 transition-colors"
                       >
-                        <span className="material-symbols-outlined text-lg">close</span>
+                        <span className="material-icons text-lg">close</span>
                       </button>
                     </div>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined absolute left-4 top-3.5 text-slate-400 text-lg">search</span>
+                      <span className="material-icons absolute left-4 top-3.5 text-slate-400 text-lg">search</span>
                       <input
                         type="text"
                         value={searchTerm}
@@ -337,7 +337,7 @@ export const QuickRegisterModal: React.FC = () => {
                 // Tipo ya pre-seleccionado — mostrar etiqueta con opción de cambiar
                 <div className="flex items-center justify-between px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-blue-600 text-sm">label</span>
+                    <span className="material-icons text-blue-600 text-sm">label</span>
                     <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest">Tipo: {type}</span>
                   </div>
                   <button
@@ -378,7 +378,7 @@ export const QuickRegisterModal: React.FC = () => {
               {/* Opciones de Documentación */}
               <div className="space-y-4 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-xs text-blue-800">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-sm">description</span>
+                  <span className="material-icons text-sm">description</span>
                   <p className="font-black uppercase tracking-widest">Apoyo Institucional Automático</p>
                 </div>
                 
@@ -391,7 +391,7 @@ export const QuickRegisterModal: React.FC = () => {
                       onChange={(e) => setGenerarCitatorio(e.target.checked)} 
                     />
                     <div className={`size-5 rounded-2xl border-2 transition-all flex items-center justify-center ${generarCitatorio ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
-                      {generarCitatorio && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
+                      {generarCitatorio && <span className="material-icons text-[14px] text-white">check</span>}
                     </div>
                     <span className="font-bold">Agendar Citatorio en Agenda Escolar</span>
                   </label>
@@ -411,7 +411,7 @@ export const QuickRegisterModal: React.FC = () => {
                       onChange={(e) => setGenerarActa(e.target.checked)} 
                     />
                     <div className={`size-5 rounded-2xl border-2 transition-all flex items-center justify-center ${generarActa ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
-                      {generarActa && <span className="material-symbols-outlined text-[14px] text-white">check</span>}
+                      {generarActa && <span className="material-icons text-[14px] text-white">check</span>}
                     </div>
                     <span className="font-bold">Generar Acta / Hoja de Acuerdos</span>
                   </label>
@@ -428,7 +428,7 @@ export const QuickRegisterModal: React.FC = () => {
           ) : (
             <div className="py-12 flex flex-col items-center text-center space-y-4">
               <div className="size-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
-                <span className="material-symbols-outlined text-4xl">check_circle</span>
+                <span className="material-icons text-4xl">check_circle</span>
               </div>
               <h4 className="text-xl font-black text-slate-800 uppercase italic">Registro Exitoso</h4>
               <p className="text-sm text-slate-500 max-w-xs font-bold">La incidencia ha sido registrada institucionalmente y las notificaciones han sido enviadas.</p>
@@ -437,7 +437,7 @@ export const QuickRegisterModal: React.FC = () => {
                   onClick={() => setShowProtocolModal(true)}
                   className="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-black/5 shadow-amber-200 flex items-center gap-3"
                 >
-                  <span className="material-symbols-outlined">security</span>
+                  <span className="material-icons">security</span>
                   Activar Protocolo: {detectedProtocol.titulo}
                 </button>
               )}
@@ -460,7 +460,7 @@ export const QuickRegisterModal: React.FC = () => {
                 disabled={!selectedStudentId && !studentNotFound}
                 className="flex-[2] h-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
-                <span className="material-symbols-outlined">save</span>
+                <span className="material-icons">save</span>
                 Registrar
               </button>
             </div>
@@ -469,7 +469,7 @@ export const QuickRegisterModal: React.FC = () => {
               onClick={handleClose}
               className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3"
             >
-              <span className="material-symbols-outlined">reply</span>
+              <span className="material-icons">reply</span>
               Volver al Sistema
             </button>
           )}

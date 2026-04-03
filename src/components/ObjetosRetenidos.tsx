@@ -199,7 +199,7 @@ export const ObjetosRetenidos: React.FC = () => {
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-6">
                   <div className="size-14 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
-                    <span className="material-symbols-outlined text-3xl">add_circle</span>
+                    <span className="material-icons text-3xl">add_circle</span>
                   </div>
                   <div>
                     <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
@@ -213,7 +213,7 @@ export const ObjetosRetenidos: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">person</span>
+                        <span className="material-icons text-sm">person</span>
                         ALUMNO / MATRÍCULA
                       </label>
                       <select 
@@ -233,7 +233,7 @@ export const ObjetosRetenidos: React.FC = () => {
 
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">event</span>
+                        <span className="material-icons text-sm">event</span>
                         FECHA_EJECUCIÓN
                       </label>
                       <input 
@@ -248,7 +248,7 @@ export const ObjetosRetenidos: React.FC = () => {
 
                   <div className="space-y-3">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">category</span>
+                      <span className="material-icons text-sm">category</span>
                       OBJETO_IDENTIFICADO
                     </label>
                     <input 
@@ -264,7 +264,7 @@ export const ObjetosRetenidos: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">category</span>
+                        <span className="material-icons text-sm">category</span>
                         CATEGORÍA
                       </label>
                       <select 
@@ -282,7 +282,7 @@ export const ObjetosRetenidos: React.FC = () => {
 
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">location_on</span>
+                        <span className="material-icons text-sm">location_on</span>
                         LUGAR DE RESGUARDO
                       </label>
                       <input 
@@ -297,7 +297,7 @@ export const ObjetosRetenidos: React.FC = () => {
 
                   <div className="space-y-3">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">description</span>
+                      <span className="material-icons text-sm">description</span>
                       MOTIVO DE RETENCIÓN
                     </label>
                     <textarea 
@@ -312,7 +312,7 @@ export const ObjetosRetenidos: React.FC = () => {
 
                   <div className="space-y-3">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">note_alt</span>
+                      <span className="material-icons text-sm">note_alt</span>
                       OBSERVACIONES
                     </label>
                     <textarea 
@@ -364,7 +364,7 @@ export const ObjetosRetenidos: React.FC = () => {
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-6">
                   <div className="size-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-500">
-                    <span className="material-symbols-outlined text-3xl">assignment_return</span>
+                    <span className="material-icons text-3xl">assignment_return</span>
                   </div>
                   <div>
                     <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
@@ -378,7 +378,7 @@ export const ObjetosRetenidos: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">handshake</span>
+                        <span className="material-icons text-sm">handshake</span>
                         ENTREGADO A
                       </label>
                       <select 
@@ -403,7 +403,7 @@ export const ObjetosRetenidos: React.FC = () => {
                   {tipoEntrega === "padre_tutor" && (
                     <div className="space-y-3">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <span className="material-symbols-outlined text-sm">person</span>
+                        <span className="material-icons text-sm">person</span>
                         NOMBRE DE QUIEN RECIBE
                       </label>
                       <input 
@@ -419,7 +419,7 @@ export const ObjetosRetenidos: React.FC = () => {
 
                   <div className="space-y-3">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">event</span>
+                      <span className="material-icons text-sm">event</span>
                       FECHA DE DEVOLUCIÓN
                     </label>
                     <input 
@@ -433,7 +433,7 @@ export const ObjetosRetenidos: React.FC = () => {
 
                   <div className="space-y-3">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">speaker_notes</span>
+                      <span className="material-icons text-sm">speaker_notes</span>
                       OBSERVACIONES DE ENTREGA
                     </label>
                     <textarea 

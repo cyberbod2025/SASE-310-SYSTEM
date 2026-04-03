@@ -149,7 +149,7 @@ const CheckboxSase = ({ id, label, checked, onChange, onRead }: any) => {
           }`}
         >
           {checked && (
-            <span className="material-symbols-outlined text-white text-[14px] font-black">
+            <span className="material-icons text-white text-[14px] font-black">
               check
             </span>
           )}
@@ -417,7 +417,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           {/* LOGO / BRANDING */}
           <div className="flex justify-center mb-8">
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl">
-              <span className="material-symbols-outlined text-4xl text-white">
+              <span className="material-icons text-4xl text-white">
                 school
               </span>
             </div>
@@ -475,7 +475,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 <div className="btn-liquid-glass"></div>
                 <div className="btn-liquid-inner gap-3">
                   Continuar{" "}
-                  <span className="material-symbols-outlined">
+                  <span className="material-icons">
                     arrow_forward
                   </span>
                 </div>
@@ -541,7 +541,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   ${formData.rol === role.id ? role.color : "bg-white/10 text-white/50"}
                 `}
                 >
-                  <span className="material-symbols-outlined text-3xl text-white">
+                  <span className="material-icons text-3xl text-white">
                     {role.icon}
                   </span>
                 </div>
@@ -572,7 +572,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
               <div className="btn-liquid-glass"></div>
               <div className="btn-liquid-inner gap-3">
                 Siguiente{" "}
-                <span className="material-symbols-outlined">arrow_forward</span>
+                <span className="material-icons">arrow_forward</span>
               </div>
             </button>
           </div>
@@ -601,7 +601,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
         <div className="relative z-10 max-w-2xl animate-scale-in">
           <div className="mb-8 inline-block p-6 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_60px_rgba(59,130,246,0.3)] animate-float">
-            <span className="material-symbols-outlined text-6xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">
+            <span className="material-icons text-6xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]">
               {selectedRoleData?.icon}
             </span>
           </div>
@@ -629,7 +629,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
               <div className="btn-liquid-glass"></div>
               <div className="btn-liquid-inner gap-4 text-xs md:text-sm">
                 <span>Desbloquear Funciones</span>
-                <span className="material-symbols-outlined">lock_open</span>
+                <span className="material-icons">lock_open</span>
               </div>
             </button>
           </div>
@@ -651,7 +651,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           <div className="relative mb-10">
             <div className="absolute inset-0 bg-emerald-500/20 blur-3xl rounded-full"></div>
             <div className="size-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 relative z-10 transition-transform group-hover:scale-110 duration-700">
-              <span className="material-symbols-outlined text-5xl text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+              <span className="material-icons text-5xl text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
                 verified
               </span>
             </div>
@@ -736,14 +736,14 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
 
             <div className="glass-panel p-6 rounded-2xl border border-white/10 bg-white/5">
               <h3 className="text-sm font-black text-white uppercase mb-4 flex items-center gap-2">
-                <span className="material-symbols-outlined text-blue-400">
+                <span className="material-icons text-blue-400">
                   security
                 </span>
                 Protocolo de Seguridad
               </h3>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-sm mt-0.5">
+                  <span className="material-icons text-slate-400 text-sm mt-0.5">
                     check_circle
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
@@ -751,7 +751,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   </p>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-sm mt-0.5">
+                  <span className="material-icons text-slate-400 text-sm mt-0.5">
                     check_circle
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
@@ -759,7 +759,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                   </p>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-slate-400 text-sm mt-0.5">
+                  <span className="material-icons text-slate-400 text-sm mt-0.5">
                     check_circle
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
@@ -781,7 +781,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
         <div className="max-w-3xl mx-auto space-y-10">
           <div className="flex justify-between items-center lg:hidden">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-white">
+              <span className="material-icons text-white">
                 school
               </span>
               <span className="text-white font-bold italic tracking-widest">
@@ -1119,7 +1119,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     ) : (
                       <>
                         <span>Enviar Solicitud</span>
-                        <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+                        <span className="material-icons text-sm group-hover:translate-x-1 transition-transform">
                           send
                         </span>
                       </>

@@ -25,7 +25,7 @@ const TacticalKPI = ({ label, value, icon, color, trend }: any) => {
         <div
           className={`p-2 rounded-2xl border ${colors[color]} bg-transparent`}
         >
-          <span className="material-symbols-outlined text-xl">{icon}</span>
+          <span className="material-icons text-xl">{icon}</span>
         </div>
         {trend && (
           <span className="text-[9px] font-black px-2 py-0.5 rounded border border-slate-200 bg-white/5 text-slate-700 uppercase">
@@ -93,7 +93,7 @@ export const DashboardSubdireccion = () => {
           <div className="relative group">
             <div className="absolute -inset-2 bg-orange-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="size-16 bg-[#0a0f18] border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.15)] relative overflow-hidden backdrop-blur-xl">
-              <span className="material-symbols-outlined text-4xl">
+              <span className="material-icons text-4xl">
                 architecture
               </span>
               <motion.div
@@ -117,7 +117,7 @@ export const DashboardSubdireccion = () => {
               </span>
             </h2>
             <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.4em] mt-3 italic flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">
+              <span className="material-icons text-sm">
                 terminal
               </span>
               CORE_SYSTEM_STABILITY: {stats.riskLevel}
@@ -130,7 +130,7 @@ export const DashboardSubdireccion = () => {
             onClick={() => handleQuickAction("reporte_mensual")}
             className="px-6 py-3.5 bg-white/5 border border-slate-200 rounded-2xl text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all flex items-center gap-3 active:scale-95"
           >
-            <span className="material-symbols-outlined text-xl">ios_share</span>
+            <span className="material-icons text-xl">ios_share</span>
             EXP_ZONA.PDF
           </button>
           <button
@@ -141,7 +141,7 @@ export const DashboardSubdireccion = () => {
             {isSyncing ? (
               <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
-              <span className="material-symbols-outlined text-xl">
+              <span className="material-icons text-xl">
                 sync_lock
               </span>
             )}
@@ -189,7 +189,7 @@ export const DashboardSubdireccion = () => {
             <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between relative">
               <div className="flex items-center gap-4">
                 <div className="size-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500">
-                  <span className="material-symbols-outlined text-xl font-black">
+                  <span className="material-icons text-xl font-black">
                     emergency
                   </span>
                 </div>
@@ -255,7 +255,7 @@ export const DashboardSubdireccion = () => {
               {students.filter((s) => s.caseState === CaseState.INTERVENCION)
                 .length === 0 && (
                 <div className="h-full flex flex-col items-center justify-center p-20 text-slate-700 opacity-30 gap-6">
-                  <span className="material-symbols-outlined text-6xl">
+                  <span className="material-icons text-6xl">
                     verified
                   </span>
                   <p className="text-[10px] font-black text-center uppercase tracking-[0.4em] italic">
@@ -271,7 +271,7 @@ export const DashboardSubdireccion = () => {
         <div className="space-y-8">
           <div className="card-sase p-8 border-slate-100 bg-[#0a0f18]/40 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-              <span className="material-symbols-outlined text-8xl text-orange-500">
+              <span className="material-icons text-8xl text-orange-500">
                 bolt
               </span>
             </div>
@@ -287,7 +287,7 @@ export const DashboardSubdireccion = () => {
                 className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-orange-600 hover:border-orange-500 active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
-                  <span className="material-symbols-outlined text-2xl">
+                  <span className="material-icons text-2xl">
                     add_moderator
                   </span>
                 </div>
@@ -306,7 +306,7 @@ export const DashboardSubdireccion = () => {
                 className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-blue-600 hover:border-blue-500 active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
-                  <span className="material-symbols-outlined text-2xl">
+                  <span className="material-icons text-2xl">
                     group_add
                   </span>
                 </div>
@@ -325,7 +325,7 @@ export const DashboardSubdireccion = () => {
                 className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-emerald-600 hover:border-emerald-500 active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
-                  <span className="material-symbols-outlined text-2xl">
+                  <span className="material-icons text-2xl">
                     assignment_turned_in
                   </span>
                 </div>
@@ -343,12 +343,12 @@ export const DashboardSubdireccion = () => {
 
           <div className="bg-gradient-to-br from-orange-600 to-orange-800 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-6xl">
+              <span className="material-icons text-6xl">
                 psychology
               </span>
             </div>
             <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
-              <span className="material-symbols-outlined text-xl">
+              <span className="material-icons text-xl">
                 auto_awesome
               </span>
               IA_INSIGHT

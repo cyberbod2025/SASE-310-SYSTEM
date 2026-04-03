@@ -45,7 +45,7 @@ const IntelligenceKPI = ({
         <div
           className={`p-2 rounded-xl border ${colors[color]} bg-transparent`}
         >
-          <span className="material-symbols-outlined text-lg">{icon}</span>
+          <span className="material-icons text-lg">{icon}</span>
         </div>
         <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
           {label}
@@ -80,7 +80,7 @@ export const Reportes: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full p-20 text-center animate-fade-in">
         <div className="size-24 bg-rose-500/10 border border-rose-500/20 rounded-full flex items-center justify-center text-rose-500 mb-8 shadow-2xl shadow-rose-500/10">
-          <span className="material-symbols-outlined text-5xl">lock</span>
+          <span className="material-icons text-5xl">lock</span>
         </div>
         <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter mb-4">
           Acceso Restringido
@@ -527,7 +527,7 @@ export const Reportes: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         {opt.icon}
                       </span>
                       <div>

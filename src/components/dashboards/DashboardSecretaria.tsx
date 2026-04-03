@@ -381,7 +381,7 @@ export const DashboardSecretaria = () => {
             className="absolute top-0 w-[2px] h-full bg-gradient-to-b from-transparent via-cyan-500/30 to-transparent pointer-events-none z-0"
           />
           <div className="flex items-center gap-3 relative z-10">
-            <span className="material-symbols-outlined text-cyan-500 text-[20px] animate-pulse">
+            <span className="material-icons text-cyan-500 text-[20px] animate-pulse">
               verified_user
             </span>
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-wider">
@@ -391,7 +391,7 @@ export const DashboardSecretaria = () => {
           </div>
           <div className="hidden md:block w-px h-4 bg-white/10 relative z-10"></div>
           <div className="flex items-center gap-3 relative z-10">
-            <span className="material-symbols-outlined text-slate-700 text-[18px]">
+            <span className="material-icons text-slate-700 text-[18px]">
               history_edu
             </span>
             <p className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">
@@ -421,7 +421,7 @@ export const DashboardSecretaria = () => {
                 </p>
               </div>
               <div className="size-10 bg-cyan-500/10 rounded-xl border border-cyan-500/20 text-cyan-400 flex items-center justify-center group-hover:bg-cyan-500/20 group-hover:scale-110 transition-all duration-500">
-                <span className="material-symbols-outlined">psychology</span>
+                <span className="material-icons">psychology</span>
               </div>
             </div>
 
@@ -467,7 +467,7 @@ export const DashboardSecretaria = () => {
               title="Cargar archivo Excel o CSV para inscripción masiva"
               className="btn-sase-primary w-full py-4 text-[10px] font-black tracking-[0.2em] shadow-cyan-600/20 relative z-10"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-icons text-[18px]">
                 upload_file
               </span>
               INICIAR IMPORTACIÓN
@@ -494,7 +494,7 @@ export const DashboardSecretaria = () => {
                 </p>
               </div>
               <div className="size-10 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                <span className="material-symbols-outlined">description</span>
+                <span className="material-icons">description</span>
               </div>
             </div>
 
@@ -547,7 +547,7 @@ export const DashboardSecretaria = () => {
                 </p>
               </div>
               <div className="size-12 rounded-xl bg-white/10 flex items-center justify-center text-white relative z-10 group-hover/total:scale-110 transition-transform duration-500">
-                <span className="material-symbols-outlined">group</span>
+                <span className="material-icons">group</span>
               </div>
               {/* Decorative corner accent */}
               <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover/total:opacity-100 transition-opacity"></div>
@@ -560,7 +560,7 @@ export const DashboardSecretaria = () => {
               title="Registrar rápidamente la entrada de alumnos sin credencial o con retardo"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-              <span className="material-symbols-outlined text-2xl relative z-10">
+              <span className="material-icons text-2xl relative z-10">
                 bolt
               </span>
               <div className="text-left relative z-10">
@@ -582,7 +582,7 @@ export const DashboardSecretaria = () => {
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                  <span className="material-symbols-outlined text-cyan-500 animate-pulse">
+                  <span className="material-icons text-cyan-500 animate-pulse">
                     analytics
                   </span>
                   BALANCE INSTITUCIONAL{" "}
@@ -603,7 +603,7 @@ export const DashboardSecretaria = () => {
                   className="btn-sase-secondary px-4 py-2 text-[9px] font-black"
                   title="Imprimir reporte de balance institucional de grupos"
                 >
-                  <span className="material-symbols-outlined text-sm">
+                  <span className="material-icons text-sm">
                     print
                   </span>
                   PDF
@@ -711,7 +711,7 @@ export const DashboardSecretaria = () => {
             <div className="flex justify-between items-center mb-6 relative z-10">
               <div>
                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                  <span className="material-symbols-outlined text-rose-500 animate-pulse">
+                  <span className="material-icons text-rose-500 animate-pulse">
                     notification_important
                   </span>
                   PROTOCOLOS ACTIVOS
@@ -728,7 +728,7 @@ export const DashboardSecretaria = () => {
             <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
               {notices.filter((n) => !n.resolved).length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center opacity-20 py-12">
-                  <span className="material-symbols-outlined text-5xl mb-2">
+                  <span className="material-icons text-5xl mb-2">
                     verified
                   </span>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em]">
@@ -751,7 +751,7 @@ export const DashboardSecretaria = () => {
                           onClick={() => resolveSystemNotice(notice.id)}
                           className="text-slate-700 hover:text-cyan-400 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-sm">
+                          <span className="material-icons text-sm">
                             check_circle
                           </span>
                         </button>
@@ -790,7 +790,7 @@ export const DashboardSecretaria = () => {
               <div className="p-8 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-black text-white uppercase italic tracking-widest flex items-center gap-3">
-                    <span className="material-symbols-outlined text-cyan-500 animate-pulse">
+                    <span className="material-icons text-cyan-500 animate-pulse">
                       smart_toy
                     </span>
                     PROPUESTA DE DISTRIBUCIÓN{" "}
@@ -822,7 +822,7 @@ export const DashboardSecretaria = () => {
                   {/* Before */}
                   <div className="space-y-6">
                     <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                      <span className="material-symbols-outlined text-slate-700">
+                      <span className="material-icons text-slate-700">
                         history_toggle_off
                       </span>
                       <h4 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em]">
@@ -873,7 +873,7 @@ export const DashboardSecretaria = () => {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between border-b border-cyan-500/20 pb-4">
                       <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-cyan-500">
+                        <span className="material-icons text-cyan-500">
                           dynamic_form
                         </span>
                         <h4 className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.2em]">
@@ -881,7 +881,7 @@ export const DashboardSecretaria = () => {
                         </h4>
                       </div>
                       <div className="group relative">
-                        <span className="material-symbols-outlined text-slate-700 text-sm cursor-help hover:text-cyan-400 transition-colors">
+                        <span className="material-icons text-slate-700 text-sm cursor-help hover:text-cyan-400 transition-colors">
                           help_outline
                         </span>
                         <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-[#0b0e14]/90 backdrop-blur-xl border border-slate-200 rounded-xl text-[9px] text-slate-600 opacity-0 pointer-events-none group-hover:opacity-100 transition-all z-50 shadow-2xl">
@@ -1012,7 +1012,7 @@ export const DashboardSecretaria = () => {
                   aria-label="Confirmar y ejecutar asignación por IA"
                   className="btn-sase-primary px-10 py-4 text-[10px] font-black flex items-center gap-3 group"
                 >
-                  <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">
+                  <span className="material-icons group-hover:rotate-12 transition-transform">
                     verified
                   </span>
                   EJECUTAR DISTRIBUCIÓN IA
@@ -1030,7 +1030,7 @@ export const DashboardSecretaria = () => {
           <div className="px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/[0.01]">
             <div>
               <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em] flex items-center gap-2">
-                <span className="material-symbols-outlined text-cyan-500 text-sm">
+                <span className="material-icons text-cyan-500 text-sm">
                   folder_shared
                 </span>
                 DIRECTORIO ESTUDIANTIL{" "}
@@ -1045,7 +1045,7 @@ export const DashboardSecretaria = () => {
               id="secretaria-search"
               className="relative w-full md:w-[450px] group"
             >
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 material-symbols-outlined group-focus-within:text-cyan-500 transition-colors">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 material-icons group-focus-within:text-cyan-500 transition-colors">
                 search
               </span>
               <input
@@ -1069,7 +1069,7 @@ export const DashboardSecretaria = () => {
           <div className="flex-1 overflow-x-auto custom-scrollbar">
             {students.length === 0 ? (
               <div className="py-32 text-center">
-                <span className="material-symbols-outlined text-7xl text-white/5 mb-6 animate-pulse">
+                <span className="material-icons text-7xl text-white/5 mb-6 animate-pulse">
                   cloud_off
                 </span>
                 <p className="text-slate-700 font-black uppercase text-[10px] tracking-[0.3em] italic">
@@ -1118,7 +1118,7 @@ export const DashboardSecretaria = () => {
                           }}
                           className="aspect-square rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             psychology
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1135,7 +1135,7 @@ export const DashboardSecretaria = () => {
                           }
                           className="aspect-square rounded-xl bg-white/5 border border-slate-200 text-slate-600 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             badge
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1152,7 +1152,7 @@ export const DashboardSecretaria = () => {
                           }
                           className="aspect-square rounded-xl bg-white/5 border border-slate-200 text-slate-600 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             assignment
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1163,7 +1163,7 @@ export const DashboardSecretaria = () => {
                           onClick={() => handleEdit(student.id)}
                           className="aspect-square rounded-xl bg-white/5 border border-slate-200 text-slate-600 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             manage_search
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1251,7 +1251,7 @@ export const DashboardSecretaria = () => {
                           {editingId === student.id ? (
                             <div className="card-sase p-5 absolute z-20 w-[320px] -translate-x-12 -translate-y-4 animate-fade-in-up shadow-2xl shadow-black border-cyan-500/40 ring-1 ring-cyan-500/20">
                               <h4 className="text-[10px] font-black text-cyan-500 uppercase mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-sm">
+                                <span className="material-icons text-sm">
                                   shield_person
                                 </span>
                                 EXPEDIENTE DE TUTORÍA
@@ -1261,7 +1261,7 @@ export const DashboardSecretaria = () => {
                                   {student.guardianInfo?.name}
                                 </p>
                                 <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase">
-                                  <span className="material-symbols-outlined text-sm text-cyan-500">
+                                  <span className="material-icons text-sm text-cyan-500">
                                     call
                                   </span>
                                   {student.guardianInfo?.phonePrimary}
@@ -1292,7 +1292,7 @@ export const DashboardSecretaria = () => {
                             </div>
                           ) : (
                             <div className="flex items-center gap-2 text-slate-700">
-                              <span className="material-symbols-outlined text-[18px]">
+                              <span className="material-icons text-[18px]">
                                 lock_person
                               </span>
                               <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">
@@ -1312,7 +1312,7 @@ export const DashboardSecretaria = () => {
                               title="Despliegue de IA: Análisis Avanzado del Alumno"
                               aria-label="Ejecutar análisis predictivo"
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 psychology
                               </span>
                             </button>
@@ -1329,7 +1329,7 @@ export const DashboardSecretaria = () => {
                               className="size-10 rounded-xl bg-white/5 border border-slate-200 text-slate-600 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
                               title="Generar Credencial Institucional"
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 badge
                               </span>
                             </button>
@@ -1346,7 +1346,7 @@ export const DashboardSecretaria = () => {
                               className="size-10 rounded-xl bg-white/5 border border-slate-200 text-slate-600 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
                               title="Ver Formulario de Inscripción"
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 assignment
                               </span>
                             </button>
@@ -1369,7 +1369,7 @@ export const DashboardSecretaria = () => {
                                   : "Modificar Expediente"
                               }
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 {editingId === student.id
                                   ? "visibility_off"
                                   : "manage_search"}
@@ -1399,7 +1399,7 @@ export const DashboardSecretaria = () => {
               <div className="p-8 bg-emerald-500/[0.03] border-b border-slate-100 flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-black text-white uppercase italic tracking-widest flex items-center gap-3">
-                    <span className="material-symbols-outlined text-emerald-500 animate-pulse">
+                    <span className="material-icons text-emerald-500 animate-pulse">
                       bolt
                     </span>
                     ACCESO <span className="text-emerald-500">RELÁMPAGO</span>
@@ -1414,13 +1414,13 @@ export const DashboardSecretaria = () => {
                   aria-label="Cerrar panel emergente"
                   className="size-10 rounded-xl bg-white/5 border border-slate-200 text-slate-700 hover:text-white hover:bg-rose-500/20 transition-all flex items-center justify-center"
                 >
-                  <span className="material-symbols-outlined">close</span>
+                  <span className="material-icons">close</span>
                 </button>
               </div>
 
               <div className="p-8 space-y-6">
                 <div className="relative group">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 material-symbols-outlined group-focus-within:text-emerald-500 transition-colors">
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 material-icons group-focus-within:text-emerald-500 transition-colors">
                     search
                   </span>
                   <input

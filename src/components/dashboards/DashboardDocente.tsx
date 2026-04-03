@@ -211,13 +211,13 @@ export const DashboardDocente = () => {
               <span className="text-[7px] font-black text-blue-400 tracking-[0.3em] leading-none mb-1 opacity-50 uppercase">
                 NUCLEO IA OPERATIVO
               </span>
-              <span className="text-lg font-black text-slate-900 italic tracking-tighter leading-none pulse-glow">
+              <span className="text-lg font-black text-slate-200 italic tracking-tighter leading-none pulse-glow">
                 SASE-310
               </span>
             </div>
 
             <div className="mt-6" id="docente-dashboard-title">
-              <h2 className="text-xl md:text-2xl font-black text-slate-900 italic tracking-tighter uppercase leading-none mb-1">
+              <h2 className="text-xl md:text-2xl font-black text-slate-200 italic tracking-tighter uppercase leading-none mb-1">
                 CENTRO <span className="text-blue-500">DE MANDO</span>
               </h2>
               <div className="flex items-center gap-2 justify-center opacity-30">
@@ -244,7 +244,7 @@ export const DashboardDocente = () => {
                     }`}
                   >
                     <span
-                      className={`material-symbols-outlined text-sm ${tab.color}`}
+                      className={`material-icons text-sm ${tab.color}`}
                     >
                       {tab.icon}
                     </span>
@@ -266,7 +266,7 @@ export const DashboardDocente = () => {
           <div className="col-span-12 xl:col-span-8">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-4">
-                <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] italic">
+                <h2 className="text-sm font-black text-slate-300 uppercase tracking-[0.2em] italic">
                   MI_GRUPO
                 </h2>
                 {selectedStudentIds.size > 0 && (
@@ -288,7 +288,7 @@ export const DashboardDocente = () => {
                     title="Realizar un reporte masivo de incidencias para los alumnos seleccionados"
                     className="bg-rose-600 hover:bg-rose-500 text-white px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] flex items-center gap-2 shadow-xl shadow-black/5 shadow-rose-600/20 transition-all active:scale-95"
                   >
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-icons text-sm">
                       campaign
                     </span>
                     REPORTAR ({selectedStudentIds.size})
@@ -333,7 +333,7 @@ export const DashboardDocente = () => {
                         className={`size-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all ${isSelected ? "bg-blue-500 border-blue-500" : "border-white/20 bg-slate-100 hover:border-blue-400/50"}`}
                       >
                         {isSelected && (
-                          <span className="material-symbols-outlined text-white text-sm font-bold">
+                          <span className="material-icons text-white text-sm font-bold">
                             check
                           </span>
                         )}
@@ -364,7 +364,7 @@ export const DashboardDocente = () => {
                         />
                       </div>
                       <div>
-                        <h3 className="text-xs font-black text-slate-800 uppercase tracking-tight group-hover:text-blue-700 transition-colors">
+                        <h3 className="text-xs font-black text-slate-300 uppercase tracking-tight group-hover:text-blue-700 transition-colors">
                           {student.name}
                         </h3>
                         <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-0.5 font-mono">
@@ -375,7 +375,7 @@ export const DashboardDocente = () => {
 
                     {student.bapInfo?.hasBAP && (
                       <div className="mt-3 flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-blue-400 text-[14px] animate-pulse">
+                        <span className="material-icons text-blue-400 text-[14px] animate-pulse">
                           inclusive
                         </span>
                         <p className="text-[9px] font-black text-blue-400 uppercase tracking-tighter">
@@ -414,9 +414,9 @@ export const DashboardDocente = () => {
                   className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent pointer-events-none z-0"
                 />
                 <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                  <span className="material-symbols-outlined">groups</span>
+                  <span className="material-icons">groups</span>
                 </div>
-                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-200 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   {students.length}
                 </h3>
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-600 transition-colors">
@@ -441,11 +441,11 @@ export const DashboardDocente = () => {
                   className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent pointer-events-none z-0"
                 />
                 <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                  <span className="material-symbols-outlined">
+                  <span className="material-icons">
                     assignment_turned_in
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-200 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   98%
                 </h3>
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-600 transition-colors">
@@ -467,11 +467,11 @@ export const DashboardDocente = () => {
                   className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent pointer-events-none z-0"
                 />
                 <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                  <span className="material-symbols-outlined">
+                  <span className="material-icons">
                     notification_important
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-200 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   3
                 </h3>
                 <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mt-1 relative z-10 group-hover:text-slate-600 transition-colors">
@@ -492,11 +492,11 @@ export const DashboardDocente = () => {
                   className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent pointer-events-none z-0"
                 />
                 <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-3 relative z-10 group-hover:scale-110 transition-transform duration-500">
-                  <span className="material-symbols-outlined">
+                  <span className="material-icons">
                     auto_awesome
                   </span>
                 </div>
-                <h3 className="text-3xl font-black text-slate-900 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
+                <h3 className="text-3xl font-black text-slate-200 tracking-tighter italic font-mono tabular-nums relative z-10 drop-shadow-xl shadow-black/5">
                   {students.reduce(
                     (acc, s) => acc + (s.gamificacion?.total_puntos || 0),
                     0,
@@ -528,7 +528,7 @@ export const DashboardDocente = () => {
                   className="w-full flex items-center gap-3 p-4 rounded-xl border border-slate-100 hover:bg-slate-100 hover:border-blue-500/20 transition-all group text-left"
                 >
                   <div className="p-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-500 transition-all">
-                    <span className="material-symbols-outlined text-xl">
+                    <span className="material-icons text-xl">
                       calendar_month
                     </span>
                   </div>
@@ -549,7 +549,7 @@ export const DashboardDocente = () => {
                   title="Finalizar sesión y salir del sistema SASE"
                   className="w-full flex items-center justify-center gap-2 py-3 text-[10px] font-black uppercase tracking-[0.15em] text-rose-500/60 hover:bg-rose-500/10 hover:text-rose-400 transition-all border border-transparent hover:border-rose-500/20 rounded-xl"
                 >
-                  <span className="material-symbols-outlined text-sm">
+                  <span className="material-icons text-sm">
                     logout
                   </span>
                   CERRAR_SESIÓN
@@ -594,7 +594,7 @@ export const DashboardDocente = () => {
                       {s.name}
                     </p>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <span className="material-symbols-outlined text-amber-400 text-sm">
+                      <span className="material-icons text-amber-400 text-sm">
                         warning
                       </span>
                       <p className="text-[10px] text-slate-700 truncate font-black uppercase">
@@ -610,7 +610,7 @@ export const DashboardDocente = () => {
             <div className="card-sase overflow-hidden flex flex-col p-0 border-slate-100">
               <div className="p-5 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center">
                 <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] italic flex items-center gap-2">
-                  <span className="material-symbols-outlined text-blue-400 text-lg">
+                  <span className="material-icons text-blue-400 text-lg">
                     group
                   </span>
                   LISTADO_GRUPO
@@ -620,7 +620,7 @@ export const DashboardDocente = () => {
                     title="Filtrar listado de alumnos"
                     className="p-2 rounded-2xl hover:bg-white/5 text-slate-600 hover:text-white transition-colors"
                   >
-                    <span className="material-symbols-outlined text-lg">
+                    <span className="material-icons text-lg">
                       filter_list
                     </span>
                   </button>
@@ -628,7 +628,7 @@ export const DashboardDocente = () => {
                     title="Buscar alumno en el grupo"
                     className="p-2 rounded-2xl hover:bg-white/5 text-slate-600 hover:text-white transition-colors"
                   >
-                    <span className="material-symbols-outlined text-lg">
+                    <span className="material-icons text-lg">
                       search
                     </span>
                   </button>
@@ -722,7 +722,7 @@ export const DashboardDocente = () => {
                 title="Cerrar ventana de detalles"
                 className="absolute top-4 right-4 p-2 hover:bg-white/5 text-slate-700 hover:text-rose-400 transition-all rounded-xl"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-icons">close</span>
               </button>
 
               <div className="p-8">
@@ -789,7 +789,7 @@ export const DashboardDocente = () => {
 
                 <div className="space-y-4">
                   <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2 italic">
-                    <span className="material-symbols-outlined text-slate-700 text-lg">
+                    <span className="material-icons text-slate-700 text-lg">
                       history_edu
                     </span>
                     TRAYECTORIA_ESCOLAR
@@ -915,7 +915,7 @@ export const DashboardDocente = () => {
           <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center relative">
             <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
             <div className="pl-4">
-              <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] italic">
+              <h2 className="text-sm font-black text-slate-300 uppercase tracking-[0.2em] italic">
                 PASE DE LISTA <span className="text-emerald-400">DIARIO</span>
               </h2>
               <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest mt-1">
@@ -933,7 +933,7 @@ export const DashboardDocente = () => {
               onClick={saveAttendance}
               title="Guardar los cambios en el pase de lista de hoy"
             >
-              <span className="material-symbols-outlined text-lg">save</span>
+              <span className="material-icons text-lg">save</span>
               GUARDAR
             </button>
           </div>
@@ -1021,7 +1021,7 @@ export const DashboardDocente = () => {
                             title={`Observación de asistencia para ${student.name}`}
                           />
                           <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-blue-400 transition-colors">
-                            <span className="material-symbols-outlined text-[16px]">
+                            <span className="material-icons text-[16px]">
                               edit_note
                             </span>
                           </button>
@@ -1048,8 +1048,8 @@ export const DashboardDocente = () => {
           <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center relative">
             <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
             <div className="pl-4">
-              <h2 className="text-sm font-black text-slate-800 uppercase tracking-[0.2em] italic flex items-center gap-3">
-                <span className="material-symbols-outlined text-amber-400 text-xl">
+              <h2 className="text-sm font-black text-slate-300 uppercase tracking-[0.2em] italic flex items-center gap-3">
+                <span className="material-icons text-amber-400 text-xl">
                   lock_clock
                 </span>
                 EVALUACIÓN <span className="text-amber-400">CONTINUA</span>
@@ -1164,7 +1164,7 @@ export const DashboardDocente = () => {
               <div className="flex justify-between items-start mb-6">
                 <div className="flex gap-4">
                   <div className="size-12 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center border border-rose-500/30">
-                    <span className="material-symbols-outlined text-2xl">
+                    <span className="material-icons text-2xl">
                       gavel
                     </span>
                   </div>
@@ -1181,7 +1181,7 @@ export const DashboardDocente = () => {
                   onClick={() => setIsQuickReportOpen(false)}
                   className="text-slate-700 hover:text-white transition-colors"
                 >
-                  <span className="material-symbols-outlined">close</span>
+                  <span className="material-icons">close</span>
                 </button>
               </div>
 
@@ -1200,7 +1200,7 @@ export const DashboardDocente = () => {
                         }
                         className="px-4 py-2 rounded-xl border border-slate-100 bg-white/[0.02] text-white text-xs font-bold hover:bg-white/[0.08] hover:border-blue-500/30 hover:text-blue-400 transition-all text-left flex items-center gap-2"
                       >
-                        <span className="material-symbols-outlined text-sm opacity-50">
+                        <span className="material-icons text-sm opacity-50">
                           {comment.type === IncidentType.CONDUCTA
                             ? "sports_kabaddi"
                             : comment.type === IncidentType.ACADEMICO

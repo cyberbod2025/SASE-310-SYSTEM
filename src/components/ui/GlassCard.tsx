@@ -58,7 +58,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
       <style>{`
         .bg-radial-glow {
-          background: radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.08), transparent 60%);
+          background: radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.03), transparent 60%);
         }
       `}</style>
     </motion.div>

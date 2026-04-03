@@ -58,7 +58,7 @@ const HolographicKPI = ({
         <div
           className={`p-2 rounded-xl border ${colors[color]} bg-transparent group-hover:scale-110 transition-transform duration-500`}
         >
-          <span className="material-symbols-outlined text-lg">{icon}</span>
+          <span className="material-icons text-lg">{icon}</span>
         </div>
         {trend && (
           <span className="text-[9px] font-black px-2 py-0.5 rounded-full border border-slate-200 bg-white/5 text-slate-600 uppercase tracking-tighter">
@@ -98,7 +98,7 @@ const TacticalActionButton = ({
     <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors"></div>
     {/* Corner accent */}
     <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-    <span className="material-symbols-outlined text-3xl mb-2 relative z-10 group-hover:scale-110 transition-transform">
+    <span className="material-icons text-3xl mb-2 relative z-10 group-hover:scale-110 transition-transform">
       {icon}
     </span>
     <span className="text-[10px] font-black uppercase leading-tight text-center relative z-10 tracking-widest">
@@ -322,7 +322,7 @@ export const DashboardPrefectura = () => {
               }
               className="px-4 md:px-6 py-2 md:py-3 bg-slate-100 border border-slate-200 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-white/[0.08] hover:text-white hover:border-white/20 transition-all flex items-center gap-2 md:gap-3"
             >
-              <span className="material-symbols-outlined text-base md:text-lg">
+              <span className="material-icons text-base md:text-lg">
                 print
               </span>
               Exportar
@@ -341,7 +341,7 @@ export const DashboardPrefectura = () => {
           <div className="flex flex-col md:flex-row items-center gap-4 relative z-10">
             <div className="flex items-center gap-3 flex-1 w-full">
               <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
-                <span className="material-symbols-outlined text-xl">
+                <span className="material-icons text-xl">
                   qr_code_scanner
                 </span>
               </div>
@@ -458,7 +458,7 @@ export const DashboardPrefectura = () => {
                     transition={{ duration: 3, repeat: Infinity }}
                     className="mb-4 p-3 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-center gap-3"
                   >
-                    <span className="material-symbols-outlined text-amber-500 text-lg">
+                    <span className="material-icons text-amber-500 text-lg">
                       info
                     </span>
                     <p className="text-[10px] text-amber-400/80 font-black uppercase tracking-widest">
@@ -625,7 +625,7 @@ export const DashboardPrefectura = () => {
               <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-[300px] pr-2 flex-1 relative z-10">
                 {recentActivity.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-48 opacity-20">
-                    <span className="material-symbols-outlined text-4xl mb-3 font-light">
+                    <span className="material-icons text-4xl mb-3 font-light">
                       terminal
                     </span>
                     <p className="text-[10px] uppercase font-black tracking-widest">
@@ -671,7 +671,7 @@ export const DashboardPrefectura = () => {
                           }
                           className="size-8 bg-white/5 hover:bg-amber-600 hover:text-white rounded-2xl flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
                         >
-                          <span className="material-symbols-outlined text-sm">
+                          <span className="material-icons text-sm">
                             print
                           </span>
                         </button>
@@ -697,7 +697,7 @@ export const DashboardPrefectura = () => {
               />
               <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-rose-500/10 opacity-20"></div>
               <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                <span className="material-symbols-outlined text-[60px] text-rose-500">
+                <span className="material-icons text-[60px] text-rose-500">
                   warning
                 </span>
               </div>
@@ -840,7 +840,7 @@ export const DashboardPrefectura = () => {
               ) : (
                 <div className="text-center py-10 opacity-30 hover:opacity-60 transition-opacity relative z-10">
                   <div className="size-16 rounded-full border-2 border-dashed border-amber-500/30 flex items-center justify-center mx-auto mb-4">
-                    <span className="material-symbols-outlined text-3xl text-amber-500/50">
+                    <span className="material-icons text-3xl text-amber-500/50">
                       person_search
                     </span>
                   </div>

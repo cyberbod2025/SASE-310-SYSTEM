@@ -26,7 +26,7 @@ export const PanelAdvertencias: React.FC<PanelAdvertenciasProps> = ({
   ) {
     return (
       <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
-        <span className="material-symbols-outlined text-emerald-500 text-xl">
+        <span className="material-icons text-emerald-500 text-xl">
           verified
         </span>
         <div>
@@ -47,7 +47,7 @@ export const PanelAdvertencias: React.FC<PanelAdvertenciasProps> = ({
       {incidenciasPrevias && incidenciasPrevias.cantidad > 0 && (
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
           <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-blue-500 text-lg">
+            <span className="material-icons text-blue-500 text-lg">
               history
             </span>
             <p className="text-[10px] font-black text-blue-700 uppercase tracking-wide">
@@ -71,7 +71,7 @@ export const PanelAdvertencias: React.FC<PanelAdvertenciasProps> = ({
       {criticas.length > 0 && (
         <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl">
           <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-rose-500 text-lg">
+            <span className="material-icons text-rose-500 text-lg">
               error
             </span>
             <p className="text-[10px] font-black text-rose-700 uppercase tracking-wide">
@@ -99,7 +99,7 @@ export const PanelAdvertencias: React.FC<PanelAdvertenciasProps> = ({
       {warnings.length > 0 && (
         <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
           <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-amber-500 text-lg">
+            <span className="material-icons text-amber-500 text-lg">
               warning
             </span>
             <p className="text-[10px] font-black text-amber-700 uppercase tracking-wide">

@@ -25,7 +25,6 @@ const DashboardDireccion = React.lazy(() => import("./dashboards/DashboardDirecc
 const DashboardSubdireccion = React.lazy(() => import("./dashboards/DashboardSubdireccion").then((m) => ({ default: m.DashboardSubdireccion })));
 const DashboardLectura = React.lazy(() => import("./dashboards/DashboardLectura"));
 const DashboardDeveloper = React.lazy(() => import("./dashboards/DashboardDeveloper").then((m) => ({ default: m.DashboardDeveloper })));
-const DashboardIntelligence = React.lazy(() => import("./dashboards/DashboardIntelligence").then((m) => ({ default: m.DashboardIntelligence })));
 
 // Modules (Lazy Loaded)
 const Agenda = React.lazy(() => import("./Agenda").then((m) => ({ default: m.Agenda })));
@@ -75,8 +74,7 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
             if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;
             if (currentModule === AppModule.ASISTENCIA) return <Asistencia />;
-            if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
-            if (currentModule === AppModule.IA_SASE) return <DashboardIntelligence />;
+             if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
             if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
             if (currentModule === AppModule.HOME) {

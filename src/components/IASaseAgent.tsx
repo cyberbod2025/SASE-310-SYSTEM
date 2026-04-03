@@ -88,7 +88,7 @@ export const IASaseAgent: React.FC = () => {
                   onClick={() => setIsAssistantOpen(false)}
                   className="size-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all hover:rotate-90"
                 >
-                  <span className="material-symbols-outlined text-sm">close</span>
+                  <span className="material-icons text-sm">close</span>
                 </button>
               </div>
 
@@ -223,7 +223,7 @@ const ActionButton: React.FC<{
     className="w-full flex items-center gap-4 p-4 bg-white/[0.03] hover:bg-white/[0.08] hover:border-blue-500/30 border border-white/5 rounded-2xl transition-all group text-left"
   >
     <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-inner">
-      <span className="material-symbols-outlined text-xl">{icon}</span>
+      <span className="material-icons text-xl">{icon}</span>
     </div>
     <div className="flex-1 min-w-0">
       <span className="block text-[10px] font-black text-white uppercase tracking-tight">
@@ -233,7 +233,7 @@ const ActionButton: React.FC<{
         {description}
       </span>
     </div>
-    <span className="material-symbols-outlined text-slate-700 group-hover:text-blue-400 text-sm">
+    <span className="material-icons text-slate-700 group-hover:text-blue-400 text-sm">
       arrow_forward_ios
     </span>
   </button>

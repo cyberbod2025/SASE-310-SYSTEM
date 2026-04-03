@@ -11,14 +11,14 @@ export const LiquidGlassFilters = () => {
       <defs>
         <filter id="liquid-glass-refraction" x="-20%" y="-20%" width="140%" height="140%">
           {/* 1. Desenfoque base para la textura esmerilada */}
-          <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
           
           {/* 2. Mapa de desplazamiento (Refracción). Simula la distorsión del cristal */}
           <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" />
           <feDisplacementMap 
             in="blur" 
             in2="noise" 
-            scale="15" 
+            scale="10" 
             xChannelSelector="R" 
             yChannelSelector="G" 
             result="displaced" 
@@ -30,13 +30,13 @@ export const LiquidGlassFilters = () => {
             values="1 0 0 0 0  
                     0 1 0 0 0  
                     0 0 1 0 0  
-                    0 0 0 1.2 0" 
+                    0 0 0 1.1 0" 
             in="displaced" 
             result="saturated" 
           />
           
           {/* 4. Mezcla final con la gráfica original */}
-          <feBlend mode="screen" in="SourceGraphic" in2="saturated" />
+          <feBlend mode="overlay" in="SourceGraphic" in2="saturated" />
         </filter>
       </defs>
     </svg>

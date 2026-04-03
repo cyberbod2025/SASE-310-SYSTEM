@@ -87,7 +87,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
                 onClick={onClose}
                 className="size-10 rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all flex items-center justify-center"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-icons">close</span>
               </button>
             </div>
 
@@ -95,7 +95,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
             <div className="flex-1 overflow-hidden flex flex-col p-6 space-y-4">
               <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest border-b border-white/5 pb-2">
                 <div className="flex items-center gap-4 text-amber-500/70">
-                  <span className="material-symbols-outlined text-sm">
+                  <span className="material-icons text-sm">
                     {viewMode === "preview" ? "visibility" : "edit_note"}
                   </span>
                   {viewMode === "preview"
@@ -201,7 +201,7 @@ export const PrintPreviewModal: React.FC<PrintPreviewModalProps> = ({
                 onClick={handlePrint}
                 className="px-10 py-4 bg-amber-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-600/20 hover:bg-amber-500 transition-all active:scale-95 flex items-center gap-3"
               >
-                <span className="material-symbols-outlined text-lg">print</span>
+                <span className="material-icons text-lg">print</span>
                 Confirmar e Imprimir
               </button>
             </div>

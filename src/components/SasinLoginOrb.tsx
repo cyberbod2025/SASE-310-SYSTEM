@@ -33,83 +33,111 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
   const pupilY = Math.max(-4, Math.min(4, mouseY * 8));
 
   return (
-    <div className={`relative flex items-center justify-center ${className || "w-24 h-24"}`}>
-      {/* Resplandor exterior más suave */}
+    <div className={`relative flex items-center justify-center ${className || "w-32 h-32"}`}>
+      {/* Resplandor exterior - Energía SASE */}
       <motion.div
         animate={{
           boxShadow: [
-            "0 0 26px 10px rgba(59,130,246,0.18)",
-            "0 0 36px 12px rgba(124,58,237,0.18)",
-            "0 0 26px 10px rgba(59,130,246,0.18)",
+            "0 0 40px 15px rgba(59,130,246,0.25)",
+            "0 0 60px 20px rgba(139,92,246,0.25)",
+            "0 0 40px 15px rgba(59,130,246,0.25)",
           ],
-          scale: [1, 1.02, 1],
+          scale: [1, 1.05, 1],
         }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         className="absolute inset-0 rounded-full"
       />
 
-      {/* Cuerpo principal de la esfera */}
+      {/* Cuerpo principal de la esfera: Cristal Líquido */}
       <motion.div
         className="absolute inset-0 rounded-full overflow-hidden"
         style={{
           background:
-            "radial-gradient(circle at 45% 35%, #c7d2fe 0%, #93c5fd 35%, #1d4ed8 75%, #0b1933 100%)",
-          border: "1px solid rgba(59,130,246,0.25)",
+            "radial-gradient(circle at 40% 30%, #ecf9ff 0%, #3b82f6 40%, #1e3a8a 85%, #050b1a 100%)",
+          border: "2px solid rgba(255,255,255,0.15)",
         }}
       >
-        {/* Reflejo de luz superior */}
-        <div
-          className="absolute top-[9%] left-[22%] w-[38%] h-[18%] rounded-full opacity-35"
-          style={{
-            background: "radial-gradient(ellipse, rgba(255,255,255,0.8) 0%, transparent 100%)",
-            filter: "blur(5px)",
-          }}
+        {/* Capas de Profundidad (Nebulosa Interna) */}
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-[-50%] bg-[conic-gradient(from_0deg,#3b82f6,#8b5cf6,#00f2ff,#3b82f6)] opacity-20 blur-3xl"
         />
 
-        {/* CARA: Ojos de SASIN */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex gap-[22%] items-center" style={{ marginTop: "-4%" }}>
-            {/* Ojo Izquierdo */}
-            <div className="relative flex items-center justify-center" style={{ width: "22%", aspectRatio: "1" }}>
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{ background: "radial-gradient(circle, #bfdbfe 0%, #60a5fa 60%, #1e3a8a 100%)" }}
+        {/* Reflejo de luz superior (Capa de cristal) */}
+        <div
+          className="absolute top-[8%] left-[20%] w-[45%] h-[25%] rounded-full bg-white/40 blur-[8px]"
+        />
+
+        {/* CARA: NÚCLEO COGNITIVO */}
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          <div className="flex flex-col items-center gap-2 mt-[-5%]">
+            
+            {/* Cejas/Expresión Neural */}
+            <div className="flex gap-10 opacity-60">
+              <motion.div 
+                animate={{ rotate: [-5, 5, -5], y: [0, -1, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="w-10 h-1 bg-white/40 rounded-full blur-[1px]"
               />
-              <motion.div
-                animate={{ x: pupilX, y: blink ? 0 : pupilY, scaleY: blink ? 0.08 : 1 }}
-                transition={{ type: "spring", stiffness: 180, damping: 18 }}
-                className="absolute rounded-full bg-white shadow-[0_0_12px_#fff,0_0_24px_#3b82f6] z-10"
-                style={{ width: "42%", height: "42%" }}
-              />
-              <div
-                className="absolute rounded-full bg-white opacity-80"
-                style={{ width: "16%", height: "16%", top: "22%", left: "56%" }}
+              <motion.div 
+                animate={{ rotate: [5, -5, 5], y: [0, -1, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="w-10 h-1 bg-white/40 rounded-full blur-[1px]"
               />
             </div>
 
-            {/* Ojo Derecho */}
-            <div className="relative flex items-center justify-center" style={{ width: "22%", aspectRatio: "1" }}>
-              <div
-                className="absolute inset-0 rounded-full"
-                style={{ background: "radial-gradient(circle, #bfdbfe 0%, #60a5fa 60%, #1e3a8a 100%)" }}
-              />
-              <motion.div
-                animate={{ x: pupilX, y: blink ? 0 : pupilY, scaleY: blink ? 0.08 : 1 }}
-                transition={{ type: "spring", stiffness: 180, damping: 18 }}
-                className="absolute rounded-full bg-[#0b1222]"
-                style={{ width: "38%", height: "38%" }}
-              />
-              <div
-                className="absolute rounded-full bg-white opacity-80"
-                style={{ width: "16%", height: "16%", top: "22%", left: "56%" }}
-              />
+            <div className="flex gap-[30%] items-center">
+              {/* Ojo Izquierdo */}
+              <div className="relative w-6 h-6 rounded-full bg-slate-900 border border-white/20 overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                 <motion.div
+                    animate={{ 
+                      x: pupilX * 1.5, 
+                      y: blink ? 15 : pupilY * 1.5,
+                      scaleY: blink ? 0.1 : 1
+                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                 >
+                    <div className="w-3.5 h-3.5 bg-white rounded-full shadow-[0_0_12px_#fff,0_0_20px_#3b82f6] flex items-center justify-center">
+                       <div className="w-1 h-1 bg-blue-600 rounded-full" />
+                    </div>
+                 </motion.div>
+              </div>
+
+              {/* Ojo Derecho */}
+              <div className="relative w-6 h-6 rounded-full bg-slate-900 border border-white/20 overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                 <motion.div
+                    animate={{ 
+                      x: pupilX * 1.5, 
+                      y: blink ? 15 : pupilY * 1.5,
+                      scaleY: blink ? 0.1 : 1
+                    }}
+                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                 >
+                    <div className="w-3.5 h-3.5 bg-white rounded-full shadow-[0_0_12px_#fff,0_0_20px_#3b82f6] flex items-center justify-center">
+                       <div className="w-1 h-1 bg-blue-600 rounded-full" />
+                    </div>
+                 </motion.div>
+              </div>
             </div>
+
+            {/* Neural Heartbeat Pulse */}
+            <motion.div 
+               animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
+               transition={{ duration: 2, repeat: Infinity }}
+               className="w-1.5 h-1.5 bg-cyan-400 rounded-full blur-[2px] mt-2"
+            />
           </div>
         </div>
+
+        {/* Reflejo inferior */}
+        <div className="absolute bottom-[10%] left-[25%] w-[50%] h-[15%] bg-blue-400/20 rounded-full blur-[12px]" />
       </motion.div>
 
-      {/* Anillo giratorio externo simplificado */}
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+      {/* Orbitals */}
+      <svg className="absolute inset-[-10%] w-[120%] h-[120%] pointer-events-none" viewBox="0 0 100 100">
         <motion.circle
           animate={{ rotate: 360 }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -118,8 +146,8 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
           cy="50"
           r="46"
           fill="none"
-          stroke="rgba(147,197,253,0.35)"
-          strokeWidth="0.8"
+          stroke="rgba(147,197,253,0.3)"
+          strokeWidth="0.5"
           strokeDasharray="6 14"
         />
       </svg>

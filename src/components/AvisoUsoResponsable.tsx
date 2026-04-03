@@ -23,7 +23,7 @@ export const AvisoUsoResponsable: React.FC<AvisoUsoResponsableProps> = ({
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100 px-8 py-6">
           <div className="flex justify-between items-start mb-4">
              <div className="size-14 bg-amber-100 rounded-2xl flex items-center justify-center border border-amber-200 shadow-sm flex-shrink-0">
-              <span className="material-symbols-outlined text-amber-600 text-3xl">
+              <span className="material-icons text-amber-600 text-3xl">
                 shield_lock
               </span>
             </div>
@@ -52,7 +52,7 @@ export const AvisoUsoResponsable: React.FC<AvisoUsoResponsableProps> = ({
           </div>
 
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
-            <span className="material-symbols-outlined text-amber-500 text-xl flex-shrink-0 mt-0.5">
+            <span className="material-icons text-amber-500 text-xl flex-shrink-0 mt-0.5">
               visibility
             </span>
             <p className="text-xs text-amber-800 leading-relaxed font-semibold">
@@ -63,7 +63,7 @@ export const AvisoUsoResponsable: React.FC<AvisoUsoResponsableProps> = ({
           </div>
 
           <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <span className="material-symbols-outlined text-blue-500 text-xl flex-shrink-0 mt-0.5">
+            <span className="material-icons text-blue-500 text-xl flex-shrink-0 mt-0.5">
               policy
             </span>
             <p className="text-[11px] text-blue-800 leading-relaxed font-medium">
@@ -88,7 +88,7 @@ export const AvisoUsoResponsable: React.FC<AvisoUsoResponsableProps> = ({
             id="btn-aceptar-acceso-sensible"
             className="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 hover:shadow-blue-500/25 transition-all active:scale-95 flex items-center justify-center gap-2"
           >
-            <span className="material-symbols-outlined text-sm">
+            <span className="material-icons text-sm">
               verified_user
             </span>
             Acepto y Continúo

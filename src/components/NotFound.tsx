@@ -30,7 +30,7 @@ export const NotFound = () => {
         >
           <div className="absolute inset-0 bg-blue-500/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
           <div className="relative flex items-center gap-3">
-            <span className="material-symbols-outlined group-hover:-translate-x-1 transition-transform">
+            <span className="material-icons group-hover:-translate-x-1 transition-transform">
               arrow_back
             </span>
             Regresar al Sistema

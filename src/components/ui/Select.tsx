@@ -51,7 +51,7 @@ export function Select({
           {children}
         </select>
         <span
-          className={`material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-lg ${
+          className={`material-icons absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-lg ${
             variant === "dark" ? "text-slate-500" : "text-slate-400"
           }`}
         >

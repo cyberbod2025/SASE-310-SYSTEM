@@ -22,7 +22,7 @@ export const DashboardLectura = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
           <div className="size-16 bg-[#0a0f18] border border-pink-500/30 rounded-2xl flex items-center justify-center text-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.15)] relative overflow-hidden backdrop-blur-xl">
-            <span className="material-symbols-outlined text-4xl">
+            <span className="material-icons text-4xl">
               menu_book
             </span>
             <motion.div
@@ -123,7 +123,7 @@ export const DashboardLectura = () => {
                 className="card-sase p-6 border-pink-500/10 flex flex-col items-center justify-center text-center group cursor-pointer"
                 onClick={() => setIsModalOpen(true)}
               >
-                <span className="material-symbols-outlined text-4xl text-pink-500 mb-4 group-hover:scale-110 transition-transform">
+                <span className="material-icons text-4xl text-pink-500 mb-4 group-hover:scale-110 transition-transform">
                   cloud_upload
                 </span>
                 <p className="text-[10px] font-black text-white uppercase tracking-widest">
@@ -208,7 +208,7 @@ const EventRow = ({ title, time, room }: any) => (
   <div className="p-6 flex items-center justify-between group hover:bg-pink-500/[0.02] transition-colors">
     <div className="flex items-center gap-5">
       <div className="size-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-700 group-hover:text-pink-400 transition-colors">
-        <span className="material-symbols-outlined">auto_stories</span>
+        <span className="material-icons">auto_stories</span>
       </div>
       <div>
         <p className="text-sm font-black text-white uppercase italic tracking-tighter">
@@ -228,7 +228,7 @@ const EventRow = ({ title, time, room }: any) => (
 const EvidenceThumb = ({ label, type }: any) => (
   <div className="card-sase p-6 border-slate-100 bg-[#0a0f18]/20 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all">
     <div className="size-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 mb-3 group-hover:text-pink-500">
-      <span className="material-symbols-outlined text-3xl">book_2</span>
+      <span className="material-icons text-3xl">book_2</span>
     </div>
     <p className="text-[9px] font-black text-white uppercase tracking-widest mb-1">
       {label}

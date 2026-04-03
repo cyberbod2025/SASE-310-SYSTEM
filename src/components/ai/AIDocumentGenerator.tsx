@@ -99,7 +99,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
         <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-full bg-blue-500/20 flex items-center justify-center border border-white/10">
-              <span className="material-symbols-outlined text-blue-400">
+              <span className="material-icons text-blue-400">
                 auto_awesome
               </span>
             </div>
@@ -117,7 +117,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
             className="size-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
             title="Cerrar generador de documentos"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-icons">close</span>
           </button>
         </div>
 
@@ -175,7 +175,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined">
+                    <span className="material-icons">
                       auto_awesome
                     </span>
                     Generar Documento con IA
@@ -212,7 +212,7 @@ export const AIDocumentGenerator: React.FC<AIDocumentGeneratorProps> = ({
                   onClick={handleSaveAndPrint}
                   className="flex-[2] py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center justify-center gap-3"
                 >
-                  <span className="material-symbols-outlined">print</span>
+                  <span className="material-icons">print</span>
                   Guardar e Imprimir
                 </button>
               </div>

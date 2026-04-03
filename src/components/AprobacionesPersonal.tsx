@@ -313,7 +313,7 @@ export const AprobacionesPersonal: React.FC = () => {
       <div className="bg-[#1e2d45]/20 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center border border-blue-500/30">
-            <span className="material-symbols-outlined text-4xl text-blue-400">
+            <span className="material-icons text-4xl text-blue-400">
               verified_user
             </span>
           </div>
@@ -333,7 +333,7 @@ export const AprobacionesPersonal: React.FC = () => {
               disabled={loading}
             >
               <span
-                className={`material-symbols-outlined text-sm ${loading ? "animate-spin" : ""}`}
+                className={`material-icons text-sm ${loading ? "animate-spin" : ""}`}
               >
                 sync
               </span>
@@ -372,7 +372,7 @@ export const AprobacionesPersonal: React.FC = () => {
 
         {pendientes.length === 0 ? (
           <div className="bg-white/5 border border-white/5 rounded-3xl p-12 text-center">
-            <span className="material-symbols-outlined text-6xl text-white/10 mb-4">
+            <span className="material-icons text-6xl text-white/10 mb-4">
               emoji_events
             </span>
             <p className="text-white/40 font-bold uppercase tracking-widest">
@@ -389,7 +389,7 @@ export const AprobacionesPersonal: React.FC = () => {
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="size-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/30 group-hover:bg-blue-600/20 group-hover:text-blue-400 transition-colors">
-                    <span className="material-symbols-outlined">
+                    <span className="material-icons">
                       person_pin
                     </span>
                   </div>
@@ -401,7 +401,7 @@ export const AprobacionesPersonal: React.FC = () => {
                       {solicitud.rol_solicitado.join(" + ")} • {solicitud.turno}
                     </p>
                   </div>
-                  <span className="material-symbols-outlined text-white/20">
+                  <span className="material-icons text-white/20">
                     arrow_forward_ios
                   </span>
                 </div>
@@ -445,7 +445,7 @@ export const AprobacionesPersonal: React.FC = () => {
                   className="size-10 bg-white/5 rounded-full flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all"
                   title="Cerrar el expediente de la solicitud"
                 >
-                  <span className="material-symbols-outlined">close</span>
+                  <span className="material-icons">close</span>
                 </button>
               </div>
 
@@ -481,7 +481,7 @@ export const AprobacionesPersonal: React.FC = () => {
                     </label>
                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5 space-y-3">
                       <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-white/20 text-sm">
+                        <span className="material-icons text-white/20 text-sm">
                           mail
                         </span>
                         <span className="text-xs text-white/60 font-bold">
@@ -490,7 +490,7 @@ export const AprobacionesPersonal: React.FC = () => {
                       </div>
                       {solicitudSeleccionada.telefono && (
                         <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-white/20 text-sm">
+                          <span className="material-icons text-white/20 text-sm">
                             phone
                           </span>
                           <span className="text-xs text-white/60 font-bold">
@@ -536,7 +536,7 @@ export const AprobacionesPersonal: React.FC = () => {
                       </label>
                       <div className="w-full bg-blue-600/10 border border-blue-500/30 rounded-2xl px-5 py-4 text-blue-400 font-black tracking-[0.3em] shadow-inner flex items-center justify-between">
                         <span>{assignmentData.matricula_sase}</span>
-                        <span className="material-symbols-outlined text-xs opacity-50">
+                        <span className="material-icons text-xs opacity-50">
                           lock
                         </span>
                       </div>
@@ -582,7 +582,7 @@ export const AprobacionesPersonal: React.FC = () => {
                           title="Alternar estado de tutoría para el personal"
                           className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${assignmentData.es_tutor ? "bg-emerald-600/20 border-emerald-500 text-emerald-400" : "bg-white/5 border-white/5 text-white/40"}`}
                         >
-                          <span className="material-symbols-outlined text-sm">
+                          <span className="material-icons text-sm">
                             {assignmentData.es_tutor
                               ? "check_circle"
                               : "circle"}
@@ -628,7 +628,7 @@ export const AprobacionesPersonal: React.FC = () => {
                           </>
                         ) : (
                           <>
-                            <span className="material-symbols-outlined">
+                            <span className="material-icons">
                               how_to_reg
                             </span>
                             Activar Personal
