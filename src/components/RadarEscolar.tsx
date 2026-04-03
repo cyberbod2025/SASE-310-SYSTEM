@@ -90,15 +90,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
 
   return (
     <div className="fixed inset-0 z-[200] bg-[#020408] flex items-center justify-center p-6 font-sans overflow-hidden">
-      <div className="absolute top-6 right-6 z-20 flex gap-3">
-        <button
-          type="button"
-          onClick={() => setIsFeedbackOpen(true)}
-          className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-[11px] font-black uppercase tracking-[0.2em] text-slate-100 hover:bg-white/15 hover:border-blue-400/50 transition-all"
-        >
-          Feedback
-        </button>
-      </div>
+      {/* Removed redundant feedback button */}
       {/* Background Ambience */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 rounded-full blur-[120px]" />
@@ -126,15 +118,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
           <h1 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter uppercase leading-none drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">
             RADAR ESCOLAR <span className="text-blue-500">—</span> HOY
           </h1>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => setIsFeedbackOpen(true)}
-              className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-[11px] font-black uppercase tracking-[0.25em] text-slate-100 hover:bg-white/15 hover:border-blue-400/50 transition-all"
-            >
-              Feedback
-            </button>
-          </div>
+          {/* Removed redundant feedback button */}
         </div>
 
         {/* Indicators Grid */}
@@ -167,7 +151,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                       }
                     `}
                     >
-                      <span className="material-symbols-outlined text-3xl">
+                      <span className="material-icons text-3xl">
                         {ind.icon}
                       </span>
                     </div>
@@ -215,7 +199,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                     className="w-full flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 group-hover:text-blue-300 transition-colors pt-4 border-t border-white/5"
                   >
                     <span>Acceder Módulo</span>
-                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+                    <span className="material-icons text-sm group-hover:translate-x-1 transition-transform">
                       arrow_forward
                     </span>
                   </button>
@@ -236,14 +220,14 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
             onClick={() => {
               if (onComplete) onComplete();
             }}
-            className="group relative px-12 py-5 overflow-hidden rounded-2xl bg-blue-600/10 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-600/20 transition-all active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:shadow-[0_0_50px_rgba(59,130,246,0.2)]"
+            className="group relative px-12 py-5 overflow-hidden rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-500/20 transition-all active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:shadow-[0_0_50px_rgba(59,130,246,0.2)]"
           >
             <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex items-center gap-4">
               <span className="text-[11px] font-black text-white uppercase tracking-[0.5em]">
                 ENTRAR AL SISTEMA
               </span>
-              <span className="material-symbols-outlined text-blue-400 group-hover:scale-125 transition-transform animate-pulse">
+              <span className="material-icons text-blue-400 group-hover:scale-125 transition-transform animate-pulse">
                 rocket_launch
               </span>
             </div>
@@ -252,9 +236,9 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
           <button
             type="button"
             onClick={() => setIsFeedbackOpen(true)}
-            className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 text-[11px] font-black uppercase tracking-[0.2em] text-slate-100 hover:bg-white/15 hover:border-blue-400/50 transition-all"
+            className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:bg-white/10 hover:border-white/20 transition-all"
           >
-            Feedback de esta vista
+            Sugerencia de Mejora / Feedback
           </button>
 
           <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">

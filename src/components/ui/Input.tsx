@@ -27,8 +27,8 @@ export function Input({
 
   const baseStyles =
     variant === "dark"
-      ? "w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white text-sm font-medium outline-none transition-all duration-300 ease-in-out focus:border-[#B799FF] focus:bg-white/10 focus:ring-4 focus:ring-[#B799FF]/20 placeholder:text-slate-500"
-      : "w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-800 text-sm font-bold outline-none transition-all duration-300 ease-in-out focus:border-[#B799FF] focus:ring-4 focus:ring-[#B799FF]/20 placeholder:text-slate-400";
+      ? "w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white text-sm font-medium outline-none transition-all duration-300 ease-in-out focus:border-[#3B82F6] focus:bg-white/10 focus:ring-4 focus:ring-[#3B82F6]/20 placeholder:text-slate-500"
+      : "w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-slate-800 text-sm font-bold outline-none transition-all duration-300 ease-in-out focus:border-[#3B82F6] focus:ring-4 focus:ring-[#3B82F6]/20 placeholder:text-slate-400";
 
   const errorStyles = error
     ? "border-red-400 focus:border-red-400 focus:ring-red-500/20"
@@ -52,7 +52,7 @@ export function Input({
       <div className="relative group">
         {leftIcon && (
           <span
-            className={`material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-blue-400 transition-colors text-xl ${
+            className={`material-icons absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-blue-400 transition-colors text-xl ${
               variant === "dark" ? "text-slate-500" : "text-slate-400"
             }`}
           >

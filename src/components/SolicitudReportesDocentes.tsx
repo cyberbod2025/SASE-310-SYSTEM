@@ -266,7 +266,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               : "border-transparent text-text-secondary hover:text-text-main"
           }`}
         >
-          <span className="material-symbols-outlined text-lg align-middle mr-1">
+          <span className="material-icons text-lg align-middle mr-1">
             add_circle
           </span>
           Nueva Solicitud
@@ -279,7 +279,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               : "border-transparent text-text-secondary hover:text-text-main"
           }`}
         >
-          <span className="material-symbols-outlined text-lg align-middle mr-1">
+          <span className="material-icons text-lg align-middle mr-1">
             pending
           </span>
           Pendientes ({pendientes.length})
@@ -292,7 +292,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               : "border-transparent text-text-secondary hover:text-text-main"
           }`}
         >
-          <span className="material-symbols-outlined text-lg align-middle mr-1">
+          <span className="material-icons text-lg align-middle mr-1">
             check_circle
           </span>
           Completadas ({completadas.length})
@@ -384,7 +384,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className={`material-symbols-outlined text-2xl ${
+                    className={`material-icons text-2xl ${
                       tipoReporte.includes("academico")
                         ? "text-blue-600"
                         : "text-gray-400"
@@ -399,7 +399,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                     </p>
                   </div>
                   {tipoReporte.includes("academico") && (
-                    <span className="material-symbols-outlined text-blue-600 ml-auto">
+                    <span className="material-icons text-blue-600 ml-auto">
                       check_circle
                     </span>
                   )}
@@ -416,7 +416,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
               >
                 <div className="flex items-center gap-3">
                   <span
-                    className={`material-symbols-outlined text-2xl ${
+                    className={`material-icons text-2xl ${
                       tipoReporte.includes("conductual")
                         ? "text-orange-600"
                         : "text-gray-400"
@@ -431,7 +431,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                     </p>
                   </div>
                   {tipoReporte.includes("conductual") && (
-                    <span className="material-symbols-outlined text-orange-600 ml-auto">
+                    <span className="material-icons text-orange-600 ml-auto">
                       check_circle
                     </span>
                   )}
@@ -501,7 +501,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                           }`}
                         >
                           {docentesSeleccionados.includes(doc.nombre) && (
-                            <span className="material-symbols-outlined text-sm">
+                            <span className="material-icons text-sm">
                               check
                             </span>
                           )}
@@ -528,7 +528,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                 }
                 className="w-full py-3 bg-primary text-white font-bold rounded-2xl hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
-                <span className="material-symbols-outlined">send</span>
+                <span className="material-icons">send</span>
                 Enviar a {docentesSeleccionados.length} docente(s)
               </button>
             </div>
@@ -541,7 +541,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
         <div className="bg-white rounded-xl border border-border-color shadow-sm overflow-hidden">
           {pendientes.length === 0 ? (
             <div className="p-10 text-center text-text-secondary">
-              <span className="material-symbols-outlined text-4xl mb-2">
+              <span className="material-icons text-4xl mb-2">
                 inbox
               </span>
               <p>No hay solicitudes pendientes.</p>
@@ -553,7 +553,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3">
                       <div className="size-10 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
-                        <span className="material-symbols-outlined">
+                        <span className="material-icons">
                           pending
                         </span>
                       </div>
@@ -606,7 +606,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
         <div className="space-y-6">
           {completadas.length === 0 ? (
             <div className="bg-white rounded-xl border border-border-color shadow-sm p-10 text-center text-text-secondary">
-              <span className="material-symbols-outlined text-4xl mb-2">
+              <span className="material-icons text-4xl mb-2">
                 folder_open
               </span>
               <p>No hay solicitudes completadas aún.</p>
@@ -632,7 +632,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                       <div
                         className={`size-8 rounded-2xl flex items-center justify-center ${selectedCompleted === sol.id ? "bg-white/20" : "bg-blue-50 text-blue-600"}`}
                       >
-                        <span className="material-symbols-outlined text-lg">
+                        <span className="material-icons text-lg">
                           description
                         </span>
                       </div>
@@ -681,7 +681,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                   <div className="flex items-center gap-3">
                                     <div className="size-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
-                                      <span className="material-symbols-outlined">
+                                      <span className="material-icons">
                                         person
                                       </span>
                                     </div>
@@ -706,7 +706,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                                   {resp.academico && (
                                     <div className="bg-blue-50/30 rounded-xl p-4 border border-blue-100/50">
                                       <h5 className="text-[10px] font-black text-blue-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-sm">
+                                        <span className="material-icons text-sm">
                                           school
                                         </span>
                                         Desempeño Académico
@@ -745,7 +745,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                                   {resp.conductual && (
                                     <div className="bg-amber-50/30 rounded-xl p-4 border border-amber-100/50">
                                       <h5 className="text-[10px] font-black text-amber-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-sm">
+                                        <span className="material-icons text-sm">
                                           psychology
                                         </span>
                                         Conducta en Clase
@@ -789,7 +789,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                                 {/* Comunicación */}
                                 <div className="bg-purple-50/30 rounded-xl p-4 border border-purple-100/50">
                                   <h5 className="text-[10px] font-black text-purple-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-sm">
+                                    <span className="material-icons text-sm">
                                       family_restroom
                                     </span>
                                     Vínculo con Tutor
@@ -822,13 +822,13 @@ export const SolicitudReportesDocentes: React.FC = () => {
                           </div>
                           <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
                             <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-2xl text-xs font-black uppercase hover:bg-slate-50 transition-all flex items-center gap-2">
-                              <span className="material-symbols-outlined text-sm">
+                              <span className="material-icons text-sm">
                                 print
                               </span>
                               Imprimir Expediente
                             </button>
                             <button className="px-4 py-2 bg-blue-600 text-white rounded-2xl text-xs font-black uppercase hover:bg-blue-700 transition-all shadow-xl shadow-black/5 flex items-center gap-2">
-                              <span className="material-symbols-outlined text-sm">
+                              <span className="material-icons text-sm">
                                 ios_share
                               </span>
                               Compartir con Directivo
@@ -841,7 +841,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
                 ) : (
                   <div className="h-full bg-slate-50 rounded-2xl border border-dashed border-slate-200 flex flex-col items-center justify-center p-12 text-center opacity-60">
                     <div className="size-20 rounded-full bg-white border border-slate-100 flex items-center justify-center text-slate-300 mb-6 shadow-sm">
-                      <span className="material-symbols-outlined text-4xl">
+                      <span className="material-icons text-4xl">
                         visibility
                       </span>
                     </div>
@@ -863,7 +863,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
       {/* Preview: Formulario que verá el Docente */}
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-border-color p-6">
         <h3 className="font-bold text-lg text-text-main mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined">preview</span>
+          <span className="material-icons">preview</span>
           Vista Previa: Formulario del Docente
         </h3>
         <p className="text-sm text-text-secondary mb-4">
@@ -874,7 +874,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
           {/* Sección Académica */}
           <div className="border-b border-gray-100 pb-6">
             <h4 className="font-bold text-blue-700 mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined">school</span>
+              <span className="material-icons">school</span>
               Desempeño Académico
             </h4>
             <div className="space-y-3">
@@ -933,7 +933,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
           {/* Sección Conductual */}
           <div className="border-b border-gray-100 pb-6">
             <h4 className="font-bold text-orange-700 mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined">psychology</span>
+              <span className="material-icons">psychology</span>
               Comportamiento en Clase
             </h4>
             <div className="p-3 bg-gray-50 rounded-2xl mb-3">
@@ -983,7 +983,7 @@ export const SolicitudReportesDocentes: React.FC = () => {
           {/* Sección Comunicación con Padres */}
           <div>
             <h4 className="font-bold text-purple-700 mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined">family_restroom</span>
+              <span className="material-icons">family_restroom</span>
               Comunicación con Padres/Tutores
             </h4>
             <div className="space-y-3">

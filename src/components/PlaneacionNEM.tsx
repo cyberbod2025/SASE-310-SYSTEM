@@ -133,7 +133,7 @@ export const PlaneacionNEM = () => {
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined">
+                    <span className="material-icons">
                       auto_awesome
                     </span>
                     Generar Estructura STEAM
@@ -165,7 +165,7 @@ export const PlaneacionNEM = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="space-y-4">
                     <h4 className="text-blue-400 font-bold uppercase text-xs tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         science
                       </span>
                       Indagación
@@ -177,7 +177,7 @@ export const PlaneacionNEM = () => {
                   </div>
                   <div className="space-y-4">
                     <h4 className="text-blue-400 font-bold uppercase text-xs tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         calculate
                       </span>
                       Aplicación Matemática
@@ -190,7 +190,7 @@ export const PlaneacionNEM = () => {
                   </div>
                   <div className="space-y-4">
                     <h4 className="text-blue-400 font-bold uppercase text-xs tracking-widest flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         emoji_objects
                       </span>
                       Producto Final

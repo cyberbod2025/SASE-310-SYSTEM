@@ -176,7 +176,7 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
             className="p-2 hover:bg-white/20 rounded-full transition-colors relative z-20 cursor-pointer"
             title="Cerrar el detalle del protocolo"
           >
-            <span className="material-symbols-outlined pointer-events-none">
+            <span className="material-icons pointer-events-none">
               close
             </span>
           </button>
@@ -186,7 +186,7 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
         <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-900/50">
           {loading ? (
             <div className="flex justify-center items-center h-40">
-              <span className="material-symbols-outlined animate-spin text-4xl text-blue-500">
+              <span className="material-icons animate-spin text-4xl text-blue-500">
                 sync
               </span>
             </div>
@@ -195,7 +195,7 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
               {/* Alert Mode Banner if warnings exist */}
               {steps.some((s) => s.es_advertencia) && (
                 <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex gap-3 items-center text-red-200 text-sm mb-6">
-                  <span className="material-symbols-outlined text-red-500">
+                  <span className="material-icons text-red-500">
                     warning
                   </span>
                   <p>
@@ -263,7 +263,7 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
 
                     {step.es_advertencia && (
                       <div className="flex items-center justify-center pr-4 text-red-500 animate-pulse">
-                        <span className="material-symbols-outlined text-4xl">
+                        <span className="material-icons text-4xl">
                           block
                         </span>
                       </div>
@@ -289,7 +289,7 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
             className="bg-white text-slate-900 px-6 py-2 rounded-2xl font-bold hover:bg-gray-200 transition-colors flex items-center gap-2 relative z-20 cursor-pointer"
             title="He leído y comprendido los pasos del protocolo"
           >
-            <span className="material-symbols-outlined pointer-events-none">
+            <span className="material-icons pointer-events-none">
               check
             </span>
             Entendido / Cerrar

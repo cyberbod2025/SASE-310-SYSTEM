@@ -54,7 +54,7 @@ const HolographicKPI = ({
         <div
           className={`p-2.5 rounded-xl border ${colors[color]} bg-transparent group-hover:scale-110 transition-transform duration-500`}
         >
-          <span className="material-symbols-outlined text-xl">{icon}</span>
+          <span className="material-icons text-xl">{icon}</span>
         </div>
         {trend && (
           <span

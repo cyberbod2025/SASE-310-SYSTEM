@@ -38,9 +38,9 @@ export const Expedientes: React.FC = () => {
 
   return (
     <div className="flex-1 w-full space-y-8 animate-fade-in font-sans">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-white/10">
         <div>
-          <h2 className="text-3xl font-black text-slate-800 uppercase italic tracking-tighter">
+          <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter">
             Control de Expedientes
           </h2>
           <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
@@ -51,12 +51,12 @@ export const Expedientes: React.FC = () => {
 
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="relative">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-2xl">
+          <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-2xl">
             search
           </span>
           <input
             type="text"
-            className="w-full h-16 bg-white border-2 border-slate-100 rounded-[1.5rem] pl-14 pr-6 text-lg font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-xl shadow-slate-200/50 placeholder:text-slate-300"
+            className="w-full h-16 bg-white/[0.03] border-2 border-white/5 rounded-[1.5rem] pl-14 pr-6 text-lg font-bold text-white focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-2xl backdrop-blur-3xl placeholder:text-slate-500"
             placeholder="Buscar por nombre o matrícula..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -87,51 +87,51 @@ export const Expedientes: React.FC = () => {
                   historial_medico: s.medicalHistory,
                   calificaciones: s.calificaciones,
                 })}
-                className="w-full text-left p-5 bg-white hover:bg-blue-50/50 border border-slate-100 hover:border-blue-200 rounded-2xl flex items-center gap-5 transition-all group hover:scale-[1.01] shadow-sm"
+                className="w-full text-left p-5 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-blue-500/30 rounded-2xl flex items-center gap-5 transition-all group hover:scale-[1.01] shadow-xl backdrop-blur-2xl"
               >
                 <img
                   src={s.avatar}
-                  className="size-14 rounded-xl border-2 border-white shadow-xl shadow-black/5 object-cover"
+                  className="size-14 rounded-xl border-2 border-white/10 shadow-xl shadow-black/5 object-cover"
                   alt=""
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">
+                    <span className="text-[10px] font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded uppercase tracking-wider">
                       {s.group}
                     </span>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
                       {s.matricula}
                     </span>
                   </div>
-                  <h4 className="text-base font-black text-slate-800 uppercase italic truncate">
+                  <h4 className="text-base font-black text-white uppercase italic truncate">
                     {s.name}
                   </h4>
                 </div>
-                <span className="material-symbols-outlined text-slate-300 group-hover:text-blue-500 transition-colors">
+                <span className="material-icons text-slate-400 group-hover:text-blue-400 transition-colors">
                   arrow_forward_ios
                 </span>
               </button>
             ))
           ) : searchTerm ? (
-            <div className="text-center py-20 bg-slate-50/50 border-2 border-dashed border-slate-100 rounded-3xl">
-              <span className="material-symbols-outlined text-6xl text-slate-200 mb-4 block">
+            <div className="text-center py-20 bg-white/[0.02] border-2 border-dashed border-white/5 rounded-3xl">
+              <span className="material-icons text-6xl text-slate-700 mb-4 block">
                 person_search
               </span>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">
+              <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">
                 No se encontraron resultados para "{searchTerm}"
               </p>
             </div>
           ) : (
             <div className="text-center py-20">
-               <div className="inline-flex size-24 bg-blue-50 rounded-full items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-4xl text-blue-500">
+               <div className="inline-flex size-24 bg-blue-500/10 rounded-full items-center justify-center mb-6">
+                <span className="material-icons text-4xl text-blue-400">
                   folder_shared
                 </span>
               </div>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">
+              <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mb-2">
                 Búsqueda de Expedientes
               </p>
-              <h3 className="text-slate-600 font-black text-lg max-w-sm mx-auto">
+              <h3 className="text-slate-400 font-black text-lg max-w-sm mx-auto uppercase tracking-tighter italic">
                 Escriba el nombre del alumno para consultar su historial institucional
               </h3>
             </div>

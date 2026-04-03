@@ -374,7 +374,7 @@ export function ExpedienteInstitucional({
         <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50 shrink-0">
           <div className="flex items-center gap-4">
             <div className="size-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-              <span className="material-symbols-outlined text-indigo-600 text-2xl">
+              <span className="material-icons text-indigo-600 text-2xl">
                 folder_shared
               </span>
             </div>
@@ -393,7 +393,7 @@ export function ExpedienteInstitucional({
               disabled={cargando || generandoPDF}
               className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-blue-600/20"
             >
-              <span className="material-symbols-outlined text-sm">
+              <span className="material-icons text-sm">
                 picture_as_pdf
               </span>
               {generandoPDF
@@ -404,7 +404,7 @@ export function ExpedienteInstitucional({
               onClick={onClose}
               className="p-2.5 hover:bg-slate-200 rounded-xl transition-colors text-slate-600 hover:text-slate-600"
             >
-              <span className="material-symbols-outlined">close</span>
+              <span className="material-icons">close</span>
             </button>
           </div>
         </div>
@@ -413,7 +413,7 @@ export function ExpedienteInstitucional({
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
           {cargando ? (
             <div className="flex-1 flex flex-col items-center justify-center p-12">
-              <span className="material-symbols-outlined text-indigo-500 animate-spin text-4xl mb-4">
+              <span className="material-icons text-indigo-500 animate-spin text-4xl mb-4">
                 progress_activity
               </span>
               <p className="text-sm font-black text-slate-600 uppercase tracking-widest">
@@ -425,7 +425,7 @@ export function ExpedienteInstitucional({
               {/* LÍNEA DE TIEMPO (Izquierda) */}
               <div className="w-full md:w-[40%] lg:w-1/3 border-r border-slate-100 bg-slate-50/50 p-6 overflow-y-auto custom-scrollbar">
                 <h3 className="text-xs font-black text-slate-600 uppercase tracking-widest mb-6 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm">
+                  <span className="material-icons text-sm">
                     history
                   </span>
                   Línea de Tiempo del Caso
@@ -433,7 +433,7 @@ export function ExpedienteInstitucional({
 
                 {lineaTiempo.length === 0 ? (
                   <div className="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl">
-                    <span className="material-symbols-outlined text-slate-300 text-3xl mb-2">
+                    <span className="material-icons text-slate-300 text-3xl mb-2">
                       history_toggle_off
                     </span>
                     <p className="text-xs text-slate-600 font-medium tracking-wide">
@@ -450,7 +450,7 @@ export function ExpedienteInstitucional({
                         <div
                           className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-${evento.color}-50 text-${evento.color}-600 shadow-sm shrink-0 z-10`}
                         >
-                          <span className="material-symbols-outlined text-[16px]">
+                          <span className="material-icons text-[16px]">
                             {evento.icon}
                           </span>
                         </div>
@@ -464,7 +464,7 @@ export function ExpedienteInstitucional({
                             </span>
                             <div className="flex items-center gap-2">
                               {evento.tipo === "documento" && (
-                                <span className="material-symbols-outlined text-[12px] text-indigo-400">
+                                <span className="material-icons text-[12px] text-indigo-400">
                                   visibility
                                 </span>
                               )}
@@ -494,7 +494,7 @@ export function ExpedienteInstitucional({
                 <div className="grid grid-cols-2 gap-4 shrink-0">
                   <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex items-center gap-4">
                     <div className="size-12 bg-rose-100 rounded-xl flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-rose-600 text-2xl">
+                      <span className="material-icons text-rose-600 text-2xl">
                         report
                       </span>
                     </div>
@@ -509,7 +509,7 @@ export function ExpedienteInstitucional({
                   </div>
                   <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex items-center gap-4">
                     <div className="size-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-indigo-600 text-2xl">
+                      <span className="material-icons text-indigo-600 text-2xl">
                         description
                       </span>
                     </div>
@@ -528,7 +528,7 @@ export function ExpedienteInstitucional({
                 <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm shrink-0">
                   <div className="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-amber-500">
+                      <span className="material-icons text-amber-500">
                         inventory_2
                       </span>
                       <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
@@ -542,7 +542,7 @@ export function ExpedienteInstitucional({
                   <div className="p-5">
                     {objetosRetenidos.length === 0 ? (
                       <div className="text-center p-6 border-2 border-dashed border-slate-200 rounded-xl">
-                        <span className="material-symbols-outlined text-slate-300 text-3xl mb-2">
+                        <span className="material-icons text-slate-300 text-3xl mb-2">
                           inventory
                         </span>
                         <p className="text-xs text-slate-600 font-medium tracking-wide">
@@ -591,7 +591,7 @@ export function ExpedienteInstitucional({
                 <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm shrink-0 flex flex-col">
                   <div className="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-indigo-500">
+                      <span className="material-icons text-indigo-500">
                         psychology
                       </span>
                       <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
@@ -609,14 +609,14 @@ export function ExpedienteInstitucional({
                       >
                         {analizando ? (
                           <>
-                            <span className="material-symbols-outlined text-[14px] animate-spin">
+                            <span className="material-icons text-[14px] animate-spin">
                               progress_activity
                             </span>
                             Analizando...
                           </>
                         ) : (
                           <>
-                            <span className="material-symbols-outlined text-[14px]">
+                            <span className="material-icons text-[14px]">
                               auto_awesome
                             </span>
                             Generar Análisis
@@ -637,7 +637,7 @@ export function ExpedienteInstitucional({
                       </div>
                     ) : (
                       <div className="h-full flex flex-col items-center justify-center text-slate-600 gap-3 py-6 text-center">
-                        <span className="material-symbols-outlined text-4xl opacity-50">
+                        <span className="material-icons text-4xl opacity-50">
                           analytics
                         </span>
                         <p className="text-xs font-medium max-w-[280px]">
@@ -652,7 +652,7 @@ export function ExpedienteInstitucional({
 
                 {/* Normativa */}
                 <div className="mt-auto p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-3 shrink-0">
-                  <span className="material-symbols-outlined text-amber-500 shrink-0 mt-0.5">
+                  <span className="material-icons text-amber-500 shrink-0 mt-0.5">
                     gavel
                   </span>
                   <p className="text-[11px] text-amber-800 leading-relaxed font-medium">
@@ -677,7 +677,7 @@ export function ExpedienteInstitucional({
             <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="size-10 bg-indigo-100 rounded-2xl flex items-center justify-center">
-                  <span className="material-symbols-outlined text-indigo-600">description</span>
+                  <span className="material-icons text-indigo-600">description</span>
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
@@ -694,7 +694,7 @@ export function ExpedienteInstitucional({
                     onClick={() => setEditandoDocumento(true)}
                     className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
                   >
-                    <span className="material-symbols-outlined text-sm">edit</span>
+                    <span className="material-icons text-sm">edit</span>
                     Editar
                   </button>
                 ) : (
@@ -702,7 +702,7 @@ export function ExpedienteInstitucional({
                     onClick={handleGuardarDocumento}
                     className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-xl shadow-black/5 shadow-green-600/20"
                   >
-                    <span className="material-symbols-outlined text-sm">save</span>
+                    <span className="material-icons text-sm">save</span>
                     Guardar Cambios
                   </button>
                 )}
@@ -710,7 +710,7 @@ export function ExpedienteInstitucional({
                   onClick={() => printContent(documentoSeleccionado.titulo, documentoSeleccionado.contenido)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-black/5 shadow-blue-600/20"
                 >
-                  <span className="material-symbols-outlined text-sm">print</span>
+                  <span className="material-icons text-sm">print</span>
                   Imprimir
                 </button>
                 <div className="w-px h-6 bg-slate-200 mx-2" />
@@ -718,7 +718,7 @@ export function ExpedienteInstitucional({
                   onClick={() => setDocumentoSeleccionado(null)}
                   className="p-2 hover:bg-slate-200 rounded-2xl transition-colors text-slate-600 hover:text-slate-600"
                 >
-                  <span className="material-symbols-outlined">close</span>
+                  <span className="material-icons">close</span>
                 </button>
               </div>
             </div>
@@ -743,7 +743,7 @@ export function ExpedienteInstitucional({
             
             {editandoDocumento && (
               <div className="px-6 py-3 bg-amber-50 border-t border-amber-100 flex items-center gap-2 text-[10px] text-amber-700 font-bold uppercase tracking-widest">
-                <span className="material-symbols-outlined text-[14px]">info</span>
+                <span className="material-icons text-[14px]">info</span>
                 Estás en modo edición. Los cambios se guardarán directamente en el expediente institucional.
               </div>
             )}

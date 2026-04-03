@@ -105,7 +105,7 @@ export const DashboardMedico = () => {
             <div className="absolute -inset-4 bg-emerald-500/20 rounded-3xl blur-xl opacity-0 group-hover/icon:opacity-100 transition-all duration-700"></div>
             <div className="size-20 bg-[#0a0f18]/80 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 relative shadow-[0_0_30px_rgba(16,185,129,0.2)] overflow-hidden backdrop-blur-xl">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-transparent"></div>
-              <span className="material-symbols-outlined text-5xl group-hover/icon:scale-110 transition-transform duration-500">
+              <span className="material-icons text-5xl group-hover/icon:scale-110 transition-transform duration-500">
                 medical_services
               </span>
               <motion.div
@@ -136,7 +136,7 @@ export const DashboardMedico = () => {
               </span>
             </h1>
             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
-              <span className="material-symbols-outlined text-[14px]">
+              <span className="material-icons text-[14px]">
                 shield_health
               </span>
               SISTEMA INTEGRAL DE SALUD INSTITUCIONAL
@@ -188,7 +188,7 @@ export const DashboardMedico = () => {
             <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between relative">
               <div className="flex items-center gap-5">
                 <div className="size-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                  <span className="material-symbols-outlined text-2xl font-black">
+                  <span className="material-icons text-2xl font-black">
                     terminal
                   </span>
                 </div>
@@ -237,7 +237,7 @@ export const DashboardMedico = () => {
                       <tr>
                         <td colSpan={5} className="p-20 text-center">
                           <div className="flex flex-col items-center gap-6 opacity-40">
-                            <span className="material-symbols-outlined text-6xl text-slate-800 animate-pulse">
+                            <span className="material-icons text-6xl text-slate-800 animate-pulse">
                               query_stats
                             </span>
                             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">
@@ -289,7 +289,7 @@ export const DashboardMedico = () => {
                           </td>
                           <td className="px-8 py-6 text-right">
                             <button className="size-10 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-90">
-                              <span className="material-symbols-outlined text-[20px]">
+                              <span className="material-icons text-[20px]">
                                 arrow_right_alt
                               </span>
                             </button>
@@ -309,7 +309,7 @@ export const DashboardMedico = () => {
           <div className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.03] relative overflow-hidden group">
             <div className="flex items-center gap-5 mb-8 relative z-10">
               <div className="size-14 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500">
-                <span className="material-symbols-outlined text-3xl animate-pulse">
+                <span className="material-icons text-3xl animate-pulse">
                   emergency_home
                 </span>
               </div>
@@ -343,7 +343,7 @@ export const DashboardMedico = () => {
                 {notifying ? (
                   <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <span className="material-symbols-outlined text-lg">
+                  <span className="material-icons text-lg">
                     priority_high
                   </span>
                 )}
@@ -361,7 +361,7 @@ export const DashboardMedico = () => {
           <div className="card-sase p-8 border-emerald-500/10 flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
             <div className="flex items-center gap-4 mb-10 pb-5 border-b border-slate-100">
               <div className="size-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-500">
-                <span className="material-symbols-outlined text-xl">
+                <span className="material-icons text-xl">
                   package_2
                 </span>
               </div>
@@ -399,7 +399,7 @@ const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => (
     <div className="flex items-center justify-between mb-4 relative z-10">
       <div className="flex items-center gap-3">
         <span
-          className={`material-symbols-outlined text-xl text-${color}-500 group-hover:scale-110 transition-transform`}
+          className={`material-icons text-xl text-${color}-500 group-hover:scale-110 transition-transform`}
         >
           {icon}
         </span>

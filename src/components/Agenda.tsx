@@ -280,7 +280,7 @@ export const Agenda: React.FC = () => {
       <div className="card-sase p-6 border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-5">
           <div className="bg-white/[0.03] p-4 rounded-2xl border border-white/10 shadow-sm">
-            <span className="material-symbols-outlined text-blue-400 text-4xl">
+            <span className="material-icons text-blue-400 text-4xl">
               calendar_today
             </span>
           </div>
@@ -304,7 +304,7 @@ export const Agenda: React.FC = () => {
           }}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-black/5 shadow-blue-500/20 flex items-center gap-3 active:scale-95 relative z-20 cursor-pointer"
         >
-          <span className="material-symbols-outlined text-[20px]">
+          <span className="material-icons text-[20px]">
             add_circle
           </span>
           Agendar Actividad
@@ -327,7 +327,7 @@ export const Agenda: React.FC = () => {
                 }
                   className="size-10 rounded-full hover:bg-white/5 text-slate-500 hover:text-blue-400 transition-all border border-transparent hover:border-white/10 flex items-center justify-center"
                 >
-                  <span className="material-symbols-outlined">chevron_left</span>
+                  <span className="material-icons">chevron_left</span>
                 </button>
                 <h3 className="text-lg font-black text-white uppercase italic tracking-tighter w-48 text-center capitalize">
                   {monthLabel}
@@ -343,7 +343,7 @@ export const Agenda: React.FC = () => {
                 }
                   className="size-10 rounded-full hover:bg-white/5 text-slate-500 hover:text-blue-400 transition-all border border-transparent hover:border-white/10 flex items-center justify-center"
                 >
-                  <span className="material-symbols-outlined">chevron_right</span>
+                  <span className="material-icons">chevron_right</span>
                 </button>
               </div>
               <div className="hidden md:flex items-center gap-4">
@@ -418,7 +418,7 @@ export const Agenda: React.FC = () => {
           <div className="lg:col-span-4 space-y-6">
             <div className="card-sase border-white/5 p-8 pb-10 min-h-[500px]">
               <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                <span className="material-symbols-outlined text-sm text-blue-400">
+                <span className="material-icons text-sm text-blue-400">
                   event
                 </span>
                 Actividades del Día
@@ -432,7 +432,7 @@ export const Agenda: React.FC = () => {
                 </div>
               ) : selectedDateEvents.length === 0 ? (
                 <div className="py-20 text-center">
-                  <span className="material-symbols-outlined text-white/10 text-6xl mb-4">
+                  <span className="material-icons text-white/10 text-6xl mb-4">
                     event_busy
                   </span>
                   <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest italic">
@@ -449,7 +449,7 @@ export const Agenda: React.FC = () => {
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div className={`flex items-center gap-2 ${cfg.color}`}>
-                          <span className="material-symbols-outlined text-[16px]">
+                          <span className="material-icons text-[16px]">
                             {cfg.icon}
                           </span>
                           <span className="text-[9px] font-black uppercase tracking-wider">
@@ -467,7 +467,7 @@ export const Agenda: React.FC = () => {
                       </p>
                       {event.alumno_nombre && (
                         <div className="flex items-center gap-2 mb-2 bg-white/5 p-2 rounded-xl border border-white/10">
-                          <span className="material-symbols-outlined text-emerald-400 text-xs">
+                          <span className="material-icons text-emerald-400 text-xs">
                             person
                           </span>
                           <span className="text-[10px] font-bold text-emerald-300">
@@ -490,7 +490,7 @@ export const Agenda: React.FC = () => {
                               : "bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20 cursor-pointer"
                           }`}
                         >
-                          <span className={`${isSendingNotif === event.id ? "animate-spin" : ""} material-symbols-outlined text-indigo-400 text-xs`}>
+                          <span className={`${isSendingNotif === event.id ? "animate-spin" : ""} material-icons text-indigo-400 text-xs`}>
                             {isSendingNotif === event.id ? "sync" : "notifications_active"}
                           </span>
                           <span className="text-[9px] font-black text-indigo-300 uppercase">
@@ -519,7 +519,7 @@ export const Agenda: React.FC = () => {
             <div className="p-8 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="bg-blue-600 p-2 rounded-xl text-white">
-                  <span className="material-symbols-outlined text-lg">
+                  <span className="material-icons text-lg">
                     edit_calendar
                   </span>
                 </div>
@@ -531,7 +531,7 @@ export const Agenda: React.FC = () => {
                 onClick={() => setShowModal(false)}
                 className="size-10 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-rose-400 hover:border-rose-500/30 transition-all flex items-center justify-center shadow-sm"
               >
-                <span className="material-symbols-outlined">close</span>
+                <span className="material-icons">close</span>
               </button>
             </div>
 
@@ -606,7 +606,7 @@ export const Agenda: React.FC = () => {
                           : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
                       }`}
                     >
-                      <span className="material-symbols-outlined text-lg">
+                      <span className="material-icons text-lg">
                         {cfg.icon}
                       </span>
                       <span className="text-[10px] font-black uppercase tracking-tight">
@@ -623,7 +623,7 @@ export const Agenda: React.FC = () => {
                     Vincular Alumno (Cita con Padres)
                   </label>
                   <div className="relative">
-                    <span className="material-symbols-outlined absolute left-4 top-3.5 text-slate-400 text-lg">
+                    <span className="material-icons absolute left-4 top-3.5 text-slate-400 text-lg">
                       search
                     </span>
                     <input
@@ -676,7 +676,7 @@ export const Agenda: React.FC = () => {
                   {newEvent.alumno_nombre && (
                     <div className="mt-2 flex items-center justify-between bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 italic">
                       <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-emerald-400 text-sm">
+                        <span className="material-icons text-emerald-400 text-sm">
                           person_check
                         </span>
                         <span className="text-xs font-black text-emerald-300 uppercase">
@@ -694,7 +694,7 @@ export const Agenda: React.FC = () => {
                         }
                         className="text-emerald-400 hover:text-emerald-300 transition-colors"
                       >
-                        <span className="material-symbols-outlined text-sm">
+                        <span className="material-icons text-sm">
                           cancel
                         </span>
                       </button>
@@ -720,7 +720,7 @@ export const Agenda: React.FC = () => {
                   }`}
                 >
                   {newEvent.para_todos_maestros && (
-                    <span className="material-symbols-outlined text-white text-[16px]">
+                    <span className="material-icons text-white text-[16px]">
                       check
                     </span>
                   )}
@@ -762,7 +762,7 @@ export const Agenda: React.FC = () => {
                   onClick={handleSaveEvent}
                   className="flex-[2] h-14 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-3"
                 >
-                  <span className="material-symbols-outlined text-[18px]">
+                  <span className="material-icons text-[18px]">
                     check_circle
                   </span>
                   Agendar Actividad

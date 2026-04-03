@@ -57,7 +57,7 @@ export const BitacoraAuditoria: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-center gap-5">
           <div className="size-16 backdrop-blur-3xl bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 shadow-xl shadow-black/5 border border-white/10">
-            <span className="material-symbols-outlined text-3xl">policy</span>
+            <span className="material-icons text-3xl">policy</span>
           </div>
           <div>
             <h2 className="text-3xl font-black text-white tracking-tight uppercase italic">
@@ -76,7 +76,7 @@ export const BitacoraAuditoria: React.FC = () => {
             className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 hover:text-white transition-all font-bold text-xs uppercase tracking-widest shadow-xl shadow-black/5 active:scale-95"
             title="Sincronizar y actualizar bitácora de auditoría"
           >
-            <span className="material-symbols-outlined text-xl">refresh</span>
+            <span className="material-icons text-xl">refresh</span>
             Sincronizar
           </button>
 
@@ -130,7 +130,7 @@ export const BitacoraAuditoria: React.FC = () => {
         <div className="px-5 md:px-8 py-5 md:py-6 border-b border-white/5 bg-white/[0.02] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
-              <span className="material-symbols-outlined text-blue-500 text-sm md:text-base">
+              <span className="material-icons text-blue-500 text-sm md:text-base">
                 history
               </span>
               Actividad del Plantel
@@ -144,7 +144,7 @@ export const BitacoraAuditoria: React.FC = () => {
             className="w-full md:w-auto text-[9px] font-black text-blue-400 uppercase tracking-widest flex items-center justify-center gap-3 px-6 py-3 md:py-2.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 transition-all"
             title="Descargar reporte oficial en formato CSV"
           >
-            <span className="material-symbols-outlined text-sm">download</span>
+            <span className="material-icons text-sm">download</span>
             Descargar Reporte CSV
           </button>
         </div>
@@ -246,7 +246,7 @@ export const BitacoraAuditoria: React.FC = () => {
                     colSpan={5}
                     className="px-8 py-20 text-center text-slate-400"
                   >
-                    <span className="material-symbols-outlined text-5xl opacity-20">
+                    <span className="material-icons text-5xl opacity-20">
                       inventory_2
                     </span>
                     <p className="text-xs font-bold uppercase mt-4">
@@ -306,7 +306,7 @@ export const BitacoraAuditoria: React.FC = () => {
                     <td className="px-8 py-5">
                       {entry.target_student_name ? (
                         <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-sm text-blue-500/40">
+                          <span className="material-icons text-sm text-blue-500/40">
                             person
                           </span>
                           <span className="text-[11px] font-black text-blue-400/80 italic">
@@ -350,7 +350,7 @@ const StatCard: React.FC<{
       <div
         className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-xl shadow-black/5 group-hover:scale-110 transition-transform duration-500`}
       >
-        <span className="material-symbols-outlined text-2xl">{icon}</span>
+        <span className="material-icons text-2xl">{icon}</span>
       </div>
       <div>
         <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">

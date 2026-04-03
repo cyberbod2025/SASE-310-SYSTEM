@@ -25,6 +25,8 @@ export const Login: React.FC<LoginProps> = ({
   const [feedbackType, setFeedbackType] = useState<"bug" | "sugerencia">("bug");
   const [feedbackText, setFeedbackText] = useState("");
 
+  const [orbPos, setOrbPos] = useState({ x: 0, y: 0 });
+
   const orbX = useMotionValue(0);
   const orbY = useMotionValue(0);
   const orbXSpring = useSpring(orbX, { stiffness: 120, damping: 18, mass: 0.6 });
@@ -32,10 +34,11 @@ export const Login: React.FC<LoginProps> = ({
 
   useEffect(() => {
     const handleMove = (event: MouseEvent) => {
-      const x = (event.clientX / window.innerWidth - 0.5) * 28;
-      const y = (event.clientY / window.innerHeight - 0.5) * 28;
-      orbX.set(x);
-      orbY.set(y);
+      const x = (event.clientX / window.innerWidth - 0.5) * 2;
+      const y = (event.clientY / window.innerHeight - 0.5) * 2;
+      setOrbPos({ x, y });
+      orbX.set(x * 14);
+      orbY.set(y * 14);
     };
 
     window.addEventListener("mousemove", handleMove, { passive: true });
@@ -54,7 +57,7 @@ export const Login: React.FC<LoginProps> = ({
 
   const [securityQuestions] = useState({
     q1: "¿Nombre de su primera escuela primaria?",
-    q2: "¿Titulo de su libro favorito?",
+    q2: "¿Título de su libro favorito?",
   });
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
@@ -149,22 +152,22 @@ export const Login: React.FC<LoginProps> = ({
       >
         <GlassCard className="p-8 flex flex-col items-center">
           <motion.div style={{ x: orbXSpring, y: orbYSpring }}>
-            <SasinLoginOrb className="w-24 h-24 mb-6" mouseX={orbX.get() / 28} mouseY={orbY.get() / 28} />
+            <SasinLoginOrb className="w-40 h-40 mb-10" mouseX={orbPos.x} mouseY={orbPos.y} />
           </motion.div>
 
-          <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-wide text-center uppercase title-sase">SASE 310</h1>
-          <p className="text-slate-500 text-sm text-center mb-8 font-medium">
+          <h1 className="text-4xl font-black text-white mb-2 tracking-tighter text-center uppercase title-sase drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">SASE 310</h1>
+          <p className="text-blue-400/60 text-xs text-center mb-10 font-bold uppercase tracking-[0.3em]">
             Sistema de Acompañamiento y Seguimiento Escolar
           </p>
 
           <form className="w-full space-y-5" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <label htmlFor="login-email" className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">
+              <label htmlFor="login-email" className="text-[10px] font-black text-blue-300 uppercase tracking-[0.25em] pl-1 opacity-70">
                Correo institucional
               </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base" aria-hidden>
-                  ✉️
+              <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-icons text-blue-500/50 group-focus-within:text-blue-400 transition-colors" aria-hidden>
+                  alternate_email
                 </span>
                 <input
                   type="email"
@@ -173,23 +176,23 @@ export const Login: React.FC<LoginProps> = ({
                   onChange={(e) => setUsername(e.target.value)}
                   id="login-email"
                   name="email"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[48px]"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.06] focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[56px]"
                   required
                   autoComplete="email"
                 />
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[10px] text-slate-600 font-bold">
                 Usa tu correo institucional @sase.mx
               </p>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="login-password" className="text-xs font-bold text-slate-500 uppercase tracking-wider pl-1">
+              <label htmlFor="login-password" className="text-[10px] font-black text-blue-300 uppercase tracking-[0.25em] pl-1 opacity-70">
                Contraseña
               </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base" aria-hidden>
-                  🔒
+              <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-icons text-blue-500/50 group-focus-within:text-blue-400 transition-colors" aria-hidden>
+                  lock
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -198,18 +201,18 @@ export const Login: React.FC<LoginProps> = ({
                   onChange={(e) => setPassword(e.target.value)}
                   id="login-password"
                   name="password"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-10 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[48px]"
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.06] focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[56px]"
                   required
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-400 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center"
                   aria-label="Mostrar u ocultar contraseña"
                 >
-                  <span className="text-base" aria-hidden>
-                    {showPassword ? "🙈" : "👁"}
+                  <span className="material-icons text-xl" aria-hidden>
+                    {showPassword ? "visibility_off" : "visibility"}
                   </span>
                 </button>
               </div>
@@ -233,15 +236,15 @@ export const Login: React.FC<LoginProps> = ({
                 setShowRecovery(true);
                 setRecoveryStep(1);
               }}
-              className="text-xs text-blue-400/80 hover:text-blue-400 font-semibold transition-colors"
+              className="text-[10px] font-black text-blue-400/60 hover:text-blue-400 uppercase tracking-widest transition-all"
             >
-              ¿Olvido su clave?
+              ¿Olvidó su clave?
             </button>
           </div>
 
-          <div className="mt-6 text-center">
-            <p className="text-xs text-slate-500">
-              ¿No tienes acceso? Solicita tu invitacion en Direccion.
+          <div className="mt-10 text-center pt-8 border-t border-white/[0.05] w-full">
+            <p className="text-[10px] text-slate-400 font-bold tracking-wide">
+              ¿No tienes acceso? Solicita tu invitación en Dirección.
             </p>
           </div>
         </GlassCard>

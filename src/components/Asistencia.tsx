@@ -186,7 +186,7 @@ export const Asistencia: React.FC = () => {
       {filteredStudents.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
           <div className="size-20 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
-            <span className="material-symbols-outlined text-4xl text-slate-700">search_off</span>
+            <span className="material-icons text-4xl text-slate-700">search_off</span>
           </div>
           <div className="space-y-1">
             <h4 className="text-white font-black uppercase tracking-widest text-sm italic">Sin resultados</h4>

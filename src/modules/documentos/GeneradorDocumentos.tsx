@@ -245,7 +245,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         <div className="px-8 py-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="size-12 bg-blue-500/20 rounded-2xl flex items-center justify-center border border-blue-400/30">
-              <span className="material-symbols-outlined text-blue-400 text-2xl">
+              <span className="material-icons text-blue-400 text-2xl">
                 auto_awesome
               </span>
             </div>
@@ -287,7 +287,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
             className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/50 hover:text-white"
             title="Cerrar generador"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-icons">close</span>
           </button>
         </div>
 
@@ -296,7 +296,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
           {/* ADVERTENCIA CITATORIO PREVIO */}
           {tipoDoc === "citatorio_padres" && citatoriosPrevios > 0 && (
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3 animate-fade-in">
-              <span className="material-symbols-outlined text-amber-500 text-2xl">
+              <span className="material-icons text-amber-500 text-2xl">
                 warning
               </span>
               <div>
@@ -328,7 +328,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                 ).map(([cat, tipos]) => (
                   <div key={cat} className="mb-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="material-symbols-outlined text-sm text-slate-400">
+                      <span className="material-icons text-sm text-slate-400">
                         {
                           CATEGORIAS_LABEL[cat as keyof typeof CATEGORIAS_LABEL]
                             .icon
@@ -355,7 +355,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                             }`}
                           >
                             <span
-                              className={`material-symbols-outlined text-xl ${
+                              className={`material-icons text-xl ${
                                 tipoDoc === key
                                   ? "text-blue-500"
                                   : "text-slate-400"
@@ -519,7 +519,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
           {fase === "generando" && (
             <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
               <div className="size-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-xl shadow-blue-500/30 animate-pulse">
-                <span className="material-symbols-outlined text-white text-4xl animate-spin">
+                <span className="material-icons text-white text-4xl animate-spin">
                   auto_awesome
                 </span>
               </div>
@@ -539,7 +539,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="size-8 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-emerald-600 text-lg">
+                    <span className="material-icons text-emerald-600 text-lg">
                       edit_note
                     </span>
                   </div>
@@ -575,7 +575,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     title="IA mejora la redacción manteniendo objetividad institucional"
                   >
                     <span
-                      className={`material-symbols-outlined text-sm ${mejorando ? "animate-spin" : ""}`}
+                      className={`material-icons text-sm ${mejorando ? "animate-spin" : ""}`}
                     >
                       {mejorando ? "progress_activity" : "auto_fix_high"}
                     </span>
@@ -603,7 +603,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     className="px-3 py-2 text-[9px] font-black text-indigo-600 bg-indigo-50 border border-indigo-200 uppercase tracking-widest hover:bg-indigo-100 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="Hace el texto más formal e institucional"
                   >
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-icons text-sm">
                       school
                     </span>
                     Hacer Formal
@@ -627,7 +627,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     className="px-3 py-2 text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 uppercase tracking-widest hover:bg-emerald-100 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="Resume el texto manteniendo datos clave"
                   >
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-icons text-sm">
                       compress
                     </span>
                     Resumir
@@ -678,7 +678,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     title="Edite el borrador generado por la IA antes de generar el documento final"
                   />
                   <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold mt-2">
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-icons text-sm">
                       info
                     </span>
                     Edite el texto libremente. Use "Mejorar Redacción" para que
@@ -705,7 +705,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
             <div className="space-y-5 animate-fade-in">
               <div className="flex items-center gap-3 mb-4">
                 <div className="size-8 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                  <span className="material-symbols-outlined text-emerald-600 text-lg">
+                  <span className="material-icons text-emerald-600 text-lg">
                     check_circle
                   </span>
                 </div>
@@ -749,7 +749,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                 className="px-8 py-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 disabled:opacity-40 transition-all flex items-center gap-2"
                 title="Generar borrador con inteligencia artificial"
               >
-                <span className="material-symbols-outlined text-lg">
+                <span className="material-icons text-lg">
                   auto_awesome
                 </span>
                 Generar con IA
@@ -762,7 +762,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                 className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 transition-all flex items-center gap-2"
                 title="Generar documento final con formato institucional"
               >
-                <span className="material-symbols-outlined text-lg">
+                <span className="material-icons text-lg">
                   description
                 </span>
                 Generar Documento Final
@@ -783,7 +783,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   className="px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:shadow-xl hover:shadow-amber-500/20 transition-all flex items-center gap-2 active:scale-95"
                   title="Imprimir documento oficial"
                 >
-                  <span className="material-symbols-outlined text-lg">
+                  <span className="material-icons text-lg">
                     print
                   </span>
                   Imprimir Documento

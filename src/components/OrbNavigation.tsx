@@ -355,19 +355,19 @@ export const OrbNavigation = () => {
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
             <span className="text-[8px] font-black tracking-[0.4em] text-blue-500/60 uppercase">
-              System_Status
+              Estado_del_Sistema
             </span>
             <div className="h-px w-24 bg-white/10"></div>
           </div>
           <span className="text-[10px] font-bold text-white/40 tabular-nums title-sase">
-            OPERATIONAL // L4_AUTH_ACTIVE
+            OPERATIVO // AUTENTICACIÓN_L4
           </span>
         </div>
         <div className="flex flex-col items-end gap-1 text-right">
           <div className="flex items-center gap-3">
             <div className="h-px w-24 bg-white/10"></div>
             <span className="text-[8px] font-black tracking-[0.4em] text-cyan-500/60 uppercase">
-              Neural_Core
+              Núcleo_Neuronal
             </span>
           </div>
           <span className="text-[10px] font-bold text-white/40 tabular-nums title-sase">
@@ -457,7 +457,7 @@ export const OrbNavigation = () => {
                           className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 transition-opacity`}
                         ></div>
                         <span
-                          className={`material-symbols-outlined text-3xl ${item.color.replace("from-", "text-")} group-hover:scale-110 transition-transform`}
+                          className={`material-icons text-3xl ${item.color.replace("from-", "text-")} group-hover:scale-110 transition-transform`}
                         >
                           {item.icon}
                         </span>
@@ -488,7 +488,7 @@ export const OrbNavigation = () => {
             </h2>
             <div className="mb-6 flex flex-col items-center">
               <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] animate-pulse">
-                SASE IA NUCLEUS
+                NÚCLEO IA SASE
               </span>
               <div className="h-px w-12 bg-blue-500/30 mt-1"></div>
             </div>

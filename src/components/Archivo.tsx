@@ -341,7 +341,7 @@ export const Archivo: React.FC = () => {
                         >
                           <div className="flex items-center gap-4 min-w-0">
                             <div className="size-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                              <span className="material-symbols-outlined text-xl">
+                              <span className="material-icons text-xl">
                                 {file.name.match(/\.(pdf|doc|docx)$/i)
                                   ? "description"
                                   : "image"}
@@ -366,7 +366,7 @@ export const Archivo: React.FC = () => {
                               rel="noopener noreferrer"
                               className="text-slate-500 group-hover:text-blue-400 transition-colors p-2 hover:bg-blue-500/10 rounded-2xl"
                             >
-                              <span className="material-symbols-outlined text-sm">
+                              <span className="material-icons text-sm">
                                 open_in_new
                               </span>
                             </a>

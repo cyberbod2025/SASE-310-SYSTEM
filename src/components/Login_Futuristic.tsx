@@ -152,7 +152,7 @@ export const Login: React.FC<LoginProps> = ({
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
                     >
-                      <span className="material-symbols-outlined text-[20px]">
+                      <span className="material-icons text-[20px]">
                         {showPassword ? "visibility_off" : "visibility"}
                       </span>
                     </button>

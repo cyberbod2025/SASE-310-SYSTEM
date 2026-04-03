@@ -24,7 +24,7 @@ const SocialMetric = ({ label, value, icon, color, pct }: any) => {
         <div
           className={`size-10 rounded-xl border ${colors[color]} flex items-center justify-center`}
         >
-          <span className="material-symbols-outlined text-xl">{icon}</span>
+          <span className="material-icons text-xl">{icon}</span>
         </div>
         {pct && (
           <span className="text-[10px] font-black px-2 py-0.5 rounded border border-slate-200 bg-white/5 text-slate-700 italic">
@@ -152,7 +152,7 @@ export const DashboardTrabajoSocial = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
           <div className="size-16 bg-[#0a0f18] border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-500 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-            <span className="material-symbols-outlined text-4xl">
+            <span className="material-icons text-4xl">
               diversity_3
             </span>
             <motion.div
@@ -204,7 +204,7 @@ export const DashboardTrabajoSocial = () => {
           {/* TERMINAL GENERATOR */}
           <div className="card-sase border-slate-100 p-8 bg-[#0a0f18]/40 backdrop-blur-xl">
             <h3 className="text-xs font-black text-orange-500 uppercase tracking-[0.3em] mb-8 italic flex items-center gap-3">
-              <span className="material-symbols-outlined text-xl">
+              <span className="material-icons text-xl">
                 history_edu
               </span>
               EMISOR_JUSTIFICANTES
@@ -291,7 +291,7 @@ export const DashboardTrabajoSocial = () => {
                   className={`size-6 rounded-2xl border-2 flex items-center justify-center transition-all ${justForm.distal ? "bg-orange-500 border-orange-500" : "border-slate-600"}`}
                 >
                   {justForm.distal && (
-                    <span className="material-symbols-outlined text-white text-sm">
+                    <span className="material-icons text-white text-sm">
                       check
                     </span>
                   )}
@@ -344,7 +344,7 @@ export const DashboardTrabajoSocial = () => {
           <div className="lg:col-span-2 card-sase border-slate-100 bg-[#0a0f18]/20 flex flex-col h-full">
             <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between">
               <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] flex items-center gap-3 italic">
-                <span className="material-symbols-outlined text-orange-500">
+                <span className="material-icons text-orange-500">
                   inventory
                 </span>
                 HISTORIAL_DE_EMISIÓN_SINCRO
@@ -408,7 +408,7 @@ export const DashboardTrabajoSocial = () => {
                           }}
                           className="size-10 bg-white/5 hover:bg-orange-600 hover:text-white rounded-xl flex items-center justify-center transition-all"
                         >
-                          <span className="material-symbols-outlined text-lg">
+                          <span className="material-icons text-lg">
                             print
                           </span>
                         </button>
@@ -437,7 +437,7 @@ export const DashboardTrabajoSocial = () => {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1 flex items-center gap-3">
-                <span className="material-symbols-outlined text-rose-500 animate-pulse">
+                <span className="material-icons text-rose-500 animate-pulse">
                   warning
                 </span>
                 Casos en vinculacion activa
@@ -468,7 +468,7 @@ export const DashboardTrabajoSocial = () => {
               }}
               className="px-6 py-3 bg-white/5 border border-slate-200 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all flex items-center gap-2 active:scale-95"
             >
-              <span className="material-symbols-outlined text-sm text-rose-400">
+              <span className="material-icons text-sm text-rose-400">
                 print
               </span>
               Generar bitacora institucional
@@ -503,7 +503,7 @@ export const DashboardTrabajoSocial = () => {
 
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-rose-500 text-lg">
+                    <span className="material-icons text-rose-500 text-lg">
                       error
                     </span>
                     <p className="text-[10px] font-black text-slate-600 uppercase italic">
@@ -511,7 +511,7 @@ export const DashboardTrabajoSocial = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-slate-600 text-lg">
+                    <span className="material-icons text-slate-600 text-lg">
                       home_pin
                     </span>
                     <p className="text-[10px] font-black text-slate-600 uppercase italic">
@@ -539,14 +539,14 @@ export const DashboardTrabajoSocial = () => {
                     }
                     className="size-12 bg-white/5 border border-slate-200 text-slate-700 rounded-2xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95"
                   >
-                    <span className="material-symbols-outlined">call</span>
+                    <span className="material-icons">call</span>
                   </button>
                 </div>
               </div>
             ))}
             {dropoutRisk.length === 0 && (
               <div className="col-span-full py-40 text-center opacity-30 flex flex-col items-center gap-6">
-                <span className="material-symbols-outlined text-6xl text-emerald-500">
+                <span className="material-icons text-6xl text-emerald-500">
                   verified_user
                 </span>
                 <p className="text-[11px] font-black uppercase tracking-[0.5em] italic">
@@ -592,12 +592,12 @@ export const DashboardTrabajoSocial = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="card-sase p-10 bg-slate-900 border-slate-100 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-8xl text-orange-500">
+                <span className="material-icons text-8xl text-orange-500">
                   online_prediction
                 </span>
               </div>
               <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-6 flex items-center gap-4">
-                <span className="material-symbols-outlined text-orange-500">
+                <span className="material-icons text-orange-500">
                   auto_awesome
                 </span>
                 ANALISIS SOCIAL IA
@@ -622,7 +622,7 @@ export const DashboardTrabajoSocial = () => {
 
             <div className="card-sase p-10 border-2 border-dashed border-slate-100 flex flex-col flex-col items-center justify-center text-center group">
               <div className="size-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
-                <span className="material-symbols-outlined text-4xl">
+                <span className="material-icons text-4xl">
                   analytics
                 </span>
               </div>

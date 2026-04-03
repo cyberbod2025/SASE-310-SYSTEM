@@ -32,7 +32,7 @@ export const MiniCalendar: React.FC<{
             onClick={handlePrev}
             className="p-1 hover:bg-white/5 rounded text-slate-400"
           >
-            <span className="material-symbols-outlined text-sm">
+            <span className="material-icons text-sm">
               chevron_left
             </span>
           </button>
@@ -40,7 +40,7 @@ export const MiniCalendar: React.FC<{
             onClick={handleNext}
             className="p-1 hover:bg-white/5 rounded text-slate-400"
           >
-            <span className="material-symbols-outlined text-sm">
+            <span className="material-icons text-sm">
               chevron_right
             </span>
           </button>

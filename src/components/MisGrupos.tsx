@@ -107,7 +107,7 @@ export const MisGrupos: React.FC = () => {
   if (grupos.length === 0) {
     return (
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
-        <span className="material-symbols-outlined text-6xl text-slate-300 mb-4">
+        <span className="material-icons text-6xl text-slate-300 mb-4">
           groups
         </span>
         <h3 className="text-xl font-bold text-slate-700 mb-2">
@@ -125,7 +125,7 @@ export const MisGrupos: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-xl shadow-black/5 p-8 text-white">
         <div className="flex items-center gap-4 mb-2">
-          <span className="material-symbols-outlined text-5xl">groups</span>
+          <span className="material-icons text-5xl">groups</span>
           <div>
             <h1 className="text-3xl font-black">Mis Grupos</h1>
             <p className="text-blue-100 text-sm">
@@ -154,7 +154,7 @@ export const MisGrupos: React.FC = () => {
                     {grupo.totalAlumnos !== 1 ? "s" : ""}
                   </p>
                 </div>
-                <span className="material-symbols-outlined text-slate-300 group-hover:text-blue-600 transition-colors">
+                <span className="material-icons text-slate-300 group-hover:text-blue-600 transition-colors">
                   chevron_right
                 </span>
               </div>
@@ -201,7 +201,7 @@ export const MisGrupos: React.FC = () => {
             onClick={() => setGrupoSeleccionado(null)}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm"
           >
-            <span className="material-symbols-outlined text-lg">
+            <span className="material-icons text-lg">
               arrow_back
             </span>
             Volver a Mis Grupos
@@ -216,7 +216,7 @@ export const MisGrupos: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-blue-50 rounded-xl p-4">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-3xl text-blue-600">
+                  <span className="material-icons text-3xl text-blue-600">
                     group
                   </span>
                   <div>
@@ -232,7 +232,7 @@ export const MisGrupos: React.FC = () => {
 
               <div className="bg-green-50 rounded-xl p-4">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-3xl text-green-600">
+                  <span className="material-icons text-3xl text-green-600">
                     school
                   </span>
                   <div>
@@ -250,7 +250,7 @@ export const MisGrupos: React.FC = () => {
 
               <div className="bg-orange-50 rounded-xl p-4">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-3xl text-orange-600">
+                  <span className="material-icons text-3xl text-orange-600">
                     warning
                   </span>
                   <div>

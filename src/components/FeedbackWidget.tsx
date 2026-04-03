@@ -143,13 +143,15 @@ ${contextoAutomatico}`;
 
   if (!isFeedbackOpen) return null;
 
+  if (!isFeedbackOpen) return null;
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#0b0e14] border border-white/20 rounded-2xl shadow-2xl p-6 w-full max-w-md animate-scale-in">
         <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/30">
-              <span className="material-symbols-outlined text-blue-500">
+              <span className="material-icons text-blue-400">
                 feedback
               </span>
             </div>
@@ -157,7 +159,7 @@ ${contextoAutomatico}`;
               <h4 className="text-white font-black text-sm uppercase tracking-widest">
                 Sugerencias y Mejoras
               </h4>
-              <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">
+              <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">
                 Tu visión construye SASE
               </p>
             </div>
@@ -168,24 +170,24 @@ ${contextoAutomatico}`;
             aria-label="Cerrar ventana de sugerencias"
             className="size-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 rounded-2xl transition-all"
           >
-            <span className="material-symbols-outlined text-[18px]">close</span>
+            <span className="material-icons text-[18px]">close</span>
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-2 text-[11px] text-slate-300 bg-white/5 border border-white/10 rounded-xl p-3">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm text-blue-400">map</span>
+              <span className="material-icons text-sm text-blue-400">map</span>
               <span className="font-bold">Módulo actual:</span>
               <span className="text-slate-200">{moduleLabels[currentModule] || "Sin módulo"}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm text-amber-400">badge</span>
+              <span className="material-icons text-sm text-amber-400">badge</span>
               <span className="font-bold">Rol:</span>
               <span className="text-slate-200">{currentUserRole}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm text-emerald-400">link</span>
+              <span className="material-icons text-sm text-emerald-400">link</span>
               <span className="font-bold">Ruta:</span>
               <span className="text-slate-200 truncate">{window.location.pathname}</span>
             </div>
@@ -249,7 +251,7 @@ ${contextoAutomatico}`;
                 onClick={() => setIssueTag(issue.key)}
                 className={`text-left px-3 py-2 rounded-2xl border text-[11px] transition-all ${
                   issueTag === issue.key
-                    ? "bg-blue-600/20 border-blue-500/40 text-white"
+                    ? "bg-blue-500/20 border-blue-500/40 text-white"
                     : "bg-black/30 border-white/5 text-slate-400 hover:text-white hover:border-white/20"
                 }`}
               >
@@ -277,10 +279,10 @@ ${contextoAutomatico}`;
           <button
             type="submit"
             disabled={isSending}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all disabled:opacity-50 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-black/5 shadow-blue-600/20 group"
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl transition-all disabled:opacity-50 text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-xl shadow-black/5 shadow-blue-500/20 group"
           >
             {isSending ? "Enviando Sugerencia..." : "Enviar Sugerencia"}
-            <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">
+            <span className="material-icons text-[16px] group-hover:translate-x-1 transition-transform">
               send
             </span>
           </button>

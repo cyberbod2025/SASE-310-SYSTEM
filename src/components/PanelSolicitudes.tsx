@@ -300,7 +300,7 @@ export const PanelSolicitudes: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <span className="material-symbols-outlined text-blue-600 text-3xl">
+            <span className="material-icons text-blue-600 text-3xl">
               assignment
             </span>
             Panel de Solicitudes
@@ -324,7 +324,7 @@ export const PanelSolicitudes: React.FC = () => {
               : "border-transparent text-text-secondary hover:text-text-main"
           }`}
         >
-          <span className="material-symbols-outlined text-lg align-middle mr-1">
+          <span className="material-icons text-lg align-middle mr-1">
             description
           </span>
           Solicitudes ({solicitudes.length})
@@ -337,7 +337,7 @@ export const PanelSolicitudes: React.FC = () => {
               : "border-transparent text-text-secondary hover:text-text-main"
           }`}
         >
-          <span className="material-symbols-outlined text-lg align-middle mr-1">
+          <span className="material-icons text-lg align-middle mr-1">
             campaign
           </span>
           Comunicados ({comunicados.length})
@@ -350,7 +350,7 @@ export const PanelSolicitudes: React.FC = () => {
               : "border-transparent text-text-secondary hover:text-text-main"
           }`}
         >
-          <span className="material-symbols-outlined text-lg align-middle mr-1">
+          <span className="material-icons text-lg align-middle mr-1">
             add_circle
           </span>
           Crear Nuevo
@@ -366,7 +366,7 @@ export const PanelSolicitudes: React.FC = () => {
               onClick={() => setActiveTab("nuevo")}
               className="px-4 py-2 bg-blue-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-black/5 shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center gap-2"
             >
-              <span className="material-symbols-outlined text-sm">
+              <span className="material-icons text-sm">
                 add_circle
               </span>
               Nueva Solicitud
@@ -412,7 +412,7 @@ export const PanelSolicitudes: React.FC = () => {
                         </p>
                         {sol.alumnoNombre && (
                           <p className="text-xs text-blue-600 mt-2 font-bold flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">
+                            <span className="material-icons text-sm">
                               person
                             </span>{" "}
                             {sol.alumnoNombre}
@@ -428,7 +428,7 @@ export const PanelSolicitudes: React.FC = () => {
                         </p>
                         {sol.fechaLimite && (
                           <div className="mt-3 inline-flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-2xl border border-amber-100">
-                            <span className="material-symbols-outlined text-[14px] text-amber-600">
+                            <span className="material-icons text-[14px] text-amber-600">
                               event
                             </span>
                             <p className="text-[10px] font-bold text-amber-700">
@@ -486,7 +486,7 @@ export const PanelSolicitudes: React.FC = () => {
 
           {comunicados.length === 0 ? (
             <div className="p-10 text-center text-text-secondary">
-              <span className="material-symbols-outlined text-4xl mb-2">
+              <span className="material-icons text-4xl mb-2">
                 campaign
               </span>
               <p>No hay comunicados enviados.</p>
@@ -511,7 +511,7 @@ export const PanelSolicitudes: React.FC = () => {
                             : "bg-blue-100 text-blue-600"
                       }`}
                     >
-                      <span className="material-symbols-outlined">
+                      <span className="material-icons">
                         {com.tipo === "evento"
                           ? "event"
                           : com.tipo === "urgente"
@@ -546,7 +546,7 @@ export const PanelSolicitudes: React.FC = () => {
           <div className="bg-white rounded-xl border border-border-color shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-border-color bg-gray-50">
               <h3 className="font-bold text-lg flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">
+                <span className="material-icons text-primary">
                   description
                 </span>
                 Solicitar Documento
@@ -600,7 +600,7 @@ export const PanelSolicitudes: React.FC = () => {
                 {newSolicitud.asignadoA &&
                   newSolicitud.asignadoA !== "gaby" && (
                     <p className="text-xs text-purple-600 mt-1 flex items-center gap-1">
-                      <span className="material-symbols-outlined text-xs">
+                      <span className="material-icons text-xs">
                         mail
                       </span>
                       CC: Gabriela (Coordinación) será notificada
@@ -626,7 +626,7 @@ export const PanelSolicitudes: React.FC = () => {
                 </select>
                 {selectedStudent && (
                   <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-xs">
+                    <span className="material-icons text-xs">
                       check_circle
                     </span>
                     Secretario asignado automáticamente:{" "}
@@ -705,7 +705,7 @@ export const PanelSolicitudes: React.FC = () => {
           <div className="bg-white rounded-xl border border-border-color shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-border-color bg-gray-50">
               <h3 className="font-bold text-lg flex items-center gap-2">
-                <span className="material-symbols-outlined text-purple-600">
+                <span className="material-icons text-purple-600">
                   campaign
                 </span>
                 Crear Comunicado

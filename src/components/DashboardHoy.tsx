@@ -142,10 +142,10 @@ export const DashboardHoy = () => {
         <div className="flex gap-2">
           <button
             onClick={handlePrimaryAction}
-            className="btn-sase-primary px-6 py-4"
+            className="btn-sase-primary px-6 py-4 flex items-center gap-3"
           >
-            <span className="material-icons text-sm">{config.icon}</span>
-            {config.action}
+            <span className="material-icons text-xl">{config.icon}</span>
+            <span className="font-black uppercase tracking-widest text-[11px]">{config.action}</span>
           </button>
         </div>
       </div>
@@ -157,16 +157,22 @@ export const DashboardHoy = () => {
         transition={{ delay: 0.3 }}
         className="mb-12"
       >
-        <div className="glass-card-quantum border-amber-500/30 bg-amber-500/5 p-6 rounded-3xl flex items-center gap-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform duration-500">
-            <span className="material-icons text-8xl text-amber-500">verified_user</span>
+        <div className="glass-card-quantum border-amber-500/30 bg-amber-500/5 p-6 rounded-3xl flex flex-col md:flex-row items-center gap-6 relative overflow-hidden group">
+          {/* Background Decorative Icon */}
+          <div className="absolute -top-4 -right-4 p-4 opacity-5 group-hover:rotate-12 transition-transform duration-500">
+            <span className="material-icons text-[160px] text-amber-500">verified_user</span>
           </div>
-          <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 flex-shrink-0 border border-amber-500/20">
-            <span className="material-icons text-3xl">auto_awesome</span>
+
+          <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 flex-shrink-0 border border-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+            <span className="material-icons text-4xl">auto_awesome</span>
           </div>
-          <div>
-            <h4 className="title-sase text-amber-400 text-xs tracking-[0.2em] mb-1">Regla de Oro Institucional</h4>
-            <p className="text-slate-200 text-xl font-bold tracking-tight italic">
+
+          <div className="flex-1 relative z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-icons text-amber-500 text-sm">security</span>
+              <h4 className="title-sase text-amber-400 text-[10px] font-black uppercase tracking-[0.3em]">Regla de Oro Institucional</h4>
+            </div>
+            <p className="text-slate-200 text-xl md:text-2xl font-black tracking-tight italic leading-tight">
               "SASE acompaña procesos, no persigue errores. Lo que no se documenta, se olvida."
             </p>
           </div>
@@ -175,14 +181,14 @@ export const DashboardHoy = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <GlassCard
-          title="Radar de Estabilidad"
-          icon="radar"
-          className="lg:col-span-2 min-h-[300px] flex flex-col"
+          title="Estabilidad del Sistema"
+          icon="insights"
+          className="lg:col-span-2 min-h-[350px] flex flex-col"
         >
           <div className="flex-1 flex items-center justify-center relative mt-4">
             <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent rounded-xl border border-white/5"></div>
             <div className="text-center z-10">
-              <span className="material-icons animate-pulse text-blue-400 text-5xl mb-3">
+              <span className="material-icons animate-pulse text-blue-400 text-6xl mb-4">
                 graphic_eq
               </span>
               <p className="text-slate-400 font-medium">

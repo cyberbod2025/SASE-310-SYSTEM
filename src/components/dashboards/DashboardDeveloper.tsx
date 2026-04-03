@@ -77,7 +77,7 @@ export const DashboardDeveloper = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-slate-200 pb-6">
         <div className="flex items-center gap-4">
           <div className="size-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center shadow-2xl shadow-indigo-600/20 ring-1 ring-white/20">
-            <span className="material-symbols-outlined text-white">
+            <span className="material-icons text-white">
               terminal
             </span>
           </div>
@@ -96,7 +96,7 @@ export const DashboardDeveloper = () => {
             onClick={handleForceRLSCheck}
             className="px-4 py-2 bg-white/5 border border-slate-200 rounded-xl text-[10px] font-black uppercase hover:bg-white/10 transition-all flex items-center gap-2"
           >
-            <span className="material-symbols-outlined text-sm">security</span>
+            <span className="material-icons text-sm">security</span>
             Auditar RLS
           </button>
         </div>
@@ -140,7 +140,7 @@ export const DashboardDeveloper = () => {
                 className="w-full p-3 bg-white/5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white hover:bg-indigo-600 transition-all text-left flex items-center justify-between group"
               >
                 {mod}
-                <span className="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="material-icons text-sm opacity-0 group-hover:opacity-100 transition-opacity">
                   arrow_forward
                 </span>
               </button>
@@ -153,7 +153,7 @@ export const DashboardDeveloper = () => {
           <div className="absolute top-0 right-0 p-24 bg-white/5 rounded-full blur-[100px] -mr-12 -mt-12 pointer-events-none"></div>
 
           <div className="flex items-center gap-4 mb-6">
-            <span className="material-symbols-outlined text-4xl text-indigo-400">
+            <span className="material-icons text-4xl text-indigo-400">
               labs
             </span>
             <div>
@@ -185,7 +185,7 @@ export const DashboardDeveloper = () => {
               </button>
             </div>
             <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-200 border-dashed flex items-center justify-center opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
-              <span className="material-symbols-outlined text-3xl mb-1">
+              <span className="material-icons text-3xl mb-1">
                 add_circle
               </span>
               <p className="text-[10px] font-bold uppercase ml-2 tracking-widest">

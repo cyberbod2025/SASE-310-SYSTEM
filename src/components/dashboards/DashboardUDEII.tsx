@@ -30,7 +30,7 @@ export const DashboardUDEII = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
           <div className="size-16 bg-[#0a0f18] border border-indigo-500/30 rounded-2xl flex items-center justify-center text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.15)] relative overflow-hidden backdrop-blur-xl">
-            <span className="material-symbols-outlined text-4xl">
+            <span className="material-icons text-4xl">
               accessibility_new
             </span>
             <motion.div
@@ -56,7 +56,7 @@ export const DashboardUDEII = () => {
           onClick={() => toast.success("Generando Reporte de Inclusión...")}
           className="px-8 py-3.5 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 hover:bg-indigo-500 transition-all active:scale-95 flex items-center gap-3"
         >
-          <span className="material-symbols-outlined text-xl">file_save</span>
+          <span className="material-icons text-xl">file_save</span>
           Generar reporte BAP
         </button>
       </div>
@@ -66,7 +66,7 @@ export const DashboardUDEII = () => {
         <div className="xl:col-span-2 card-sase border-slate-100 bg-[#0a0f18]/40 overflow-hidden flex flex-col group">
           <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] flex items-center gap-3 italic">
-              <span className="material-symbols-outlined text-indigo-400">
+              <span className="material-icons text-indigo-400">
                 monitoring
               </span>
               MONITOR DE BARRERAS (BAP)
@@ -123,7 +123,7 @@ export const DashboardUDEII = () => {
                         }}
                         className="size-10 bg-white/5 hover:bg-indigo-600 hover:text-white rounded-xl flex items-center justify-center transition-all group-hover:border-indigo-500/30 border border-transparent active:scale-90"
                       >
-                        <span className="material-symbols-outlined text-lg">
+                        <span className="material-icons text-lg">
                           edit_note
                         </span>
                       </button>
@@ -142,7 +142,7 @@ export const DashboardUDEII = () => {
                         }
                         className="size-10 bg-white/5 hover:bg-indigo-600 hover:text-white rounded-xl flex items-center justify-center transition-all border border-transparent active:scale-90"
                       >
-                        <span className="material-symbols-outlined text-lg">
+                        <span className="material-icons text-lg">
                           print
                         </span>
                       </button>
@@ -167,7 +167,7 @@ export const DashboardUDEII = () => {
                 onClick={() => toast("Abriendo Guia de Ajustes Razonables...")}
                 className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
               >
-                <span className="material-symbols-outlined text-indigo-400">
+                <span className="material-icons text-indigo-400">
                   menu_book
                 </span>
                 <span className="text-[11px] font-black text-white uppercase tracking-widest italic">
@@ -178,7 +178,7 @@ export const DashboardUDEII = () => {
                 onClick={() => toast("Enviando comunicación a padres...")}
                 className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
               >
-                <span className="material-symbols-outlined text-emerald-400">
+                <span className="material-icons text-emerald-400">
                   mark_as_unread
                 </span>
                 <span className="text-[11px] font-black text-white uppercase tracking-widest italic">
@@ -190,7 +190,7 @@ export const DashboardUDEII = () => {
 
           <div className="card-sase p-10 bg-indigo-900/10 border-indigo-500/10 flex flex-col items-center text-center">
             <div className="size-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 mb-6">
-              <span className="material-symbols-outlined text-3xl font-black italic">
+              <span className="material-icons text-3xl font-black italic">
                 psychology
               </span>
             </div>

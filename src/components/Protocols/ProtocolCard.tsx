@@ -34,7 +34,7 @@ export const ProtocolCard: React.FC<ProtocolCardProps> = ({
     >
       <div className={`${colorClass} p-3 flex items-center justify-between`}>
         <span className="text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2">
-          <span className="material-symbols-outlined text-sm">
+          <span className="material-icons text-sm">
             {protocol.tipo === "convivencia"
               ? "shield"
               : protocol.tipo === "salud"
@@ -45,7 +45,7 @@ export const ProtocolCard: React.FC<ProtocolCardProps> = ({
           </span>
           {typeLabels[protocol.tipo]}
         </span>
-        <span className="material-symbols-outlined text-white/80 group-hover:text-white transition-colors">
+        <span className="material-icons text-white/80 group-hover:text-white transition-colors">
           arrow_forward
         </span>
       </div>
@@ -74,7 +74,7 @@ export const ProtocolCard: React.FC<ProtocolCardProps> = ({
         </p>
 
         <div className="flex items-center gap-2 text-xs text-gray-400">
-          <span className="material-symbols-outlined text-sm">flag</span>
+          <span className="material-icons text-sm">flag</span>
           <span>Activación: {protocol.activacion?.substring(0, 40)}...</span>
         </div>
       </div>
