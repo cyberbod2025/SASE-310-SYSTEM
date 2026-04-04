@@ -40,22 +40,22 @@ export const Intro: React.FC<IntroProps> = ({ onEnter }) => {
   };
 
   // Dinámica de color y posición de ojos según fase
-  let orbBase = "59, 130, 246"; // Azul inicial (#3b82f6)
+  let orbBase = "139, 92, 246"; // Violeta Inicial (Energía SASE)
   let eyeX = 0;
   let eyeY = 0;
 
   if (phase === 3) {
-    orbBase = "0, 200, 83"; // Verde
+    orbBase = "245, 158, 11"; // Ámbar (Alerta temprana)
     eyeY = -25; // Arriba
   } else if (phase === 4) {
-    orbBase = "255, 152, 0"; // Naranja
+    orbBase = "6, 182, 212"; // Cian (Procesamiento)
     eyeY = 25; // Abajo
   } else if (phase === 5) {
-    orbBase = "211, 47, 47"; // Rojo
-    eyeX = 25; // Diagonal
-    eyeY = -25;
+    orbBase = "244, 63, 94"; // Magenta (Acción/Crítico)
+    eyeX = 20;
+    eyeY = -20;
   } else if (phase >= 6) {
-    orbBase = "14, 165, 233"; // Azul cielo imponente (Sky 500)
+    orbBase = "124, 58, 237"; // Violeta SASE Final
   }
 
   const plasmaColor = `rgba(${orbBase}, 0.8)`;

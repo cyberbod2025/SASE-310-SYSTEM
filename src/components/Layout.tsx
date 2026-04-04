@@ -139,6 +139,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [showNotifications]);
 
+  const { setIsTourActive } = useApp();
+
+  // Monitorizar activación del tour (driver.js no es reactivo por sí solo)
+  useEffect(() => {
+    const checkTour = () => {
+      const active = !!document.querySelector(".driver-popover") || localStorage.getItem("sase_tour_active") === "true";
+      setIsTourActive(active);
+    };
+
+    const interval = setInterval(checkTour, 500);
+    return () => clearInterval(interval);
+  }, [setIsTourActive]);
+
   const displayUserName =
     profile?.nombre || user?.user_metadata?.full_name || "Usuario SASE";
   const displayUserRole =
@@ -212,8 +225,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   </h3>
                   <div className="flex flex-col gap-0.5 mt-0.5">
                     <div className="flex items-center gap-1.5">
-                      <span className="size-1.5 bg-blue-500 rounded-full"></span>
-                      <span className="text-[9px] font-black text-blue-500/70 uppercase tracking-widest truncate">
+                      <span className="size-1.5 bg-violet-500 rounded-full"></span>
+                      <span className="text-[9px] font-black text-violet-500/70 uppercase tracking-widest truncate">
                         {displayUserRole}
                       </span>
                     </div>
@@ -692,9 +705,9 @@ const NavItem: React.FC<{
       title={collapsed ? label : ""}
       className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
-          ? `bg-blue-500/10 backdrop-blur-md text-blue-400 shadow-xl shadow-black/20 font-black border-blue-500/30 scale-[1.02]`
+          ? `bg-violet-500/10 backdrop-blur-md text-violet-400 shadow-xl shadow-black/20 font-black border-violet-500/30 scale-[1.02]`
           : "text-slate-400 hover:bg-white/5 hover:text-white font-bold border-transparent"
-      } ${highlighted ? "shadow-[0_0_25px_rgba(59,130,246,0.2)] border-blue-500/20 bg-blue-500/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
+      } ${highlighted ? "shadow-[0_0_25px_rgba(139,92,246,0.2)] border-violet-500/20 bg-violet-500/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span
         className={`material-icons text-[20px] transition-transform ${

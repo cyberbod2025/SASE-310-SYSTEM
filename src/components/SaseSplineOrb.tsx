@@ -23,12 +23,12 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
   // Map institutional states to official copilot colors
   const getStateColor = (s: string) => {
     switch (s) {
-      case 'normal': return '#00ff00';    // Pure Neon Green
-      case 'warning': return '#ffff00';   // Pure Neon Yellow
-      case 'alert': return '#ff0000';     // Pure Neon Red
-      case 'thinking': return '#ff8800';  // Pure Neon Gold/Orange
-      case 'rebooting': return '#00ffff'; // Pure Neon Cyan
-      default: return '#00ff00';
+      case 'normal': return '#8b5cf6';    // Violeta Eléctrico
+      case 'warning': return '#f59e0b';   // Ámbar Alerta
+      case 'alert': return '#f43f5e';     // Magenta Acción
+      case 'thinking': return '#d946ef';  // Fucsia Neural
+      case 'rebooting': return '#06b6d4'; // Cian Cuántico
+      default: return '#8b5cf6';
     }
   };
 
@@ -82,15 +82,15 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
     const c = getStateColor(s);
     if (s === 'thinking') {
       return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.5) 15%, transparent 45%),
-              repeating-conic-gradient(from 0deg at 50% 50%, #ff0000 0deg, #ff8800 10deg, #ffff00 20deg, #00ff00 30deg, #00ffff 40deg, #0000ff 50deg, #ff00ff 60deg, #ff0000 70deg),
+              repeating-conic-gradient(from 0deg at 50% 50%, #8b5cf6 0deg, #d946ef 10deg, #06b6d4 20deg, #8b5cf6 30deg),
               radial-gradient(circle at 70% 70%, rgba(0,0,0,0.9) 0%, transparent 100%),
               ${c}44`;
     }
-    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 15%, transparent 45%),
-            radial-gradient(circle at 50% 50%, ${c} 0%, ${c}EE 30%, rgba(0,0,0,0.5) 85%, transparent 100%),
+    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 15%, transparent 45%),
+            radial-gradient(circle at 50% 50%, ${c} 0%, ${c}EE 40%, rgba(10,13,23,0.7) 90%, transparent 100%),
             radial-gradient(circle at 75% 75%, rgba(0,0,0,0.9) 0%, transparent 100%),
-            linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 40%, rgba(0,0,0,0.6) 100%),
-            ${c}15`;
+            linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 40%, rgba(0,0,0,0.7) 100%),
+            ${c}25`;
   };
 
   return (
@@ -134,10 +134,10 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
             : 'saturate(1.4) hue-rotate(0deg) contrast(1.1)',
           scale: state === 'warning' ? 1.08 : (state === 'thinking' ? 1.04 : 1),
           background: get3DGradient(state),
-          boxShadow: `inset -25px -25px 50px rgba(0,0,0,0.8), 
-                      inset 25px 25px 50px rgba(255,255,255,0.25),
-                      0 0 100px ${state === 'thinking' ? 'rgba(255,255,255,0.4)' : color + '66'},
-                      0 0 30px ${state === 'thinking' ? 'rgba(255,255,255,0.6)' : color + '88'}`,
+          boxShadow: `inset -25px -25px 50px rgba(0,0,0,0.85), 
+                      inset 25px 25px 50px rgba(255,255,255,0.3),
+                      0 0 100px ${state === 'thinking' ? 'rgba(217,70,239,0.4)' : color + '77'},
+                      0 0 40px ${state === 'thinking' ? 'rgba(217,70,239,0.7)' : color + 'AA'}`,
         }}
         transition={{
           y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
@@ -249,7 +249,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
             className="absolute w-[240px] h-[240px] rounded-full border border-white/20 blur-md"
             style={{
               background: state === 'thinking' 
-                ? `conic-gradient(from ${i * 90}deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)`
+                ? `conic-gradient(from ${i * 90}deg, #8b5cf6, #d946ef, #06b6d4, #8b5cf6)`
                 : `radial-gradient(circle, ${color}22 0%, transparent 70%)`
             }}
           />

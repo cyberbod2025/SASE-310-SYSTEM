@@ -74,7 +74,7 @@ export const ProtocolsView: React.FC = () => {
           objetivo:
             "Atención a la violencia digital y protección de la identidad.",
           activacion:
-            "Evidencia de hostigamiento en redes sociales o mensajería.",
+            "Evidencia de hostigamiento en redes sociales o mensajer\u00EDa.",
           fuente: "Ley Olimpia y Protocolo SEP",
           roles_responsables: ["Orientación", "Dirección"],
           icono: "devices",
@@ -99,13 +99,15 @@ export const ProtocolsView: React.FC = () => {
   };
 
   const filteredProtocols = protocols.filter((p) => {
+    if (!p) return false;
     if (filterType !== "all" && p.tipo !== filterType) return false;
-    if (
-      searchQuery &&
-      !p.titulo.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      !p.activacion?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-      return false;
+    
+    if (searchQuery) {
+      const searchLower = searchQuery.toLowerCase();
+      const titleMatch = p.titulo?.toLowerCase()?.includes(searchLower) || false;
+      const activationMatch = p.activacion?.toLowerCase()?.includes(searchLower) || false;
+      if (!titleMatch && !activationMatch) return false;
+    }
     return true;
   });
 
@@ -113,7 +115,7 @@ export const ProtocolsView: React.FC = () => {
     all: protocols.length,
     convivencia: protocols.filter((p) => p.tipo === "convivencia").length,
     salud: protocols.filter((p) => p.tipo === "salud").length,
-    pc: protocols.filter((p) => p.tipo === "proteccion_civil").length,
+    pc: protocols.filter((p) => p.tipo === "proteccion_civil" || p.tipo === "seguridad").length,
     apoyo: protocols.filter((p) => p.tipo === "apoyo").length,
   };
 
@@ -125,8 +127,8 @@ export const ProtocolsView: React.FC = () => {
     >
       {/* ENCABEZADO */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
-          Protocolos de Actuacion
+        <h1 className="text-3xl font-bold text-white mb-2 tracking-wide title-sase">
+          Protocolos de Actuación
         </h1>
         <p className="text-slate-400 text-sm">
           Consulta los lineamientos y normativas institucionales.
@@ -140,10 +142,10 @@ export const ProtocolsView: React.FC = () => {
           <input
             type="text"
             placeholder="Buscar protocolo..."
-            title="Buscar protocolos por titulo o situacion de activacion"
+            title="Buscar protocolos por t\u00EDtulo o situaci\u00F3n de activaci\u00F3n"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300"
+            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-violet-400 focus:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300"
           />
         </div>
       </GlassCard>
@@ -188,12 +190,12 @@ export const ProtocolsView: React.FC = () => {
             onClick={() => setFilterType("proteccion_civil")}
             className={`px-4 py-2 rounded-2xl text-sm font-bold transition-all ${
               filterType === "proteccion_civil"
-                ? "bg-blue-500 text-white shadow-xl shadow-black/5"
-                : "text-slate-400 hover:text-blue-300 hover:bg-white/5"
+                ? "bg-cyan-500 text-white shadow-xl shadow-black/5"
+                : "text-slate-400 hover:text-cyan-300 hover:bg-white/5"
             }`}
-            title="Filtrar por protocolos de proteccion civil y emergencias"
+            title="Filtrar por protocolos de protecci\u00F3n civil y emergencias"
           >
-            Proteccion Civil ({stats.pc})
+            Protección Civil ({stats.pc})
           </button>
           <button
             onClick={() => setFilterType("apoyo")}
@@ -212,7 +214,7 @@ export const ProtocolsView: React.FC = () => {
       {/* GRID DE PROTOCOLOS */}
       {loading ? (
         <div className="flex-1 flex justify-center items-center">
-          <span className="material-icons animate-spin text-4xl text-blue-500">
+          <span className="material-icons animate-spin text-4xl text-violet-500">
             sync
           </span>
         </div>
@@ -226,7 +228,7 @@ export const ProtocolsView: React.FC = () => {
           {filteredProtocols.map((proto) => (
             <GlassCard key={proto.id} className="flex flex-col justify-between h-full group">
               <div>
-                <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4 text-blue-400">
+                <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center mb-4 text-violet-400">
                   <span className="material-icons">{proto.icono || "menu_book"}</span>
                 </div>
                 <h3 className="text-lg font-semibold text-slate-200 mb-2 group-hover:text-white transition-colors">
