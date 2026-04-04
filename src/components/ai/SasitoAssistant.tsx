@@ -41,6 +41,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     students,
     notifications,
     currentUserProfile,
+    isTourActive,
   } = useApp();
 
   const [localState, setLocalState] = useState<SasitoState>('calm');
@@ -78,12 +79,12 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
 
   const getStateColor = (s: SasitoState) => {
     switch (s) {
-      case 'calm': return '#00ff00';
-      case 'attention': return '#f59e0b';
-      case 'alert': return '#ff0000';
-      case 'processing': return '#ffffff';
-      case 'rebooting': return '#00ffff';
-      default: return '#00ff00';
+      case 'calm': return '#8b5cf6';      // Violeta Energía
+      case 'attention': return '#f59e0b';  // Ámbar
+      case 'alert': return '#f43f5e';      // Magenta Alerta
+      case 'processing': return '#d946ef'; // Fucsia Thinking
+      case 'rebooting': return '#06b6d4';  // Cian Reboot
+      default: return '#8b5cf6';
     }
   };
 
@@ -91,12 +92,12 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     const color = getStateColor(s);
     if (s === 'processing') {
       return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 10%, transparent 40%),
-              repeating-conic-gradient(from 0deg at 50% 50%, #ff0000 0deg, #ff8800 10deg, #ffff00 20deg, #00ff00 30deg, #00ffff 40deg, #0000ff 50deg, #ff00ff 60deg, #ff0000 70deg),
+              repeating-conic-gradient(from 0deg at 50% 50%, #8b5cf6 0deg, #d946ef 10deg, #06b6d4 20deg, #8b5cf6 30deg),
               radial-gradient(circle at 70% 70%, rgba(0,0,0,0.8) 0%, transparent 100%),
-              rgba(255,255,255,0.2)`;
+              rgba(139,92,246,0.2)`;
     }
-    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 10%, transparent 40%),
-            radial-gradient(circle at 50% 50%, ${color} 0%, ${color}CC 40%, transparent 85%),
+    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.5) 10%, transparent 40%),
+            radial-gradient(circle at 50% 50%, ${color} 0%, ${color}CC 40%, rgba(10,13,23,0.7) 90%),
             radial-gradient(circle at 70% 70%, rgba(0,0,0,0.8) 0%, transparent 100%),
             linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.2) 100%),
             ${color}33`;
@@ -236,6 +237,8 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     }, 1500);
   };
 
+  if (isTourActive) return null;
+
   return (
     <>
       <svg className="hidden">
@@ -308,7 +311,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                     setIsChatOpen(false);
                     import("../TourGuide").then(m => m.startProductTour(currentUserProfile?.full_name || "Docente", currentUserRole as any));
                   }}
-                  className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-blue-400 uppercase tracking-widest hover:bg-blue-500/10 transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-500/10 transition-all flex items-center justify-center gap-2"
                 >
                   REINICIAR TOUR
                 </button>
@@ -331,11 +334,11 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
               exit={{ opacity: 0, scale: 0.8, x: 20 }}
               className="absolute bottom-full right-0 mb-6 w-72"
             >
-              <div className="glass-card-quantum p-5 border-blue-500/30 bg-slate-900/90 backdrop-blur-2xl shadow-2xl relative overflow-hidden group">
-                <div className="absolute inset-0 border border-blue-500/0 group-hover:border-blue-500/40 transition-all duration-700 rounded-[inherit]" />
+              <div className="glass-card-quantum p-5 border-violet-500/30 bg-slate-930/90 backdrop-blur-2xl shadow-2xl relative overflow-hidden group">
+                <div className="absolute inset-0 border border-violet-500/0 group-hover:border-violet-500/40 transition-all duration-700 rounded-[inherit]" />
                 
                 <div className="flex items-start gap-4 relative z-10">
-                  <div className="size-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
+                  <div className="size-8 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-400 shrink-0">
                     <span className="material-icons text-lg">auto_awesome</span>
                   </div>
                   <div className="flex-1">
@@ -351,7 +354,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                             }
                             setCurrentSuggestion(null);
                           }}
-                          className="px-3 py-1.5 bg-blue-600 rounded-lg text-[10px] font-black text-white uppercase tracking-widest hover:bg-blue-500 transition-all font-sans"
+                          className="px-3 py-1.5 bg-violet-600 rounded-lg text-[10px] font-black text-white uppercase tracking-widest hover:bg-violet-500 transition-all font-sans"
                         >
                           {currentSuggestion.actionLabel || "ENTENDIDO"}
                         </button>
@@ -391,9 +394,9 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                 scale: [1, 1.3, 1],
                 opacity: [0.1, 0.3, 0.1],
                 boxShadow: `0 0 100px ${
-                  localState === 'processing' ? '#ffffff' : 
-                  localState === 'alert' ? '#ff0000' : 
-                  localState === 'attention' ? '#ffff00' : '#00ff00'
+                  localState === 'processing' ? '#d946ef' : 
+                  localState === 'alert' ? '#f43f5e' : 
+                  localState === 'attention' ? '#f59e0b' : '#8b5cf6'
                 }44`
               }}
               transition={{ duration: 4, repeat: Infinity }}

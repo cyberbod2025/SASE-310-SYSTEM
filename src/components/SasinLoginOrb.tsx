@@ -38,9 +38,9 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
       <motion.div
         animate={{
           boxShadow: [
-            "0 0 40px 15px rgba(59,130,246,0.25)",
-            "0 0 60px 20px rgba(139,92,246,0.25)",
-            "0 0 40px 15px rgba(59,130,246,0.25)",
+            "0 0 40px 15px rgba(139,92,246,0.25)",
+            "0 0 60px 20px rgba(6,182,212,0.25)",
+            "0 0 40px 15px rgba(139,92,246,0.25)",
           ],
           scale: [1, 1.05, 1],
         }}
@@ -53,7 +53,7 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
         className="absolute inset-0 rounded-full overflow-hidden"
         style={{
           background:
-            "radial-gradient(circle at 40% 30%, #ecf9ff 0%, #3b82f6 40%, #1e3a8a 85%, #050b1a 100%)",
+            "radial-gradient(circle at 40% 30%, #f5f3ff 0%, #8b5cf6 40%, #4c1d95 85%, #0a0d17 100%)",
           border: "2px solid rgba(255,255,255,0.15)",
         }}
       >
@@ -89,7 +89,7 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
 
             <div className="flex gap-[30%] items-center">
               {/* Ojo Izquierdo */}
-              <div className="relative w-6 h-6 rounded-full bg-slate-900 border border-white/20 overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+              <div className="relative w-6 h-6 rounded-full bg-slate-950 border border-white/20 overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.6)]">
                  <motion.div
                     animate={{ 
                       x: pupilX * 1.5, 
@@ -99,14 +99,14 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
                     className="absolute inset-0 flex items-center justify-center"
                  >
-                    <div className="w-3.5 h-3.5 bg-white rounded-full shadow-[0_0_12px_#fff,0_0_20px_#3b82f6] flex items-center justify-center">
-                       <div className="w-1 h-1 bg-blue-600 rounded-full" />
+                    <div className="w-3.5 h-3.5 bg-white rounded-full shadow-[0_0_12px_#fff,0_0_20px_#8b5cf6] flex items-center justify-center">
+                       <div className="w-1 h-1 bg-violet-600 rounded-full" />
                     </div>
                  </motion.div>
               </div>
 
               {/* Ojo Derecho */}
-              <div className="relative w-6 h-6 rounded-full bg-slate-900 border border-white/20 overflow-hidden shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+              <div className="relative w-6 h-6 rounded-full bg-slate-950 border border-white/20 overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.6)]">
                  <motion.div
                     animate={{ 
                       x: pupilX * 1.5, 
@@ -116,8 +116,8 @@ export const SasinLoginOrb: React.FC<SasinLoginOrbProps> = ({ className, mouseX 
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
                     className="absolute inset-0 flex items-center justify-center"
                  >
-                    <div className="w-3.5 h-3.5 bg-white rounded-full shadow-[0_0_12px_#fff,0_0_20px_#3b82f6] flex items-center justify-center">
-                       <div className="w-1 h-1 bg-blue-600 rounded-full" />
+                    <div className="w-3.5 h-3.5 bg-white rounded-full shadow-[0_0_12px_#fff,0_0_20px_#8b5cf6] flex items-center justify-center">
+                       <div className="w-1 h-1 bg-violet-600 rounded-full" />
                     </div>
                  </motion.div>
               </div>

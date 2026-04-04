@@ -5,20 +5,20 @@
 @tailwind utilities;
 
 :root {
-  --sase-bg: #0B1120;
-  --sase-bg-alt: #0F172A;
-  --sase-primary: #3B82F6;
-  --sase-primary-glow: rgba(59, 130, 246, 0.2);
-  --sase-accent: #60A5FA;
-  --sase-accent-glow: rgba(96, 165, 250, 0.15);
-  --sase-error: #EF4444;
+  --sase-bg: #0A0D17; /* Deep Night - Energía Base */
+  --sase-bg-alt: #111827;
+  --sase-primary: #8B5CF6; /* Violeta Energético */
+  --sase-primary-glow: rgba(139, 92, 246, 0.25);
+  --sase-accent: #06B6D4; /* Cian Eléctrico */
+  --sase-accent-glow: rgba(6, 182, 212, 0.15);
+  --sase-error: #F43F5E; /* Magenta Alerta */
   --sase-success: #10B981;
-  --sase-surface: rgba(15, 23, 42, 0.8);
-  --sase-border: rgba(255, 255, 255, 0.1);
+  --sase-surface: rgba(17, 24, 39, 0.6); /* Dark Glass surface */
+  --sase-border: rgba(255, 255, 255, 0.08);
   --sase-text-head: #FFFFFF;
-  --sase-text-main: #E2E8F0; /* Slate 200 */
+  --sase-text-main: #CBD5E1; /* Slate 300 */
   --sase-text-muted: #94A3B8; /* Slate 400 */
-  --sase-border-radius: 1rem;
+  --sase-border-radius: 1.25rem;
 
   /* Mobile Safe Areas */
   --safe-top: env(safe-area-inset-top, 0px);
@@ -428,15 +428,49 @@
   right: -40px;
   width: 80px;
   height: 80px;
-  background: radial-gradient(circle at 30% 30%, #3b82f6, #000);
+  background: radial-gradient(circle at 30% 30%, #8b5cf6, #000); /* Violet Base */
   border-radius: 50%;
   box-shadow:
-    0 0 30px rgba(59, 130, 246, 0.8),
-    0 0 60px rgba(0, 242, 255, 0.4),
+    0 0 30px rgba(139, 92, 246, 0.8),
+    0 0 60px rgba(6, 182, 212, 0.4),
     inset 0 0 20px rgba(255, 255, 255, 0.2);
   animation: float 3s ease-in-out infinite, sase-neural-pulse 2s ease-in-out infinite;
-  z-index: 1000;
+  z-index: 10000;
+  border: 4px solid rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  /* Glow extra */
+  background: radial-gradient(circle at 35% 35%, #8b5cf6, #0ea5e9);
+}
+
+.sase-tour-welcome-orb {
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle at 30% 30%, #8b5cf6, #06b6d4);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 0 40px rgba(139, 92, 246, 0.8),
+    inset 0 0 20px rgba(255, 255, 255, 0.4);
+  animation: float 4s ease-in-out infinite;
+}
+
+.sase-tour-step-orb-container {
+  float: right;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  margin-top: -10px;
+}
+
+.sase-tour-step-orb {
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle at 30% 30%, #8b5cf6, #06b6d4);
+  border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 30px rgba(6, 182, 212, 0.6),
+    inset 0 0 15px rgba(255, 255, 255, 0.3);
+  animation: float 3s ease-in-out infinite;
 }
 
 @keyframes sase-neural-pulse {

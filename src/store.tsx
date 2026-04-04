@@ -63,6 +63,8 @@ interface AppContextType {
   systemMessage: string | null;
   setSystemState: (state: SystemState, message?: string) => void;
   resetSystemState: () => void;
+  isTourActive: boolean;
+  setIsTourActive: (active: boolean) => void;
   highlightedModule: AppModule | null;
   highlightModule: (moduleKey: string | AppModule) => void;
   autoNavigate: boolean;
@@ -80,6 +82,11 @@ interface AppContextType {
   addSystemNotice: any;
   resolveSystemNotice: any;
   updateCredencialStatus: any;
+
+  // Students & Objects
+  addObjetoRetenido: any;
+  updateEstadoObjeto: any;
+  registrarDevolucion: any;
 
   // Inventory & Stats
   suministros: any;
@@ -148,7 +155,7 @@ export const AppProvider: React.FC<{
   // 6. UI State Slice
   const ui = useUiSlice(user, auth.currentUserRole, studentsSlice.students);
 
-  const aiSystem = useSystemStateSlice(ui.systemState);
+  const aiSystem = useSystemStateSlice(ui.systemState as SystemState);
 
   // Compatibility functions for missing ones in slices
   const updateStudentAudit = async (studentId: string, modifiedBy: string) => {

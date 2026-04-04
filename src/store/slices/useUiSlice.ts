@@ -16,6 +16,7 @@ export const useUiSlice = (
   const [assistantStatus, setAssistantStatus] = useState<
     "idle" | "listening" | "thinking"
   >("idle");
+  const [isTourActive, setIsTourActive] = useState(false);
   const [activePrintJob, setActivePrintJob] = useState<any>(null);
   const [printModal, setPrintModal] = useState({
     isOpen: false,
@@ -104,6 +105,8 @@ export const useUiSlice = (
     setIsFeedbackOpen,
     assistantStatus,
     setAssistantStatus,
+    isTourActive,
+    setIsTourActive,
     systemState,
     activePrintJob,
     setActivePrintJob,

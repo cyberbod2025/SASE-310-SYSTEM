@@ -10,16 +10,18 @@ export default {
       colors: {
         // Restauración de Paleta SASE Premium (Fondo Oscuro + Neón)
         sase: {
-          dark: "#0b0e14",
+          dark: "#0a0d17",
           card: "rgba(17, 24, 39, 0.7)",
-          cyan: "#00f2ff",
+          cyan: "#06b6d4",
           blue: "#3b82f6",
-          purple: "#a855f7",
+          purple: "#8b5cf6",
+          magenta: "#f43f5e",
           emerald: "#10b981",
         },
       },
       boxShadow: {
-        "glow-cyan": "0 0 20px rgba(0, 242, 255, 0.3)",
+        "glow-cyan": "0 0 20px rgba(6, 182, 212, 0.4)",
+        "glow-purple": "0 0 20px rgba(139, 92, 246, 0.4)",
         "glow-blue": "0 0 20px rgba(59, 130, 246, 0.3)",
       },
     },
