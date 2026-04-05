@@ -4,6 +4,7 @@ import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
 import { SasinLoginOrb } from "./SasinLoginOrb";
 import { GlassCard } from "./ui/GlassCard";
+import { LiquidButton, LiquidCard } from "./ui/LiquidGlassKit";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -150,7 +151,7 @@ export const Login: React.FC<LoginProps> = ({
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-md relative z-10"
       >
-        <GlassCard className="p-8 flex flex-col items-center">
+        <LiquidCard className="p-10 flex flex-col items-center">
           <motion.div style={{ x: orbXSpring, y: orbYSpring }}>
             <SasinLoginOrb className="w-40 h-40 mb-10" mouseX={orbPos.x} mouseY={orbPos.y} />
           </motion.div>
@@ -176,7 +177,7 @@ export const Login: React.FC<LoginProps> = ({
                   onChange={(e) => setUsername(e.target.value)}
                   id="login-email"
                   name="email"
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.06] focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[56px]"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-full py-4 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500/50 focus:bg-white/[0.1] focus:ring-8 focus:ring-cyan-500/5 transition-all text-sm min-h-[56px] backdrop-blur-xl"
                   required
                   autoComplete="email"
                 />
@@ -201,7 +202,7 @@ export const Login: React.FC<LoginProps> = ({
                   onChange={(e) => setPassword(e.target.value)}
                   id="login-password"
                   name="password"
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.06] focus:ring-4 focus:ring-blue-500/5 transition-all text-sm min-h-[56px]"
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-full py-4 pl-12 pr-12 text-white placeholder-slate-600 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.1] focus:ring-8 focus:ring-purple-500/5 transition-all text-sm min-h-[56px] backdrop-blur-xl"
                   required
                   autoComplete="current-password"
                 />
@@ -218,15 +219,14 @@ export const Login: React.FC<LoginProps> = ({
               </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <LiquidButton
+              variant="purple"
               type="submit"
               disabled={loading}
-              className="w-full mt-6 py-3 rounded-xl bg-blue-600 text-white font-bold tracking-wide shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] transition-all min-h-[48px]"
+              className="w-full mt-8 py-4 rounded-full"
             >
               {loading ? "Verificando acceso..." : "Acceder al sistema"}
-            </motion.button>
+            </LiquidButton>
           </form>
 
           <div className="mt-4 text-center">
@@ -247,7 +247,7 @@ export const Login: React.FC<LoginProps> = ({
               ¿No tienes acceso? Solicita tu invitación en Dirección.
             </p>
           </div>
-        </GlassCard>
+        </LiquidCard>
       </motion.div>
 
       <AnimatePresence>
