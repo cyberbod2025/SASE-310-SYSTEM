@@ -122,8 +122,8 @@ export const DashboardHoy = () => {
     >
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">
-            {getGreeting()}, <span className="text-blue-600 capitalize">{currentUserProfile?.full_name?.split(" ")[0] || "Docente"}</span>
+          <h1 id="dashboard-header" className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">
+            {getGreeting()}, <span className="text-blue-600 capitalize">{currentUserRole}</span>
           </h1>
           <p className="text-slate-500 font-medium flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -132,6 +132,7 @@ export const DashboardHoy = () => {
         </div>
         
         <GlassButton
+          id="export-btn"
           onClick={handlePrimaryAction}
           className="px-8"
           size="lg"
@@ -156,11 +157,12 @@ export const DashboardHoy = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2 flex flex-col gap-6">
-          <GlassCard
-            title="Actividad Reciente del Grupo"
-            icon="event_note"
-            className="flex-1"
-          >
+          <div id="panel-risk-groups" className="flex-1">
+            <GlassCard
+              title="Actividad Reciente del Grupo"
+              icon="event_note"
+              className="h-full"
+            >
             <div className="h-64 flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 rounded-xl mt-4 border border-slate-100">
               <span className="material-icons text-slate-300 text-5xl mb-4">analytics</span>
               <p className="text-slate-500 font-medium">
@@ -171,31 +173,38 @@ export const DashboardHoy = () => {
               </p>
             </div>
           </GlassCard>
+          </div>
         </div>
 
         <div className="flex flex-col gap-4">
           <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] pl-1">Estadísticas de Hoy</h3>
           {todayStats.map((stat, index) => (
-            <GlassCard key={index} className="flex-1 p-6">
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-sm border border-slate-100 ${
-                    stat.status === "good" ? "text-emerald-500" : 
-                    stat.status === "warning" ? "text-orange-500" : "text-blue-500"
-                  }`}
-                >
-                  <span className="material-icons text-2xl">{stat.icon}</span>
+            <div 
+              key={index} 
+              id={index === 0 ? "kpi-assist" : (index === 1 ? "kpi-risk" : undefined)}
+              className="flex-1"
+            >
+              <GlassCard className="h-full p-6">
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-sm border border-slate-100 ${
+                      stat.status === "good" ? "text-emerald-500" : 
+                      stat.status === "warning" ? "text-orange-500" : "text-blue-500"
+                    }`}
+                  >
+                    <span className="material-icons text-2xl">{stat.icon}</span>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-[11px] font-black uppercase tracking-wider">
+                      {stat.label}
+                    </p>
+                    <p className="text-2xl font-black text-slate-800 tracking-tight">
+                      {stat.value}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-slate-500 text-[11px] font-black uppercase tracking-wider">
-                    {stat.label}
-                  </p>
-                  <p className="text-2xl font-black text-slate-800 tracking-tight">
-                    {stat.value}
-                  </p>
-                </div>
-              </div>
-            </GlassCard>
+              </GlassCard>
+            </div>
           ))}
         </div>
       </div>

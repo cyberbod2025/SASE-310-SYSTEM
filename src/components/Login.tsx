@@ -130,15 +130,17 @@ export const Login: React.FC<LoginProps> = ({
 
   return (
     <div 
-      className="sase-layout-light min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden"
+      className="sase-layout-light min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-slate-950"
     >
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/15 via-blue-500/10 to-cyan-500/15 animate-pulse-slow pointer-events-none mix-blend-screen" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-slate-950/50 to-slate-950 pointer-events-none" />
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-lg relative z-10"
       >
-        <GlassCard className="p-10 flex flex-col items-center !border-t-0 shadow-2xl">
+        <GlassCard className="p-10 flex flex-col items-center !border-t-0 shadow-2xl !backdrop-blur-[32px] !bg-white/10 border-white/10 ring-1 ring-white/20">
           <motion.div 
             style={{ x: orbXSpring, y: orbYSpring }}
             className="mb-8"
@@ -146,8 +148,8 @@ export const Login: React.FC<LoginProps> = ({
             <SasinLoginOrb className="w-32 h-32" mouseX={orbPos.x} mouseY={orbPos.y} />
           </motion.div>
 
-          <h1 className="text-5xl font-black text-slate-800 mb-2 tracking-tighter text-center uppercase">SASE 310</h1>
-          <p className="text-slate-500 text-[10px] text-center mb-10 font-black uppercase tracking-[0.4em]">
+          <h1 className="text-5xl font-black text-white mb-2 tracking-tighter text-center uppercase drop-shadow-md">SASE 310</h1>
+          <p className="text-white/60 text-[10px] text-center mb-10 font-black uppercase tracking-[0.4em]">
             Gestión Institucional de Nueva Generación
           </p>
 
