@@ -77,20 +77,9 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [state, eyeX, eyeY]);
 
-  // Exact 3D Gradients from source - ENHANCED for higher fidelity
+  // Exact 3D Gradients from source - ENHANCED for higher fidelity (Soft Radial Lavanda/Cian)
   const get3DGradient = (s: string) => {
-    const c = getStateColor(s);
-    if (s === 'thinking') {
-      return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.5) 15%, transparent 45%),
-              repeating-conic-gradient(from 0deg at 50% 50%, #8b5cf6 0deg, #d946ef 10deg, #06b6d4 20deg, #8b5cf6 30deg),
-              radial-gradient(circle at 70% 70%, rgba(0,0,0,0.9) 0%, transparent 100%),
-              ${c}44`;
-    }
-    return `radial-gradient(circle at 30% 30%, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 15%, transparent 45%),
-            radial-gradient(circle at 50% 50%, ${c} 0%, ${c}EE 40%, rgba(10,13,23,0.7) 90%, transparent 100%),
-            radial-gradient(circle at 75% 75%, rgba(0,0,0,0.9) 0%, transparent 100%),
-            linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 40%, rgba(0,0,0,0.7) 100%),
-            ${c}25`;
+    return 'radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(139, 92, 246, 0.5) 40%, rgba(6, 182, 212, 0.2) 70%, transparent 100%)';
   };
 
   return (
@@ -134,10 +123,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
             : 'saturate(1.4) hue-rotate(0deg) contrast(1.1)',
           scale: state === 'warning' ? 1.08 : (state === 'thinking' ? 1.04 : 1),
           background: get3DGradient(state),
-          boxShadow: `inset -25px -25px 50px rgba(0,0,0,0.85), 
-                      inset 25px 25px 50px rgba(255,255,255,0.3),
-                      0 0 100px ${state === 'thinking' ? 'rgba(217,70,239,0.4)' : color + '77'},
-                      0 0 40px ${state === 'thinking' ? 'rgba(217,70,239,0.7)' : color + 'AA'}`,
+          boxShadow: `0 0 40px rgba(139, 92, 246, 0.3)`,
         }}
         transition={{
           y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
@@ -147,7 +133,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
           background: { duration: 1 },
           boxShadow: { duration: 1 }
         }}
-        className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden backdrop-blur-xl z-10 ring-2 ring-white/10"
+        className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden backdrop-blur-[8px] opacity-80 z-10 ring-2 ring-white/10"
         style={{
           filter: state === 'thinking' ? 'url(#fractalNoise)' : 'url(#subtleNoise)'
         }}
