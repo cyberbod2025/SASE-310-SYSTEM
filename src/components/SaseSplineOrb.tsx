@@ -93,25 +93,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className, 
           />
         </Suspense>
 
-        {/* 4. OJOS INTERACTIVOS (Sentient Layer) */}
-        {/* Estos ojos se superponen al modelo 3D para darle vida y 'mirada' */}
-        <div 
-          className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none mix-blend-overlay opacity-80"
-          style={{
-            transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 15}px)`
-          }}
-        >
-          <div className="flex gap-12 sm:gap-20">
-             <motion.div 
-               animate={state === 'thinking' ? { scaleY: [1, 0.1, 1], transition: { repeat: Infinity, duration: 4 } } : {}}
-               className="size-1.5 sm:size-2.5 bg-white rounded-full shadow-[0_0_15px_white]" 
-             />
-             <motion.div 
-               animate={state === 'thinking' ? { scaleY: [1, 0.1, 1], transition: { repeat: Infinity, duration: 4, delay: 0.2 } } : {}}
-               className="size-1.5 sm:size-2.5 bg-white rounded-full shadow-[0_0_15px_white]" 
-             />
-          </div>
-        </div>
+        {/* 4. ELIMINADO: OJOS INTERACTIVOS ESTABAN AQUÍ */}
 
         {/* 5. Capas de Color Adaptativas (Inundan el modelo 3D) */}
         {/* Capa 1: Tinte Base */}

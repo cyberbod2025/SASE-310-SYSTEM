@@ -184,6 +184,18 @@ export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
     can_view_sensitive: true,
     can_manage_system: true,
   },
+  guest: {
+    can_view_names: false,
+    can_register: false,
+    can_edit: false,
+    can_close: false,
+    can_escalate: false,
+    can_view_audit: false,
+    can_approve_staff: false,
+    can_assign_groups: false,
+    can_view_sensitive: false,
+    can_manage_system: false,
+  },
 };
 
 export function combinarPermisos(roles: string[]): PermisosSASE {
@@ -201,6 +213,7 @@ export function combinarPermisos(roles: string[]): PermisosSASE {
   };
 
   roles.forEach((rol) => {
+    if (!rol) return;
     const permisos = PERMISOS_POR_ROL[rol.toLowerCase()];
     if (permisos) {
       Object.keys(permisosBase).forEach((key) => {

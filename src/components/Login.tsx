@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { SaseSplineOrb } from "./SaseSplineOrb";
+import { SasinLoginOrb } from "./SasinLoginOrb";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -172,9 +172,10 @@ export const Login: React.FC<LoginProps> = ({
               >
                 <div className="flex items-center justify-center gap-4 sm:gap-6 mb-4">
                   <motion.div style={{ x: orbXSpring, y: orbYSpring }}>
-                    <SaseSplineOrb
-                      state="thinking"
+                    <SasinLoginOrb
                       className="w-24 h-24 sm:w-32 sm:h-32"
+                      mouseX={orbX.get() / 28}
+                      mouseY={orbY.get() / 28}
                     />
                   </motion.div>
                   <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] uppercase italic leading-none drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]">
