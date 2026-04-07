@@ -90,7 +90,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProtocolDismissed, setIsProtocolDismissed] = useState(false);
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  // Roles con acceso global a todas las notificaciones institucionales
+  const ROLES_ACCESO_TOTAL = [UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
+  const visibleNotifications = notifications.filter((n) => {
+    if (!n.targetRole) return true; // Sin targetRole = global, todos la ven
+    if (ROLES_ACCESO_TOTAL.includes(currentUserRole as UserRole)) return true;
+    return n.targetRole === currentUserRole;
+  });
+  const unreadCount = visibleNotifications.filter((n) => !n.read).length;
+
 
   const sidebarWidth = isSidebarCollapsed ? "w-20" : "w-72";
 
@@ -498,7 +506,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                     )}
                   </div>
                   <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-2">
-                    {notifications.length === 0 ? (
+                    {visibleNotifications.length === 0 ? (
                       <div className="py-12 text-center opacity-40">
                         <span className="material-symbols-outlined text-4xl block mb-2">
                           notifications_off
@@ -508,7 +516,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                         </p>
                       </div>
                     ) : (
-                      notifications.map((notif) => (
+                      visibleNotifications.map((notif) => (
                         <div
                           key={notif.id}
                           className={`p-4 rounded-xl mb-2 transition-all cursor-pointer ${notif.read ? "bg-white/[0.02] opacity-60" : "bg-white/5 hover:bg-white/[0.08]"}`}
@@ -521,10 +529,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                         >
                           <div className="flex gap-3">
                             <div
-                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-500/20 text-red-500" : "bg-blue-500/20 text-blue-500"}`}
+                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-500/20 text-red-500" : notif.type === "warning" ? "bg-amber-500/20 text-amber-400" : "bg-blue-500/20 text-blue-500"}`}
                             >
                               <span className="material-symbols-outlined text-sm">
-                                {notif.type === "error" ? "report" : "info"}
+                                {notif.type === "error" ? "report" : notif.type === "warning" ? "warning" : "info"}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -575,12 +583,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 state={neuralCoreState}
                 className="w-[110px] h-[110px] cursor-pointer"
               />
-              {!isAssistantOpen && (
-                <span className="absolute top-0 right-0 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-                </span>
-              )}
+              {/* ELIMINADO: Puntitos indicadores (Notification Ping) removidos a petición del usuario porque no tenían función específica al tocarlos. */}
             </button>
           </div>
         )}

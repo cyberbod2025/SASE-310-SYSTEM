@@ -3,35 +3,7 @@ import { Notification, SystemNotice, UserRole, AppModule } from "../../types";
 import toast from "react-hot-toast";
 
 export const useNotificationSlice = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "n1",
-      title: "Stock Crítico en Enfermería",
-      message: "Paracetamol bajo (2 unidades). Se recomienda reabastecer.",
-      read: false,
-      time: "10:30 AM",
-      type: "warning",
-      actionModule: AppModule.DASHBOARD,
-    },
-    {
-      id: "n2",
-      title: "Justificante Pendiente",
-      message: "Nuevo justificante de 3º B pendiente de validación.",
-      read: false,
-      time: "09:15 AM",
-      type: "info",
-      actionModule: AppModule.DASHBOARD,
-    },
-    {
-      id: "n3",
-      title: "Patrón de Riesgo Detectado",
-      message: "Estudiante con 3+ incidencias requiere intervención.",
-      read: false,
-      time: "Ayer",
-      type: "error",
-      actionModule: AppModule.REPORTES,
-    },
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const [notices, setNotices] = useState<SystemNotice[]>([]);
 

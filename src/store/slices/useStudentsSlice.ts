@@ -95,9 +95,6 @@ export const useStudentsSlice = (
             id, objeto, motivo, fecha, responsable_id, responsable_nombre, responsable_rol, 
             estado, incidencia_id, created_at, fecha_devolucion, entregado_a, entregado_por, 
             lugar_retencion, categoria, observaciones, evidencia_url, autorizado_por
-          ),
-          estudiantes (
-            total_puntos, escaneos_realizados, nickname
           )
         `);
 
@@ -184,13 +181,6 @@ export const useStudentsSlice = (
             studentId: d.id,
           })),
           isDistancia: !!d.is_distancia,
-          gamificacion: d.estudiantes?.[0]
-            ? {
-                total_puntos: d.estudiantes[0].total_puntos || 0,
-                escaneos_realizados: d.estudiantes[0].escaneos_realizados || 0,
-                nickname: d.estudiantes[0].nickname,
-              }
-            : undefined,
           objetosRetenidos: (d.objetos_retenidos || []).map((o: any): ObjetoRetenido => ({
             id: o.id,
             alumno_id: d.id,
