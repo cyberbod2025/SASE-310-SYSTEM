@@ -130,10 +130,7 @@ export const Login: React.FC<LoginProps> = ({
 
   return (
     <div 
-      className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden"
-      style={{
-        background: "radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0.1%, rgba(233, 226, 226, 0.28) 90.1%), #f1f5f9",
-      }}
+      className="sase-layout-light min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -324,7 +321,5 @@ export const Login: React.FC<LoginProps> = ({
     </div>
   );
 };
-
-export default Login;
 
 export default Login;

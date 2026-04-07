@@ -273,8 +273,8 @@
   /* === GLASS QUANTUM (Used for Sidebar/Header) === */
   .glass-card-quantum {
     background: rgba(11, 17, 32, 0.6);
-    backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
   }
@@ -416,8 +416,8 @@
 /* --- SASE PREMIUM TOUR (DRIVER.JS CUSTOMIZATION) --- */
 .driver-popover.sase-tour-popover {
   background: rgba(13, 17, 23, 0.85) !important;
-  backdrop-filter: blur(24px) !important;
   -webkit-backdrop-filter: blur(24px) !important;
+  backdrop-filter: blur(24px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 24px !important;
   box-shadow:
@@ -666,5 +666,9 @@
   .focus-glow:focus {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 0 18px rgba(59, 130, 246, 0.2);
     border-color: #3B82F6;
+  }
+
+  .sase-layout-light {
+    background: radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0.1%, rgba(233, 226, 226, 0.28) 90.1%), #f1f5f9;
   }
 }

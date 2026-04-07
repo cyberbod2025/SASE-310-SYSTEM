@@ -298,12 +298,16 @@ export const Reportes: React.FC = () => {
                 <div className="space-y-2">
                   <input
                     type="date"
+                    title="Fecha Inicial"
+                    aria-label="Fecha Inicial"
                     value={dateRange.start}
                     onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
                     className="w-full h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 transition-all"
                   />
                   <input
                     type="date"
+                    title="Fecha Final"
+                    aria-label="Fecha Final"
                     value={dateRange.end}
                     onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
                     className="w-full h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 transition-all"

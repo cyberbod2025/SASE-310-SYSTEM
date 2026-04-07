@@ -33,18 +33,6 @@ type AddNotificationOptions = {
 
 export const useNotificationSlice = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-<<<<<<< HEAD
-
-  const [notices, setNotices] = useState<SystemNotice[]>([]);
-
-  const markNotificationRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
-  };
-
-  const addNotification = (
-=======
 
   const [notices, setNotices] = useState<SystemNotice[]>([]);
 
@@ -55,7 +43,6 @@ export const useNotificationSlice = () => {
   };
 
   const addNotification = async (
->>>>>>> 6b7cfee0048e22f3aeefd2736b20d95b3c864f6f
     data: Omit<Notification, "id" | "read" | "time">,
     options?: AddNotificationOptions,
   ) => {

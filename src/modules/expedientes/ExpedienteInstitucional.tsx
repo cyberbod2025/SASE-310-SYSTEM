@@ -327,6 +327,8 @@ export function ExpedienteInstitucional({
                     <div className="max-w-[210mm] mx-auto bg-white shadow-2xl border border-slate-200 min-h-full p-[2cm] print-container">
                        {editandoDocumento ? (
                           <textarea
+                            title="Editor de contenido del documento"
+                            aria-label="Editor de contenido del documento"
                             value={contenidoTemp}
                             onChange={(e) => setContenidoTemp(e.target.value)}
                             className="w-full h-full min-h-[50vh] border-none focus:ring-0 p-0 text-[14px] font-serif leading-relaxed text-slate-800 resize-none"

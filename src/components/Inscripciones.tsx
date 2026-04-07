@@ -314,6 +314,8 @@ export const Inscripciones: React.FC = () => {
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Fecha Nacimiento</label>
                         <input
                           type="date"
+                          title="Fecha de Nacimiento"
+                          aria-label="Fecha de Nacimiento"
                           className="h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
                           value={formData.fechaNacimiento}
                           onChange={(e) => setFormData({ ...formData, fechaNacimiento: e.target.value })}
@@ -323,6 +325,8 @@ export const Inscripciones: React.FC = () => {
                       <div className="flex flex-col gap-2">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Género</label>
                         <select
+                          title="Género"
+                          aria-label="Género"
                           className="h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
                           value={formData.genero}
                           onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
@@ -337,6 +341,8 @@ export const Inscripciones: React.FC = () => {
                        <div className="flex flex-col gap-2">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Grupo Asignado</label>
                         <select
+                          title="Grupo Asignado"
+                          aria-label="Grupo Asignado"
                           className="h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
                           value={formData.group}
                           onChange={(e) => setFormData({ ...formData, group: e.target.value })}
@@ -365,6 +371,8 @@ export const Inscripciones: React.FC = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Vive Con</label>
                       <select
+                        title="Vive Con"
+                        aria-label="Vive Con"
                         className="h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
                         value={formData.viveCon}
                         onChange={(e) => setFormData({ ...formData, viveCon: e.target.value })}
@@ -387,7 +395,7 @@ export const Inscripciones: React.FC = () => {
                     <GlassInput label="Teléfono de Emergencia" value={formData.telEmergencia} onChange={(e) => setFormData({ ...formData, telEmergencia: e.target.value })} required />
                     <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 mt-4">
                        <span className="text-xs font-bold text-slate-600">¿Requerido por UDEII?</span>
-                       <input type="checkbox" checked={formData.isUdeii} onChange={(e) => setFormData({...formData, isUdeii: e.target.checked})} className="size-5 accent-blue-600" />
+                       <input type="checkbox" title="Requerido por UDEII" aria-label="Requerido por UDEII" checked={formData.isUdeii} onChange={(e) => setFormData({...formData, isUdeii: e.target.checked})} className="size-5 accent-blue-600" />
                     </div>
                   </div>
                 </div>
@@ -404,14 +412,14 @@ export const Inscripciones: React.FC = () => {
                                <span className="material-icons text-slate-400">face</span>
                                <span className="text-xs font-bold text-slate-700">Foto Estudiante</span>
                              </div>
-                             <input type="file" className="text-[10px]" onChange={(e) => handleFileChange(e, setFileStudent)} />
+                             <input type="file" title="Subir Foto Estudiante" aria-label="Subir Foto Estudiante" className="text-[10px]" onChange={(e) => handleFileChange(e, setFileStudent)} />
                           </div>
                           <div className="p-4 border border-dashed border-slate-200 rounded-2xl flex items-center justify-between">
                              <div className="flex items-center gap-3">
                                <span className="material-icons text-slate-400">assignment_ind</span>
                                <span className="text-xs font-bold text-slate-700">Foto Tutor</span>
                              </div>
-                             <input type="file" className="text-[10px]" onChange={(e) => handleFileChange(e, setFileGuardian)} />
+                             <input type="file" title="Subir Foto Tutor" aria-label="Subir Foto Tutor" className="text-[10px]" onChange={(e) => handleFileChange(e, setFileGuardian)} />
                           </div>
                        </div>
                     </div>
@@ -419,9 +427,9 @@ export const Inscripciones: React.FC = () => {
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 mb-4 block">Documentación Recibida</label>
                       <div className="grid grid-cols-1 gap-2">
                         {(Object.keys(formData.docs) as Array<keyof typeof formData.docs>).map((docKey) => (
-                           <label key={docKey} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                           <label key={docKey} title={docKey} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
                               <span className="text-xs font-bold text-slate-600">{docKey.replace(/([A-Z])/g, " $1").toUpperCase()}</span>
-                              <input type="checkbox" checked={formData.docs[docKey]} onChange={() => handleCheckboxChange(docKey)} className="size-4 accent-emerald-500" />
+                              <input type="checkbox" title={docKey} aria-label={docKey} checked={formData.docs[docKey]} onChange={() => handleCheckboxChange(docKey)} className="size-4 accent-emerald-500" />
                            </label>
                         ))}
                       </div>

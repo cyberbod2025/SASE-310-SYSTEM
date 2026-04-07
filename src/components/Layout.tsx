@@ -177,10 +177,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div
       data-sasito-state={neuralCoreState}
-      className="flex h-screen w-full bg-[#f1f5f9] text-slate-800 overflow-hidden font-sans select-none relative"
-      style={{
-        background: "radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0.1%, rgba(233, 226, 226, 0.28) 90.1%)",
-      }}
+      className="sase-layout-light flex h-screen w-full text-slate-800 overflow-hidden font-sans select-none relative"
     >
       <TutorialController />
       
