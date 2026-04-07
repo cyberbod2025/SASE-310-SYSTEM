@@ -105,7 +105,7 @@ export const DashboardMedico = () => {
             <div className="absolute -inset-4 bg-emerald-500/20 rounded-3xl blur-xl opacity-0 group-hover/icon:opacity-100 transition-all duration-700"></div>
             <div className="size-20 bg-[#0a0f18]/80 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 relative shadow-[0_0_30px_rgba(16,185,129,0.2)] overflow-hidden backdrop-blur-xl">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-transparent"></div>
-              <span className="material-symbols-outlined text-5xl group-hover/icon:scale-110 transition-transform duration-500">
+              <span className="material-icons text-5xl group-hover/icon:scale-110 transition-transform duration-500">
                 medical_services
               </span>
               <motion.div
@@ -122,21 +122,21 @@ export const DashboardMedico = () => {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">
-                UNIT_04 // HEALTH_DPT
+                UNIDAD 04 // AREA DE SALUD
               </span>
               <span className="size-1 bg-slate-700 rounded-full"></span>
-              <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
+              <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em]">
                 MÉDICO ESCOLAR
               </span>
             </div>
-            <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
-              MEDICAL{" "}
+            <h1 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase italic leading-none">
+              ESTACION{" "}
               <span className="text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
-                STATION
+                MEDICA
               </span>
             </h1>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
-              <span className="material-symbols-outlined text-[14px]">
+            <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mt-2 italic flex items-center gap-2">
+              <span className="material-icons text-[14px]">
                 shield_health
               </span>
               SISTEMA INTEGRAL DE SALUD INSTITUCIONAL
@@ -145,7 +145,7 @@ export const DashboardMedico = () => {
         </div>
 
         <div className="flex items-center gap-6 relative z-10">
-          <div className="text-right border-r border-white/5 pr-6">
+          <div className="text-right border-r border-slate-100 pr-6">
             <p className="text-lg font-black text-white uppercase tracking-tighter italic tabular-nums">
               {new Date().toLocaleTimeString("es-MX", { hour12: false })}
             </p>
@@ -156,7 +156,7 @@ export const DashboardMedico = () => {
                 className="size-1.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"
               />
               <span className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.3em]">
-                HEALTH_CORE_ACTIVE
+                NUCLEO DE SALUD ACTIVO
               </span>
             </div>
           </div>
@@ -185,26 +185,26 @@ export const DashboardMedico = () => {
           </div>
 
           <div className="card-sase border-emerald-500/10 overflow-hidden flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
-            <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between relative">
+            <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between relative">
               <div className="flex items-center gap-5">
                 <div className="size-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                  <span className="material-symbols-outlined text-2xl font-black">
+                  <span className="material-icons text-2xl font-black">
                     terminal
                   </span>
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">
-                    DATA_STREAM:{" "}
-                    <span className="text-emerald-500">CLINICAL_LOGS</span>
+                    FLUJO DE DATOS:{" "}
+                    <span className="text-emerald-500">REGISTROS CLINICOS</span>
                   </h3>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">
+                  <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-1">
                     FLUJO CONTINUO DE REGISTROS DE ATENCIÓN MÉDICA
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setCurrentModule(AppModule.REPORTES)}
-                className="px-5 py-2.5 bg-white/[0.03] border border-white/10 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30 transition-all active:scale-95 shadow-xl"
+                className="px-5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30 transition-all active:scale-95 shadow-xl"
               >
                 EXPEDIENTE MÉDICO
               </button>
@@ -213,21 +213,21 @@ export const DashboardMedico = () => {
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-white/[0.02] text-slate-500 text-[9px] uppercase font-black border-b border-white/5">
+                  <tr className="bg-white/[0.02] text-slate-700 text-[9px] uppercase font-black border-b border-slate-100">
                     <th className="px-8 py-5 tracking-[0.2em] italic">
-                      TS_STAMP
+                      HORA
                     </th>
                     <th className="px-8 py-5 tracking-[0.2em] italic">
-                      SUBJECT_NAME
+                      ALUMNO
                     </th>
                     <th className="px-8 py-5 tracking-[0.2em] italic text-center">
-                      ZONE
+                      GRUPO
                     </th>
                     <th className="px-8 py-5 tracking-[0.2em] italic">
-                      LOG_TYPE
+                      TIPO
                     </th>
                     <th className="px-8 py-5 text-right tracking-[0.2em] italic">
-                      OPS
+                      ACCIONES
                     </th>
                   </tr>
                 </thead>
@@ -237,11 +237,11 @@ export const DashboardMedico = () => {
                       <tr>
                         <td colSpan={5} className="p-20 text-center">
                           <div className="flex flex-col items-center gap-6 opacity-40">
-                            <span className="material-symbols-outlined text-6xl text-slate-800 animate-pulse">
+                            <span className="material-icons text-6xl text-slate-800 animate-pulse">
                               query_stats
                             </span>
                             <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">
-                              NO_DATA_CURRENTLY_REGISTERED
+                              SIN REGISTROS EN ESTE MOMENTO
                             </p>
                           </div>
                         </td>
@@ -256,7 +256,7 @@ export const DashboardMedico = () => {
                           className="hover:bg-emerald-500/[0.02] transition-colors group/row border-l-2 border-transparent hover:border-emerald-500/40"
                         >
                           <td className="px-8 py-6">
-                            <span className="text-emerald-500 font-mono text-xs tabular-nums tracking-tighter bg-emerald-500/5 px-3 py-1.5 rounded-lg border border-emerald-500/10">
+                            <span className="text-emerald-500 font-mono text-xs tabular-nums tracking-tighter bg-emerald-500/5 px-3 py-1.5 rounded-2xl border border-emerald-500/10">
                               {new Date(visit.date).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -268,14 +268,14 @@ export const DashboardMedico = () => {
                               <span className="font-black text-white text-sm italic uppercase tracking-tighter group-hover/row:text-emerald-400 transition-all duration-300">
                                 {visit.studentName}
                               </span>
-                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1.5">
+                              <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-1.5">
                                 SIG:{" "}
                                 {visit.studentId.substring(0, 8).toUpperCase()}
                               </span>
                             </div>
                           </td>
                           <td className="px-8 py-6 text-center">
-                            <span className="px-3 py-1 bg-[#0a0f18] border border-white/10 rounded-lg text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            <span className="px-3 py-1 bg-[#0a0f18] border border-slate-200 rounded-2xl text-[9px] font-black text-slate-600 uppercase tracking-widest">
                               {visit.group}
                             </span>
                           </td>
@@ -288,8 +288,8 @@ export const DashboardMedico = () => {
                             </div>
                           </td>
                           <td className="px-8 py-6 text-right">
-                            <button className="size-10 rounded-2xl bg-white/[0.03] border border-white/10 text-slate-500 flex items-center justify-center hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-90">
-                              <span className="material-symbols-outlined text-[20px]">
+                            <button className="size-10 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-90">
+                              <span className="material-icons text-[20px]">
                                 arrow_right_alt
                               </span>
                             </button>
@@ -309,13 +309,13 @@ export const DashboardMedico = () => {
           <div className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.03] relative overflow-hidden group">
             <div className="flex items-center gap-5 mb-8 relative z-10">
               <div className="size-14 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500">
-                <span className="material-symbols-outlined text-3xl animate-pulse">
+                <span className="material-icons text-3xl animate-pulse">
                   emergency_home
                 </span>
               </div>
               <div>
                 <h4 className="text-[11px] font-black text-rose-500 uppercase tracking-[0.4em] mb-1 italic">
-                  URGENT_MONITOR
+                  MONITOREO URGENTE
                 </h4>
                 <div className="flex items-center gap-2">
                   <span className="size-1.5 bg-rose-500 rounded-full animate-ping"></span>
@@ -326,7 +326,7 @@ export const DashboardMedico = () => {
               </div>
             </div>
 
-            <p className="text-[11px] font-medium text-slate-400 leading-relaxed mb-8 uppercase tracking-tight">
+            <p className="text-[11px] font-medium text-slate-600 leading-relaxed mb-8 uppercase tracking-tight">
               SISTEMA DETECTÓ{" "}
               <span className="text-white font-black">
                 {activeAlertsCount} CASOS
@@ -343,7 +343,7 @@ export const DashboardMedico = () => {
                 {notifying ? (
                   <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                 ) : (
-                  <span className="material-symbols-outlined text-lg">
+                  <span className="material-icons text-lg">
                     priority_high
                   </span>
                 )}
@@ -351,7 +351,7 @@ export const DashboardMedico = () => {
               </button>
               <button
                 onClick={() => setQuickRegisterOpen(true)}
-                className="w-full py-4 bg-white/[0.03] border border-white/10 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl hover:bg-white/[0.08] transition-all"
+                className="w-full py-4 bg-slate-100 border border-slate-200 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl hover:bg-white/[0.08] transition-all"
               >
                 REGISTRAR TRIAGE
               </button>
@@ -359,17 +359,17 @@ export const DashboardMedico = () => {
           </div>
 
           <div className="card-sase p-8 border-emerald-500/10 flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
-            <div className="flex items-center gap-4 mb-10 pb-5 border-b border-white/5">
+            <div className="flex items-center gap-4 mb-10 pb-5 border-b border-slate-100">
               <div className="size-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-500">
-                <span className="material-symbols-outlined text-xl">
+                <span className="material-icons text-xl">
                   package_2
                 </span>
               </div>
               <div>
                 <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] italic">
-                  SUPPLY_CHAIN
+                  CADENA DE SUMINISTRO
                 </h3>
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5">
+                <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-0.5">
                   ESTADO DEL BOTIQUÍN
                 </p>
               </div>
@@ -399,11 +399,11 @@ const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => (
     <div className="flex items-center justify-between mb-4 relative z-10">
       <div className="flex items-center gap-3">
         <span
-          className={`material-symbols-outlined text-xl text-${color}-500 group-hover:scale-110 transition-transform`}
+          className={`material-icons text-xl text-${color}-500 group-hover:scale-110 transition-transform`}
         >
           {icon}
         </span>
-        <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
+        <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] italic">
           {label}
         </span>
       </div>
@@ -433,7 +433,7 @@ const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => (
 const InventoryList = ({ items, onUpdate }: any) => (
   <div className="space-y-6">
     {items.length === 0 ? (
-      <p className="text-[10px] text-slate-500 uppercase text-center py-6">
+      <p className="text-[10px] text-slate-700 uppercase text-center py-6">
         Iniciando flujo de inventario...
       </p>
     ) : (
@@ -442,13 +442,13 @@ const InventoryList = ({ items, onUpdate }: any) => (
         return (
           <div key={item.id} className="group/item">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
                 {item.nombre}
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => onUpdate(item.id, -1)}
-                  className="size-6 bg-white/5 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
+                  className="size-6 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors"
                 >
                   -
                 </button>
@@ -457,7 +457,7 @@ const InventoryList = ({ items, onUpdate }: any) => (
                 </span>
                 <button
                   onClick={() => onUpdate(item.id, 1)}
-                  className="size-6 bg-white/5 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
+                  className="size-6 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-white/10 transition-colors"
                 >
                   +
                 </button>

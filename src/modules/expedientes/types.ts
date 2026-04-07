@@ -7,8 +7,17 @@ export interface DatosAlumnoExpediente {
   grado: string;
   turno: string;
   curp?: string;
+  fecha_nacimiento?: string;
+  edad?: number;
   tutor?: string;
+  relacion_tutor?: string;
   telefono_tutor?: string;
+  telefono_tutor_secundario?: string;
+  correo_tutor?: string;
+  direccion?: string;
+  alertas_medicas?: string[];
+  historial_medico?: string;
+  calificaciones?: any[];
 }
 
 export interface IncidenciaExpediente {

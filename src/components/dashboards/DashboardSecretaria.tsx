@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../../store";
 import toast from "react-hot-toast";
-import { CaseState, AppModule, Student, IncidentType } from "../../types";
+import { CaseState, CaseLabels, AppModule, Student, IncidentType } from "../../types";
 import { Inscripciones } from "../Inscripciones";
 import { Archivo } from "../Archivo";
 import { CICLO_ESCOLAR } from "../../config/sase.config";
@@ -336,15 +336,15 @@ export const DashboardSecretaria = () => {
           <div>
             <div className="flex items-center gap-3 mb-2">
               <span className="h-1 w-10 bg-cyan-600 rounded-full shadow-[0_0_15px_#0891b2]"></span>
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">
+              <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.5em]">
                 División de Servicios Escolares
               </p>
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none">
+            <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase leading-none">
               CONTROL <span className="text-cyan-500">ADMINISTRATIVO</span>
             </h1>
           </div>
-          <div className="flex items-center gap-6 px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
+          <div className="flex items-center gap-6 px-6 py-3 rounded-2xl bg-white/5 border border-slate-200 backdrop-blur-xl">
             <div className="text-right">
               <p className="text-[9px] font-black text-cyan-500 uppercase tracking-widest mb-1">
                 Operador Activo
@@ -381,20 +381,20 @@ export const DashboardSecretaria = () => {
             className="absolute top-0 w-[2px] h-full bg-gradient-to-b from-transparent via-cyan-500/30 to-transparent pointer-events-none z-0"
           />
           <div className="flex items-center gap-3 relative z-10">
-            <span className="material-symbols-outlined text-cyan-500 text-[20px] animate-pulse">
+            <span className="material-icons text-cyan-500 text-[20px] animate-pulse">
               verified_user
             </span>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
+            <p className="text-[10px] font-black text-slate-600 uppercase tracking-wider">
               Nivel de Auditoría:{" "}
               <span className="text-cyan-400">TOTAL / MONITOREADO</span>
             </p>
           </div>
           <div className="hidden md:block w-px h-4 bg-white/10 relative z-10"></div>
           <div className="flex items-center gap-3 relative z-10">
-            <span className="material-symbols-outlined text-slate-500 text-[18px]">
+            <span className="material-icons text-slate-700 text-[18px]">
               history_edu
             </span>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">
               Sistema de Bóveda: Registro de consulta de expedientes activo
             </p>
           </div>
@@ -404,7 +404,7 @@ export const DashboardSecretaria = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Data Import Card */}
-          <div className="card-sase p-6 flex flex-col justify-between group relative overflow-hidden cursor-default hover:bg-white/[0.03] transition-all">
+          <div className="card-sase p-6 flex flex-col justify-between group relative overflow-hidden cursor-default hover:bg-slate-100 transition-all">
             {/* Scanning Line */}
             <motion.div
               animate={{ top: ["-10%", "110%"] }}
@@ -416,17 +416,17 @@ export const DashboardSecretaria = () => {
                 <h3 className="text-sm font-black text-white uppercase tracking-widest">
                   Carga Masiva e IA
                 </h3>
-                <p className="text-[9px] font-black text-slate-500 mt-1 uppercase tracking-[0.3em] leading-none italic">
+                <p className="text-[9px] font-black text-slate-700 mt-1 uppercase tracking-[0.3em] leading-none italic">
                   Layout SEP / Excel / CSV
                 </p>
               </div>
               <div className="size-10 bg-cyan-500/10 rounded-xl border border-cyan-500/20 text-cyan-400 flex items-center justify-center group-hover:bg-cyan-500/20 group-hover:scale-110 transition-all duration-500">
-                <span className="material-symbols-outlined">psychology</span>
+                <span className="material-icons">psychology</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between mb-4 bg-white/[0.02] p-3 rounded-xl border border-white/5 relative z-10">
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] italic">
+            <div className="flex items-center justify-between mb-4 bg-white/[0.02] p-3 rounded-xl border border-slate-100 relative z-10">
+              <span className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] italic">
                 Equilibrar con IA
               </span>
               <button
@@ -448,7 +448,7 @@ export const DashboardSecretaria = () => {
               </button>
             </div>
 
-            <p className="text-[9px] text-slate-500 mb-6 font-medium leading-relaxed italic uppercase relative z-10">
+            <p className="text-[9px] text-slate-700 mb-6 font-medium leading-relaxed italic uppercase relative z-10">
               {useAIDistribution
                 ? "Algoritmo de balanceo por género y promedio activo."
                 : "Asignación secuencial por grupo nominal."}
@@ -467,17 +467,17 @@ export const DashboardSecretaria = () => {
               title="Cargar archivo Excel o CSV para inscripción masiva"
               className="btn-sase-primary w-full py-4 text-[10px] font-black tracking-[0.2em] shadow-cyan-600/20 relative z-10"
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-icons text-[18px]">
                 upload_file
               </span>
               INICIAR IMPORTACIÓN
             </button>
             {/* Decorative corner accent */}
-            <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
           </div>
 
           {/* Trámites Card */}
-          <div className="card-sase p-6 flex flex-col group relative overflow-hidden cursor-default hover:bg-white/[0.03] transition-all">
+          <div className="card-sase p-6 flex flex-col group relative overflow-hidden cursor-default hover:bg-slate-100 transition-all">
             {/* Scanning Line */}
             <motion.div
               animate={{ top: ["-10%", "110%"] }}
@@ -489,29 +489,29 @@ export const DashboardSecretaria = () => {
                 <h3 className="text-sm font-black text-white uppercase tracking-widest">
                   Trámites Activos
                 </h3>
-                <p className="text-[9px] font-black text-slate-500 mt-1 uppercase tracking-[0.3em] leading-none italic">
+                <p className="text-[9px] font-black text-slate-700 mt-1 uppercase tracking-[0.3em] leading-none italic">
                   Constancias y Certificados
                 </p>
               </div>
               <div className="size-10 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                <span className="material-symbols-outlined">description</span>
+                <span className="material-icons">description</span>
               </div>
             </div>
 
             <div className="space-y-3 flex-1 relative z-10">
-              <div className="flex justify-between items-center p-3 bg-white/[0.02] border border-white/5 rounded-xl">
-                <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
+              <div className="flex justify-between items-center p-3 bg-white/[0.02] border border-slate-100 rounded-xl">
+                <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] italic">
                   Pendientes
                 </span>
-                <span className="text-2xl font-black text-amber-500 italic tabular-nums tracking-tighter drop-shadow-lg">
+                <span className="text-2xl font-black text-amber-500 italic tabular-nums tracking-tighter drop-shadow-xl shadow-black/5">
                   08
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-white/[0.02] border border-white/5 rounded-xl">
-                <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] italic">
+              <div className="flex justify-between items-center p-3 bg-white/[0.02] border border-slate-100 rounded-xl">
+                <span className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] italic">
                   En Proceso
                 </span>
-                <span className="text-2xl font-black text-cyan-500 italic tabular-nums tracking-tighter drop-shadow-lg">
+                <span className="text-2xl font-black text-cyan-500 italic tabular-nums tracking-tighter drop-shadow-xl shadow-black/5">
                   12
                 </span>
               </div>
@@ -519,13 +519,13 @@ export const DashboardSecretaria = () => {
 
             <button
               onClick={() => setCurrentModule(AppModule.SOLICITUDES)}
-              className="mt-6 w-full py-3 bg-white/[0.02] hover:bg-white/[0.05] text-white border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all relative z-10 active:scale-95"
+              className="mt-6 w-full py-3 bg-white/[0.02] hover:bg-white/[0.05] text-white border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all relative z-10 active:scale-95"
               title="Ver y gestionar trámites pendientes de constancias y certificados"
             >
               SALA DE GESTIÓN
             </button>
             {/* Decorative corner accent */}
-            <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
           </div>
 
           {/* Info Card & Quick Access */}
@@ -542,25 +542,25 @@ export const DashboardSecretaria = () => {
                 <h3 className="text-white/50 font-black text-[9px] uppercase tracking-[0.3em] italic">
                   Total Matrícula
                 </h3>
-                <p className="text-4xl font-black text-white tabular-nums mt-1 italic tracking-tighter drop-shadow-lg scale-95 group-hover/total:scale-100 transition-transform duration-500 origin-left">
+                <p className="text-4xl font-black text-white tabular-nums mt-1 italic tracking-tighter drop-shadow-xl shadow-black/5 scale-95 group-hover/total:scale-100 transition-transform duration-500 origin-left">
                   {students.length}
                 </p>
               </div>
               <div className="size-12 rounded-xl bg-white/10 flex items-center justify-center text-white relative z-10 group-hover/total:scale-110 transition-transform duration-500">
-                <span className="material-symbols-outlined">group</span>
+                <span className="material-icons">group</span>
               </div>
               {/* Decorative corner accent */}
-              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover/total:opacity-100 transition-opacity"></div>
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover/total:opacity-100 transition-opacity"></div>
             </div>
 
             {/* Quick Entry Button (Magic Register) */}
             <button
               onClick={() => setShowQuickAccess(true)}
-              className="w-full mt-4 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-3 active:scale-95 group overflow-hidden relative"
+              className="w-full mt-4 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl shadow-xl shadow-black/5 shadow-emerald-500/20 transition-all flex items-center justify-center gap-3 active:scale-95 group overflow-hidden relative"
               title="Registrar rápidamente la entrada de alumnos sin credencial o con retardo"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-              <span className="material-symbols-outlined text-2xl relative z-10">
+              <span className="material-icons text-2xl relative z-10">
                 bolt
               </span>
               <div className="text-left relative z-10">
@@ -582,15 +582,15 @@ export const DashboardSecretaria = () => {
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                  <span className="material-symbols-outlined text-cyan-500 animate-pulse">
+                  <span className="material-icons text-cyan-500 animate-pulse">
                     analytics
                   </span>
                   BALANCE INSTITUCIONAL{" "}
-                  <span className="text-slate-500">
+                  <span className="text-slate-700">
                     [{CICLO_ESCOLAR.nombre}]
                   </span>
                 </h3>
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest mt-1">
                   Monitoreo de densidad poblacional por aula
                 </p>
               </div>
@@ -603,7 +603,7 @@ export const DashboardSecretaria = () => {
                   className="btn-sase-secondary px-4 py-2 text-[9px] font-black"
                   title="Imprimir reporte de balance institucional de grupos"
                 >
-                  <span className="material-symbols-outlined text-sm">
+                  <span className="material-icons text-sm">
                     print
                   </span>
                   PDF
@@ -638,7 +638,7 @@ export const DashboardSecretaria = () => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="p-4 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-cyan-500/30 hover:bg-white/[0.03] transition-all group/stat relative overflow-hidden cursor-default"
+                    className="p-4 bg-white/[0.02] rounded-2xl border border-slate-100 hover:border-cyan-500/30 hover:bg-slate-100 transition-all group/stat relative overflow-hidden cursor-default"
                   >
                     {/* Scanning Line */}
                     <motion.div
@@ -656,10 +656,10 @@ export const DashboardSecretaria = () => {
                         {g.groupId}
                       </span>
                       <div className="text-right">
-                        <p className="text-[22px] font-black text-cyan-400 tabular-nums leading-none tracking-tighter drop-shadow-lg scale-95 group-hover/stat:scale-100 transition-transform duration-500">
+                        <p className="text-[22px] font-black text-cyan-400 tabular-nums leading-none tracking-tighter drop-shadow-xl shadow-black/5 scale-95 group-hover/stat:scale-100 transition-transform duration-500">
                           {g.count}
                         </p>
-                        <p className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+                        <p className="text-[8px] font-black text-slate-700 uppercase tracking-[0.2em] italic">
                           Alumnos
                         </p>
                       </div>
@@ -686,14 +686,14 @@ export const DashboardSecretaria = () => {
                         </div>
                         <div className="flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full bg-slate-500"></span>
-                          <span className="text-slate-400">
+                          <span className="text-slate-600">
                             Mas: {g.maleCount}
                           </span>
                         </div>
                       </div>
                     </div>
                     {/* Decorative corner accent */}
-                    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover/stat:opacity-100 transition-opacity"></div>
+                    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover/stat:opacity-100 transition-opacity"></div>
                   </motion.div>
                 ));
               })() as any}
@@ -711,16 +711,16 @@ export const DashboardSecretaria = () => {
             <div className="flex justify-between items-center mb-6 relative z-10">
               <div>
                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                  <span className="material-symbols-outlined text-rose-500 animate-pulse">
+                  <span className="material-icons text-rose-500 animate-pulse">
                     notification_important
                   </span>
                   PROTOCOLOS ACTIVOS
                 </h3>
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1 italic">
+                <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] mt-1 italic">
                   Intervención departamentos externos
                 </p>
               </div>
-              <span className="px-3 py-1.5 bg-rose-500/10 text-rose-500 text-[10px] font-black rounded-md border border-rose-500/20 tabular-nums drop-shadow-sm">
+              <span className="px-3 py-1.5 bg-rose-500/10 text-rose-500 text-[10px] font-black rounded-2xl border border-rose-500/20 tabular-nums drop-shadow-sm">
                 {notices.filter((n) => !n.resolved).length}
               </span>
             </div>
@@ -728,7 +728,7 @@ export const DashboardSecretaria = () => {
             <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
               {notices.filter((n) => !n.resolved).length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center opacity-20 py-12">
-                  <span className="material-symbols-outlined text-5xl mb-2">
+                  <span className="material-icons text-5xl mb-2">
                     verified
                   </span>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em]">
@@ -741,7 +741,7 @@ export const DashboardSecretaria = () => {
                   .map((notice) => (
                     <div
                       key={notice.id}
-                      className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-all group/notice"
+                      className="p-4 bg-white/[0.02] border border-slate-100 rounded-2xl hover:bg-white/[0.04] transition-all group/notice"
                     >
                       <div className="flex justify-between items-start mb-3">
                         <span className="text-[8px] font-black px-2 py-0.5 rounded bg-white/10 text-white uppercase tracking-widest">
@@ -749,9 +749,9 @@ export const DashboardSecretaria = () => {
                         </span>
                         <button
                           onClick={() => resolveSystemNotice(notice.id)}
-                          className="text-slate-500 hover:text-cyan-400 transition-colors"
+                          className="text-slate-700 hover:text-cyan-400 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-sm">
+                          <span className="material-icons text-sm">
                             check_circle
                           </span>
                         </button>
@@ -759,19 +759,19 @@ export const DashboardSecretaria = () => {
                       <p className="text-[11px] font-black text-white uppercase italic mb-1">
                         {notice.studentName}
                       </p>
-                      <p className="text-[10px] text-slate-500 line-clamp-2 uppercase font-medium leading-tight mb-3">
+                      <p className="text-[10px] text-slate-700 line-clamp-2 uppercase font-medium leading-tight mb-3">
                         {notice.description}
                       </p>
-                      <div className="flex justify-between items-center pt-3 border-t border-white/5">
+                      <div className="flex justify-between items-center pt-3 border-t border-slate-100">
                         <div className="flex items-center gap-2">
                           <div className="size-5 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-[8px] font-black text-cyan-500">
                             {notice.requestedBy.charAt(0)}
                           </div>
-                          <span className="text-[8px] font-black text-slate-400 uppercase">
+                          <span className="text-[8px] font-black text-slate-600 uppercase">
                             {notice.requestedBy}
                           </span>
                         </div>
-                        <span className="text-[8px] font-black text-slate-500 uppercase tracking-tighter italic">
+                        <span className="text-[8px] font-black text-slate-700 uppercase tracking-tighter italic">
                           {new Date(notice.date).toLocaleDateString()}
                         </span>
                       </div>
@@ -785,30 +785,30 @@ export const DashboardSecretaria = () => {
         {/* MODAL: AI DISTRIBUTION VISUALIZER */}
         {showDistributionModal && distributionAnalysis && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#020408]/80 backdrop-blur-2xl p-4 animate-fade-in">
-            <div className="card-sase w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
+            <div className="card-sase w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col border-slate-200 shadow-[0_0_100px_rgba(0,0,0,0.8)]">
               {/* Header */}
-              <div className="p-8 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
+              <div className="p-8 border-b border-slate-100 bg-white/[0.01] flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-black text-white uppercase italic tracking-widest flex items-center gap-3">
-                    <span className="material-symbols-outlined text-cyan-500 animate-pulse">
+                    <span className="material-icons text-cyan-500 animate-pulse">
                       smart_toy
                     </span>
                     PROPUESTA DE DISTRIBUCIÓN{" "}
                     <span className="text-cyan-500/50">INTELIGENTE</span>
                   </h3>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1">
+                  <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] mt-1">
                     ANÁLISIS ALGORÍTMICO BASADO EN PROMEDIO, GÉNERO Y DENSIDAD
                     OPERATIVA
                   </p>
                 </div>
                 <div className="flex gap-4">
-                  <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl">
+                  <div className="px-4 py-2 bg-white/5 border border-slate-200 rounded-xl">
                     <span className="text-[10px] font-black text-cyan-500 uppercase tracking-widest block">
                       Nuevos Ingresos
                     </span>
                     <span className="text-xl font-black text-white tabular-nums">
                       {proposedStudents.length}{" "}
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-[10px] text-slate-700">
                         ALUMNOS
                       </span>
                     </span>
@@ -821,11 +821,11 @@ export const DashboardSecretaria = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   {/* Before */}
                   <div className="space-y-6">
-                    <div className="flex items-center gap-3 border-b border-white/5 pb-4">
-                      <span className="material-symbols-outlined text-slate-500">
+                    <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+                      <span className="material-icons text-slate-700">
                         history_toggle_off
                       </span>
-                      <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                      <h4 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em]">
                         ESTADO DE CARGA ACTUAL
                       </h4>
                     </div>
@@ -835,25 +835,25 @@ export const DashboardSecretaria = () => {
                         .map((group) => (
                           <div
                             key={group.groupId}
-                            className="bg-white/[0.02] p-4 rounded-2xl border border-white/5 opacity-40 hover:opacity-60 transition-opacity"
+                            className="bg-white/[0.02] p-4 rounded-2xl border border-slate-100 opacity-40 hover:opacity-60 transition-opacity"
                           >
                             <div className="flex justify-between items-center mb-3">
                               <span className="font-black text-white italic tracking-tighter">
                                 {group.groupId}
                               </span>
-                              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                              <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
                                 {group.count}{" "}
                                 <span className="text-[8px]">EXPEDIENTES</span>
                               </span>
                             </div>
                             <div className="flex gap-6 mt-2">
-                              <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                              <div className="text-[10px] font-black uppercase tracking-widest text-slate-700">
                                 PROMEDIO:{" "}
                                 <span className="text-white">
                                   {group.avgGpa.toFixed(1)}
                                 </span>
                               </div>
-                              <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                              <div className="text-[10px] font-black uppercase tracking-widest text-slate-700">
                                 BALANCE (F):{" "}
                                 <span className="text-white">
                                   {(
@@ -873,7 +873,7 @@ export const DashboardSecretaria = () => {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between border-b border-cyan-500/20 pb-4">
                       <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-cyan-500">
+                        <span className="material-icons text-cyan-500">
                           dynamic_form
                         </span>
                         <h4 className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.2em]">
@@ -881,10 +881,10 @@ export const DashboardSecretaria = () => {
                         </h4>
                       </div>
                       <div className="group relative">
-                        <span className="material-symbols-outlined text-slate-500 text-sm cursor-help hover:text-cyan-400 transition-colors">
+                        <span className="material-icons text-slate-700 text-sm cursor-help hover:text-cyan-400 transition-colors">
                           help_outline
                         </span>
-                        <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-[#0b0e14]/90 backdrop-blur-xl border border-white/10 rounded-xl text-[9px] text-slate-400 opacity-0 pointer-events-none group-hover:opacity-100 transition-all z-50 shadow-2xl">
+                        <div className="absolute bottom-full right-0 mb-2 w-48 p-3 bg-[#0b0e14]/90 backdrop-blur-xl border border-slate-200 rounded-xl text-[9px] text-slate-600 opacity-0 pointer-events-none group-hover:opacity-100 transition-all z-50 shadow-2xl">
                           Nuestro motor de IA analiza el promedio de grado y la
                           balance de género para optimizar la cohesión del
                           grupo.
@@ -911,11 +911,11 @@ export const DashboardSecretaria = () => {
                                 </span>
                                 <div className="flex items-center gap-3">
                                   {countDiff > 0 && (
-                                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg border border-emerald-500/30 animate-pulse">
+                                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-1 rounded-2xl border border-emerald-500/30 animate-pulse">
                                       +{countDiff} ASIGNADOS
                                     </span>
                                   )}
-                                  <span className="text-xs font-black text-white tracking-widest uppercase">
+                                  <span className="text-xs font-black text-slate-900 tracking-widest uppercase">
                                     {group.count} ALUMNOS
                                   </span>
                                 </div>
@@ -925,7 +925,7 @@ export const DashboardSecretaria = () => {
                               <div className="space-y-4">
                                 {/* GPA Bar */}
                                 <div>
-                                  <div className="flex justify-between text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                                  <div className="flex justify-between text-[9px] font-black text-slate-700 uppercase tracking-widest mb-1.5">
                                     <span>CALIDAD ACADÉMICA (PROMEDIO)</span>
                                     <span className="text-cyan-500">
                                       {group.avgGpa.toFixed(1)}
@@ -946,7 +946,7 @@ export const DashboardSecretaria = () => {
                                 </div>
                                 {/* Gender Bar */}
                                 <div>
-                                  <div className="flex justify-between text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                                  <div className="flex justify-between text-[9px] font-black text-slate-700 uppercase tracking-widest mb-1.5">
                                     <span>ESTRUCTURA DE GÉNERO (BALANCE)</span>
                                     <span className="text-white">
                                       {(
@@ -994,7 +994,7 @@ export const DashboardSecretaria = () => {
               </div>
 
               {/* Actions */}
-              <div className="p-6 border-t border-white/5 bg-white/[0.01] flex justify-end gap-4">
+              <div className="p-6 border-t border-slate-100 bg-white/[0.01] flex justify-end gap-4">
                 <button
                   onClick={() => {
                     setShowDistributionModal(false);
@@ -1002,7 +1002,7 @@ export const DashboardSecretaria = () => {
                   }}
                   title="Cancelar y descartar la propuesta de distribución"
                   aria-label="Abortar operación de distribución"
-                  className="px-6 py-4 text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-[0.2em] transition-colors"
+                  className="px-6 py-4 text-[10px] font-black text-slate-700 hover:text-white uppercase tracking-[0.2em] transition-colors"
                 >
                   ABORTAR OPERACIÓN
                 </button>
@@ -1012,7 +1012,7 @@ export const DashboardSecretaria = () => {
                   aria-label="Confirmar y ejecutar asignación por IA"
                   className="btn-sase-primary px-10 py-4 text-[10px] font-black flex items-center gap-3 group"
                 >
-                  <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">
+                  <span className="material-icons group-hover:rotate-12 transition-transform">
                     verified
                   </span>
                   EJECUTAR DISTRIBUCIÓN IA
@@ -1025,18 +1025,18 @@ export const DashboardSecretaria = () => {
         {/* Student List */}
         <div
           id="secretaria-list"
-          className="card-sase overflow-hidden flex flex-col min-h-[600px] border-white/10"
+          className="card-sase overflow-hidden flex flex-col min-h-[600px] border-slate-200"
         >
-          <div className="px-6 py-4 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/[0.01]">
+          <div className="px-6 py-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/[0.01]">
             <div>
               <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em] flex items-center gap-2">
-                <span className="material-symbols-outlined text-cyan-500 text-sm">
+                <span className="material-icons text-cyan-500 text-sm">
                   folder_shared
                 </span>
                 DIRECTORIO ESTUDIANTIL{" "}
-                <span className="text-slate-500">/ INSTITUCIONAL</span>
+                <span className="text-slate-700">/ INSTITUCIONAL</span>
               </h3>
-              <p className="text-[9px] font-medium text-slate-500 uppercase tracking-widest mt-0.5">
+              <p className="text-[9px] font-medium text-slate-700 uppercase tracking-widest mt-0.5">
                 Base de datos centralizada de expedientes electrónicos
               </p>
             </div>
@@ -1045,13 +1045,13 @@ export const DashboardSecretaria = () => {
               id="secretaria-search"
               className="relative w-full md:w-[450px] group"
             >
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 material-symbols-outlined group-focus-within:text-cyan-500 transition-colors">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-700 material-icons group-focus-within:text-cyan-500 transition-colors">
                 search
               </span>
               <input
                 type="text"
                 placeholder="FILTRAR POR NOMBRE O MATRÍCULA..."
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500/40 focus:bg-white/[0.05] transition-all uppercase tracking-widest"
+                className="w-full bg-slate-100 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-xs font-black text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500/40 focus:bg-white/[0.05] transition-all uppercase tracking-widest"
                 onChange={(e) => {
                   const term = e.target.value.toLowerCase();
                   const rows = document.querySelectorAll(".student-row");
@@ -1069,10 +1069,10 @@ export const DashboardSecretaria = () => {
           <div className="flex-1 overflow-x-auto custom-scrollbar">
             {students.length === 0 ? (
               <div className="py-32 text-center">
-                <span className="material-symbols-outlined text-7xl text-white/5 mb-6 animate-pulse">
+                <span className="material-icons text-7xl text-white/5 mb-6 animate-pulse">
                   cloud_off
                 </span>
-                <p className="text-slate-500 font-black uppercase text-[10px] tracking-[0.3em] italic">
+                <p className="text-slate-700 font-black uppercase text-[10px] tracking-[0.3em] italic">
                   Sincronización requerida: Base de datos vacía
                 </p>
               </div>
@@ -1083,13 +1083,13 @@ export const DashboardSecretaria = () => {
                   {students.map((student) => (
                     <div
                       key={student.id}
-                      className="card-sase p-5 bg-white/[0.03] border-white/10 hover:border-cyan-500/30 transition-all active:scale-[0.98]"
+                      className="card-sase p-5 bg-slate-100 border-slate-200 hover:border-cyan-500/30 transition-all active:scale-[0.98]"
                     >
                       <div className="flex items-center gap-4 mb-4">
                         <img
                           src={student.avatar}
                           alt={student.name}
-                          className="size-14 rounded-2xl border border-white/10 shadow-lg"
+                          className="size-14 rounded-2xl border border-slate-200 shadow-xl shadow-black/5"
                         />
                         <div className="flex-1">
                           <h4 className="font-black text-white uppercase italic text-sm leading-tight">
@@ -1110,7 +1110,7 @@ export const DashboardSecretaria = () => {
                         ></span>
                       </div>
 
-                      <div className="grid grid-cols-4 gap-2 pt-4 border-t border-white/5">
+                      <div className="grid grid-cols-4 gap-2 pt-4 border-t border-slate-100">
                         <button
                           onClick={() => {
                             setSelectedStudent(student);
@@ -1118,7 +1118,7 @@ export const DashboardSecretaria = () => {
                           }}
                           className="aspect-square rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             psychology
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1133,9 +1133,9 @@ export const DashboardSecretaria = () => {
                               data: student,
                             })
                           }
-                          className="aspect-square rounded-xl bg-white/5 border border-white/10 text-slate-400 flex flex-col items-center justify-center gap-1"
+                          className="aspect-square rounded-xl bg-white/5 border border-slate-200 text-slate-600 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             badge
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1150,9 +1150,9 @@ export const DashboardSecretaria = () => {
                               data: student,
                             })
                           }
-                          className="aspect-square rounded-xl bg-white/5 border border-white/10 text-slate-400 flex flex-col items-center justify-center gap-1"
+                          className="aspect-square rounded-xl bg-white/5 border border-slate-200 text-slate-600 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             assignment
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1161,9 +1161,9 @@ export const DashboardSecretaria = () => {
                         </button>
                         <button
                           onClick={() => handleEdit(student.id)}
-                          className="aspect-square rounded-xl bg-white/5 border border-white/10 text-slate-400 flex flex-col items-center justify-center gap-1"
+                          className="aspect-square rounded-xl bg-white/5 border border-slate-200 text-slate-600 flex flex-col items-center justify-center gap-1"
                         >
-                          <span className="material-symbols-outlined text-xl">
+                          <span className="material-icons text-xl">
                             manage_search
                           </span>
                           <span className="text-[7px] font-black uppercase">
@@ -1178,20 +1178,20 @@ export const DashboardSecretaria = () => {
                 {/* --- WEB/DESKTOP: VISTA DE TABLA (Renderizado Robusto) --- */}
                 <table className="hidden md:table w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-white/[0.02] border-b border-white/5">
-                      <th className="px-8 py-6 text-[9px] font-black text-slate-500 uppercase tracking-[0.25em]">
+                    <tr className="bg-white/[0.02] border-b border-slate-100">
+                      <th className="px-8 py-6 text-[9px] font-black text-slate-700 uppercase tracking-[0.25em]">
                         EXPEDIENTE / IDENTIDAD
                       </th>
-                      <th className="px-8 py-6 text-[9px] font-black text-slate-500 uppercase tracking-[0.25em]">
+                      <th className="px-8 py-6 text-[9px] font-black text-slate-700 uppercase tracking-[0.25em]">
                         ESTRUCTURA ACADÉMICA
                       </th>
-                      <th className="px-8 py-6 text-[9px] font-black text-slate-500 uppercase tracking-[0.25em]">
+                      <th className="px-8 py-6 text-[9px] font-black text-slate-700 uppercase tracking-[0.25em]">
                         ESTADO DE CONTROL
                       </th>
-                      <th className="px-8 py-6 text-[9px] font-black text-slate-500 uppercase tracking-[0.25em]">
+                      <th className="px-8 py-6 text-[9px] font-black text-slate-700 uppercase tracking-[0.25em]">
                         INFORMACIÓN DE TUTORÍA
                       </th>
-                      <th className="px-8 py-6 text-[9px] font-black text-slate-500 uppercase tracking-[0.25em] text-center">
+                      <th className="px-8 py-6 text-[9px] font-black text-slate-700 uppercase tracking-[0.25em] text-center">
                         ACCIONES DE CONTROL
                       </th>
                     </tr>
@@ -1209,7 +1209,7 @@ export const DashboardSecretaria = () => {
                                 src={student.avatar}
                                 alt={`Expediente de ${student.name}`}
                                 title={`Avatar de ${student.name}`}
-                                className="size-11 rounded-xl border border-white/10 group-hover/row:border-cyan-500/50 transition-all shadow-xl"
+                                className="size-11 rounded-xl border border-slate-200 group-hover/row:border-cyan-500/50 transition-all shadow-xl"
                               />
                               <div className="absolute -bottom-1 -right-1 size-3 bg-emerald-500 border-2 border-[#020408] rounded-full"></div>
                             </div>
@@ -1217,7 +1217,7 @@ export const DashboardSecretaria = () => {
                               <span className="block font-black text-white uppercase italic text-sm tracking-tight group-hover/row:text-cyan-400 transition-colors">
                                 {student.name}
                               </span>
-                              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-0.5 block">
+                              <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-0.5 block">
                                 SASE-ID: {student.id.substring(0, 8)}
                               </span>
                             </div>
@@ -1235,7 +1235,7 @@ export const DashboardSecretaria = () => {
                         </td>
                         <td className="px-8 py-5">
                           <span
-                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black border uppercase tracking-widest ${
+                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl text-[10px] font-black border uppercase tracking-widest ${
                               student.caseState === CaseState.CERRADO
                                 ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                                 : student.caseState === CaseState.OBSERVADO
@@ -1244,14 +1244,14 @@ export const DashboardSecretaria = () => {
                             }`}
                           >
                             <span className="size-1.5 rounded-full bg-current animate-pulse"></span>
-                            {student.caseState}
+                            {CaseLabels[student.caseState]}
                           </span>
                         </td>
                         <td className="px-8 py-5">
                           {editingId === student.id ? (
                             <div className="card-sase p-5 absolute z-20 w-[320px] -translate-x-12 -translate-y-4 animate-fade-in-up shadow-2xl shadow-black border-cyan-500/40 ring-1 ring-cyan-500/20">
-                              <h4 className="text-[10px] font-black text-cyan-500 uppercase mb-4 border-b border-white/10 pb-2 flex items-center gap-2">
-                                <span className="material-symbols-outlined text-sm">
+                              <h4 className="text-[10px] font-black text-cyan-500 uppercase mb-4 border-b border-slate-200 pb-2 flex items-center gap-2">
+                                <span className="material-icons text-sm">
                                   shield_person
                                 </span>
                                 EXPEDIENTE DE TUTORÍA
@@ -1260,23 +1260,23 @@ export const DashboardSecretaria = () => {
                                 <p className="text-xs font-black text-white uppercase italic">
                                   {student.guardianInfo?.name}
                                 </p>
-                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase">
-                                  <span className="material-symbols-outlined text-sm text-cyan-500">
+                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase">
+                                  <span className="material-icons text-sm text-cyan-500">
                                     call
                                   </span>
                                   {student.guardianInfo?.phonePrimary}
                                 </div>
-                                <p className="text-[9px] font-black text-slate-500 italic leading-tight uppercase">
+                                <p className="text-[9px] font-black text-slate-700 italic leading-tight uppercase">
                                   {student.guardianInfo?.address ||
                                     "Domicilio en reserva institucional"}
                                 </p>
                               </div>
-                              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-white/5">
+                              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
                                 <button
                                   onClick={() => setEditingId(null)}
                                   title="Cerrar vista de expediente de tutoría"
                                   aria-label="Cerrar detalles de tutoría"
-                                  className="text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest transition-colors"
+                                  className="text-[9px] font-black text-slate-700 hover:text-white uppercase tracking-widest transition-colors"
                                 >
                                   CERRAR
                                 </button>
@@ -1292,7 +1292,7 @@ export const DashboardSecretaria = () => {
                             </div>
                           ) : (
                             <div className="flex items-center gap-2 text-slate-700">
-                              <span className="material-symbols-outlined text-[18px]">
+                              <span className="material-icons text-[18px]">
                                 lock_person
                               </span>
                               <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">
@@ -1308,11 +1308,11 @@ export const DashboardSecretaria = () => {
                                 setSelectedStudent(student);
                                 setShowAdvancedPanel(true);
                               }}
-                              className="size-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
+                              className="size-10 rounded-xl bg-white/5 border border-slate-200 text-slate-600 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
                               title="Despliegue de IA: Análisis Avanzado del Alumno"
                               aria-label="Ejecutar análisis predictivo"
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 psychology
                               </span>
                             </button>
@@ -1326,10 +1326,10 @@ export const DashboardSecretaria = () => {
                                   data: student,
                                 })
                               }
-                              className="size-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
+                              className="size-10 rounded-xl bg-white/5 border border-slate-200 text-slate-600 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
                               title="Generar Credencial Institucional"
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 badge
                               </span>
                             </button>
@@ -1343,10 +1343,10 @@ export const DashboardSecretaria = () => {
                                   data: student,
                                 })
                               }
-                              className="size-10 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
+                              className="size-10 rounded-xl bg-white/5 border border-slate-200 text-slate-600 hover:text-cyan-500 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-center group/btn"
                               title="Ver Formulario de Inscripción"
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 assignment
                               </span>
                             </button>
@@ -1356,7 +1356,7 @@ export const DashboardSecretaria = () => {
                               className={`size-10 rounded-xl border transition-all flex items-center justify-center group/btn ${
                                 editingId === student.id
                                   ? "bg-cyan-500 text-white border-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.4)]"
-                                  : "bg-white/5 border-white/10 text-slate-400 hover:text-cyan-400 hover:border-cyan-400/30"
+                                  : "bg-white/5 border-slate-200 text-slate-600 hover:text-cyan-400 hover:border-cyan-400/30"
                               }`}
                               title={
                                 editingId === student.id
@@ -1369,7 +1369,7 @@ export const DashboardSecretaria = () => {
                                   : "Modificar Expediente"
                               }
                             >
-                              <span className="material-symbols-outlined text-[20px] group-hover/btn:scale-110 transition-transform">
+                              <span className="material-icons text-[20px] group-hover/btn:scale-110 transition-transform">
                                 {editingId === student.id
                                   ? "visibility_off"
                                   : "manage_search"}
@@ -1396,15 +1396,15 @@ export const DashboardSecretaria = () => {
         {showQuickAccess && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#020408]/90 backdrop-blur-2xl p-4 animate-fade-in">
             <div className="card-sase w-full max-w-lg overflow-hidden flex flex-col border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.1)] animate-scale-in">
-              <div className="p-8 bg-emerald-500/[0.03] border-b border-white/5 flex justify-between items-center">
+              <div className="p-8 bg-emerald-500/[0.03] border-b border-slate-100 flex justify-between items-center">
                 <div>
                   <h3 className="text-xl font-black text-white uppercase italic tracking-widest flex items-center gap-3">
-                    <span className="material-symbols-outlined text-emerald-500 animate-pulse">
+                    <span className="material-icons text-emerald-500 animate-pulse">
                       bolt
                     </span>
                     ACCESO <span className="text-emerald-500">RELÁMPAGO</span>
                   </h3>
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1">
+                  <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] mt-1">
                     PROTOCOLO DE REGISTRO EXPRESS - CONTROL DE ENTRADA
                   </p>
                 </div>
@@ -1412,15 +1412,15 @@ export const DashboardSecretaria = () => {
                   onClick={() => setShowQuickAccess(false)}
                   title="Cerrar panel de acceso relámpago"
                   aria-label="Cerrar panel emergente"
-                  className="size-10 rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:text-white hover:bg-rose-500/20 transition-all flex items-center justify-center"
+                  className="size-10 rounded-xl bg-white/5 border border-slate-200 text-slate-700 hover:text-white hover:bg-rose-500/20 transition-all flex items-center justify-center"
                 >
-                  <span className="material-symbols-outlined">close</span>
+                  <span className="material-icons">close</span>
                 </button>
               </div>
 
               <div className="p-8 space-y-6">
                 <div className="relative group">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 material-symbols-outlined group-focus-within:text-emerald-500 transition-colors">
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-700 material-icons group-focus-within:text-emerald-500 transition-colors">
                     search
                   </span>
                   <input
@@ -1429,7 +1429,7 @@ export const DashboardSecretaria = () => {
                     placeholder="INGRESAR NOMBRE O MATRÍCULA..."
                     title="Búsqueda rápida de alumnos"
                     aria-label="Búsqueda rápida de alumnos"
-                    className="w-full bg-white/[0.03] border border-white/10 rounded-2xl py-5 pl-14 pr-4 text-xs font-black text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 focus:bg-white/[0.05] transition-all uppercase tracking-widest"
+                    className="w-full bg-slate-100 border border-slate-200 rounded-2xl py-5 pl-14 pr-4 text-xs font-black text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/40 focus:bg-white/[0.05] transition-all uppercase tracking-widest"
                     value={quickSearch}
                     onChange={(e) => setQuickSearch(e.target.value)}
                   />
@@ -1449,20 +1449,20 @@ export const DashboardSecretaria = () => {
                       .map((student) => (
                         <div
                           key={student.id}
-                          className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] hover:border-emerald-500/30 transition-all flex justify-between items-center group/item"
+                          className="p-4 bg-white/[0.02] border border-slate-100 rounded-2xl hover:bg-white/[0.04] hover:border-emerald-500/30 transition-all flex justify-between items-center group/item"
                         >
                           <div className="flex items-center gap-4">
                             <img
                               src={student.avatar}
                               alt={`Avatar de ${student.name}`}
                               title={`Avatar de ${student.name}`}
-                              className="size-11 rounded-xl border border-white/10 group-hover/item:border-emerald-500/50 transition-colors"
+                              className="size-11 rounded-xl border border-slate-200 group-hover/item:border-emerald-500/50 transition-colors"
                             />
                             <div>
                               <p className="text-xs font-black text-white uppercase italic leading-tight group-hover/item:text-emerald-400">
                                 {student.name}
                               </p>
-                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
+                              <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest mt-1">
                                 {student.group}{" "}
                                 <span className="text-emerald-500/40">//</span>{" "}
                                 {student.matricula}
@@ -1476,7 +1476,7 @@ export const DashboardSecretaria = () => {
                               }
                               title="Registrar entrada sin credencial (Incidencia automática)"
                               aria-label={`Registrar entrada sin credencial para ${student.name}`}
-                              className="px-4 py-2.5 bg-rose-500/10 text-rose-500 rounded-xl text-[9px] font-black uppercase border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all shadow-lg active:scale-95"
+                              className="px-4 py-2.5 bg-rose-500/10 text-rose-500 rounded-xl text-[9px] font-black uppercase border border-rose-500/20 hover:bg-rose-500 hover:text-white transition-all shadow-xl shadow-black/5 active:scale-95"
                             >
                               S/ CRED
                             </button>
@@ -1486,7 +1486,7 @@ export const DashboardSecretaria = () => {
                               }
                               title="Registrar retardo oficial (Incidencia automática)"
                               aria-label={`Registrar retardo para ${student.name}`}
-                              className="px-4 py-2.5 bg-amber-500/10 text-amber-500 rounded-xl text-[9px] font-black uppercase border border-amber-500/20 hover:bg-amber-500 hover:text-white transition-all shadow-lg active:scale-95"
+                              className="px-4 py-2.5 bg-amber-500/10 text-amber-500 rounded-xl text-[9px] font-black uppercase border border-amber-500/20 hover:bg-amber-500 hover:text-white transition-all shadow-xl shadow-black/5 active:scale-95"
                             >
                               RETARDO
                             </button>
@@ -1502,15 +1502,15 @@ export const DashboardSecretaria = () => {
                           .includes(quickSearch.toLowerCase()) ||
                         s.matricula.includes(quickSearch),
                     ).length === 0 && (
-                      <p className="text-center py-8 text-[10px] font-black text-slate-400 uppercase">
+                      <p className="text-center py-8 text-[10px] font-black text-slate-600 uppercase">
                         Alumno no encontrado
                       </p>
                     )}
                 </div>
               </div>
 
-              <div className="p-6 bg-white/[0.01] border-t border-white/5 text-center">
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-relaxed italic">
+              <div className="p-6 bg-white/[0.01] border-t border-slate-100 text-center">
+                <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest leading-relaxed italic">
                   Este registro genera una incidencia automática y permite el
                   paso inmediato al aula.
                   <br />

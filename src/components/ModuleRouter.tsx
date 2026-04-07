@@ -1,6 +1,7 @@
 import React from "react";
 import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Loading Component
 export const LoadingSpinner = () => (
@@ -16,16 +17,14 @@ export const LoadingSpinner = () => (
 const DashboardHoy = React.lazy(() => import("./DashboardHoy").then(m => ({ default: m.DashboardHoy })));
 const DashboardDocente = React.lazy(() => import("./dashboards/DashboardDocente").then(m => ({ default: m.DashboardDocente })));
 const DashboardPrefectura = React.lazy(() => import("./dashboards/DashboardPrefectura").then((m) => ({ default: m.DashboardPrefectura })));
-const DashboardMedico = React.lazy(() => import("./dashboards/DashboardMedico"));
+const DashboardSalud = React.lazy(() => import("./dashboards/DashboardSalud").then((m) => ({ default: m.DashboardSalud })));
 const DashboardOrientacion = React.lazy(() => import("./dashboards/DashboardOrientacion").then((m) => ({ default: m.DashboardOrientacion })));
 const DashboardTrabajoSocial = React.lazy(() => import("./dashboards/DashboardTrabajoSocial").then((m) => ({ default: m.DashboardTrabajoSocial })));
 const DashboardSecretaria = React.lazy(() => import("./dashboards/DashboardSecretaria").then((m) => ({ default: m.DashboardSecretaria })));
 const DashboardDireccion = React.lazy(() => import("./dashboards/DashboardDireccion").then((m) => ({ default: m.DashboardDireccion })));
 const DashboardSubdireccion = React.lazy(() => import("./dashboards/DashboardSubdireccion").then((m) => ({ default: m.DashboardSubdireccion })));
-const DashboardUDEII = React.lazy(() => import("./dashboards/DashboardUDEII").then((m) => ({ default: m.DashboardUDEII })));
 const DashboardLectura = React.lazy(() => import("./dashboards/DashboardLectura"));
 const DashboardDeveloper = React.lazy(() => import("./dashboards/DashboardDeveloper").then((m) => ({ default: m.DashboardDeveloper })));
-const DashboardIntelligence = React.lazy(() => import("./dashboards/DashboardIntelligence").then((m) => ({ default: m.DashboardIntelligence })));
 
 // Modules (Lazy Loaded)
 const Agenda = React.lazy(() => import("./Agenda").then((m) => ({ default: m.Agenda })));
@@ -52,68 +51,78 @@ export const ModuleRouter: React.FC = () => {
 
   return (
     <React.Suspense fallback={<LoadingSpinner />}>
-      {(() => {
-        if (currentModule === AppModule.AGENDA) return <Agenda />;
-        if (currentModule === AppModule.REPORTES) return <Reportes />;
-        if (currentModule === AppModule.EXPEDIENTES) return <Expedientes />;
-        if (currentModule === AppModule.BITACORA) return <BitacoraAuditoria />;
-        if (currentModule === AppModule.SOLICITUDES) return <PanelSolicitudes />;
-        if (currentModule === AppModule.REPORTES_DOCENTES) return <SolicitudReportesDocentes />;
-        if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
-        if (currentModule === AppModule.ARCHIVO) return <Archivo />;
-        if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
-        if (currentModule === AppModule.APROBACIONES_PERSONAL) return <AprobacionesPersonal />;
-        if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
-        if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;
-        if (currentModule === AppModule.ASISTENCIA) return <Asistencia />;
-        if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
-        if (currentModule === AppModule.IA_SASE) return <DashboardIntelligence />;
-        if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentModule}
+          initial={{ opacity: 0, scale: 0.99, filter: "blur(4px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 1.01, filter: "blur(4px)" }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="h-full w-full"
+        >
+          {(() => {
+            if (currentModule === AppModule.AGENDA) return <Agenda />;
+            if (currentModule === AppModule.REPORTES) return <Reportes />;
+            if (currentModule === AppModule.EXPEDIENTES) return <Expedientes />;
+            if (currentModule === AppModule.BITACORA) return <BitacoraAuditoria />;
+            if (currentModule === AppModule.SOLICITUDES) return <PanelSolicitudes />;
+            if (currentModule === AppModule.REPORTES_DOCENTES) return <SolicitudReportesDocentes />;
+            if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
+            if (currentModule === AppModule.ARCHIVO) return <Archivo />;
+            if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
+            if (currentModule === AppModule.APROBACIONES_PERSONAL) return <AprobacionesPersonal />;
+            if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
+            if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;
+            if (currentModule === AppModule.ASISTENCIA) return <Asistencia />;
+             if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
+            if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
-        if (currentModule === AppModule.HOME) {
-          return <OrbNavigation />;
-        }
-
-        if (currentModule === AppModule.WELCOME) {
-            return <DashboardHoy />;
-        }
-
-        switch (currentUserRole) {
-          case UserRole.DOCENTE:
-          case UserRole.DOCENTE_TUTOR:
-            return <DashboardDocente />;
-          case UserRole.DIRECTIVO:
-            return <DashboardDireccion />;
-          case UserRole.SUBDIRECCION:
-            return <DashboardSubdireccion />;
-          case UserRole.PREFECTURA:
-            return <DashboardPrefectura />;
-          case UserRole.ORIENTACION:
-            return <DashboardOrientacion />;
-          case UserRole.TRABAJO_SOCIAL:
-            return <DashboardTrabajoSocial />;
-          case UserRole.MEDICO_ESCOLAR:
-            return <DashboardMedico />;
-          case UserRole.UDEII:
-            return <DashboardUDEII />;
-          case UserRole.PROMOTORA_LECTURA:
-            return <DashboardLectura />;
-          case UserRole.SECRETARIA:
-            return <DashboardSecretaria />;
-          case UserRole.DEVELOPER:
-          case UserRole.SYSTEM_ADMIN:
-            return <DashboardDeveloper />;
-          default:
-            if (currentModule === (AppModule.REGISTRO_PERSONAL as any)) {
-              return (
-                <RegistroPersonal
-                  onBack={() => setCurrentModule(AppModule.HOME)}
-                />
-              );
+            if (currentModule === AppModule.HOME) {
+              return <OrbNavigation />;
             }
-            return <OrbNavigation />;
-        }
-      })()}
+
+            if (currentModule === AppModule.WELCOME) {
+                return <DashboardHoy />;
+            }
+
+            switch (currentUserRole) {
+              case UserRole.DOCENTE:
+              case UserRole.DOCENTE_TUTOR:
+                return <DashboardDocente />;
+              case UserRole.DIRECTIVO:
+                return <DashboardDireccion />;
+              case UserRole.SUBDIRECCION:
+                return <DashboardSubdireccion />;
+              case UserRole.PREFECTURA:
+                return <DashboardPrefectura />;
+              case UserRole.ORIENTACION:
+                return <DashboardOrientacion />;
+              case UserRole.TRABAJO_SOCIAL:
+                return <DashboardTrabajoSocial />;
+              case UserRole.MEDICO_ESCOLAR:
+                return <DashboardSalud />;
+              case UserRole.UDEII:
+                return <DashboardSalud />;
+              case UserRole.PROMOTORA_LECTURA:
+                return <DashboardLectura />;
+              case UserRole.SECRETARIA:
+                return <DashboardSecretaria />;
+              case UserRole.DEVELOPER:
+              case UserRole.SYSTEM_ADMIN:
+                return <DashboardDeveloper />;
+              default:
+                if (currentModule === (AppModule.REGISTRO_PERSONAL as any)) {
+                  return (
+                    <RegistroPersonal
+                      onBack={() => setCurrentModule(AppModule.HOME)}
+                    />
+                  );
+                }
+                return <OrbNavigation />;
+            }
+          })()}
+        </motion.div>
+      </AnimatePresence>
     </React.Suspense>
   );
 };

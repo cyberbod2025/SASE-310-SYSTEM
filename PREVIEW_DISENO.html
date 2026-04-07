@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SASE-310: Institutional Soft Glass - Vista Previa de Diseño</title>
+    <style>
+        :root {
+            --sase-blue: #2563eb;
+            --sase-orange: #ea580c;
+            --sase-red: #dc2626;
+            --sase-bg-main: #f8fafc;
+            --sase-text-dark: #1e293b;
+            --sase-text-muted: #64748b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0.1%, rgba(233, 226, 226, 0.28) 90.1%);
+            background-color: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--sase-text-dark);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.4);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--sase-text-muted);
+        }
+
+        .mockup-image {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        /* --- SASE INSTITUTIONAL SOFT GLASS CARD --- */
+        .card-sase {
+            background: rgba(255, 255, 255, 0.7);
+            -webkit-backdrop-filter: blur(30px);
+            backdrop-filter: blur(30px);
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-sase:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        /* MANDATO ABSOLUTO: Role Border-T-4 */
+        .card-role-teacher { border-top: 5px solid var(--sase-blue); }
+        .card-role-prefectura { border-top: 5px solid var(--sase-orange); }
+        .card-role-riesgo { border-top: 5px solid var(--sase-red); }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--sase-text-muted);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-value {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: var(--sase-text-muted);
+            line-height: 1.5;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .btn-action {
+            margin-top: 25px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: none;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-blue { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+        .btn-blue:hover { background: #2563eb; color: white; }
+        
+        .btn-orange { background: rgba(234, 88, 12, 0.1); color: #ea580c; }
+        .btn-orange:hover { background: #ea580c; color: white; }
+
+        .btn-red { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
+        .btn-red:hover { background: #dc2626; color: white; }
+
+        .status-blue { background: var(--sase-blue); }
+        .status-orange { background: var(--sase-orange); }
+        .status-red { background: var(--sase-red); }
+
+        .footer-note {
+            margin-top: 40px; 
+            text-align: center; 
+            font-size: 12px; 
+            color: #94a3b8; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>SASE-310: Institutional Soft Glass</h1>
+        <p>Prototipo de diseño basado en el "Mandato Absoluto" de seriedad administrativa.</p>
+    </div>
+
+    <!-- IMAGEN DEL MOCKUP GENERADO -->
+    <img src="SASE_SCREENSHOTS/mockup_propuesta.png" alt="Mockup SASE" class="mockup-image">
+
+    <div class="grid">
+        <!-- TARJETA DOCENTE -->
+        <div class="card-sase card-role-teacher">
+            <div class="card-title">
+                <span class="status-dot status-blue"></span>
+                Docencia / Planeación
+            </div>
+            <div class="card-value">94.8%</div>
+            <p class="card-desc">Indice general de asistencia registrado para el 1er Grado Grupo A. (Hoy, 2026-04-07)</p>
+            <button class="btn-action btn-blue">Abrir Pase de Lista</button>
+        </div>
+
+        <!-- TARJETA PREFECTURA -->
+        <div class="card-sase card-role-prefectura">
+            <div class="card-title">
+                <span class="status-dot status-orange"></span>
+                Prefectura / Seguimiento
+            </div>
+            <div class="card-value">12</div>
+            <p class="card-desc">Incidencias menores registradas en la biblioteca durante la jornada matutina.</p>
+            <button class="btn-action btn-orange">Revisar Reportes</button>
+        </div>
+
+        <!-- TARJETA RIESGO -->
+        <div class="card-sase card-role-riesgo">
+            <div class="card-title">
+                <span class="status-dot status-red"></span>
+                Atención Prioritaria
+            </div>
+            <div class="card-value">3</div>
+            <p class="card-desc">Alumnos detectados con patrón de riesgo crítico segun el semáforo institucional.</p>
+            <button class="btn-action btn-red">Ver Expedientes</button>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        Mandato Absoluto SASE-310: Orden, Limpieza y Profesionalismo.
+    </div>
+</div>
+
+</body>
+</html>

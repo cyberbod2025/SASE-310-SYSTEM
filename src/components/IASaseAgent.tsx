@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
-import { SaseSplineOrb } from "./SaseSplineOrb";
+import { SasitoCopilot } from "./SasitoCopilot";
 import type { SystemState } from "../types/systemState";
 import { UserRole, AppModule, CaseState } from "../types";
-import { calcularEstadoSistema, OrbState } from "../utils/estadoSistema";
 
 /**
  * IA-SASE Agent Component
@@ -20,23 +19,15 @@ export const IASaseAgent: React.FC = () => {
     openQuickRegister,
   } = useApp();
 
-  // Mapeo entre el semáforo institucional (OrbState) y el visualizador de núcleo (SystemState)
-  const orbState = React.useMemo((): SystemState => {
-    switch (systemState) {
-      case "thinking": return "thinking";
-      case "red": return "alert";
-      case "yellow": return "warning";
-      default: return "normal";
-    }
-  }, [systemState]);
+  // El orbe ya recibe el SystemState directamente desde el store
+  const orbState = systemState;
 
   // Texto descriptivo del estado para accesibilidad/clima
   const stateLabel = React.useMemo(() => {
     switch (systemState) {
-      case "red": return "CRÍTICO";
-      case "yellow": return "ALERTA";
+      case "alert": return "CRÍTICO";
+      case "warning": return "ALERTA";
       case "thinking": return "PROCESANDO";
-      case "gold": return "NORMAL";
       default: return "ESTABLE";
     }
   }, [systemState]);
@@ -67,7 +58,7 @@ export const IASaseAgent: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-[20px] right-[20px] z-[5000] flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-[5000] flex flex-col items-end">
       {/* Panel de Acciones Rápidas (El 'Pensamiento' de la IA) */}
       <AnimatePresence>
         {isAssistantOpen && (
@@ -97,7 +88,7 @@ export const IASaseAgent: React.FC = () => {
                   onClick={() => setIsAssistantOpen(false)}
                   className="size-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all hover:rotate-90"
                 >
-                  <span className="material-symbols-outlined text-sm">close</span>
+                  <span className="material-icons text-sm">close</span>
                 </button>
               </div>
 
@@ -187,10 +178,10 @@ export const IASaseAgent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* El Núcleo / Cara Neural 3D */}
-        <SaseSplineOrb
-          state={orbState}
-          isInteracting={isAssistantOpen}
+        {/* El Núcleo / Cara Neural 3D (New Sasito Copilot) */}
+        <SasitoCopilot
+          systemState={orbState}
+          isWidgetMode={true}
           className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-[0_0_40px_rgba(59,130,246,0.3)]"
         />
 
@@ -207,12 +198,12 @@ export const IASaseAgent: React.FC = () => {
         </AnimatePresence>
 
         {/* Alerta Visual para Estados Críticos */}
-        {(systemState === "red" || systemState === "yellow") && (
+        {(systemState === "alert" || systemState === "warning") && (
           <motion.div
             animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
             transition={{ duration: 1.5, repeat: Infinity }}
             className={`absolute inset-0 rounded-full border-2 ${
-              systemState === "red" ? "border-red-500" : "border-yellow-500"
+              systemState === "alert" ? "border-red-500" : "border-yellow-500"
             } pointer-events-none`}
           />
         )}
@@ -232,7 +223,7 @@ const ActionButton: React.FC<{
     className="w-full flex items-center gap-4 p-4 bg-white/[0.03] hover:bg-white/[0.08] hover:border-blue-500/30 border border-white/5 rounded-2xl transition-all group text-left"
   >
     <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-inner">
-      <span className="material-symbols-outlined text-xl">{icon}</span>
+      <span className="material-icons text-xl">{icon}</span>
     </div>
     <div className="flex-1 min-w-0">
       <span className="block text-[10px] font-black text-white uppercase tracking-tight">
@@ -242,7 +233,7 @@ const ActionButton: React.FC<{
         {description}
       </span>
     </div>
-    <span className="material-symbols-outlined text-slate-700 group-hover:text-blue-400 text-sm">
+    <span className="material-icons text-slate-700 group-hover:text-blue-400 text-sm">
       arrow_forward_ios
     </span>
   </button>

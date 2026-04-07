@@ -7,7 +7,10 @@ import { UserRole } from "../types";
 export const startProductTour = (
   userName: string = "Usuario",
   role: UserRole = UserRole.DOCENTE,
+  setIsTourActive?: (active: boolean) => void,
 ) => {
+  if (setIsTourActive) setIsTourActive(true);
+  
   // Prevenir que se inicien múltiples tours al mismo tiempo
   if (document.querySelector(".driver-popover")) {
     console.warn("Tour ya está en ejecución");
@@ -17,6 +20,12 @@ export const startProductTour = (
   // Marcamos que el tour está activo para que el modal lo detecte
   localStorage.setItem("sase_tour_active", "true");
 
+  // Helper para añadir la "cara" de Sasito a cada paso si es necesario
+  const withSasito = (title: string, desc: string) => ({
+    title: `<div class='flex items-center gap-3'><span>🤖 <b>SASITO:</b> ${title}</span></div>`,
+    description: `<div class='sase-tour-step-orb-container'><div class='sase-tour-step-orb'></div></div>` + desc,
+  });
+
   // 1. Pasos Base (Bienvenida + Sidebar Global)
   const steps: any[] = [
     {
@@ -24,43 +33,33 @@ export const startProductTour = (
       popover: {
         title: `NÚCLEO SASE-310: Hola, ${userName} 👋`,
         description:
-          "<div style='margin-bottom: 20px; display: flex; justify-content: center;'><div style='width: 60px; height: 60px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(59, 130, 246, 0.3);'><span class='material-symbols-outlined' style='color: #60a5fa; font-size: 32px;'>smart_toy</span></div></div>" +
-          "Soy la <b>IA de SASE-310</b>. Mi núcleo de procesamiento está listo para optimizar tu gestión escolar.<br><br>" +
-          "He calibrado tu entorno de trabajo. Permíteme guiarte por los protocolos clave de tu operación institucional.",
+          "<div style='margin-bottom: 20px; display: flex; justify-content: center;'>" +
+          "  <div class='sase-tour-welcome-orb'></div>" +
+          "</div>" +
+          "Soy <b>Sasito</b>, tu Copiloto IA. Mi núcleo de procesamiento está listo para optimizar tu gestión escolar.<br><br>" +
+          "He calibrado tu entorno de trabajo según tu rango. Permíteme guiarte por los protocolos clave para asegurar una operación institucional impecable.",
         side: "center",
         align: "center",
       },
     },
     {
       element: "#sidebar-logo",
-      popover: {
-        title: "Identidad & Rango Institucional 🛡️",
-        description:
-          `Protocolos de seguridad verificados para: <b>${role}</b>. ` +
-          "He desplegado automáticamente las facultades, accesos y herramientas que corresponden a tu rango en la estructura educativa.",
-        side: "right",
-        align: "start",
-      },
+      popover: withSasito("Identidad & Rango Institucional 🛡️", 
+        `Protocolos de seguridad verificados para: <b>${role}</b>. ` +
+        "He desplegado automáticamente las facultades, accesos y herramientas que corresponden a tu rango en la estructura educativa."
+      ),
     },
     {
       element: "#sidebar-nav",
-      popover: {
-        title: "Consola de Navegación 🧭",
-        description:
-          "Aquí residen los módulos de inteligencia: Expedientes, Agendas y Metadatos. Todo está interconectado para que la información fluya sin fricciones.",
-        side: "right",
-        align: "center",
-      },
+      popover: withSasito("Consola de Navegación 🧭", 
+        "Aquí residen los módulos de inteligencia: Expedientes, Agendas y Metadatos. Todo está interconectado para que la información fluya sin fricciones."
+      ),
     },
     {
       element: "#sidebar-feedback",
-      popover: {
-        title: "Sincronización de Mejoras 🗣️",
-        description:
-          "Mi red neuronal aprende de tu experiencia. Si detectas una anomalía o tienes una sugerencia de mejora, este es el portal directo hacia mis desarrolladores.",
-        side: "right",
-        align: "center",
-      },
+      popover: withSasito("Sincronización de Mejoras 🗣️", 
+        "Mi red neuronal aprende de tu experiencia. Si detectas una anomalía o tienes una sugerencia de mejora, este es el portal directo hacia mis desarrolladores."
+      ),
     },
   ];
 
@@ -70,53 +69,33 @@ export const startProductTour = (
       steps.push(
         {
           element: "#dashboard-header",
-          popover: {
-            title: "Centro de Comando Institucional 🏛️",
-            description:
-              "Esta es tu vista satelital. Desde aquí supervisas el pulso vital de la escuela con datos procesados en tiempo real.",
-            side: "bottom",
-            align: "start",
-          },
+          popover: withSasito("Centro de Comando Institucional 🏛️", 
+            "Esta es tu vista satelital. Desde aquí supervisas el pulso vital de la escuela con datos procesados en tiempo real."
+          ),
         },
         {
           element: "#kpi-assist",
-          popover: {
-            title: "Métricas de Presencia 📈",
-            description:
-              "Monitoreo constante de asistencia. La IA detecta automáticamente desviaciones que podrían indicar riesgos de deserción.",
-            side: "top",
-            align: "center",
-          },
+          popover: withSasito("Métricas de Presencia 📈", 
+            "Monitoreo constante de asistencia. La IA detecta automáticamente desviaciones que podrían indicar riesgos de deserción."
+          ),
         },
         {
           element: "#kpi-risk",
-          popover: {
-            title: "Radar de Riesgo Crítico 🚨",
-            description:
-              "<b>Prioridad Máxima.</b> Estas son las alertas rojas que requieren tu intervención directa o delegación inmediata a protocolos de seguimiento.",
-            side: "top",
-            align: "center",
-          },
+          popover: withSasito("Radar de Riesgo Crítico 🚨", 
+            "<b>Prioridad Máxima.</b> Estas son las alertas rojas que requieren tu intervención directa o delegación inmediata a protocolos de seguimiento."
+          ),
         },
         {
           element: "#panel-risk-groups",
-          popover: {
-            title: "Focalización Estratégica 🎯",
-            description:
-              "He identificado los grupos con mayores índices de conflicto. Dirige los recursos de Orientación y Prefectura hacia estos nodos críticos.",
-            side: "right",
-            align: "start",
-          },
+          popover: withSasito("Focalización Estratégica 🎯", 
+            "He identificado los grupos con mayores índices de conflicto. Dirige los recursos de Orientación y Prefectura hacia estos nodos críticos."
+          ),
         },
         {
           element: "#export-btn",
-          popover: {
-            title: "Inteligencia Documental 🖨️",
-            description:
-              "Transformo los datos en reportes ejecutivos listos para imprimir. Eficacia administrativa para tus juntas de consejo.",
-            side: "left",
-            align: "center",
-          },
+          popover: withSasito("Inteligencia Documental 🖨️", 
+            "Transformo los datos en reportes ejecutivos listos para imprimir. Eficacia administrativa para tus juntas de consejo."
+          ),
         },
       );
       break;
@@ -125,53 +104,33 @@ export const startProductTour = (
       steps.push(
         {
           element: "#pref-header",
-          popover: {
-            title: "Unidad de Control Operativo",
-            description:
-              "Bienvenido, Prefecto. Tu consola está configurada para el monitoreo táctico de la convivencia diaria.",
-            side: "bottom",
-            align: "start",
-          },
+          popover: withSasito("Unidad de Control Operativo", 
+            "Bienvenido, Prefecto. Tu consola está configurada para el monitoreo táctico de la convivencia diaria."
+          ),
         },
         {
           element: "#pref-quick-register",
-          popover: {
-            title: "Ingreso de Datos Táctico ⚡",
-            description:
-              "Registra anomalías (retardos, uniforme, conducta) en menos de 5 segundos. Mi sistema se encarga del resto del papeleo legal.",
-            side: "right",
-            align: "center",
-          },
+          popover: withSasito("Ingreso de Datos Táctico ⚡", 
+            "Registra anomalías (retardos, uniforme, conducta) en menos de 5 segundos. Mi sistema se encarga del resto del papeleo legal."
+          ),
         },
         {
           element: "#pref-kpi-grid",
-          popover: {
-            title: "Análisis del Flujo Escolar 📊",
-            description:
-              "Métricas vivas sobre retardos y cumplimiento normativo. Si los números suben, es hora de un patrullaje intensivo.",
-            side: "top",
-            align: "center",
-          },
+          popover: withSasito("Análisis del Flujo Escolar 📊", 
+            "Métricas vivas sobre retardos y cumplimiento normativo. Si los números suben, es hora de un patrullaje intensivo."
+          ),
         },
         {
           element: "#pref-recent-activity",
-          popover: {
-            title: "Historial de Eventos 🕒",
-            description:
-              "Seguimiento segundo a segundo de todas las incidencias en el plantel. Nada escapa al registro institucional.",
-            side: "top",
-            align: "center",
-          },
+          popover: withSasito("Historial de Eventos 🕒", 
+            "Seguimiento segundo a segundo de todas las incidencias en el plantel. Nada escapa al registro institucional."
+          ),
         },
         {
           element: "#pref-daily-alerts",
-          popover: {
-            title: "Detección de Patrones ⚠️",
-            description:
-              "Mis algoritmos te alertarán sobre alumnos recurrentes automáticamente. Actúa antes de que la falta se vuelva hábito.",
-            side: "left",
-            align: "center",
-          },
+          popover: withSasito("Detección de Patrones ⚠️", 
+            "Mis algoritmos te alertarán sobre alumnos recurrentes automáticamente. Actúa antes de que la falta se vuelva hábito."
+          ),
         },
       );
       break;
@@ -180,23 +139,15 @@ export const startProductTour = (
       steps.push(
         {
           element: "#nav-expedientes",
-          popover: {
-            title: "Célula Administrativa 📝",
-            description:
-              "Gestión de expedientes e integridad de la base de datos de los alumnos. Actualizaciones de estatus en un entorno confiable.",
-            side: "right",
-            align: "center",
-          },
+          popover: withSasito("Célula Administrativa 📝", 
+            "Gestión de expedientes e integridad de la base de datos de los alumnos. Actualizaciones de estatus en un entorno confiable."
+          ),
         },
         {
           element: "#nav-agenda",
-          popover: {
-            title: "Coordinación de Citas y Eventos 📅",
-            description:
-              "Módulo central de agendamiento. Lleva el control de citas de área, reuniones de directivos y eventos institucionales con eficiencia.",
-            side: "right",
-            align: "center",
-          },
+          popover: withSasito("Coordinación de Citas y Eventos 📅", 
+            "Módulo central de agendamiento. Lleva el control de citas de área, reuniones de directivos y eventos institucionales con eficiencia."
+          ),
         },
       );
       break;
@@ -205,13 +156,9 @@ export const startProductTour = (
       // Para roles operativos (Docente, Prefecto, etc.) que usan el Registro Rápido
       steps.push({
         element: "#quick-register-btn",
-        popover: {
-          title: "⚡ Protocolo de Registro Rápido",
-          description:
-            "Esta es la herramienta más poderosa: <b>Reporta en solo 3 clics</b>. <br>Yo proceso la narrativa, notifico a tus superiores y genero el acta oficial. Tú solo enfócate en educar.",
-          side: "bottom",
-          align: "center",
-        },
+        popover: withSasito("⚡ Protocolo de Registro Rápido", 
+          "Esta es la herramienta más poderosa: <b>Reporta en solo 3 clics</b>. <br>Yo proceso la narrativa, notifico a tus superiores y genero el acta oficial. Tú solo enfócate en educar."
+        ),
       });
       break;
   }
@@ -219,23 +166,15 @@ export const startProductTour = (
   // 3. Feedback Global y Cierre
   steps.push({
     element: "#sidebar-feedback",
-    popover: {
-      title: "Voz Activa del Usuario 🗣️",
-      description:
-        "Utiliza este panel en cualquier momento para enviar tus <b>comentarios, sugerencias o reportar errores</b> directamente al equipo de Ingeniería.",
-      side: "right",
-      align: "end",
-    },
+    popover: withSasito("Voz Activa del Usuario 🗣️", 
+      "Utiliza este panel en cualquier momento para enviar tus <b>comentarios, sugerencias o reportar errores</b> directamente al equipo de Ingeniería."
+    ),
   });
 
   steps.push({
-    popover: {
-      title: "Protocolo de Inducción Finalizado 🌟",
-      description:
-        "Has sido sincronizado satisfactoriamente con el núcleo SASE-310. Explora con confianza, estás respaldado por inteligencia institucional.<br><br><i>Tu éxito es la paz de nuestra escuela.</i>",
-      side: "center",
-      align: "center",
-    },
+    popover: withSasito("Protocolo de Inducción Finalizado 🌟", 
+      "Has sido sincronizado satisfactoriamente con el núcleo SASE-310. Ahora tienes el control total de tu sector.<br><br>Recuerda que estaré siempre disponible para asistirte en tiempo real.<br><br><i>Tu éxito es la paz de nuestra escuela. ¡Adelante!</i>"
+    ),
   });
 
 
@@ -244,15 +183,15 @@ export const startProductTour = (
     animate: true,
     allowClose: true,
     stagePadding: 6,
-    popoverClass: "sase-tour-popover", // NUEVA CLASE PREMIUM
+    popoverClass: "sase-tour-popover", 
     doneBtnText: "FINALIZAR INDUCCIÓN",
     nextBtnText: "SIGUIENTE FASE ➔",
     prevBtnText: "⬅ PROTOCOLO ANTERIOR",
     progressText: "ETAPA {{current}} DE {{total}}",
     steps: steps,
     onDestroyStarted: () => {
-      // Cleanup cleanup
       localStorage.removeItem("sase_tour_active");
+      if (setIsTourActive) setIsTourActive(false);
       driverObj.destroy();
     },
   });

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useApp } from "../store";
 import { UserRole, AppModule, IncidentType } from "../types";
 import { QuickRegisterModal } from "./QuickRegisterModal";
@@ -10,22 +10,27 @@ import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
 import { SaseSplineOrb } from "./SaseSplineOrb";
+import { SasitoAssistant } from "./ai/SasitoAssistant";
+import { LiquidGlassFilters } from "./ui/LiquidGlassFilters";
+import { QuickRegister } from "./ui/QuickRegister";
+import { motion, AnimatePresence } from "framer-motion";
+import { EncuestaPulso } from "./onboarding/EncuestaPulso";
 
 const roleColors: Record<UserRole, string> = {
-  [UserRole.DIRECTIVO]: "bg-red-900 border-none",
-  [UserRole.SUBDIRECCION]: "bg-orange-800 border-none",
-  [UserRole.DOCENTE]: "bg-blue-600 border-none",
-  [UserRole.DOCENTE_TUTOR]: "bg-blue-700 border-none",
-  [UserRole.PREFECTURA]: "bg-orange-600 border-none",
-  [UserRole.ORIENTACION]: "bg-emerald-600 border-none",
-  [UserRole.TRABAJO_SOCIAL]: "bg-purple-600 border-none",
-  [UserRole.MEDICO_ESCOLAR]: "bg-red-600 border-none",
-  [UserRole.SECRETARIA]: "bg-cyan-600 border-none",
-  [UserRole.UDEII]: "bg-indigo-600 border-none",
-  [UserRole.PROMOTORA_LECTURA]: "bg-pink-600 border-none",
-  [UserRole.GUEST]: "bg-slate-800 border-none",
-  [UserRole.DEVELOPER]: "bg-slate-900 border-none border-r border-white/5",
-  [UserRole.SYSTEM_ADMIN]: "bg-indigo-950 border-none",
+  [UserRole.DIRECTIVO]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.SUBDIRECCION]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.DOCENTE]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.DOCENTE_TUTOR]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.PREFECTURA]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.ORIENTACION]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.TRABAJO_SOCIAL]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.MEDICO_ESCOLAR]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.SECRETARIA]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.UDEII]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.PROMOTORA_LECTURA]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.GUEST]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.DEVELOPER]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
+  [UserRole.SYSTEM_ADMIN]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
 };
 
 const roleImages: Record<UserRole, string> = {
@@ -85,6 +90,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   } = useApp();
   const { user, profile } = useAuth();
 
+  // 🧭 PLAN ONBOARDING 30-60-90
+  const onboardingPhase = useMemo(() => {
+    const createdDate = profile?.creado_en ? new Date(profile.creado_en) : new Date();
+    const diffDays = Math.ceil(Math.abs(new Date().getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 30) return 'PHASE_1';
+    if (diffDays <= 60) return 'PHASE_2';
+    if (diffDays <= 90) return 'PHASE_3';
+    return 'GRADUATED';
+  }, [profile]);
+
+  const isPhase1 = onboardingPhase === 'PHASE_1';
+  const isDocente = currentUserRole === UserRole.DOCENTE || currentUserRole === UserRole.DOCENTE_TUTOR;
+
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -120,6 +139,19 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     };
   }, [showNotifications]);
 
+  const { setIsTourActive } = useApp();
+
+  // Monitorizar activación del tour (driver.js no es reactivo por sí solo)
+  useEffect(() => {
+    const checkTour = () => {
+      const active = !!document.querySelector(".driver-popover") || localStorage.getItem("sase_tour_active") === "true";
+      setIsTourActive(active);
+    };
+
+    const interval = setInterval(checkTour, 500);
+    return () => clearInterval(interval);
+  }, [setIsTourActive]);
+
   const displayUserName =
     profile?.nombre || user?.user_metadata?.full_name || "Usuario SASE";
   const displayUserRole =
@@ -143,53 +175,55 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   }, [aiSystemState, autoNavigate, highlightedModule, setCurrentModule, clearHighlight]);
 
   return (
-    <div className="flex h-screen text-slate-300 overflow-hidden font-sans select-none bg-transparent">
+    <div
+      data-sasito-state={neuralCoreState}
+      className="flex h-screen w-full bg-[#f1f5f9] text-slate-800 overflow-hidden font-sans select-none relative"
+      style={{
+        background: "radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0.1%, rgba(233, 226, 226, 0.28) 90.1%)",
+      }}
+    >
       <TutorialController />
+      
+      {/* 🔮 Inyectar Filtros SVG Globales para Liquid Glass */}
+      <LiquidGlassFilters />
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/80 z-[60] md:hidden backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 bg-slate-900/40 z-[60] md:hidden backdrop-blur-md animate-fade-in"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar - Premium Crystal Glass */}
+      {/* Sidebar - Institutional Soft Glass (Light) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-[#06182a]/40 !backdrop-blur-[60px] transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/10 md:relative md:translate-x-0 shadow-[20px_0_80px_-15px_rgba(0,0,0,0.6)] ${
+        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} bg-white/40 backdrop-blur-[40px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/60 md:relative md:translate-x-0 shadow-xl ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full relative overflow-hidden">
-          {/* Internal Glow - Tactical Crystal Effect */}
-          <div className="absolute top-[-5%] left-[-10%] w-[120%] h-[30%] bg-cyan-500/15 blur-[100px] pointer-events-none animate-pulse-slow"></div>
-          <div className="absolute bottom-[20%] right-[-20%] w-[100%] h-[30%] bg-violet-600/10 blur-[120px] pointer-events-none"></div>
-          <div className="absolute top-[40%] left-[-10%] w-[50%] h-[20%] bg-blue-500/10 blur-[80px] pointer-events-none animate-pulse"></div>
-
-          {/* Profile Section */}
           <div
             id="sidebar-logo"
-            className={`p-6 border-b border-white/5 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
+            className={`p-6 border-b border-white/20 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
           >
             <div className="flex items-center gap-4">
               <div className="relative group">
-                <div className="absolute -inset-1.5 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <img
                   src={roleImages[currentUserRole]}
                   alt={`Perfil de ${currentUserRole}`}
                   title={`Usuario: ${displayUserName}`}
-                  className={`rounded-2xl border border-white/10 shadow-2xl relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
+                  className={`rounded-2xl border border-white shadow-lg relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
                 />
               </div>
               {!isSidebarCollapsed && (
-                <div className="flex-1 min-w-0 animate-fade-in">
-                  <h3 className="text-[10px] font-black text-white truncate uppercase tracking-widest title-sase">
+                <div className="flex-1 min-w-0 animate-fade-in text-slate-800">
+                  <h3 className="text-[10px] font-black truncate uppercase tracking-widest">
                     {displayUserName}
                   </h3>
                   <div className="flex flex-col gap-0.5 mt-0.5">
                     <div className="flex items-center gap-1.5">
                       <span className="size-1.5 bg-blue-500 rounded-full"></span>
-                      <span className="text-[9px] font-black text-blue-500/70 uppercase tracking-widest truncate">
+                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest truncate">
                         {displayUserRole}
                       </span>
                     </div>
@@ -205,7 +239,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             className="flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar relative z-10"
           >
             {!isSidebarCollapsed && (
-              <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-4">
+              <span className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] block mb-4">
                 Operatividad
               </span>
             )}
@@ -213,7 +247,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <NavItem
               id="nav-dashboard"
               icon="dashboard"
-              label="Dashboard"
+              label="Tablero"
               active={currentModule === AppModule.DASHBOARD}
               onClick={() => {
                 setCurrentModule(AppModule.DASHBOARD);
@@ -221,6 +255,36 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               }}
               color={currentUserRole}
               highlighted={highlightedModule === AppModule.DASHBOARD}
+              collapsed={isSidebarCollapsed}
+            />
+
+            {/* Docente e Incidencias */}
+            {isDocente && (
+               <NavItem
+                id="nav-pedagogia"
+                icon="psychology"
+                label="Detección Pedagógica"
+                active={currentModule === AppModule.REPORTES_DOCENTES}
+                onClick={() => {
+                  setCurrentModule(AppModule.REPORTES_DOCENTES);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+                collapsed={isSidebarCollapsed}
+              />
+            )}
+
+            <NavItem
+              id="nav-expedientes"
+              icon="folder_shared"
+              label="Expedientes"
+              active={currentModule === AppModule.EXPEDIENTES}
+              onClick={() => {
+                setCurrentModule(AppModule.EXPEDIENTES);
+                setIsSidebarOpen(false);
+              }}
+              color={currentUserRole}
+              highlighted={highlightedModule === AppModule.EXPEDIENTES}
               collapsed={isSidebarCollapsed}
             />
 
@@ -238,23 +302,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               collapsed={isSidebarCollapsed}
             />
 
-            <NavItem
-              id="nav-expedientes"
-              icon="folder_shared"
-              label="Expedientes"
-              active={currentModule === AppModule.EXPEDIENTES}
-              onClick={() => {
-                setCurrentModule(AppModule.EXPEDIENTES);
-                setIsSidebarOpen(false);
-              }}
-              color={currentUserRole}
-              highlighted={highlightedModule === AppModule.EXPEDIENTES}
-              collapsed={isSidebarCollapsed}
-            />
-
             {(currentUserRole === UserRole.PREFECTURA || 
-              currentUserRole === UserRole.DOCENTE || 
-              currentUserRole === UserRole.DOCENTE_TUTOR ||
+              isDocente || 
               currentUserRole === UserRole.SYSTEM_ADMIN ||
               currentUserRole === UserRole.DEVELOPER) && (
               <NavItem
@@ -288,25 +337,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   collapsed={isSidebarCollapsed}
                 />
 
-                {(currentUserRole === UserRole.DIRECTIVO ||
-                  currentUserRole === UserRole.SUBDIRECCION ||
-                  currentUserRole === UserRole.SYSTEM_ADMIN ||
-                  currentUserRole === UserRole.DEVELOPER) && (
-                  <NavItem
-                    id="nav-ia-sase"
-                    icon="neurology"
-                    label="Núcleo IA"
-                    active={currentModule === AppModule.IA_SASE}
-                    onClick={() => {
-                      setCurrentModule(AppModule.IA_SASE);
-                      setIsSidebarOpen(false);
-                    }}
-                    color={currentUserRole}
-                    highlighted={highlightedModule === AppModule.IA_SASE}
-                    collapsed={isSidebarCollapsed}
-                  />
-                )}
-
+ 
                 <NavItem
                   id="nav-protocolos"
                   icon="policy"
@@ -323,7 +354,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </>
             )}
 
-            {(currentUserRole === UserRole.SYSTEM_ADMIN || currentUserRole === UserRole.DEVELOPER) && (
+            {(currentUserRole === UserRole.SYSTEM_ADMIN || 
+              currentUserRole === UserRole.DEVELOPER || 
+              currentUserRole === UserRole.PREFECTURA ||
+              currentUserRole === UserRole.DIRECTIVO ||
+              currentUserRole === UserRole.SUBDIRECCION) && (
               <NavItem
                 id="nav-bitacora"
                 icon="history"
@@ -340,8 +375,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             )}
 
             {!isSidebarCollapsed && (
-              <span className="px-4 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mt-6 mb-4">
-                Soporte & Ayuda
+              <span className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] block mt-6 mb-4">
+                Soporte y Ayuda
               </span>
             )}
 
@@ -359,22 +394,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </nav>
 
           {/* Footer Sidebar */}
-          <div className="p-4 border-t border-white/5 space-y-3 relative z-10">
+          <div className="p-4 border-t border-white/20 space-y-3 relative z-10">
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              title={
-                isSidebarCollapsed
-                  ? "Expandir barra lateral"
-                  : "Colapsar barra lateral"
-              }
-              aria-label={
-                isSidebarCollapsed
-                  ? "Expandir barra lateral"
-                  : "Colapsar barra lateral"
-              }
-              className="hidden md:flex items-center justify-center w-full py-2 bg-white/[0.03] hover:bg-white/[0.08] text-slate-500 hover:text-white rounded-xl transition-all"
+              className="hidden md:flex items-center justify-center w-full py-2 bg-white/20 hover:bg-white/40 text-slate-500 rounded-xl transition-all"
             >
-              <span className="material-symbols-outlined text-lg">
+              <span className="material-icons text-lg">
                 {isSidebarCollapsed
                   ? "side_navigation"
                   : "keyboard_double_arrow_left"}
@@ -384,12 +409,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <button
               id="sidebar-feedback"
               onClick={() => setIsFeedbackOpen(true)}
-              title="Enviar comentarios, sugerencias o reportar errores"
-              className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 rounded-xl transition-all group"
+              className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 rounded-xl transition-all"
             >
-              <span className="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">
-                feedback
-              </span>
+              <span className="material-icons text-lg">feedback</span>
               {!isSidebarCollapsed && (
                 <span className="ml-3 text-[10px] font-black uppercase tracking-widest">
                   Sugerencias
@@ -402,16 +424,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 await supabase.auth.signOut();
                 window.location.reload();
               }}
-              title="Cerrar sesión de forma segura"
-              aria-label="Cerrar sesión"
-              className="flex items-center justify-center w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition-all group"
+              className="flex items-center justify-center w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-600 rounded-xl transition-all"
             >
-              <span className="material-symbols-outlined text-lg group-hover:rotate-180 transition-transform duration-500">
-                logout
-              </span>
+              <span className="material-icons text-lg">logout</span>
               {!isSidebarCollapsed && (
                 <span className="ml-3 text-[10px] font-black uppercase tracking-widest">
-                  Cerrar Sesión
+                  Salir
                 </span>
               )}
             </button>
@@ -421,130 +439,100 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
-        {/* Header - Glassmorphism Sticky */}
-        <header className="h-20 glass-card-quantum !rounded-none !border-b !border-white/5 !border-t-0 !border-l-0 !border-r-0 !bg-[#0b0e14]/50 flex items-center justify-between px-6 shrink-0 z-40 relative">
+        {/* Header */}
+        <header className="h-20 bg-white/40 backdrop-blur-[40px] border-b border-white/60 flex items-center justify-between px-6 shrink-0 z-40">
           <div className="flex items-center gap-6">
             <button
-              className="md:hidden size-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-400"
+              className="md:hidden size-10 flex items-center justify-center bg-white/60 border border-white/60 rounded-xl text-slate-600"
               onClick={() => setIsSidebarOpen(true)}
-              title="Abrir menú de navegación"
-              aria-label="Abrir menú lateral"
             >
-              <span className="material-symbols-outlined">menu</span>
+              <span className="material-icons">menu</span>
             </button>
 
             <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <h2 className="text-[11px] font-black text-slate-100 uppercase tracking-[0.4em] title-sase">
-                  SASE <span className="text-blue-500/40 mx-1">/</span>{" "}
-                  <span className="text-blue-400 group-hover:text-blue-300 transition-colors uppercase">SISTEMA_SASE_310</span>
-                </h2>
-              </div>
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              <h2 className="text-[11px] font-black text-slate-800 uppercase tracking-[0.4em]">
+                SASE <span className="text-blue-500/20 mx-1">/</span>{" "}
+                <span className="text-blue-600 uppercase">GESTIÓN_INSTITUCIONAL</span>
+              </h2>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
                 Estatus: Operativo • v{VERSION.numero}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Quick Report Button */}
             <button
               id="quick-register-btn"
               onClick={() => openQuickRegister(IncidentType.CONDUCTA)}
-              title="Generar un reporte de incidencia inmediato"
-              aria-label="Generar reporte rápido"
-              className="btn-premium-red hidden md:flex h-10 px-5"
+              className="hidden md:flex h-10 px-5 bg-red-600 text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-red-500 transition-all shadow-lg shadow-red-500/20 items-center gap-2"
             >
-              <span className="material-symbols-outlined text-lg">
-                emergency
-              </span>
-              <span className="ml-2">REPORTE RÁPIDO</span>
+              <span className="material-icons text-lg">emergency</span>
+              REPORTE RÁPIDO
             </button>
 
-            <div className="h-8 w-px bg-white/10 mx-2 hidden md:block"></div>
-
-            {/* Notification & Alerts */}
-            <div
-              className="relative flex items-center gap-2"
-              ref={notificationRef}
-            >
+            <div className="relative" ref={notificationRef}>
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                title={
-                  unreadCount > 0
-                    ? `Tienes ${unreadCount} notificaciones pendientes`
-                    : "Ver notificaciones"
-                }
-                aria-label="Alternar panel de notificaciones"
                 className={`size-10 flex items-center justify-center rounded-xl border transition-all ${
                   unreadCount > 0
-                    ? "bg-blue-500/10 border-blue-500/30 text-blue-500 animate-pulse-soft"
-                    : "bg-white/5 border-white/10 text-slate-400 hover:text-white"
+                    ? "bg-blue-500/10 border-blue-200 text-blue-600 animate-pulse-soft"
+                    : "bg-white/40 border-white/60 text-slate-600 hover:bg-white/60 shadow-sm"
                 }`}
               >
                 <div className="relative">
-                  <span className="material-symbols-outlined">
-                    notifications
-                  </span>
+                  <span className="material-icons">notifications</span>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border-2 border-[#0b0e14]"></span>
+                    <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border-2 border-white"></span>
                   )}
                 </div>
               </button>
 
-              {/* Notifications Dropdown (moved inside container for better ref handling) */}
               {showNotifications && (
-                <div className="absolute top-14 right-0 w-80 md:w-96 z-50 animate-fade-in-up overflow-hidden rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/80 glass-dropdown">
-                  <div className="p-4 border-b border-white/5 flex justify-between items-center">
+                <div className="absolute top-14 right-0 w-80 md:w-96 z-50 animate-fade-in-up overflow-hidden rounded-2xl border border-white/60 shadow-2xl glass-dropdown bg-white/90 backdrop-blur-3xl">
+                  <div className="p-4 border-b border-white/20 flex justify-between items-center">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      Alertas del Sistema
+                      Alertas Institucionales
                     </span>
                     {unreadCount > 0 && (
-                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-500 rounded text-[9px] font-black">
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-[9px] font-black">
                         {unreadCount}
                       </span>
                     )}
                   </div>
                   <div className="max-h-[60vh] overflow-y-auto custom-scrollbar p-2">
                     {visibleNotifications.length === 0 ? (
-                      <div className="py-12 text-center opacity-40">
-                        <span className="material-symbols-outlined text-4xl block mb-2">
+                      <div className="py-12 text-center opacity-60">
+                        <span className="material-icons text-4xl block mb-2 text-slate-300">
                           notifications_off
                         </span>
-                        <p className="text-[10px] font-black uppercase tracking-widest">
-                          Sin notificaciones
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                          Sin pendientes
                         </p>
                       </div>
                     ) : (
                       visibleNotifications.map((notif) => (
                         <div
                           key={notif.id}
-                          className={`p-4 rounded-xl mb-2 transition-all cursor-pointer ${notif.read ? "bg-white/[0.02] opacity-60" : "bg-white/5 hover:bg-white/[0.08]"}`}
+                          className={`p-4 rounded-xl mb-2 transition-all cursor-pointer border ${notif.read ? "bg-white/20 border-transparent opacity-60" : "bg-white border-white/60 hover:bg-white/80 shadow-sm"}`}
                           onClick={() => {
                             markNotificationRead(notif.id);
-                            if (notif.actionModule)
-                              setCurrentModule(notif.actionModule);
+                            if (notif.actionModule) setCurrentModule(notif.actionModule);
                             setShowNotifications(false);
                           }}
                         >
                           <div className="flex gap-3">
-                            <div
-                              className={`size-8 rounded-lg flex items-center justify-center ${notif.type === "error" ? "bg-red-500/20 text-red-500" : notif.type === "warning" ? "bg-amber-500/20 text-amber-400" : "bg-blue-500/20 text-blue-500"}`}
-                            >
-                              <span className="material-symbols-outlined text-sm">
+                            <div className={`size-8 rounded-2xl flex items-center justify-center ${notif.type === "error" ? "bg-red-100 text-red-600" : notif.type === "warning" ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600"}`}>
+                              <span className="material-icons text-sm">
                                 {notif.type === "error" ? "report" : notif.type === "warning" ? "warning" : "info"}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="text-[11px] font-black text-white uppercase truncate">
+                              <h4 className="text-[11px] font-black text-slate-800 uppercase truncate">
                                 {notif.title}
                               </h4>
-                              <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">
+                              <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
                                 {notif.message}
                               </p>
-                              <span className="text-[8px] text-slate-600 mt-2 block uppercase tracking-widest font-black">
-                                {notif.time}
-                              </span>
                             </div>
                           </div>
                         </div>
@@ -559,36 +547,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
         {/* Main Content Scroll Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
-          <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-blue-500/5 via-transparent to-transparent opacity-30"></div>
           <div className="p-4 md:p-8 animate-fade-in relative z-10">
             {children}
           </div>
-
-          {/* Background Ambient Glow */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-600/[0.02] blur-[150px]"></div>
-            <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-indigo-600/[0.02] blur-[150px]"></div>
-          </div>
         </main>
 
-        {/* Floating IA-SASE Core - Hidden on HOME to avoid duplication */}
-        {currentModule !== AppModule.HOME && (
-          <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
-            <button
-              onClick={() => setIsAssistantOpen(!isAssistantOpen)}
-              className="relative focus:outline-none group active:scale-95 transition-transform"
-              title="Interactuar con IA-SASE"
-            >
-              <SaseSplineOrb
-                state={neuralCoreState}
-                className="w-[110px] h-[110px] cursor-pointer"
-              />
-              {/* ELIMINADO: Puntitos indicadores (Notification Ping) removidos a petición del usuario porque no tenían función específica al tocarlos. */}
-            </button>
-          </div>
-        )}
+        {/* Sasito IA: siempre presente en todas las pantallas */}
+        <SasitoAssistant />
+        <EncuestaPulso />
       </div>
 
+      <QuickRegister />
       <FeedbackWidget />
       <QuickRegisterModal />
     </div>
@@ -605,13 +574,8 @@ const NavItem: React.FC<{
   collapsed?: boolean;
   highlighted?: boolean;
 }> = ({ icon, label, active, onClick, id, color, collapsed, highlighted }) => {
-  // Determine active colors based on role background
-  // Usually white text on dark bg, but active item should pop
-  // We'll use White background with Colored Text for active state
-
-  // Map role to text color for the active stats
   const textColors: Record<UserRole, string> = {
-    [UserRole.DIRECTIVO]: "text-slate-900",
+    [UserRole.DIRECTIVO]: "text-slate-200",
     [UserRole.SUBDIRECCION]: "text-orange-800",
     [UserRole.DOCENTE]: "text-blue-600",
     [UserRole.DOCENTE_TUTOR]: "text-blue-700",
@@ -622,26 +586,26 @@ const NavItem: React.FC<{
     [UserRole.SECRETARIA]: "text-cyan-600",
     [UserRole.UDEII]: "text-indigo-600",
     [UserRole.PROMOTORA_LECTURA]: "text-pink-600",
-    [UserRole.GUEST]: "text-slate-800",
+    [UserRole.GUEST]: "text-slate-300",
     [UserRole.DEVELOPER]: "text-black",
     [UserRole.SYSTEM_ADMIN]: "text-indigo-900",
   };
 
-  const activeTextClass = textColors[color as UserRole] || "text-slate-800";
+  const activeTextClass = textColors[color as UserRole] || "text-slate-300";
 
   return (
     <button
       id={id}
       onClick={onClick}
       title={collapsed ? label : ""}
-      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group my-1 border ${
+      className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
-          ? `bg-white/95 backdrop-blur-md ${activeTextClass} shadow-[0_8px_30px_rgba(0,0,0,0.2)] font-black border-white/20 scale-[1.02]`
-          : "text-white/60 hover:bg-white/10 hover:text-white font-bold border-transparent"
-      } ${highlighted ? "shadow-[0_0_25px_rgba(59,130,246,0.35)] border-blue-500/40 bg-blue-500/10 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
+          ? `bg-violet-500/10 backdrop-blur-md text-violet-400 shadow-xl shadow-black/20 font-black border-violet-500/30 scale-[1.02]`
+          : "text-slate-400 hover:bg-white/5 hover:text-white font-bold border-transparent"
+      } ${highlighted ? "shadow-[0_0_25px_rgba(139,92,246,0.2)] border-violet-500/20 bg-violet-500/5 animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span
-        className={`material-symbols-outlined text-[20px] transition-transform ${
+        className={`material-icons text-[20px] transition-transform ${
           active ? "" : "group-hover:scale-110"
         }`}
       >
@@ -653,7 +617,7 @@ const NavItem: React.FC<{
             {label}
           </span>
           {active && (
-            <span className="ml-auto material-symbols-outlined text-[16px]">
+            <span className="ml-auto material-icons text-[16px]">
               chevron_right
             </span>
           )}

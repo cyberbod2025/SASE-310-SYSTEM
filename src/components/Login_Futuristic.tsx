@@ -152,7 +152,7 @@ export const Login: React.FC<LoginProps> = ({
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors"
                     >
-                      <span className="material-symbols-outlined text-[20px]">
+                      <span className="material-icons text-[20px]">
                         {showPassword ? "visibility_off" : "visibility"}
                       </span>
                     </button>
@@ -183,7 +183,7 @@ export const Login: React.FC<LoginProps> = ({
         </div>
 
         <p className="text-center mt-12 text-[10px] text-slate-500 font-black uppercase tracking-[0.5em] select-none opacity-60 title-sase">
-          SASE v{VERSION.numero} • NUCLEUS
+          SASE v{VERSION.numero} • NUCLEO
         </p>
       </div>
 
