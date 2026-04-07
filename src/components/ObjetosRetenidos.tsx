@@ -202,6 +202,8 @@ export const ObjetosRetenidos: React.FC = () => {
                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Estudiante / Matrícula</label>
                        <select 
                           required
+                          title="Seleccionar Estudiante"
+                          aria-label="Seleccionar Estudiante"
                           className="h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
                           value={selectedStudentId}
                           onChange={(e) => setSelectedStudentId(e.target.value)}
@@ -221,6 +223,8 @@ export const ObjetosRetenidos: React.FC = () => {
                     <div className="flex flex-col gap-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Categoría</label>
                       <select 
+                        title="Categoría del Objeto"
+                        aria-label="Categoría del Objeto"
                         className="h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
                         value={categoria}
                         onChange={(e) => setCategoria(e.target.value)}
@@ -239,6 +243,8 @@ export const ObjetosRetenidos: React.FC = () => {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Motivo de Retención</label>
                     <textarea 
                       required
+                      title="Motivo de Retención"
+                      aria-label="Motivo de Retención"
                       placeholder="Describa por qué se retiró el artículo..."
                       className="w-full h-24 bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 transition-all"
                       value={motivo}
@@ -278,6 +284,8 @@ export const ObjetosRetenidos: React.FC = () => {
                   <div className="flex flex-col gap-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Entregar A</label>
                     <select 
+                      title="Entregar A"
+                      aria-label="Entregar A"
                       className="h-[46px] bg-slate-50 border border-slate-100 rounded-xl px-4 text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500"
                       value={tipoEntrega}
                       onChange={(e) => {

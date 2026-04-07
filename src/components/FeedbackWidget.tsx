@@ -120,7 +120,6 @@ ${contextoAutomatico}`;
           created_at: new Date().toISOString(),
         },
       ]);
-<<<<<<< HEAD
 
       if (error) {
         console.warn("Feedback table might be missing:", error);
@@ -130,17 +129,6 @@ ${contextoAutomatico}`;
       } else {
         toast.success("¡Gracias! Tu sugerencia ha sido recibida.", { duration: 4000 });
       }
-=======
-
-      if (error) {
-        console.warn("Feedback table might be missing:", error);
-        toast.error("Error al enviar. Intenta de nuevo.", { duration: 4000 });
-        setIsSending(false);
-        return;
-      } else {
-        toast.success("¡Gracias! Tu sugerencia ha sido recibida.", { duration: 4000 });
-      }
->>>>>>> 6b7cfee0048e22f3aeefd2736b20d95b3c864f6f
     } catch (err) {
       console.error(err);
       // Sin toast adicional en catch para evitar mensajes duplicados

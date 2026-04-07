@@ -30,7 +30,6 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       onClick={onClick}
       className={`
         bg-white/10 backdrop-blur-[24px] 
-        -webkit-backdrop-filter: blur(24px);
         rounded-2xl shadow-xl 
         border border-white/20 
         border-t-4 border-[var(--color-rol)]
@@ -39,10 +38,11 @@ export const GlassCard: React.FC<GlassCardProps> = ({
         ${(onClick || hover) ? "cursor-pointer" : ""} 
         ${className}
       `}
+      style={{ WebkitBackdropFilter: "blur(24px)" }}
     >
       <div className="relative z-10">
         {title && (
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 flex items-center gap-2 border-b border-white/5 pb-2">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 flex items-center gap-2 border-b border-white/5 pb-2" title={title}>
             {icon && (
               <span className="material-icons text-[14px] opacity-70">
                 {icon}

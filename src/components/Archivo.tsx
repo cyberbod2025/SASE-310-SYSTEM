@@ -104,6 +104,8 @@ export const Archivo: React.FC = () => {
             <div className="relative">
               <input
                 type="file"
+                title="Subir archivo al repositorio"
+                aria-label="Subir archivo al repositorio"
                 onChange={handleFileUpload}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 disabled={uploading}
