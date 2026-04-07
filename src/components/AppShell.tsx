@@ -14,7 +14,10 @@ const MainContent = () => {
 
 export const AppShell = () => {
   const { currentModule } = useApp();
-  const [showRadar, setShowRadar] = React.useState(true);
+  const [showRadar, setShowRadar] = React.useState(() => {
+    // Only show radar if it hasn't been shown in this session AND we are in the welcome module
+    return sessionStorage.getItem("sase_radar_shown") !== "true";
+  });
 
   // El Radar solo se muestra en el módulo de bienvenida (post-login inmediato)
   const isWelcome = currentModule === AppModule.WELCOME;
@@ -23,9 +26,10 @@ export const AppShell = () => {
     <ErrorBoundary>
       <React.Suspense fallback={<LoadingSpinner />}>
         {isWelcome && showRadar ? (
-          <RadarEscolar onComplete={() => setShowRadar(false)} />
-        ) : isWelcome ? (
-          <DashboardHoy />
+          <RadarEscolar onComplete={() => {
+            sessionStorage.setItem("sase_radar_shown", "true");
+            setShowRadar(false);
+          }} />
         ) : (
           <Layout>
             <MainContent />

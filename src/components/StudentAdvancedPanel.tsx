@@ -6,7 +6,7 @@ import {
   Incident,
   DocumentoInstitucional,
   UserRole,
-  CaseState,
+  CaseState, CaseLabels,
   IncidentType,
 } from "../types";
 import { useApp } from "../store";
@@ -282,10 +282,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
         {/* BOTÓN CERRAR (Visible y Claro) */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-[70] p-3 md:p-2 bg-white/80 backdrop-blur-md text-slate-500 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-lg border border-slate-200 group active:scale-95"
+          className="absolute top-4 right-4 z-[70] p-3 md:p-2 bg-white/80 backdrop-blur-md text-slate-500 rounded-full hover:bg-rose-500 hover:text-white transition-all shadow-xl shadow-black/5 border border-slate-200 group active:scale-95"
           title="Cerrar Expediente"
         >
-          <span className="material-symbols-outlined text-2xl md:text-xl group-hover:rotate-90 duration-300">
+          <span className="material-icons text-2xl md:text-xl group-hover:rotate-90 duration-300">
             close
           </span>
         </button>
@@ -305,14 +305,14 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             <div
               className={`absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-sm whitespace-nowrap ${statusColor}`}
             >
-              {student.caseState.replace("_", " ")}
+              {CaseLabels[student.caseState]}
             </div>
           </div>
 
           {/* Datos Clave (Texto Grande) */}
           <div className="w-full space-y-4 mt-2">
             <div className="text-center px-2">
-              <h2 className="text-2xl font-black text-slate-800 tracking-tight leading-tight">
+              <h2 className="text-2xl font-black text-slate-300 tracking-tight leading-tight">
                 {student.name}
               </h2>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -345,22 +345,22 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
               {student.isDistancia && (
-                <span className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-lg uppercase flex items-center gap-1.5 shadow-sm">
-                  <span className="material-symbols-outlined text-[14px]">
+                <span className="px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-2xl uppercase flex items-center gap-1.5 shadow-sm">
+                  <span className="material-icons text-[14px]">
                     wifi
                   </span>
                   Distancia
                 </span>
               )}
               {student.bapInfo?.hasBAP && (
-                <span className="px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 text-[10px] font-bold rounded-lg uppercase flex items-center gap-1.5 shadow-sm">
-                  <span className="material-symbols-outlined text-[14px]">
+                <span className="px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 text-[10px] font-bold rounded-2xl uppercase flex items-center gap-1.5 shadow-sm">
+                  <span className="material-icons text-[14px]">
                     psychology
                   </span>
                   BAP
                 </span>
               )}
-              <span className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 text-[10px] font-bold rounded-lg uppercase shadow-sm">
+              <span className="px-3 py-1.5 bg-white border border-slate-200 text-slate-500 text-[10px] font-bold rounded-2xl uppercase shadow-sm">
                 Activo 2026
               </span>
             </div>
@@ -374,7 +374,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               <div className="flex items-center gap-2 z-10">
-                <span className="material-symbols-outlined text-xl">
+                <span className="material-icons text-xl">
                   folder_shared
                 </span>
                 <span className="text-[11px] font-black uppercase tracking-widest">
@@ -400,7 +400,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   icon: "ecg_heart",
                   label: "Clínico / Conductual",
                 },
-                { id: "LEGAL", icon: "gavel", label: "Legal & Protocolos" },
+                { id: "LEGAL", icon: "gavel", label: "Legal y Protocolos" },
               ] as const
             )
               .filter((tab) => tab.id !== "CLINICAL" || canViewClinical)
@@ -409,13 +409,13 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   title={`Ver información ${tab.label}`}
-                  className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wide transition-all duration-200 ${
+                  className={`flex-1 py-2 rounded-2xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-wide transition-all duration-200 ${
                     activeTab === tab.id
-                      ? "bg-white text-slate-800 shadow-sm border border-slate-200"
+                      ? "bg-white text-slate-300 shadow-sm border border-slate-200"
                       : "text-slate-400 hover:bg-white/50 hover:text-slate-600"
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">
+                  <span className="material-icons text-[18px]">
                     {tab.icon}
                   </span>
                   <span className="hidden sm:inline">{tab.label}</span>
@@ -430,7 +430,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               <div className="overflow-y-auto custom-scrollbar h-full pr-2 space-y-6">
                 <div className="flex justify-between items-center pb-4 border-b border-slate-100">
                   <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                    <span className="material-symbols-outlined text-slate-400">
+                    <span className="material-icons text-slate-400">
                       score
                     </span>
                     Kardex de Calificaciones
@@ -544,8 +544,8 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                     <div className="relative z-10">
                       <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-4">
-                          <div className="size-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-white shadow-lg shadow-indigo-500/20">
-                            <span className="material-symbols-outlined text-3xl">
+                          <div className="size-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 text-white shadow-xl shadow-black/5 shadow-indigo-500/20">
+                            <span className="material-icons text-3xl">
                               sports_esports
                             </span>
                           </div>
@@ -575,10 +575,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             Total Puntos
                           </span>
                           <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-amber-300 text-xl drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]">
+                            <span className="material-icons text-amber-300 text-xl drop-shadow-[0_0_8px_rgba(252,211,77,0.5)]">
                               stars
                             </span>
-                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-lg">
+                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-xl shadow-black/5">
                               {student.gamificacion.total_puntos}
                             </span>
                           </div>
@@ -589,10 +589,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             Escaneos
                           </span>
                           <div className="flex items-center gap-2">
-                            <span className="material-symbols-outlined text-cyan-300 text-xl drop-shadow-[0_0_8px_rgba(103,232,249,0.5)]">
+                            <span className="material-icons text-cyan-300 text-xl drop-shadow-[0_0_8px_rgba(103,232,249,0.5)]">
                               qr_code_scanner
                             </span>
-                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-lg">
+                            <span className="text-3xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-xl shadow-black/5">
                               {student.gamificacion.escaneos_realizados}
                             </span>
                           </div>
@@ -625,7 +625,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               <div className="overflow-y-auto custom-scrollbar h-full pr-2">
                 <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                   <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
-                    <span className="material-symbols-outlined text-slate-400">
+                    <span className="material-icons text-slate-400">
                       history_edu
                     </span>
                     Información Clínica e Incidencias
@@ -638,7 +638,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 {/* RESUMEN MÉDICO PRIORITARIO */}
                 <div className="mb-8 p-5 bg-rose-50 border border-rose-100 rounded-2xl">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="material-symbols-outlined text-rose-500 text-2xl">
+                    <span className="material-icons text-rose-500 text-2xl">
                       clinical_notes
                     </span>
                     <div>
@@ -689,7 +689,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
 
                 <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                   <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-icons text-sm">
                       timeline
                     </span>
                     Bitácora Cronológica
@@ -697,10 +697,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setShowIncidentForm(true)}
-                      className="px-4 py-1.5 bg-rose-600 text-white text-[10px] font-black rounded-lg uppercase shadow-sm hover:bg-rose-700 transition-all flex items-center gap-2"
+                      className="px-4 py-1.5 bg-rose-600 text-white text-[10px] font-black rounded-2xl uppercase shadow-sm hover:bg-rose-700 transition-all flex items-center gap-2"
                       title="Registrar nueva incidencia o reporte clínico/conductual"
                     >
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         add_photo_alternate
                       </span>
                       Nuevo Reporte
@@ -713,7 +713,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
 
                 {student.incidents.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
-                    <span className="material-symbols-outlined text-slate-300 text-5xl mb-3">
+                    <span className="material-icons text-slate-300 text-5xl mb-3">
                       history_edu
                     </span>
                     <p className="text-slate-500 text-xs font-bold">
@@ -741,7 +741,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                           }`}
                         ></div>
 
-                        <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
+                        <div className="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:shadow-xl shadow-black/5 transition-shadow group">
                           <div className="flex justify-between items-start mb-2">
                             <span
                               className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wide border ${
@@ -757,20 +757,20 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => handleWhatsAppIncident(inc)}
-                                className={`p-1.5 rounded-lg transition-all flex items-center gap-1.5 border ${
+                                className={`p-1.5 rounded-2xl transition-all flex items-center gap-1.5 border ${
                                   inc.notificado_whatsapp 
                                     ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
                                     : "bg-slate-50 text-slate-400 border-slate-200 hover:bg-emerald-500 hover:text-white hover:border-emerald-400"
                                 }`}
                                 title={inc.notificado_whatsapp ? "Notificado por WhatsApp" : "Notificar al Tutor por WhatsApp"}
                               >
-                                <span className="material-symbols-outlined text-[16px]">
+                                <span className="material-icons text-[16px]">
                                   {inc.notificado_whatsapp ? 'done_all' : 'send_to_mobile'}
                                 </span>
                                 <span className="text-[9px] font-black uppercase tracking-tighter">WhatsApp</span>
                               </button>
                               <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[12px]">
+                                <span className="material-icons text-[12px]">
                                   calendar_today
                                 </span>
                                 {new Date(inc.date).toLocaleDateString("es-MX", {
@@ -781,7 +781,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                               </span>
                             </div>
                           </div>
-                          <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-3 rounded-lg border border-slate-100">
+                          <p className="text-sm text-slate-600 leading-relaxed font-medium bg-slate-50 p-3 rounded-2xl border border-slate-100">
                             {inc.description}
                           </p>
 
@@ -799,7 +799,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                                     className="w-full h-24 object-cover group-hover/ev:scale-110 transition-transform duration-500"
                                   />
                                   <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/ev:opacity-100 transition-opacity flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-white">
+                                    <span className="material-icons text-white">
                                       fullscreen
                                     </span>
                                   </div>
@@ -832,8 +832,8 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               <div className="h-full flex flex-col overflow-hidden">
                 <div className="mb-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl flex justify-between items-center shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="bg-white p-2 rounded-lg border border-blue-200 text-blue-600 shadow-sm">
-                      <span className="material-symbols-outlined text-2xl">
+                    <div className="bg-white p-2 rounded-2xl border border-blue-200 text-blue-600 shadow-sm">
+                      <span className="material-icons text-2xl">
                         smart_toy
                       </span>
                     </div>
@@ -849,11 +849,11 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                   {canPrintSensitive && (
                     <button
                       onClick={() => setShowAIGenerator(true)}
-                      className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white hover:shadow-md transition-all px-4 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 shadow-sm"
+                      className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-600 hover:text-white hover:shadow-xl shadow-black/5 transition-all px-4 py-2 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 shadow-sm"
                       title="Abrir asistente de IA para redactar documentos institucionales"
                     >
                       Generar Nuevo
-                      <span className="material-symbols-outlined text-sm">
+                      <span className="material-icons text-sm">
                         arrow_forward
                       </span>
                     </button>
@@ -869,7 +869,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-3">
                           <div className="bg-slate-50 p-2 rounded border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-colors">
-                            <span className="material-symbols-outlined text-slate-400 group-hover:text-blue-500">
+                            <span className="material-icons text-slate-400 group-hover:text-blue-500">
                               description
                             </span>
                           </div>
@@ -890,16 +890,16 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                         {canPrintSensitive && (
                           <button
                             onClick={() => handlePrintDoc(doc)}
-                            className="text-slate-300 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-all"
+                            className="text-slate-300 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-2xl transition-all"
                             title="Imprimir"
                           >
-                            <span className="material-symbols-outlined text-[20px]">
+                            <span className="material-icons text-[20px]">
                               print
                             </span>
                           </button>
                         )}
                       </div>
-                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 mt-2">
+                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 mt-2">
                         <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed font-mono">
                           {doc.contenido}
                         </p>
@@ -917,7 +917,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           {/* Núcleo Familiar */}
           <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
-              <span className="material-symbols-outlined text-[16px]">
+              <span className="material-icons text-[16px]">
                 family_restroom
               </span>
               Núcleo Familiar
@@ -927,7 +927,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                 Tutor Principal
               </p>
-              <p className="text-sm font-black text-slate-800 uppercase">
+              <p className="text-sm font-black text-slate-300 uppercase">
                 {student.guardianInfo?.name || "Sin registrar"}
               </p>
               <p className="text-xs text-slate-500 font-medium">
@@ -938,9 +938,9 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={() => handleContactTutor("call")}
-                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
+                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-2xl py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
               >
-                <span className="material-symbols-outlined text-[16px]">
+                <span className="material-icons text-[16px]">
                   call
                 </span>
                 <span className="text-[10px] font-black uppercase">Llamar</span>
@@ -955,9 +955,9 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                     student.id,
                   );
                 }}
-                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
+                className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-2xl py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
               >
-                <span className="material-symbols-outlined text-[16px]">
+                <span className="material-icons text-[16px]">
                   mail
                 </span>
                 <span className="text-[10px] font-black uppercase">Email</span>
@@ -969,7 +969,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           {canViewClinical && (
             <div className="bg-indigo-50/50 rounded-xl p-5 border border-indigo-100 shadow-sm">
               <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-indigo-200 pb-2">
-                <span className="material-symbols-outlined text-[16px]">
+                <span className="material-icons text-[16px]">
                   psychology_alt
                 </span>
                 UDEII / Perfil de Inclusión (BAP)
@@ -1005,7 +1005,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           {canViewClinical && (
             <div className="bg-orange-50/50 rounded-xl p-5 border border-orange-100 shadow-sm">
               <h3 className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-orange-200 pb-2">
-                <span className="material-symbols-outlined text-[16px]">
+                <span className="material-icons text-[16px]">
                   communities
                 </span>
                 Estudio Socioeconómico
@@ -1040,7 +1040,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           {/* Acciones Rápidas (Panel de Control) */}
           <div className="flex-1 bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col">
             <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-slate-100 pb-2">
-              <span className="material-symbols-outlined text-[16px]">
+              <span className="material-icons text-[16px]">
                 bolt
               </span>
               Gestión Integral
@@ -1055,7 +1055,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 className={`w-full p-3 rounded-xl border transition-all flex items-center gap-3 group text-left ${
                   student.isDistancia
                     ? "bg-amber-50 border-amber-200 text-amber-700 shadow-inner"
-                    : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm hover:shadow-md"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 shadow-sm hover:shadow-xl shadow-black/5"
                 }`}
               >
                 <div
@@ -1065,7 +1065,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                       : "bg-slate-50 border-slate-100 text-slate-400 group-hover:bg-slate-100"
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[18px]">
+                  <span className="material-icons text-[18px]">
                     {student.isDistancia ? "wifi_off" : "wifi"}
                   </span>
                 </div>
@@ -1083,10 +1083,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               {canPrintSensitive && (
                 <button
                   onClick={() => setShowExpediente(true)}
-                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-xl shadow-black/5 group text-left"
                 >
                   <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-indigo-100 group-hover:border-indigo-200 group-hover:text-indigo-600 flex items-center justify-center transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">
+                    <span className="material-icons text-[18px]">
                       folder_shared
                     </span>
                   </div>
@@ -1105,10 +1105,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               {canPrintSensitive && (
                 <button
                   onClick={() => toast("Abrir modal de citatorio")} // Placeholder funcional
-                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                  className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-xl shadow-black/5 group text-left"
                 >
                   <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-rose-100 group-hover:border-rose-200 group-hover:text-rose-600 flex items-center justify-center transition-colors">
-                    <span className="material-symbols-outlined text-[18px]">
+                    <span className="material-icons text-[18px]">
                       notifications_active
                     </span>
                   </div>
@@ -1126,10 +1126,10 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
               {/* Imprimir Kardex */}
               <button
                 onClick={() => toast("Imprimiendo Kardex...")}
-                className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-cyan-50 hover:border-cyan-200 hover:text-cyan-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-md group text-left"
+                className="w-full p-3 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-cyan-50 hover:border-cyan-200 hover:text-cyan-700 transition-all flex items-center gap-3 shadow-sm hover:shadow-xl shadow-black/5 group text-left"
               >
                 <div className="w-9 h-9 rounded-full bg-slate-50 border border-slate-100 text-slate-400 group-hover:bg-cyan-100 group-hover:border-cyan-200 group-hover:text-cyan-600 flex items-center justify-center transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">
+                  <span className="material-icons text-[18px]">
                     print
                   </span>
                 </div>
@@ -1160,7 +1160,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 className="w-full p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-500 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 transition-all flex items-center gap-3 group text-left"
               >
                 <div className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-400 group-hover:border-indigo-200 group-hover:text-indigo-600 flex items-center justify-center transition-colors shadow-sm">
-                  <span className="material-symbols-outlined text-[18px]">
+                  <span className="material-icons text-[18px]">
                     contact_page
                   </span>
                 </div>
@@ -1190,14 +1190,14 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden">
             <div className="p-8 space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">
+                <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest">
                   Nueva Incidencia con Evidencia
                 </h3>
                 <button
                   onClick={() => setShowIncidentForm(false)}
                   className="size-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400"
                 >
-                  <span className="material-symbols-outlined">close</span>
+                  <span className="material-icons">close</span>
                 </button>
               </div>
 
@@ -1271,16 +1271,16 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                                 photo: null,
                               }));
                             }}
-                            className="absolute top-2 right-2 size-6 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-lg"
+                            className="absolute top-2 right-2 size-6 bg-rose-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-black/5"
                           >
-                            <span className="material-symbols-outlined text-xs">
+                            <span className="material-icons text-xs">
                               close
                             </span>
                           </button>
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <span className="material-symbols-outlined text-3xl text-slate-300">
+                          <span className="material-icons text-3xl text-slate-300">
                             add_a_photo
                           </span>
                           <p className="text-[10px] text-slate-400 font-bold uppercase">
@@ -1303,12 +1303,12 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 <button
                   onClick={handleSaveIncident}
                   disabled={isSaving}
-                  className="flex-[2] py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-rose-700 transition-all shadow-lg shadow-rose-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-[2] py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase hover:bg-rose-700 transition-all shadow-xl shadow-black/5 shadow-rose-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {isSaving ? (
                     <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <span className="material-symbols-outlined text-sm">
+                    <span className="material-icons text-sm">
                       save
                     </span>
                   )}
@@ -1325,7 +1325,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           fallback={
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
               <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 shadow-2xl">
-                <span className="material-symbols-outlined text-indigo-500 animate-spin text-4xl">
+                <span className="material-icons text-indigo-500 animate-spin text-4xl">
                   progress_activity
                 </span>
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest">
@@ -1349,7 +1349,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
           fallback={
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
               <div className="bg-white p-6 rounded-2xl flex flex-col items-center gap-4 shadow-2xl">
-                <span className="material-symbols-outlined text-blue-500 animate-spin text-4xl">
+                <span className="material-icons text-blue-500 animate-spin text-4xl">
                   progress_activity
                 </span>
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest">

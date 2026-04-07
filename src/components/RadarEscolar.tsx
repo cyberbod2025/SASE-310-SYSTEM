@@ -2,11 +2,13 @@ import React, { useMemo, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
 import { CaseState, AppModule } from "../types";
+import { FeedbackWidget } from "./FeedbackWidget";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
   onComplete,
 }) => {
-  const { students, setCurrentModule } = useApp();
+  const { students, setCurrentModule, setIsFeedbackOpen } = useApp();
   const [loading, setLoading] = useState(true);
 
   // UX: Información visible en menos de 5 segundos.
@@ -100,22 +102,54 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
         animate={{ opacity: 1, scale: 1 }}
         className="relative z-10 w-full max-w-5xl"
       >
-        {/* Header */}
+        {/* Header & Sasito Core */}
         <div className="flex flex-col items-center mb-16 text-center">
           <motion.div
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="flex items-center gap-3 mb-4"
+            className="flex items-center gap-3 mb-8"
           >
             <div className="h-[1px] w-12 bg-blue-500/30"></div>
             <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.6em]">
-              Protocolo SASE v3.10
+              Sincronización de Núcleo // Sasito IA
             </span>
             <div className="h-[1px] w-12 bg-blue-500/30"></div>
           </motion.div>
-          <h1 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter uppercase leading-none drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+
+          <div className="relative mb-12 flex flex-col items-center">
+             <motion.div
+               animate={loading ? { scale: [1, 1.05, 1], rotate: [0, 5, -5, 0] } : {}}
+               transition={{ duration: 2, repeat: Infinity }}
+               className="relative z-20"
+             >
+                <SaseSplineOrb 
+                  state={loading ? "thinking" : "normal"} 
+                  className="size-40 md:size-56" 
+                />
+             </motion.div>
+             
+             {/* Dynamic Welcome Message from Sasito */}
+             <AnimatePresence>
+               {!loading && (
+                 <motion.div
+                   initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                   animate={{ opacity: 1, y: 0, scale: 1 }}
+                   className="absolute -top-16 bg-white text-black px-6 py-3 rounded-2xl rounded-br-none shadow-2xl text-xs font-black uppercase tracking-widest italic"
+                 >
+                    ¡Sincronización completa! Bienvenido al núcleo SASE-310.
+                 </motion.div>
+               )}
+             </AnimatePresence>
+
+             <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-[100px] animate-pulse -z-10" />
+          </div>
+
+          <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase leading-none drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">
             RADAR ESCOLAR <span className="text-blue-500">—</span> HOY
           </h1>
+          <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mt-4">
+            {loading ? "Analizando trayectoria de expedientes..." : "Resultados de monitoreo institucional"}
+          </p>
         </div>
 
         {/* Indicators Grid */}
@@ -148,7 +182,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                       }
                     `}
                     >
-                      <span className="material-symbols-outlined text-3xl">
+                      <span className="material-icons text-3xl">
                         {ind.icon}
                       </span>
                     </div>
@@ -196,7 +230,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                     className="w-full flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 group-hover:text-blue-300 transition-colors pt-4 border-t border-white/5"
                   >
                     <span>Acceder Módulo</span>
-                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+                    <span className="material-icons text-sm group-hover:translate-x-1 transition-transform">
                       arrow_forward
                     </span>
                   </button>
@@ -217,17 +251,25 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
             onClick={() => {
               if (onComplete) onComplete();
             }}
-            className="group relative px-12 py-5 overflow-hidden rounded-2xl bg-blue-600/10 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-600/20 transition-all active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:shadow-[0_0_50px_rgba(59,130,246,0.2)]"
+            className="group relative px-12 py-5 overflow-hidden rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-500/20 transition-all active:scale-95 shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:shadow-[0_0_50px_rgba(59,130,246,0.2)]"
           >
             <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative z-10 flex items-center gap-4">
               <span className="text-[11px] font-black text-white uppercase tracking-[0.5em]">
                 ENTRAR AL SISTEMA
               </span>
-              <span className="material-symbols-outlined text-blue-400 group-hover:scale-125 transition-transform animate-pulse">
+              <span className="material-icons text-blue-400 group-hover:scale-125 transition-transform animate-pulse">
                 rocket_launch
               </span>
             </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsFeedbackOpen(true)}
+            className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:bg-white/10 hover:border-white/20 transition-all"
+          >
+            Sugerencia de Mejora / Feedback
           </button>
 
           <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.5em] animate-pulse">
@@ -238,6 +280,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
 
       {/* Decorative Scanline */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-10 bg-[length:100%_2px,3px_100%]" />
+      <FeedbackWidget />
     </div>
   );
 };

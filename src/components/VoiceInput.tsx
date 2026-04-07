@@ -52,7 +52,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onTranscript, className 
       className={`p-2 rounded-full transition-all ${isListening ? 'bg-red-100 text-red-600 animate-pulse ring-2 ring-red-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} ${className}`}
       title="Dictado por voz"
     >
-      <span className="material-symbols-outlined text-[20px]">mic</span>
+      <span className="material-icons text-[20px]">mic</span>
     </button>
   );
 };

@@ -32,20 +32,24 @@ export const IntroPlayer: React.FC<IntroPlayerProps> = ({ onComplete }) => {
         Saltar Intro ↠
       </button>
 
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 z-10 pointer-events-none" />
+      <div className="absolute inset-0 bg-lavender-500/5 mix-blend-overlay z-20 pointer-events-none" />
+
       <video
         ref={videoRef}
-        className="w-full h-full object-contain bg-black"
+        className="w-full h-full object-contain pointer-events-none"
         onEnded={handleVideoEnd}
         autoPlay
         muted
-        controls
         playsInline
+        disablePictureInPicture
+        onContextMenu={(e) => e.preventDefault()}
         onError={(e) => {
           console.warn("Video source failed. Skipping intro.", e);
           onComplete();
         }}
       >
-        <source src="/assets/videos/intro_sase_2026.mp4" type="video/mp4" />
+        <source src="/assets/videos/INTRO_OFICIAL.mp4" type="video/mp4" />
         su navegador no soporta video.
       </video>
     </div>

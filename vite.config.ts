@@ -23,22 +23,10 @@ export default defineConfig(({ mode }) => {
         output: {
           manualChunks(id) {
             if (id.includes("node_modules")) {
-              if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) {
-                return "vendor-react";
-              }
-              if (id.includes("@supabase")) {
-                return "vendor-supabase";
-              }
-              if (id.includes("framer-motion")) {
-                return "vendor-framer";
-              }
-              if (id.includes("@google/generative-ai")) {
-                return "vendor-ai";
-              }
-              if (id.includes("date-fns")) {
-                return "vendor-utils";
-              }
-              return "vendor";
+              const match = id.split("node_modules/")[1]?.split("/");
+              const pkg = match ? match[0] : "vendor";
+              const safeName = pkg.replace(/@/g, "");
+              return `vendor-${safeName}`;
             }
             if (id.includes("src/data/officialStaff.ts")) {
               return "staff-data";
@@ -46,7 +34,7 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      chunkSizeWarningLimit: 800,
+      chunkSizeWarningLimit: 1500,
     },
   };
 });

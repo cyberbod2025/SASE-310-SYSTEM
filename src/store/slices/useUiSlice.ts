@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { UserRole, Student, CaseState, RoleLabels } from "../../types";
 import { getSaludo as getSaludoConfig } from "../../config/sase.config";
-import { calcularEstadoSistema, OrbState } from "../../utils/estadoSistema";
+import { SystemState } from "../../types/systemState";
 
 export const useUiSlice = (
   user: any,
@@ -16,6 +16,7 @@ export const useUiSlice = (
   const [assistantStatus, setAssistantStatus] = useState<
     "idle" | "listening" | "thinking"
   >("idle");
+  const [isTourActive, setIsTourActive] = useState(false);
   const [activePrintJob, setActivePrintJob] = useState<any>(null);
   const [printModal, setPrintModal] = useState({
     isOpen: false,
@@ -23,11 +24,28 @@ export const useUiSlice = (
     html: "",
   });
 
-  // Estado del Orbe Global
-  const systemState = useMemo(
-    () => calcularEstadoSistema(students, isAssistantOpen, assistantStatus),
-    [students, isAssistantOpen, assistantStatus],
-  );
+  // Determinar el estado visual del semáforo basado en los riesgos calculados en DB
+  const systemState = useMemo(() => {
+    // 1. Estados de la IA (Prioridad visual)
+    if (isAssistantOpen) return "normal"; // Orbe dorado en legado, normal/calma en nuevo
+    if (assistantStatus === "thinking") return "thinking";
+
+    // 2. Estados Institucionales (Fuente de verdad: DB)
+    const highRiskCount = students.filter(s => 
+      s.estadoSemaforo === 'INTERVENCION' || 
+      s.estadoSemaforo === 'EN_ANALISIS'
+    ).length;
+
+    const warningCount = students.filter(s => 
+      s.estadoSemaforo === 'PATRON_DETECTADO' || 
+      s.estadoSemaforo === 'OBSERVADO'
+    ).length;
+
+    if (highRiskCount > 0) return "alert";
+    if (warningCount > 0) return "warning";
+    
+    return "normal"; 
+  }, [students, isAssistantOpen, assistantStatus]);
 
   const openQuickRegister = (type?: any) => {
     if (type) setQuickRegisterType(type);
@@ -38,8 +56,6 @@ export const useUiSlice = (
     setActivePrintJob(job);
 
     if (showPreview) {
-      // Si se solicita preview, no imprimimos de inmediato, solo preparamos los datos
-      // La UI (App.tsx o similar) reaccionará abriendo el modal de previsualización
       return;
     }
 
@@ -67,7 +83,6 @@ export const useUiSlice = (
         ).length;
         msg = `${greeting}, ${userName}. Hoy acompañamos ${highRisk} trayectorias críticas.`;
         break;
-      // ... Otros casos simplificados para el asistente
       case UserRole.DEVELOPER:
         msg = `${greeting}, ${userName}. Núcleo SASE operando con integridad total.`;
         break;
@@ -90,6 +105,8 @@ export const useUiSlice = (
     setIsFeedbackOpen,
     assistantStatus,
     setAssistantStatus,
+    isTourActive,
+    setIsTourActive,
     systemState,
     activePrintJob,
     setActivePrintJob,

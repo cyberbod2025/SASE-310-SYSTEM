@@ -17,7 +17,7 @@ export const HomeMinimal: React.FC<HomeMinimalProps> = ({ user, onLogout }) => {
     <div className="min-h-screen w-full bg-slate-900 text-white flex flex-col items-center justify-center p-4 font-sans">
       <div className="w-full max-w-md bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700 text-center space-y-8">
         <div className="h-20 flex items-center justify-center">
-          <span className="material-symbols-outlined text-6xl text-green-400">
+          <span className="material-icons text-6xl text-green-400">
             check_circle
           </span>
         </div>
@@ -31,7 +31,7 @@ export const HomeMinimal: React.FC<HomeMinimalProps> = ({ user, onLogout }) => {
           </p>
         </div>
 
-        <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-700 text-left">
+        <div className="bg-slate-900/50 p-4 rounded-2xl border border-slate-700 text-left">
           <p className="text-xs text-slate-500 uppercase font-bold mb-1">
             Usuario Autenticado
           </p>

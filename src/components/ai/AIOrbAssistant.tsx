@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useApp } from "../../store";
 import { UserRole, AppModule } from "../../types";
@@ -34,6 +34,61 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
   } = useApp();
 
   const [chatInput, setChatInput] = useState("");
+  const [idleMessage, setIdleMessage] = useState<string | null>(null);
+  const [idleKind, setIdleKind] = useState<"aviso" | "tip">("tip");
+
+  const idleTips = useMemo(
+    () => [
+      `Asistencia estimada hoy: ${
+        students.length > 0
+          ? Math.round(
+              ((students.length - students.filter((s) => s.caseState !== "CERRADO").length) /
+                students.length) *
+                100,
+            )
+          : 0
+      }%. ¿Quieres revisar incidencias?`,
+      "Recuerda: lo que no se documenta, se olvida. ¿Registramos una incidencia?",
+      "Puedo abrir reportes, agenda, protocolos y expedientes según tu rol.",
+      "Si detectas un objeto no permitido, usa el módulo de Objetos Retenidos.",
+      "Soy Sasito, tu copiloto institucional. ¿En qué te apoyo?",
+      "Revisa alertas críticas con patrones de riesgo en Reportes.",
+      "Pídeme acciones concretas: \"abrir agenda\", \"nueva incidencia\", \"ver bitácora\".",
+      "No olvides cerrar tus reportes una vez se haya concluido el acompañamiento.",
+      "La seguridad institucional empieza con el registro oportuno.",
+      "¿Necesitas ayuda con los protocolos? Yo te guío paso a paso.",
+    ],
+    [students],
+  );
+
+  const idleNotices = useMemo(() => {
+    const unread = notifications.filter((n: any) => !n.read);
+    return unread.map((n: any) => ({
+      kind: "aviso" as const,
+      text: `Aviso: ${n.title}. ${n.message}`,
+    }));
+  }, [notifications]);
+
+  useEffect(() => {
+    if (isAssistantOpen) return;
+    const options = idleNotices.length > 0
+      ? idleNotices
+      : idleTips.map((text) => ({ kind: "tip" as const, text }));
+
+    if (options.length === 0) return;
+
+    const initialIndex = Math.floor(Math.random() * options.length);
+    setIdleMessage(options[initialIndex].text);
+    setIdleKind(options[initialIndex].kind);
+
+    const interval = setInterval(() => {
+      const nextIndex = Math.floor(Math.random() * options.length);
+      setIdleMessage(options[nextIndex].text);
+      setIdleKind(options[nextIndex].kind);
+    }, 12000);
+
+    return () => clearInterval(interval);
+  }, [isAssistantOpen, idleNotices, idleTips]);
 
   // Logic from AssistantBanner - Unified in AI Orb
   // Role-specific background activity simulation
@@ -221,14 +276,14 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
       case UserRole.DOCENTE_TUTOR:
         baseActions.push(
           {
-            icon: "add",
-            label: "Nueva Incidencia",
+            icon: "ads_click",
+            label: "Acción Rápida",
             action: () => setQuickRegisterOpen(true),
           },
           {
             icon: "calendar_month",
             label: "Mi Agenda",
-            action: () => setCurrentModule(AppModule.AGENDA),
+            action: () => openModule(AppModule.AGENDA),
           },
         );
         break;
@@ -252,17 +307,17 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
           {
             icon: "analytics",
             label: "Indicadores",
-            action: () => setCurrentModule(AppModule.REPORTES),
+            action: () => openModule(AppModule.REPORTES),
           },
           {
             icon: "history_edu",
             label: "Auditoría",
-            action: () => setCurrentModule(AppModule.BITACORA),
+            action: () => openModule(AppModule.BITACORA),
           },
           {
             icon: "admin_panel_settings",
             label: "Control Personal",
-            action: () => setCurrentModule(AppModule.APROBACIONES_PERSONAL),
+            action: () => openModule(AppModule.APROBACIONES_PERSONAL),
           },
         );
         break;
@@ -341,12 +396,12 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
         baseActions.push(
           {
             icon: "terminal",
-            label: "Root Console",
+            label: "Consola Raiz",
             action: () => setCurrentModule(AppModule.DASHBOARD),
           },
           {
             icon: "database",
-            label: "SQL Explorer",
+            label: "Explorador SQL",
             action: () => toast("Acceso a Supabase Dashboard"),
           },
         );
@@ -371,19 +426,163 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
     onDeactivate?.();
   };
 
+  const roleModules = useMemo(() => {
+    const allModules = Object.values(AppModule) as AppModule[];
+    return {
+      [UserRole.DOCENTE]: [
+        AppModule.DASHBOARD,
+        AppModule.EXPEDIENTES,
+        AppModule.AGENDA,
+        AppModule.REPORTES,
+        AppModule.PROTOCOLOS,
+        AppModule.ARCHIVO,
+        AppModule.MIS_GRUPOS,
+      ],
+      [UserRole.DOCENTE_TUTOR]: [
+        AppModule.DASHBOARD,
+        AppModule.EXPEDIENTES,
+        AppModule.AGENDA,
+        AppModule.REPORTES,
+        AppModule.PROTOCOLOS,
+        AppModule.ARCHIVO,
+        AppModule.MIS_GRUPOS,
+      ],
+      [UserRole.PREFECTURA]: [
+        AppModule.DASHBOARD,
+        AppModule.ASISTENCIA,
+        AppModule.PROTOCOLOS,
+        AppModule.REPORTES,
+        AppModule.AGENDA,
+      ],
+      [UserRole.ORIENTACION]: [
+        AppModule.DASHBOARD,
+        AppModule.EXPEDIENTES,
+        AppModule.AGENDA,
+        AppModule.REPORTES,
+        AppModule.REPORTES_DOCENTES,
+      ],
+      [UserRole.TRABAJO_SOCIAL]: [
+        AppModule.DASHBOARD,
+        AppModule.TRABAJO_SOCIAL_TRACKER,
+        AppModule.AGENDA,
+        AppModule.REPORTES,
+      ],
+      [UserRole.MEDICO_ESCOLAR]: [
+        AppModule.DASHBOARD,
+        AppModule.SALUD,
+        AppModule.REPORTES,
+      ],
+      [UserRole.SECRETARIA]: [
+        AppModule.DASHBOARD,
+        AppModule.INSCRIPCIONES,
+        AppModule.EXPEDIENTES,
+        AppModule.REPORTES,
+      ],
+      [UserRole.DIRECTIVO]: [
+        AppModule.DASHBOARD,
+        AppModule.REPORTES,
+        AppModule.BITACORA,
+        AppModule.APROBACIONES_PERSONAL,
+        AppModule.PROTOCOLOS,
+        AppModule.AGENDA,
+      ],
+      [UserRole.SUBDIRECCION]: [
+        AppModule.DASHBOARD,
+        AppModule.REPORTES,
+        AppModule.BITACORA,
+        AppModule.APROBACIONES_PERSONAL,
+        AppModule.PROTOCOLOS,
+        AppModule.AGENDA,
+      ],
+      [UserRole.UDEII]: [
+        AppModule.DASHBOARD,
+        AppModule.UDEII_TRACKER,
+        AppModule.PROTOCOLOS,
+        AppModule.REPORTES,
+      ],
+      [UserRole.PROMOTORA_LECTURA]: [
+        AppModule.DASHBOARD,
+        AppModule.LECTURA_TRACKER,
+        AppModule.AGENDA,
+        AppModule.REPORTES,
+      ],
+      [UserRole.DEVELOPER]: allModules,
+      [UserRole.SYSTEM_ADMIN]: allModules,
+      [UserRole.GUEST]: [AppModule.DASHBOARD],
+    } as Record<UserRole, AppModule[]>;
+  }, []);
+
+  const canAccessModule = (module: AppModule) =>
+    roleModules[currentUserRole]?.includes(module);
+
+  const openModule = (module: AppModule) => {
+    if (!canAccessModule(module)) {
+      toast.error("No tienes permisos para esa accion");
+      return false;
+    }
+    setCurrentModule(module);
+    handleClose();
+    return true;
+  };
+
   const processInput = (text: string) => {
     if (!text.trim()) return;
     setChatInput("");
-    toast.success("SASE analizando: " + text);
-    setTimeout(() => {
-      if (text.toLowerCase().includes("agenda")) {
-        setCurrentModule(AppModule.AGENDA);
-        handleClose();
-      } else if (text.toLowerCase().includes("reporte")) {
-        setQuickRegisterOpen(true);
-        handleClose();
+    const normalized = text.toLowerCase();
+    toast.success(`Sasito analizando: ${text}`);
+
+    if (
+      normalized.includes("sugerencia") ||
+      normalized.includes("comentario") ||
+      normalized.includes("feedback")
+    ) {
+      setIsFeedbackOpen(true);
+      return;
+    }
+
+    if (normalized.includes("manual") || normalized.includes("ayuda")) {
+      window.open("/docs/SASE_Manual_Integral.html", "_blank");
+      return;
+    }
+
+    if (
+      normalized.includes("incidencia") ||
+      normalized.includes("reporte rapido") ||
+      normalized.includes("reporte rápido")
+    ) {
+      setQuickRegisterOpen(true);
+      handleClose();
+      return;
+    }
+
+    const moduleIntents: Array<{ keywords: string[]; module: AppModule }> = [
+      { keywords: ["agenda", "calendario"], module: AppModule.AGENDA },
+      { keywords: ["asistencia", "pase de lista"], module: AppModule.ASISTENCIA },
+      { keywords: ["expediente", "expedientes"], module: AppModule.EXPEDIENTES },
+      { keywords: ["reporte", "reportes"], module: AppModule.REPORTES },
+      { keywords: ["bitacora", "bitácora", "auditoria", "auditoría"], module: AppModule.BITACORA },
+      { keywords: ["protocolos", "protocolo"], module: AppModule.PROTOCOLOS },
+      { keywords: ["inscripciones", "admisiones"], module: AppModule.INSCRIPCIONES },
+      { keywords: ["aprobaciones", "personal"], module: AppModule.APROBACIONES_PERSONAL },
+      { keywords: ["mis grupos", "grupos"], module: AppModule.MIS_GRUPOS },
+      { keywords: ["planeacion", "planeacion nem"], module: AppModule.PLANEACION_NEM },
+      { keywords: ["objetos retenidos"], module: AppModule.OBJETOS_RETENIDOS },
+      { keywords: ["archivo"], module: AppModule.ARCHIVO },
+      { keywords: ["salud", "clinica", "clínica"], module: AppModule.SALUD },
+      { keywords: ["udeii", "inclusion", "inclusión"], module: AppModule.UDEII_TRACKER },
+      { keywords: ["trabajo social", "ts"], module: AppModule.TRABAJO_SOCIAL_TRACKER },
+      { keywords: ["lectura", "promotora"], module: AppModule.LECTURA_TRACKER },
+      { keywords: ["tablero", "dashboard", "inicio"], module: AppModule.DASHBOARD },
+    ];
+
+    for (const intent of moduleIntents) {
+      if (intent.keywords.some((keyword) => normalized.includes(keyword))) {
+        openModule(intent.module);
+        return;
       }
-    }, 1000);
+    }
+
+    toast("Dime un modulo o accion especifica, y te ayudo a ejecutarla.");
   };
 
   return (
@@ -420,7 +619,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
               />
               {/* Ícono */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="material-symbols-outlined text-violet-300 text-[22px] group-hover:scale-110 group-hover:text-violet-200 transition-all duration-300">
+                <span className="material-icons text-violet-300 text-[22px] group-hover:scale-110 group-hover:text-violet-200 transition-all duration-300">
                   feedback
                 </span>
               </div>
@@ -428,17 +627,33 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
             </div>
             {/* Label SIEMPRE visible */}
             <div className="flex flex-col items-center">
-              <span className="px-2.5 py-1 bg-slate-900/70 border border-violet-500/25 rounded-lg text-[8px] font-black text-violet-300/90 uppercase tracking-widest backdrop-blur-xl">
-                FEEDBACK
+              <span className="px-2.5 py-1 bg-slate-900/70 border border-violet-500/25 rounded-2xl text-[8px] font-black text-violet-300/90 uppercase tracking-widest backdrop-blur-xl">
+                SUGERENCIAS
               </span>
             </div>
           </motion.button>
         </div>
       )}
 
-      {/* ── Orbe Flotante IA SASE — se oculta solo en OrbNavigation (ya está en el centro) ── */}
-      {!isAssistantOpen && !hideFloating && (
-        <div className="fixed bottom-6 right-4 sm:right-6 z-[2000] scale-[0.65] sm:scale-75 origin-bottom-right opacity-60 hover:opacity-100 transition-opacity">
+      {/* ── Orbe Flotante IA SASE — SIEMPRE VISIBLE ── */}
+      {!isAssistantOpen && (
+        <div className="fixed bottom-8 right-8 z-[3000] scale-[0.65] sm:scale-75 origin-bottom-right">
+          
+          {/* Burbuja de Mensaje Aleatorio */}
+          <AnimatePresence>
+            {idleMessage && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                className="absolute bottom-full right-0 mb-6 w-64 p-4 bg-slate-900/90 backdrop-blur-xl border border-blue-500/30 rounded-2xl shadow-2xl text-[11px] font-medium text-blue-100 leading-relaxed pointer-events-none"
+              >
+                <div className="absolute -bottom-2 right-8 w-4 h-4 bg-slate-900 border-r border-b border-blue-500/30 rotate-45" />
+                {idleMessage}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <motion.button
             className="cursor-pointer group flex flex-col items-end bg-transparent border-none appearance-none outline-none"
             initial={{ x: 100, opacity: 0 }}
@@ -468,30 +683,20 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
                     "radial-gradient(circle at 30% 30%, #3b82f6 0%, #00f2ff 40%, #8b5cf6 70%, #05070a 100%)",
                 }}
               />
-              {/* Center Content - Face Icon */}
-              <div className="absolute inset-2 flex items-center justify-center pointer-events-none overflow-hidden rounded-full">
-                <motion.img
-                  src="/SASE_ICON.png"
-                  alt="SASE Face"
-                  className="w-full h-full object-cover scale-110"
-                  animate={{
-                    scale: [1.1, 1.2, 1.1],
-                    rotate: [0, 5, -5, 0],
-                  }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
+              {/* Center Content - Live Neural Face */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none rounded-full overflow-hidden">
+                <SaseSplineOrb 
+                  state={aiSystemState === 'alert' ? 'alert' : aiSystemState === 'warning' ? 'warning' : 'normal'} 
+                  className="w-full h-full scale-[1.8]"
                 />
               </div>
             </div>
             <div className="mt-2 flex flex-col items-end gap-0.5 px-3 py-1.5 bg-blue-600/10 border border-blue-500/20 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.1)] group-hover:bg-blue-600/20 transition-colors">
               <span className="text-[7px] font-black text-blue-400 uppercase tracking-[0.3em]">
-                IA ACTIVE
+                IA ACTIVA
               </span>
               <span className="text-[9px] font-black text-white uppercase tracking-[0.2em] italic">
-                NUCLEUS SASE
+                NÚCLEO SASE
               </span>
             </div>
           </motion.button>
@@ -512,47 +717,21 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
               className="flex flex-col lg:flex-row items-center justify-center gap-12 p-8 max-w-7xl w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Orbe Central Maestro */}
+              {/* Orbe Central Maestro — NÚCLEO SASE PREMIUM */}
               <div className="relative group">
-                <motion.div
-                  className="relative w-80 h-80 rounded-full shadow-[0_0_150px_rgba(59,130,246,0.4)] border border-white/10 overflow-hidden"
-                  animate={status}
-                  variants={orbVariants}
-                >
-                  <div className="absolute inset-0 bg-[#020406]"></div>
-
-                  {/* Neural Web Effect - Background Layer */}
-                  <motion.div
-                    className="absolute inset-[-50%] opacity-30 blur-[80px]"
-                    animate={{ rotate: 360 }}
-                    transition={{
-                      duration: 25,
-                      repeat: Infinity,
-                      ease: "linear",
-                    }}
-                    style={{
-                      background:
-                        "conic-gradient(from 0deg, #3b82f6, #00f2ff, #8b5cf6, #3b82f6)",
-                    }}
-                  />
-
-                  {/* SASE Neural Face - Unified Component */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <SaseSplineOrb 
-                      state={
-                        status === 'thinking' || status === 'listening' 
-                          ? 'thinking' 
-                          : aiSystemState === 'alert' 
-                            ? 'alert' 
-                            : aiSystemState === 'warning' 
-                              ? 'warning' 
-                              : 'normal'
-                      }
-                      isInteracting={true}
-                      className="w-full h-full scale-150"
-                    />
-                  </div>
-                </motion.div>
+                <SaseSplineOrb 
+                  state={
+                    status === 'thinking' || status === 'listening' 
+                      ? 'thinking' 
+                      : aiSystemState === 'alert' 
+                        ? 'alert' 
+                        : aiSystemState === 'warning' 
+                          ? 'warning' 
+                          : 'normal'
+                  }
+                  isInteracting={true}
+                  className="w-80 h-80 drop-shadow-[0_0_100px_rgba(59,130,246,0.3)]"
+                />
 
                 {/* SASE Identity - MOVED BELOW ORB */}
                 <div className="mt-8 flex flex-col items-center gap-2">
@@ -565,7 +744,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
                   </motion.span>
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.8em]">
-                      NUCLEUS v3.0
+                      NUCLEO v3.0
                     </span>
                     <div className="h-0.5 w-16 bg-blue-500/30 mt-2 rounded-full overflow-hidden">
                       <motion.div
@@ -601,187 +780,69 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
 
               {/* Tactical Control Panel */}
               <motion.div
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="w-full max-w-md bg-white/[0.03] border border-white/10 rounded-[40px] p-8 backdrop-blur-3xl shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden"
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                className="w-full lg:w-1/2 space-y-6"
               >
-                {/* Decorative scanning line */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent animate-scan text-[0px]">
-                  .
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="size-1 w-24 bg-blue-500/30"></div>
+                  <h2 className="title-sase text-blue-400 text-xs tracking-[0.5em] font-black uppercase">Centro_de_Comando_IA</h2>
                 </div>
 
-                <div className="flex items-center justify-between mb-8 border-b border-white/5 pb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="size-12 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
-                      <span className="material-symbols-outlined text-2xl">
-                        terminal
-                      </span>
-                    </div>
-                    <div>
-                      <h4 className="text-white font-black text-sm uppercase tracking-[0.2em]">
-                        Panel Táctico
-                      </h4>
-                      <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-                        Operador: {currentUserRole}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleClose}
-                    className="size-10 rounded-xl bg-white/5 hover:bg-rose-500/20 hover:text-rose-400 transition-all flex items-center justify-center border border-white/10 group"
-                    title="Cerrar panel táctico"
-                    aria-label="Cerrar asistente"
-                  >
-                    <span className="material-symbols-outlined group-hover:rotate-90 transition-transform">
-                      close
-                    </span>
-                  </button>
+                <div className="grid grid-cols-2 gap-4">
+                  {getRoleActions().map((action, idx) => (
+                    <motion.button
+                      key={idx}
+                      whileHover={{ scale: 1.02, backgroundColor: "rgba(59, 130, 246, 0.15)" }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={action.action}
+                      className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/5 border border-white/10 group transition-all"
+                    >
+                      <span className="material-icons text-3xl text-blue-400 mb-3 group-hover:scale-110 group-hover:text-cyan-400 transition-all">{action.icon}</span>
+                      <span className="text-[10px] font-black text-white group-hover:text-cyan-100 uppercase tracking-widest text-center transition-colors">{action.label}</span>
+                    </motion.button>
+                  ))}
                 </div>
 
-                {/* PENDING TASKS / ALERTS SECTION (Replaces Helper Banner) */}
-                {pendingActions.length > 0 && (
-                  <div className="mb-8 animate-fade-in">
-                    <h5 className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] mb-4 flex items-center gap-2 italic">
-                      <span className="size-1.5 bg-amber-500 rounded-full animate-ping"></span>
-                      Acciones Pendientes Reconocidas
-                    </h5>
-                    <div className="space-y-3">
-                      {pendingActions.map((action) => (
-                        <button
-                          key={action.id}
-                          onClick={() => {
-                            setCurrentModule(action.module);
-                            handleClose();
-                          }}
-                          title={`Ir a: ${action.title}`}
-                          aria-label={`${action.title}: ${action.description}`}
-                          className={`w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group ${
-                            action.priority === "urgent"
-                              ? "bg-rose-500/10 border-rose-500/20 hover:bg-rose-500/20"
-                              : "bg-white/5 border-white/5 hover:bg-white/10"
-                          }`}
-                        >
-                          <div
-                            className={`p-2 rounded-xl border ${
-                              action.priority === "urgent"
-                                ? "bg-rose-500/20 border-rose-500/40 text-rose-400"
-                                : "bg-blue-500/10 border-blue-500/20 text-blue-400"
-                            }`}
-                          >
-                            <span className="material-symbols-outlined text-sm">
-                              {action.icon}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[11px] font-black text-white uppercase tracking-tight">
-                              {action.title}
-                            </p>
-                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest truncate">
-                              {action.description}
-                            </p>
-                          </div>
-                          <span className="material-symbols-outlined text-slate-600 group-hover:text-white transition-colors">
-                            arrow_right_alt
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* IA ACTIVITIES MONITORING */}
-                <div className="mb-8 animate-fade-in delay-100">
-                  <h5 className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] mb-4 flex items-center gap-2 italic">
-                    <span className="material-symbols-outlined text-blue-400 text-xs translate-y-[-1px]">
-                      monitoring
-                    </span>
-                    Procesos de Jules en Curso
-                  </h5>
-                  <div className="grid grid-cols-1 gap-2">
-                    {iaActivities.map((activity, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center gap-3 px-4 py-3 bg-blue-500/5 border border-blue-500/10 rounded-xl group/activity hover:border-blue-500/30 transition-all"
-                      >
-                        <span className="material-symbols-outlined text-[16px] text-blue-400 animate-pulse">
-                          {activity.icon}
-                        </span>
-                        <span className="text-[10px] font-bold text-white/70 uppercase tracking-tight truncate">
-                          {activity.label}
-                        </span>
-                        <div className="ml-auto flex gap-1 items-center">
-                          <div
-                            className="size-1 bg-blue-500/40 rounded-full animate-bounce"
-                            style={{ animationDelay: "0ms" }}
-                          ></div>
-                          <div
-                            className="size-1 bg-blue-500/60 rounded-full animate-bounce"
-                            style={{ animationDelay: "200ms" }}
-                          ></div>
-                          <div
-                            className="size-1 bg-blue-500/80 rounded-full animate-bounce"
-                            style={{ animationDelay: "400ms" }}
-                          ></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ROLE QUICK ACTIONS */}
-                <div className="mb-8">
-                  <h5 className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em] mb-4 italic">
-                    Comandos de Módulo
-                  </h5>
-                  <div className="grid grid-cols-2 gap-3">
-                    {getRoleActions().map((action, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          action.action();
-                          handleClose();
-                        }}
-                        title={`Ejecutar: ${action.label}`}
-                        aria-label={`Acción rápida: ${action.label}`}
-                        className="flex flex-col items-center gap-3 p-5 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-blue-600/10 hover:border-blue-500/30 transition-all group active:scale-95"
-                      >
-                        <div className="p-3 bg-white/5 rounded-2xl group-hover:bg-blue-500/20 text-blue-400 group-hover:text-blue-300 transition-all">
-                          <span className="material-symbols-outlined text-2xl group-hover:scale-110 transition-transform">
-                            {action.icon}
-                          </span>
-                        </div>
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-center group-hover:text-white">
-                          {action.label}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* COMMAND INPUT */}
-                <div className="relative group/input">
-                  <div className="absolute inset-x-0 -bottom-1 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-focus-within/input:opacity-100 transition-opacity"></div>
-                  <input
+                {/* Input Neural */}
+                <div className="relative mt-8 group">
+                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-20 group-focus-within:opacity-40 transition duration-1000"></div>
+                   <input
                     type="text"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Escribe un comando o petición..."
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-5 px-6 text-xs text-white outline-none focus:border-blue-500/40 focus:bg-black/60 transition-all font-black uppercase tracking-widest placeholder:text-slate-700 placeholder:italic"
-                    onKeyDown={(e) =>
-                      e.key === "Enter" &&
-                      processInput((e.target as HTMLInputElement).value)
-                    }
+                    onKeyDown={(e) => e.key === "Enter" && processInput(chatInput)}
+                    placeholder="Escribe una instrucción al Núcleo SASE..."
+                    className="relative w-full bg-black/60 border border-white/20 rounded-2xl px-6 py-5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-blue-500/50 backdrop-blur-xl"
                   />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                    <VoiceInput onTranscript={processInput} />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                     <VoiceInput onTranscript={processInput} />
                   </div>
                 </div>
 
-                <p className="mt-8 text-center text-[8px] font-black text-slate-700 uppercase tracking-[0.5em] italic">
-                  SASE CORE UI • v3.1.0 • ENCRYPTED_CONNECTION
-                </p>
+                {/* Activities log */}
+                <div className="mt-8 pt-8 border-t border-white/10">
+                   <div className="space-y-3">
+                      {iaActivities.map((act, i) => (
+                        <div key={i} className="flex items-center gap-3 opacity-60 hover:opacity-100 transition-opacity">
+                           <span className="material-icons text-xs text-blue-400 animate-pulse">{act.icon}</span>
+                           <span className="text-[9px] font-medium text-slate-400 uppercase tracking-widest">{act.label}</span>
+                        </div>
+                      ))}
+                   </div>
+                </div>
               </motion.div>
             </div>
+
+            {/* Close Button UI */}
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={handleClose}
+              className="absolute top-10 right-10 size-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-all"
+            >
+              <span className="material-icons">close</span>
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>

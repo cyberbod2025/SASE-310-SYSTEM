@@ -23,12 +23,12 @@ const TacticalKPI = ({ label, value, icon, color, trend }: any) => {
       <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.02] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:opacity-[0.05] transition-opacity"></div>
       <div className="flex justify-between items-start mb-4">
         <div
-          className={`p-2 rounded-lg border ${colors[color]} bg-transparent`}
+          className={`p-2 rounded-2xl border ${colors[color]} bg-transparent`}
         >
-          <span className="material-symbols-outlined text-xl">{icon}</span>
+          <span className="material-icons text-xl">{icon}</span>
         </div>
         {trend && (
-          <span className="text-[9px] font-black px-2 py-0.5 rounded border border-white/10 bg-white/5 text-slate-500 uppercase">
+          <span className="text-[9px] font-black px-2 py-0.5 rounded border border-slate-200 bg-white/5 text-slate-700 uppercase">
             {trend}
           </span>
         )}
@@ -37,7 +37,7 @@ const TacticalKPI = ({ label, value, icon, color, trend }: any) => {
         <h4 className="text-3xl font-black text-white italic tracking-tighter mb-1 leading-none">
           {value}
         </h4>
-        <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] italic">
+        <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em] italic">
           {label}
         </p>
       </div>
@@ -88,12 +88,12 @@ export const DashboardSubdireccion = () => {
       </div>
 
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10 border-b border-white/5 pb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
           <div className="relative group">
             <div className="absolute -inset-2 bg-orange-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div className="size-16 bg-[#0a0f18] border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.15)] relative overflow-hidden backdrop-blur-xl">
-              <span className="material-symbols-outlined text-4xl">
+              <span className="material-icons text-4xl">
                 architecture
               </span>
               <motion.div
@@ -116,8 +116,8 @@ export const DashboardSubdireccion = () => {
                 Académico
               </span>
             </h2>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mt-3 italic flex items-center gap-2">
-              <span className="material-symbols-outlined text-sm">
+            <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.4em] mt-3 italic flex items-center gap-2">
+              <span className="material-icons text-sm">
                 terminal
               </span>
               CORE_SYSTEM_STABILITY: {stats.riskLevel}
@@ -128,9 +128,9 @@ export const DashboardSubdireccion = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => handleQuickAction("reporte_mensual")}
-            className="px-6 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all flex items-center gap-3 active:scale-95"
+            className="px-6 py-3.5 bg-white/5 border border-slate-200 rounded-2xl text-[10px] font-black text-slate-600 uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all flex items-center gap-3 active:scale-95"
           >
-            <span className="material-symbols-outlined text-xl">ios_share</span>
+            <span className="material-icons text-xl">ios_share</span>
             EXP_ZONA.PDF
           </button>
           <button
@@ -141,7 +141,7 @@ export const DashboardSubdireccion = () => {
             {isSyncing ? (
               <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
             ) : (
-              <span className="material-symbols-outlined text-xl">
+              <span className="material-icons text-xl">
                 sync_lock
               </span>
             )}
@@ -185,17 +185,17 @@ export const DashboardSubdireccion = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 relative z-10">
         {/* CRITICAL FEED PANEL */}
         <div className="xl:col-span-2 space-y-8">
-          <div className="card-sase border-white/5 overflow-hidden flex flex-col group h-full bg-[#0a0f18]/40 backdrop-blur-xl">
-            <div className="p-6 border-b border-white/5 bg-white/[0.01] flex items-center justify-between relative">
+          <div className="card-sase border-slate-100 overflow-hidden flex flex-col group h-full bg-[#0a0f18]/40 backdrop-blur-xl">
+            <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between relative">
               <div className="flex items-center gap-4">
                 <div className="size-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500">
-                  <span className="material-symbols-outlined text-xl font-black">
+                  <span className="material-icons text-xl font-black">
                     emergency
                   </span>
                 </div>
                 <div>
                   <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic">
-                    STREAM DE{" "}
+                    FLUJO DE{" "}
                     <span className="text-orange-500">INTERVENCIONES</span>
                   </h3>
                   <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
@@ -205,9 +205,9 @@ export const DashboardSubdireccion = () => {
               </div>
               <button
                 onClick={() => setCurrentModule(AppModule.REPORTES)}
-                className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-all"
+                className="px-4 py-2 bg-white/5 border border-slate-200 rounded-xl text-[9px] font-black text-slate-700 uppercase tracking-widest hover:text-white transition-all"
               >
-                VER_HISTORIAL_COMPLETO
+                Ver historial completo
               </button>
             </div>
 
@@ -221,10 +221,10 @@ export const DashboardSubdireccion = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
-                      className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between group/row hover:border-orange-500/30 transition-all border-l-4 border-l-orange-600"
+                      className="p-5 bg-white/[0.02] border border-slate-100 rounded-2xl flex items-center justify-between group/row hover:border-orange-500/30 transition-all border-l-4 border-l-orange-600"
                     >
                       <div className="flex items-center gap-5">
-                        <div className="size-12 rounded-xl bg-[#05070a] border border-white/10 flex items-center justify-center text-slate-400 font-black italic">
+                        <div className="size-12 rounded-xl bg-[#05070a] border border-slate-200 flex items-center justify-center text-slate-600 font-black italic">
                           {s.name.charAt(0)}
                         </div>
                         <div>
@@ -232,7 +232,7 @@ export const DashboardSubdireccion = () => {
                             <h4 className="text-sm font-black text-white uppercase italic tracking-tighter transition-colors group-hover/row:text-orange-400">
                               {s.name}
                             </h4>
-                            <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-black text-slate-500 uppercase tracking-widest">
+                            <span className="px-2 py-0.5 bg-white/5 border border-slate-200 rounded text-[9px] font-black text-slate-700 uppercase tracking-widest">
                               {s.group}
                             </span>
                           </div>
@@ -255,11 +255,11 @@ export const DashboardSubdireccion = () => {
               {students.filter((s) => s.caseState === CaseState.INTERVENCION)
                 .length === 0 && (
                 <div className="h-full flex flex-col items-center justify-center p-20 text-slate-700 opacity-30 gap-6">
-                  <span className="material-symbols-outlined text-6xl">
+                  <span className="material-icons text-6xl">
                     verified
                   </span>
                   <p className="text-[10px] font-black text-center uppercase tracking-[0.4em] italic">
-                    NO_ACTIVE_INTERVENTIONS_DETECTED
+                    No hay intervenciones activas registradas
                   </p>
                 </div>
               )}
@@ -269,25 +269,25 @@ export const DashboardSubdireccion = () => {
 
         {/* COMMAND ACTIONS PANEL (FIXED) */}
         <div className="space-y-8">
-          <div className="card-sase p-8 border-white/5 bg-[#0a0f18]/40 relative overflow-hidden group">
+          <div className="card-sase p-8 border-slate-100 bg-[#0a0f18]/40 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-              <span className="material-symbols-outlined text-8xl text-orange-500">
+              <span className="material-icons text-8xl text-orange-500">
                 bolt
               </span>
             </div>
 
             <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
               <span className="size-2 bg-orange-500 rounded-full shadow-[0_0_8px_#f97316]"></span>
-              COMMAND_ACTIONS
+              Acciones de mando
             </h3>
 
             <div className="space-y-4">
               <button
                 onClick={() => handleQuickAction("protocolos")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-orange-600 hover:border-orange-500 active:scale-95 transition-all group/btn"
+                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-orange-600 hover:border-orange-500 active:scale-95 transition-all group/btn"
               >
-                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover/btn:bg-white/20 group-hover/btn:text-white">
-                  <span className="material-symbols-outlined text-2xl">
+                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
+                  <span className="material-icons text-2xl">
                     add_moderator
                   </span>
                 </div>
@@ -295,7 +295,7 @@ export const DashboardSubdireccion = () => {
                   <p className="text-xs font-black text-white uppercase tracking-widest italic leading-none mb-1">
                     Inyectar Protocolo
                   </p>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter group-hover:text-white/60">
+                  <p className="text-[9px] font-black text-slate-700 uppercase tracking-tighter group-hover:text-white/60">
                     AUTORIZACIÓN_SEP_310
                   </p>
                 </div>
@@ -303,10 +303,10 @@ export const DashboardSubdireccion = () => {
 
               <button
                 onClick={() => handleQuickAction("suplencia")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-blue-600 hover:border-blue-500 active:scale-95 transition-all group/btn"
+                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-blue-600 hover:border-blue-500 active:scale-95 transition-all group/btn"
               >
-                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover/btn:bg-white/20 group-hover/btn:text-white">
-                  <span className="material-symbols-outlined text-2xl">
+                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
+                  <span className="material-icons text-2xl">
                     group_add
                   </span>
                 </div>
@@ -314,7 +314,7 @@ export const DashboardSubdireccion = () => {
                   <p className="text-xs font-black text-white uppercase tracking-widest italic leading-none mb-1">
                     Gestionar Suplencia
                   </p>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter group-hover:text-white/60">
+                  <p className="text-[9px] font-black text-slate-700 uppercase tracking-tighter group-hover:text-white/60">
                     SISTEMA_DE_COBERTURA
                   </p>
                 </div>
@@ -322,10 +322,10 @@ export const DashboardSubdireccion = () => {
 
               <button
                 onClick={() => handleQuickAction("planeaciones")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-emerald-600 hover:border-emerald-500 active:scale-95 transition-all group/btn"
+                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-emerald-600 hover:border-emerald-500 active:scale-95 transition-all group/btn"
               >
-                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover/btn:bg-white/20 group-hover/btn:text-white">
-                  <span className="material-symbols-outlined text-2xl">
+                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
+                  <span className="material-icons text-2xl">
                     assignment_turned_in
                   </span>
                 </div>
@@ -333,7 +333,7 @@ export const DashboardSubdireccion = () => {
                   <p className="text-xs font-black text-white uppercase tracking-widest italic leading-none mb-1">
                     Validar NEEM
                   </p>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter group-hover:text-white/60">
+                  <p className="text-[9px] font-black text-slate-700 uppercase tracking-tighter group-hover:text-white/60">
                     AUDITORÍA_ACADÉMICA
                   </p>
                 </div>
@@ -343,12 +343,12 @@ export const DashboardSubdireccion = () => {
 
           <div className="bg-gradient-to-br from-orange-600 to-orange-800 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined text-6xl">
+              <span className="material-icons text-6xl">
                 psychology
               </span>
             </div>
             <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
-              <span className="material-symbols-outlined text-xl">
+              <span className="material-icons text-xl">
                 auto_awesome
               </span>
               IA_INSIGHT

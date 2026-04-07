@@ -1,26 +1,24 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import { useApp } from "../store";
-import { UserRole, AppModule, IncidentType, CaseState } from "../types";
 import { GlassCard } from "./ui/GlassCard";
+import { GlassButton } from "./ui/GlassButton";
+import { useApp } from "../store";
+import { AppModule, CaseState, IncidentType, UserRole } from "../types";
 
-export const DashboardHoy: React.FC = () => {
-  const { currentUserRole, setCurrentModule, students, openQuickRegister } =
-    useApp();
+export const DashboardHoy = () => {
+  const {
+    students,
+    setCurrentModule,
+    currentUserRole,
+    currentUserProfile,
+    openQuickRegister,
+  } = useApp();
 
-  // Métrica base: Alumnos con incidencias activas
   const activeCases = useMemo(
     () => students.filter((s) => s.caseState !== CaseState.CERRADO),
     [students],
   );
 
-  // Alertas Médicas
-  const medicalAlerts = useMemo(
-    () => students.filter((s) => s.medicalAlerts && s.medicalAlerts.length > 0),
-    [students],
-  );
-
-  // Incidencias del día (Mockup o filtrado por fecha actual)
   const todayStr = new Date().toISOString().split("T")[0];
   const todayIncidents = useMemo(() => {
     return students.reduce((acc, s) => {
@@ -31,335 +29,199 @@ export const DashboardHoy: React.FC = () => {
     }, 0);
   }, [students, todayStr]);
 
-  const getRoleLabel = () => {
+  const attendanceEstimate = useMemo(() => {
+    if (!students.length) return "—";
+    const pct = Math.max(
+      0,
+      Math.min(100, Math.round(((students.length - activeCases.length) / students.length) * 100)),
+    );
+    return `${pct}%`;
+  }, [students.length, activeCases.length]);
+
+  const todayStats = [
+    {
+      label: "Asistencia General",
+      value: attendanceEstimate,
+      status: "good",
+      icon: "check_circle",
+    },
+    {
+      label: "Casos en Seguimiento",
+      value: `${activeCases.length}`,
+      status: "warning",
+      icon: "notifications_active",
+    },
+    {
+      label: "Incidencias Reportadas Hoy",
+      value: `${todayIncidents}`,
+      status: "info",
+      icon: "event",
+    },
+  ];
+
+  const getGreeting = () => {
+    const hours = new Date().getHours();
+    if (hours < 12) return "Buenos días";
+    if (hours < 19) return "Buenas tardes";
+    return "Buenas noches";
+  };
+
+  const handlePrimaryAction = () => {
     switch (currentUserRole) {
       case UserRole.DOCENTE:
-        return "NÚCLEO DOCENTE";
+      case UserRole.DOCENTE_TUTOR:
+        openQuickRegister(IncidentType.CONDUCTA);
+        return;
       case UserRole.PREFECTURA:
-        return "NÚCLEO PREFECTURA";
-      case UserRole.DIRECTIVO:
-        return "NÚCLEO DIRECCIÓN";
+        setCurrentModule(AppModule.BITACORA);
+        return;
       case UserRole.ORIENTACION:
-        return "NUCLEO ORIENTACIÓN";
-      case UserRole.MEDICO_ESCOLAR:
-        return "NÚCLEO MÉDICO";
       case UserRole.TRABAJO_SOCIAL:
-        return "NÚCLEO TRABAJO SOCIAL";
+        setCurrentModule(AppModule.REPORTES);
+        return;
       default:
-        return "MODO OPERATIVO";
+        setCurrentModule(AppModule.DASHBOARD);
     }
   };
 
-  const getRoleTip = () => {
-    switch (currentUserRole) {
-      case UserRole.DOCENTE:
-        return "Revisa las incidencias de tus grupos asignados y registra asistencia.";
-      case UserRole.PREFECTURA:
-        return "Monitorea la convivencia escolar y reporta novedades en tiempo real.";
-      case UserRole.DIRECTIVO:
-        return "Visión global del pulso institucional y casos de alta prioridad.";
-      case UserRole.ORIENTACION:
-        return "Seguimiento de trayectorias y citas de acompañamiento emocional.";
-      case UserRole.MEDICO_ESCOLAR:
-        return "Atención a alertas de salud y administración del inventario clínico.";
-      case UserRole.TRABAJO_SOCIAL:
-        return "Gestión de visitas domiciliarias y vinculación con familias.";
-      default:
-        return "Bienvenido al sistema integral de gestión escolar SASE 310.";
+  const roleConfigs: Record<string, any> = {
+    [UserRole.DOCENTE]: {
+      focus: "Planeación y Seguimiento",
+      action: "Registrar Incidencia",
+      icon: "add_circle",
+      color: "blue"
+    },
+    [UserRole.PREFECTURA]: {
+      focus: "Operativa de Convivencia",
+      action: "Ver Bitácora",
+      icon: "inventory",
+      color: "orange"
+    },
+    [UserRole.ORIENTACION]: {
+      focus: "Análisis Institucional",
+      action: "Generar Reporte",
+      icon: "analytics",
+      color: "purple"
+    },
+    default: {
+      focus: "Gestión Administrativa",
+      action: "Ver Tablero",
+      icon: "dashboard",
+      color: "blue"
     }
   };
+
+  const config = roleConfigs[currentUserRole as string] || roleConfigs.default;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#020617] text-white p-6 md:p-12 font-sans overflow-x-hidden relative">
-      {/* HUD Background Effects */}
-      <div className="absolute inset-0 pointer-events-none opacity-20">
-        <div className="absolute top-0 left-1/4 w-px h-full bg-blue-500/10"></div>
-        <div className="absolute top-0 right-1/4 w-px h-full bg-blue-500/10"></div>
-        <div className="absolute left-0 top-1/3 w-full h-px bg-blue-500/10"></div>
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="flex-1 p-6 lg:p-8 relative z-10 w-full max-w-7xl mx-auto h-full overflow-y-auto no-scrollbar"
+    >
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">
+            {getGreeting()}, <span className="text-blue-600 capitalize">{currentUserProfile?.full_name?.split(" ")[0] || "Docente"}</span>
+          </h1>
+          <p className="text-slate-500 font-medium flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Sistema SASE-310 operativo • {config.focus}
+          </p>
+        </div>
+        
+        <GlassButton
+          onClick={handlePrimaryAction}
+          className="px-8"
+          size="lg"
+        >
+          <span className="material-icons mr-2 text-xl">{config.icon}</span>
+          <span className="uppercase tracking-widest text-[11px] font-black">{config.action}</span>
+        </GlassButton>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-7xl mx-auto relative z-10"
-      >
-        {/* Header */}
-        <header id="dashboard-header" className="mb-16 border-l-[6px] border-blue-600 pl-8 py-4 relative">
-          <div className="absolute -left-[6px] top-0 h-full w-[6px] bg-blue-500/20 blur-[4px]"></div>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="relative">
-              <h1 className="text-5xl md:text-8xl font-black title-sase italic leading-none text-white">
-                HOY EN LA{" "}
-                <span className="text-blue-500 text-glow-blue">
-                  ESCUELA
-                </span>
-              </h1>
-              <div className="flex flex-wrap items-center gap-4 mt-6">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                  <span className="text-[10px] md:text-xs font-black text-blue-400/80 tracking-[0.4em] uppercase font-mono">
-                    SASE 310 // SYSTEM_ACTIVE
-                  </span>
-                </div>
-                <span className="text-[10px] font-black bg-blue-600/20 text-blue-400 px-4 py-1.5 rounded-lg border border-blue-500/30 uppercase tracking-[0.2em] backdrop-blur-md">
-                  {getRoleLabel()}
-                </span>
-              </div>
-              <p className="mt-6 text-slate-400 text-[11px] font-bold uppercase tracking-widest max-w-xl leading-relaxed border-l border-white/10 pl-4">
-                {getRoleTip()}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest leading-none">
-                {new Date().toLocaleDateString("es-MX", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <p className="text-2xl font-black text-white/40 italic font-mono tabular-nums">
-                {new Date().getHours()}:
-                {new Date().getMinutes().toString().padStart(2, "0")}
-              </p>
-            </div>
-          </div>
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* 1. ALERTAS */}
-          <section className="space-y-6">
-            <h2 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.5em] flex items-center gap-3">
-              <span className="size-2 bg-rose-500 rounded-full animate-ping"></span>
-              1. ALERTAS PRIORITARIAS
-            </h2>
-
-            <div className="space-y-4">
-              <GlassCard
-                title="Casos Activos"
-                icon="warning"
-                description="Incidencias abiertas que requieren seguimiento institucional."
-                className="border-rose-500/20 shadow-rose-500/5"
-              >
-                <div className="mt-auto flex justify-between items-end">
-                  <span className="text-[9px] text-rose-500/80 font-black tracking-widest uppercase">Seguimiento Requerido</span>
-                  <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">{activeCases.length}</span>
-                </div>
-              </GlassCard>
-
-              <GlassCard
-                title="Alertas Médicas"
-                icon="medical_services"
-                description="Alumnos con condiciones de salud que requieren atención."
-                className="border-blue-500/20 shadow-blue-500/5"
-              >
-                <div className="mt-auto flex justify-between items-end">
-                  <span className="text-[9px] text-blue-500/80 font-black tracking-widest uppercase">Monitor de Salud</span>
-                  <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">{medicalAlerts.length}</span>
-                </div>
-              </GlassCard>
-
-              <GlassCard
-                title="Reincidencias"
-                icon="error"
-                description="Patrones de comportamiento detectados por el sistema."
-                className="border-amber-500/20 shadow-amber-500/5"
-              >
-                <div className="mt-auto flex justify-between items-end">
-                  <span className="text-[9px] text-amber-500/80 font-black tracking-widest uppercase">Patrones de Conducta</span>
-                  <span className="text-4xl font-black text-white italic font-mono title-sase text-glow-blue">
-                    {students.filter((s) => s.incidents.length > 2).length}
-                  </span>
-                </div>
-              </GlassCard>
-            </div>
-          </section>
-
-          {/* 2. ACTIVIDAD DEL DÍA */}
-          <section className="space-y-6">
-            <h2 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.5em] flex items-center gap-3">
-              <span className="size-2 bg-amber-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.5)]"></span>
-              2. FLUJO OPERATIVO
-            </h2>
-
-            <div className="glass-card-quantum p-0 border-white/5 overflow-hidden h-[450px] flex flex-col relative group">
-              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/[0.02] to-transparent pointer-events-none"></div>
-              <div className="p-5 border-b border-white/5 bg-white/[0.03] flex justify-between items-center">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest font-mono">
-                  HISTORIAL_REAL_TIME
-                </p>
-                <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-              </div>
-              <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar relative z-10">
-                <div className="flex items-center gap-5 border-b border-white/5 pb-5 group/item transition-all hover:pl-2">
-                  <div className="size-12 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-[inset_0_0_15px_rgba(59,130,246,0.1)]">
-                    <span className="material-symbols-outlined text-blue-400 text-xl group-hover/item:scale-110 transition-transform">
-                      edit_note
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-white uppercase tracking-tight">
-                      {todayIncidents} Incidencias
-                    </p>
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
-                      Sincronizadas con SASE Core
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-5 border-b border-white/5 pb-5 group/item transition-all hover:pl-2 text-glow-blue">
-                  <div className="size-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 shadow-[inset_0_0_15px_rgba(16,185,129,0.1)]">
-                    <span className="material-symbols-outlined text-emerald-400 text-xl group-hover/item:scale-110 transition-transform">
-                      task_alt
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-white uppercase tracking-tight">
-                      Estado Operativo: Óptimo
-                    </p>
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
-                      Sin bloqueos institucionales
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-5 group/item transition-all hover:pl-2">
-                  <div className="size-12 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20 shadow-[inset_0_0_15px_rgba(99,102,241,0.1)]">
-                    <span className="material-symbols-outlined text-indigo-400 text-xl group-hover/item:scale-110 transition-transform">
-                      groups
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-white uppercase tracking-tight">
-                      Monitor Grupal
-                    </p>
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
-                      Seguimiento activo de 12 núcleos
-                    </p>
-                  </div>
-                </div>
-
-                {/* Visualizer Bar */}
-                <div className="mt-10 pt-6 border-t border-white/5">
-                  <div className="flex justify-between mb-3">
-                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] font-mono">
-                      PLANT_SAFETY_LEVEL
-                    </span>
-                    <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest animate-pulse">
-                      ESTABLE_SECURE
-                    </span>
-                  </div>
-                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden p-[1px] border border-white/10">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: '15%' }}
-                      className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)]"
-                    ></motion.div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* SASE PROMISE: Hook for the user */}
-            <div className="rounded-3xl bg-gradient-to-br from-indigo-900/40 via-blue-900/20 to-transparent border border-blue-500/20 p-6 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span className="material-symbols-outlined text-6xl text-blue-400 rotate-12">
-                  verified_user
-                </span>
-              </div>
-              <div className="relative z-10 flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                  <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">
-                    Protocolo SASE Activo
-                  </span>
-                </div>
-                <h3 className="text-xl font-black text-white italic lowercase leading-tight tracking-tighter">
-                  reporta en <span className="text-blue-400">3 clics</span> y{" "}
-                  <br />
-                  siéntete{" "}
-                  <span className="text-indigo-400 underline decoration-indigo-500/50">
-                    respaldado
-                  </span>
-                  .
-                </h3>
-                <p className="text-[10px] text-slate-400 max-w-[240px] mt-2 font-medium leading-relaxed">
-                  La IA procesa, notifica a directivos y genera el acta oficial al
-                  instante. Tu prioridad es el alumno, la nuestra es el proceso.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* 3. ACCIONES INMEDIATAS */}
-          <section className="space-y-6">
-            <h2 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.5em] flex items-center gap-3">
-              <span className="material-symbols-outlined text-sm animate-bounce">
-                ads_click
-              </span>
-              3. ACCIONES INMEDIATAS
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <GlassCard
-                title="Registrar Incidencia"
-                icon="add_circle"
-                description="Reporte rápido de comportamiento o asistencia."
-                onClick={() => openQuickRegister()}
-                className="md:col-span-2 border-blue-500/30"
-              />
-              
-              <GlassCard
-                title="Expediente"
-                icon="folder_shared"
-                description="Consulta expedientes digitales."
-                onClick={() => setCurrentModule(AppModule.EXPEDIENTES)}
-              />
-
-              <GlassCard
-                title="Buscar"
-                icon="search"
-                description="Búsqueda rápida de alumnos."
-                onClick={() => setCurrentModule(AppModule.DASHBOARD)}
-              />
-
-              <GlassCard
-                title="Estadísticas"
-                icon="insights"
-                description="Análisis y reportes globales."
-                onClick={() => setCurrentModule(AppModule.REPORTES)}
-              />
-
-              <GlassCard
-                title="Seguimiento"
-                icon="assignment"
-                description="Bitácora de acompañamiento."
-                onClick={() => setCurrentModule(AppModule.BITACORA)}
-              />
-              
-              <GlassCard
-                title="Riesgo"
-                icon="monitoring"
-                description="Panel de prevención de riesgo."
-                onClick={() => setCurrentModule(AppModule.DASHBOARD)}
-                className="md:col-span-2"
-              />
-            </div>
-
-            {/* Main CTA */}
-            <div className="pt-6">
-              <button
-                onClick={() => setCurrentModule(AppModule.HOME)}
-                className="w-full py-5 bg-gradient-to-r from-blue-700 via-indigo-800 to-indigo-950 hover:from-blue-600 hover:via-indigo-700 hover:to-indigo-900 text-white font-black uppercase tracking-[0.4em] rounded-2xl shadow-[0_20px_40px_rgba(59,130,246,0.3)] transition-all active:scale-[0.98] flex items-center justify-center gap-4 border border-white/10 group"
-              >
-                <span className="title-sase text-xs">ENTRAR AL SASE CORE</span>
-                <span className="material-symbols-outlined text-base group-hover:translate-x-2 transition-transform">login</span>
-              </button>
-              <p className="text-[9px] text-center text-slate-600 font-black uppercase tracking-[0.6em] mt-6 opacity-60">
-                SISTEMA_ACOMPAÑAMIENTO_SOCIOEMOCIONAL_V3.1
-              </p>
-            </div>
-          </section>
+      {/* 🏛️ CALLOUT INSTITUCIONAL */}
+      <GlassCard className="mb-8 !bg-blue-50/50 !border-l-4 !border-l-blue-500 !border-t-0 p-6 flex flex-col md:flex-row items-center gap-6">
+        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+          <span className="material-icons text-3xl">info</span>
         </div>
-      </motion.div>
-    </div>
+        <div className="flex-1 text-center md:text-left">
+          <h4 className="text-blue-700 text-[10px] font-black uppercase tracking-[0.3em] mb-1">RECORDATORIO ADMINISTRATIVO</h4>
+          <p className="text-slate-700 text-lg font-bold italic">
+            "SASE acompaña procesos, no persigue errores. Lo que no se documenta, se olvida."
+          </p>
+        </div>
+      </GlassCard>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <GlassCard
+            title="Actividad Reciente del Grupo"
+            icon="event_note"
+            className="flex-1"
+          >
+            <div className="h-64 flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 rounded-xl mt-4 border border-slate-100">
+              <span className="material-icons text-slate-300 text-5xl mb-4">analytics</span>
+              <p className="text-slate-500 font-medium">
+                Resumen estadístico de las últimas 24 horas.
+              </p>
+              <p className="text-slate-400 text-xs mt-1">
+                Los datos se actualizan en tiempo real conforme a los registros.
+              </p>
+            </div>
+          </GlassCard>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] pl-1">Estadísticas de Hoy</h3>
+          {todayStats.map((stat, index) => (
+            <GlassCard key={index} className="flex-1 p-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-sm border border-slate-100 ${
+                    stat.status === "good" ? "text-emerald-500" : 
+                    stat.status === "warning" ? "text-orange-500" : "text-blue-500"
+                  }`}
+                >
+                  <span className="material-icons text-2xl">{stat.icon}</span>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-[11px] font-black uppercase tracking-wider">
+                    {stat.label}
+                  </p>
+                  <p className="text-2xl font-black text-slate-800 tracking-tight">
+                    {stat.value}
+                  </p>
+                </div>
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      </div>
+
+      <GlassCard title="Tareas Pendientes y Calendario" icon="calendar_today">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          {[
+            { task: "Junta de Consejo Técnico", time: "18:00", type: "Reunión" },
+            { task: "Revisión de Expedientes", time: "11:00", type: "Administración" },
+            { task: "Seguimiento de Acuerdos", time: "12:30", type: "Pedagógico" },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="p-4 rounded-xl border border-slate-100 bg-white/50 hover:bg-white hover:shadow-md transition-all cursor-pointer group"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded">
+                  {item.type}
+                </span>
+                <span className="text-xs font-bold text-slate-400">{item.time} h</span>
+              </div>
+              <p className="text-slate-800 font-bold group-hover:text-blue-700 transition-colors">{item.task}</p>
+            </div>
+          ))}
+        </div>
+      </GlassCard>
+    </motion.div>
   );
 };

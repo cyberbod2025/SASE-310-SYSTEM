@@ -46,13 +46,22 @@ export const RoleLabels: Record<UserRole, string> = {
 };
 
 export enum CaseState {
-  OBSERVADO = "En Seguimiento Preventivo", // 1-2 Incidents
-  PATRON_DETECTADO = "Atención Prioritaria", // 3 Incidents
-  EN_ANALISIS = "En Análisis de Trayectoria",
-  INTERVENCION = "Acompañamiento Intensivo",
-  SEGUIMIENTO = "Seguimiento Institucional",
-  CERRADO = "Acompañamiento Concluido",
+  OBSERVADO = "OBSERVADO",
+  PATRON_DETECTADO = "PATRON_DETECTADO",
+  EN_ANALISIS = "EN_ANALISIS",
+  INTERVENCION = "INTERVENCION",
+  SEGUIMIENTO = "SEGUIMIENTO",
+  CERRADO = "CERRADO",
 }
+
+export const CaseLabels: Record<CaseState, string> = {
+  [CaseState.OBSERVADO]: "En Seguimiento Preventivo",
+  [CaseState.PATRON_DETECTADO]: "Atención Prioritaria",
+  [CaseState.EN_ANALISIS]: "En Análisis de Trayectoria",
+  [CaseState.INTERVENCION]: "Acompañamiento Intensivo",
+  [CaseState.SEGUIMIENTO]: "Seguimiento Institucional",
+  [CaseState.CERRADO]: "Acompañamiento Concluido",
+};
 
 export enum IncidentType {
   ASISTENCIA = "Asistencia / Falta",
@@ -250,7 +259,7 @@ export interface Student {
   riesgoAsistencia?: number;
   riesgoAcademico?: number;
   riesgoSocioemocional?: number;
-
+ 
   // New: Advanced Management
   calificaciones?: Calificacion[];
   documentos?: DocumentoInstitucional[];
@@ -301,8 +310,6 @@ export interface ProtocolActivation {
   paso_actual?: number;
 }
 
-
-
 export enum AppModule {
   DASHBOARD = "dashboard",
   INSCRIPCIONES = "inscripciones",
@@ -333,6 +340,7 @@ export enum AppModule {
   PLANEACION_NEM = "planeacion_nem",
   IA_SASE = "ia_sase",
   OBJETOS_RETENIDOS = "objetos_retenidos",
+  MANUAL_USUARIO = "manual_usuario",
 }
 
 export interface Group {

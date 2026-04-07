@@ -66,3 +66,6 @@ tmp/
 # Diagnostic Scripts Output
 scripts/*.txt
 .vercel
+
+# Codex config (secrets)
+.codex/

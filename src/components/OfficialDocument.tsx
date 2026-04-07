@@ -211,7 +211,7 @@ export const OfficialDocument: React.FC<DocumentProps> = ({
 
       {/* MARCA DE AGUA / SEGURIDAD */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] rotate-[-45deg] whitespace-nowrap text-8xl font-black pointer-events-none uppercase">
-        CUAHTEPEX 310 SASE-CORE
+        CUAHTEPEX 310 SASE-NUCLEO
       </div>
     </div>
   );

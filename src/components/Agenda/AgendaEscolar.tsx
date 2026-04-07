@@ -155,7 +155,7 @@ export const AgendaEscolar = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-white/10 gap-4">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-400">
-            <span className="material-symbols-outlined text-3xl">calendar_month</span>
+            <span className="material-icons text-3xl">calendar_month</span>
           </div>
           <div>
             <h2 className="text-2xl font-black text-white uppercase tracking-tight">Agenda Escolar Digital</h2>
@@ -170,7 +170,7 @@ export const AgendaEscolar = () => {
           onClick={() => setCurrentModule(AppModule.DASHBOARD)}
           className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/10 text-xs font-bold uppercase text-slate-300 hover:bg-white/5 hover:text-white transition-colors backdrop-blur-md"
         >
-          <span className="material-symbols-outlined">arrow_back</span>
+          <span className="material-icons">arrow_back</span>
           Regresar
         </button>
       </div>
@@ -181,14 +181,14 @@ export const AgendaEscolar = () => {
           <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-600/[0.03] blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
           <div className="flex justify-between items-center mb-8 relative z-10">
-            <button onClick={handlePrevMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-all">
-              <span className="material-symbols-outlined">chevron_left</span>
+            <button onClick={handlePrevMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-2xl text-slate-400 hover:text-white transition-all">
+              <span className="material-icons">chevron_left</span>
             </button>
             <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-widest italic drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
               {monthName}
             </h3>
-            <button onClick={handleNextMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white transition-all">
-              <span className="material-symbols-outlined">chevron_right</span>
+            <button onClick={handleNextMonth} className="p-2 border border-white/10 hover:bg-white/5 rounded-2xl text-slate-400 hover:text-white transition-all">
+              <span className="material-icons">chevron_right</span>
             </button>
           </div>
 
@@ -236,7 +236,7 @@ export const AgendaEscolar = () => {
                   </div>
 
                   <div className="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-2xl transition-opacity">
-                    <span className="material-symbols-outlined text-amber-400 text-2xl drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]">add</span>
+                    <span className="material-icons text-amber-400 text-2xl drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]">add</span>
                   </div>
                 </div>
               );
@@ -255,7 +255,7 @@ export const AgendaEscolar = () => {
         <div className="xl:col-span-4 space-y-6">
           <div className="card-sase border-amber-500/20 bg-amber-500/[0.02] p-6 relative overflow-hidden h-full flex flex-col">
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-              <span className="material-symbols-outlined text-[100px] text-amber-500">event_note</span>
+              <span className="material-icons text-[100px] text-amber-500">event_note</span>
             </div>
             
             <h3 className="text-[11px] font-black uppercase tracking-[0.4em] mb-6 relative z-10 flex items-center gap-3 text-amber-500 italic">
@@ -293,7 +293,7 @@ export const AgendaEscolar = () => {
                         )}
                         {ev.location && (
                            <p className="text-[10px] text-slate-500 uppercase mt-1 flex items-center gap-1">
-                             <span className="material-symbols-outlined text-[12px]">location_on</span>
+                             <span className="material-icons text-[12px]">location_on</span>
                              {ev.location}
                            </p>
                         )}
@@ -314,7 +314,7 @@ export const AgendaEscolar = () => {
               }}
               className="mt-6 w-full py-4 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.5)] flex items-center justify-center gap-3 relative z-10"
             >
-              <span className="material-symbols-outlined text-sm md:text-lg">event_available</span>
+              <span className="material-icons text-sm md:text-lg">event_available</span>
               Agendar Nuevo Evento
             </button>
           </div>
@@ -330,7 +330,7 @@ export const AgendaEscolar = () => {
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-white/5 rounded-full hover:bg-white/10 transition-colors"
             >
-              <span className="material-symbols-outlined">close</span>
+              <span className="material-icons">close</span>
             </button>
             
             <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-1 mt-2">Registrar Evento</h3>

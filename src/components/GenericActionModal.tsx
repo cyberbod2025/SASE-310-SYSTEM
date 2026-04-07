@@ -71,7 +71,7 @@ export const GenericActionModal = ({
             className="text-slate-400 hover:text-slate-600 transition-colors"
             title="Cerrar modal"
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-icons">close</span>
           </button>
         </div>
 
@@ -112,7 +112,7 @@ export const GenericActionModal = ({
                 </select>
               ) : field.type === "file" ? (
                 <div className="relative border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 hover:border-blue-400 transition-all cursor-pointer group">
-                  <span className="material-symbols-outlined text-3xl mb-2 group-hover:text-blue-500 transition-colors">
+                  <span className="material-icons text-3xl mb-2 group-hover:text-blue-500 transition-colors">
                     cloud_upload
                   </span>
                   <span className="text-[10px] font-bold uppercase tracking-widest group-hover:text-blue-600 transition-colors">
@@ -149,17 +149,17 @@ export const GenericActionModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-slate-500 font-bold text-xs uppercase tracking-widest hover:bg-slate-100 rounded-xl transition-colors"
+              className="px-5 py-2.5 btn-sase-secondary"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-colors shadow-xl shadow-black/5 shadow-blue-200 disabled:opacity-50 flex items-center gap-2"
             >
               {loading && (
-                <span className="material-symbols-outlined animate-spin text-[18px]">
+                <span className="material-icons animate-spin text-[18px]">
                   progress_activity
                 </span>
               )}

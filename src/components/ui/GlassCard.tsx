@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from "react";
+import { motion } from "framer-motion";
 
 interface GlassCardProps {
   title?: string;
@@ -8,6 +8,7 @@ interface GlassCardProps {
   onClick?: () => void;
   children?: React.ReactNode;
   className?: string;
+  hover?: boolean;
 }
 
 export const GlassCard: React.FC<GlassCardProps> = ({
@@ -17,53 +18,49 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   onClick,
   children,
   className = "",
+  hover,
 }) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.05, translateY: -5 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={hover || onClick ? { 
+        translateY: -4,
+        backgroundColor: "rgba(255, 255, 255, 0.15)"
+      } : {}}
+      whileTap={hover || onClick ? { scale: 0.99 } : {}}
       onClick={onClick}
       className={`
-        bg-white/10 
-        backdrop-blur-xl 
+        bg-white/10 backdrop-blur-[24px] 
+        -webkit-backdrop-filter: blur(24px);
+        rounded-2xl shadow-xl 
         border border-white/20 
-        rounded-2xl 
-        shadow-xl 
-        p-6 
-        cursor-pointer 
-        transition-all 
-        duration-300 
-        group
-        relative
-        overflow-hidden
+        border-t-4 border-[var(--color-rol)]
+        p-6 transition-all duration-300
+        relative overflow-hidden
+        ${(onClick || hover) ? "cursor-pointer" : ""} 
         ${className}
       `}
     >
-      {/* Background Glow Effect */}
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-colors" />
-      
-      <div className="relative z-10 flex flex-col h-full">
-        {icon && (
-          <div className="mb-4 text-blue-400 group-hover:text-blue-300 transition-colors">
-            <span className="material-symbols-outlined text-4xl">
-              {icon}
-            </span>
-          </div>
-        )}
-        
+      <div className="relative z-10">
         {title && (
-          <h2 className="text-xl font-bold text-white mb-2 group-hover:text-blue-200 transition-colors uppercase tracking-tight">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 flex items-center gap-2 border-b border-white/5 pb-2">
+            {icon && (
+              <span className="material-icons text-[14px] opacity-70">
+                {icon}
+              </span>
+            )}
             {title}
-          </h2>
+          </h3>
         )}
         
         {description && (
-          <p className="text-gray-300 text-sm mb-4 leading-relaxed font-medium">
+          <p className="text-sm text-slate-600 font-medium leading-relaxed mb-4">
             {description}
           </p>
         )}
-        
-        {children}
+
+        <div className="text-slate-800">
+          {children}
+        </div>
       </div>
     </motion.div>
   );

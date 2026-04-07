@@ -196,12 +196,12 @@ export const AssistantBanner: React.FC<{
             {/* Botón Dashboard siempre visible */}
             <button
               onClick={() => setCurrentModule(AppModule.DASHBOARD)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all border bg-blue-600/20 border-blue-500/40 text-blue-400 hover:bg-blue-600/30 hover:border-blue-400 uppercase tracking-widest hover:translate-y-[-1px] active:translate-y-[0px] shadow-lg shadow-blue-500/10"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all border bg-blue-600/20 border-blue-500/40 text-blue-400 hover:bg-blue-600/30 hover:border-blue-400 uppercase tracking-widest hover:translate-y-[-1px] active:translate-y-[0px] shadow-xl shadow-black/5 shadow-blue-500/10"
             >
-              <span className="material-symbols-outlined text-[16px]">
+              <span className="material-icons text-[16px]">
                 dashboard
               </span>
-              IR AL DASHBOARD
+              IR AL TABLERO
             </button>
 
             {pendingActions.length > 0 && (
@@ -224,7 +224,7 @@ export const AssistantBanner: React.FC<{
                           : "bg-white/[0.04] border-white/10 text-slate-300 hover:border-blue-400/40 hover:text-blue-400"
                     }`}
                   >
-                    <span className="material-symbols-outlined text-[16px]">
+                    <span className="material-icons text-[16px]">
                       {action.priority === "urgent" ? "priority_high" : "bolt"}
                     </span>
                     {action.title}
