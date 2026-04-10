@@ -35,15 +35,15 @@ FOR INSERT
 TO authenticated
 WITH CHECK (auth.role() = 'authenticated');
 
--- Allow users to see their own logs, or Directors/Admins to see all
-CREATE POLICY "Users view own logs, Admins view all" ON public.audit_log
-FOR SELECT
-TO authenticated
-USING (
-  auth.uid() = user_id 
-  OR 
-  (SELECT rol FROM public.profiles WHERE id = auth.uid()) IN ('direccion', 'secretaria', 'prefectura')
-);
+  -- Allow users to see their own logs, o roles directivos ver todo
+  CREATE POLICY "Users view own logs, Admins view all" ON public.audit_log
+  FOR SELECT
+  TO authenticated
+  USING (
+    auth.uid() = user_id 
+    OR 
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('direccion', 'secretaria', 'prefectura')
+  );
 
 -- 3. Alertas Patron Policies
 -- Drop insecure policy
