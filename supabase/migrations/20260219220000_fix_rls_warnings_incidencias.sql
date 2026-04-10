@@ -20,6 +20,15 @@ WITH CHECK (auth.role() = 'authenticated');
 
 -- 3. Sandbox Incidencias: Fix public access vulnerability
 -- 'Sandbox Incidencias All' targeted 'public' role (including anon).
+create table if not exists public.sandbox_incidencias (
+    id uuid primary key default gen_random_uuid(),
+    alumno_id uuid references public.alumnos(id) on delete cascade,
+    descripcion text,
+    created_at timestamptz default now()
+);
+
+alter table public.sandbox_incidencias enable row level security;
+
 DROP POLICY IF EXISTS "Sandbox Incidencias All" ON public.sandbox_incidencias;
 
 -- Create restricted policy (authenticated only)
