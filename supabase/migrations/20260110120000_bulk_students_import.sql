@@ -1,7 +1,8 @@
 -- Importación Masiva de Alumnos desde CSV
 -- Generado automáticamente el 2026-01-11T02:33:28.151Z
 
-INSERT INTO public.alumnos (matricula, nombre_completo, grupo) VALUES
+WITH data (matricula, nombre_completo, grupo) AS (
+VALUES
 ('250001', 'ABURTO TORRES JESUS ANTONIO', '1º A'),
 ('250002', 'ACOSTA TORRES FERNANDO', '1º A'),
 ('250003', 'ALONSO MARTINEZ CARMEN MONSERRAT', '1º A'),
@@ -497,7 +498,15 @@ INSERT INTO public.alumnos (matricula, nombre_completo, grupo) VALUES
 ('230160', 'SANTIAGO VAZQUEZ SEBASTIAN ALEJANDRO', '3º D'),
 ('230161', 'SORIANO FLORES KEVIN CRISTOFER', '3º D'),
 ('230162', 'VALDEZ VALDEZ RAFAEL', '3º D'),
-('230163', 'VAZQUEZ BUCIO ANDREA ALEXANDRA', '3º D');
+('230163', 'VAZQUEZ BUCIO ANDREA ALEXANDRA', '3º D')
+)
+INSERT INTO public.alumnos (matricula, nombre_completo, grupo, curp)
+SELECT
+  matricula,
+  nombre_completo,
+  grupo,
+  'SASE' || matricula || 'TEMPXXXX' AS curp
+FROM data;
 
 -- Opcional: Si quieres ignorar duplicados de matricula, cambia el INSERT arriba por:
 -- INSERT INTO ... VALUES ... ON CONFLICT (matricula) DO NOTHING;
