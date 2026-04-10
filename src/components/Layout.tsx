@@ -15,6 +15,12 @@ import { LiquidGlassFilters } from "./ui/LiquidGlassFilters";
 import { QuickRegister } from "./ui/QuickRegister";
 import { motion, AnimatePresence } from "framer-motion";
 import { EncuestaPulso } from "./onboarding/EncuestaPulso";
+import {
+  getAllowedModules,
+  getOnboardingPhase,
+  isModuleAllowed,
+  OnboardingPhase,
+} from "../utils/onboardingLogic";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
@@ -64,7 +70,6 @@ const roleImages: Record<UserRole, string> = {
     "https://ui-avatars.com/api/?name=SysAdmin&background=1e1b4b&color=a5b4fc",
 };
 
-
 export const Layout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -90,18 +95,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   } = useApp();
   const { user, profile } = useAuth();
 
-  // 🧭 PLAN ONBOARDING 30-60-90
-  const onboardingPhase = useMemo(() => {
-    const createdDate = profile?.creado_en ? new Date(profile.creado_en) : new Date();
-    const diffDays = Math.ceil(Math.abs(new Date().getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays <= 30) return 'PHASE_1';
-    if (diffDays <= 60) return 'PHASE_2';
-    if (diffDays <= 90) return 'PHASE_3';
-    return 'GRADUATED';
-  }, [profile]);
-
-  const isPhase1 = onboardingPhase === 'PHASE_1';
+  const userCreatedAt = profile?.creado_en || user?.created_at || null;
+  const onboardingPhase: OnboardingPhase = useMemo(
+    () => getOnboardingPhase(userCreatedAt),
+    [userCreatedAt],
+  );
+  const allowedModules = useMemo(
+    () => getAllowedModules(onboardingPhase, currentUserRole),
+    [onboardingPhase, currentUserRole],
+  );
+  const canAccess = (module: AppModule) => isModuleAllowed(module, allowedModules);
+  const isPhase1 = onboardingPhase === "fase1";
   const isDocente = currentUserRole === UserRole.DOCENTE || currentUserRole === UserRole.DOCENTE_TUTOR;
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -117,7 +121,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     return n.targetRole === currentUserRole;
   });
   const unreadCount = visibleNotifications.filter((n) => !n.read).length;
-
 
   const sidebarWidth = isSidebarCollapsed ? "w-20" : "w-72";
 
@@ -175,9 +178,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   }, [aiSystemState, autoNavigate, highlightedModule, setCurrentModule, clearHighlight]);
 
   return (
-    <div
+    <div 
       data-sasito-state={neuralCoreState}
-      className="sase-layout-light flex h-screen w-full text-slate-800 overflow-hidden font-sans select-none relative"
+      className="flex h-screen w-full bg-[#0B1120] text-slate-200 overflow-hidden font-sans select-none"
     >
       <TutorialController />
       
@@ -187,24 +190,30 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-900/40 z-[60] md:hidden backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 bg-black/80 z-[60] md:hidden backdrop-blur-md animate-fade-in"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
-      {/* Sidebar - Institutional Soft Glass (Light) */}
+      {/* Sidebar - Premium Crystal Glass (Light Edition) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} bg-white/40 backdrop-blur-[40px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/60 md:relative md:translate-x-0 shadow-xl ${
+        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-[#0B1120]/60 !backdrop-blur-[60px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-white/10 md:relative md:translate-x-0 shadow-[10px_0_40px_-15px_rgba(0,0,0,0.4)] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full relative overflow-hidden">
+          {/* Internal Glow - Subtle Institutional Effect */}
+          <div className="absolute top-[-5%] left-[-10%] w-[120%] h-[30%] bg-blue-500/5 blur-[100px] pointer-events-none animate-pulse-slow -z-10"></div>
+          <div className="absolute bottom-[20%] right-[-20%] w-[100%] h-[30%] bg-slate-200/20 blur-[120px] pointer-events-none -z-10"></div>
+          <div className="absolute top-[40%] left-[-10%] w-[50%] h-[20%] bg-blue-400/5 blur-[80px] pointer-events-none animate-pulse -z-10"></div>
+
           <div
             id="sidebar-logo"
-            className={`p-6 border-b border-white/20 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
+            className={`p-6 border-b border-white/5 relative z-10 ${isSidebarCollapsed ? "items-center" : ""}`}
           >
             <div className="flex items-center gap-4">
               <div className="relative group">
+                <div className="absolute -inset-1.5 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <img
                   src={roleImages[currentUserRole]}
                   alt={`Perfil de ${currentUserRole}`}
@@ -213,14 +222,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 />
               </div>
               {!isSidebarCollapsed && (
-                <div className="flex-1 min-w-0 animate-fade-in text-slate-800">
+                <div className="flex-1 min-w-0 animate-fade-in text-white">
                   <h3 className="text-[10px] font-black truncate uppercase tracking-widest">
                     {displayUserName}
                   </h3>
                   <div className="flex flex-col gap-0.5 mt-0.5">
                     <div className="flex items-center gap-1.5">
-                      <span className="size-1.5 bg-blue-500 rounded-full"></span>
-                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest truncate">
+                      <span className="size-1.5 bg-blue-400 rounded-full"></span>
+                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest truncate">
                         {displayUserRole}
                       </span>
                     </div>
@@ -241,23 +250,25 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </span>
             )}
 
-            <NavItem
-              id="nav-dashboard"
-              icon="dashboard"
-              label="Tablero"
-              active={currentModule === AppModule.DASHBOARD}
-              onClick={() => {
-                setCurrentModule(AppModule.DASHBOARD);
-                setIsSidebarOpen(false);
-              }}
-              color={currentUserRole}
-              highlighted={highlightedModule === AppModule.DASHBOARD}
-              collapsed={isSidebarCollapsed}
-            />
+            {canAccess(AppModule.DASHBOARD) && (
+              <NavItem
+                id="nav-dashboard"
+                icon="dashboard"
+                label="Tablero"
+                active={currentModule === AppModule.DASHBOARD}
+                onClick={() => {
+                  setCurrentModule(AppModule.DASHBOARD);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+                highlighted={highlightedModule === AppModule.DASHBOARD}
+                collapsed={isSidebarCollapsed}
+              />
+            )}
 
-            {/* Docente e Incidencias */}
-            {isDocente && (
-               <NavItem
+            {/* Fase 1 Docente: Mostrar SOLO herramientas críticas para evitar sobrecarga */}
+            {isPhase1 && isDocente && canAccess(AppModule.REPORTES_DOCENTES) && (
+              <NavItem
                 id="nav-pedagogia"
                 icon="psychology"
                 label="Detección Pedagógica"
@@ -271,36 +282,58 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               />
             )}
 
-            <NavItem
-              id="nav-expedientes"
-              icon="folder_shared"
-              label="Expedientes"
-              active={currentModule === AppModule.EXPEDIENTES}
-              onClick={() => {
-                setCurrentModule(AppModule.EXPEDIENTES);
-                setIsSidebarOpen(false);
-              }}
-              color={currentUserRole}
-              highlighted={highlightedModule === AppModule.EXPEDIENTES}
-              collapsed={isSidebarCollapsed}
-            />
+            {canAccess(AppModule.EXPEDIENTES) && (
+              <NavItem
+                id="nav-expedientes"
+                icon="folder_shared"
+                label="Expedientes"
+                active={currentModule === AppModule.EXPEDIENTES}
+                onClick={() => {
+                  setCurrentModule(AppModule.EXPEDIENTES);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+                highlighted={highlightedModule === AppModule.EXPEDIENTES}
+                collapsed={isSidebarCollapsed}
+              />
+            )}
 
-            <NavItem
-              id="nav-agenda"
-              icon="calendar_month"
-              label="Agenda"
-              active={currentModule === AppModule.AGENDA}
-              onClick={() => {
-                setCurrentModule(AppModule.AGENDA);
-                setIsSidebarOpen(false);
-              }}
-              color={currentUserRole}
-              highlighted={highlightedModule === AppModule.AGENDA}
-              collapsed={isSidebarCollapsed}
-            />
+            {/* FASES AVANZADAS: Desbloquear módulos complejos progresivamente (Excepto para administrativos/prefectura que necesitan todo) */}
+            {canAccess(AppModule.AGENDA) && (!isPhase1 || (currentUserRole !== UserRole.DOCENTE && currentUserRole !== UserRole.DOCENTE_TUTOR)) && (
+              <>
+                <NavItem
+                  id="nav-agenda"
+                  icon="event"
+                  label="Agenda"
+                  active={currentModule === AppModule.AGENDA}
+                  onClick={() => {
+                    setCurrentModule(AppModule.AGENDA);
+                    setIsSidebarOpen(false);
+                  }}
+                  color={currentUserRole}
+                  highlighted={highlightedModule === AppModule.AGENDA}
+                  collapsed={isSidebarCollapsed}
+                />
 
-            {(currentUserRole === UserRole.PREFECTURA || 
-              isDocente || 
+                <NavItem
+                  id="nav-incidencias"
+                  icon="report_problem"
+                  label="Incidencias"
+                  active={currentModule === AppModule.INCIDENCIAS}
+                  onClick={() => {
+                    setCurrentModule(AppModule.INCIDENCIAS);
+                    setIsSidebarOpen(false);
+                  }}
+                  color={currentUserRole}
+                  highlighted={highlightedModule === AppModule.INCIDENCIAS}
+                  collapsed={isSidebarCollapsed}
+                />
+              </>
+            )}
+
+            {canAccess(AppModule.ASISTENCIA) && (currentUserRole === UserRole.PREFECTURA || 
+              currentUserRole === UserRole.DOCENTE || 
+              currentUserRole === UserRole.DOCENTE_TUTOR ||
               currentUserRole === UserRole.SYSTEM_ADMIN ||
               currentUserRole === UserRole.DEVELOPER) && (
               <NavItem
@@ -320,38 +353,41 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             {currentUserRole !== UserRole.SECRETARIA && (
               <>
-                <NavItem
-                  id="nav-reportes"
-                  icon="analytics"
-                  label="Reportes"
-                  active={currentModule === AppModule.REPORTES}
-                  onClick={() => {
-                    setCurrentModule(AppModule.REPORTES);
-                    setIsSidebarOpen(false);
-                  }}
-                  color={currentUserRole}
-                  highlighted={highlightedModule === AppModule.REPORTES}
-                  collapsed={isSidebarCollapsed}
-                />
+                {canAccess(AppModule.REPORTES) && (
+                  <NavItem
+                    id="nav-reportes"
+                    icon="analytics"
+                    label="Reportes"
+                    active={currentModule === AppModule.REPORTES}
+                    onClick={() => {
+                      setCurrentModule(AppModule.REPORTES);
+                      setIsSidebarOpen(false);
+                    }}
+                    color={currentUserRole}
+                    highlighted={highlightedModule === AppModule.REPORTES}
+                    collapsed={isSidebarCollapsed}
+                  />
+                )}
 
- 
-                <NavItem
-                  id="nav-protocolos"
-                  icon="policy"
-                  label="Protocolos"
-                  active={currentModule === AppModule.PROTOCOLOS}
-                  onClick={() => {
-                    setCurrentModule(AppModule.PROTOCOLOS);
-                    setIsSidebarOpen(false);
-                  }}
-                  color={currentUserRole}
-                  highlighted={highlightedModule === AppModule.PROTOCOLOS}
-                  collapsed={isSidebarCollapsed}
-                />
+                {canAccess(AppModule.PROTOCOLOS) && (
+                  <NavItem
+                    id="nav-protocolos"
+                    icon="policy"
+                    label="Protocolos"
+                    active={currentModule === AppModule.PROTOCOLOS}
+                    onClick={() => {
+                      setCurrentModule(AppModule.PROTOCOLOS);
+                      setIsSidebarOpen(false);
+                    }}
+                    color={currentUserRole}
+                    highlighted={highlightedModule === AppModule.PROTOCOLOS}
+                    collapsed={isSidebarCollapsed}
+                  />
+                )}
               </>
             )}
 
-            {(currentUserRole === UserRole.SYSTEM_ADMIN || 
+            {canAccess(AppModule.BITACORA) && (currentUserRole === UserRole.SYSTEM_ADMIN || 
               currentUserRole === UserRole.DEVELOPER || 
               currentUserRole === UserRole.PREFECTURA ||
               currentUserRole === UserRole.DIRECTIVO ||

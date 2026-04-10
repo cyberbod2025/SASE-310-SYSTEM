@@ -43,7 +43,7 @@ vi.mock("../src/supabase/client", () => {
     error: null,
   });
   supabaseMocks.insertSelect.mockReturnValue({ single: supabaseMocks.single });
-  supabaseMocks.insert.mockReturnValue({ select: supabaseMocks.insertSelect });
+  supabaseMocks.insert.mockResolvedValue({ error: null });
   supabaseMocks.from.mockReturnValue({
     select: supabaseMocks.select,
     insert: supabaseMocks.insert,
@@ -67,35 +67,44 @@ describe("Agenda Unit Tests", () => {
   it("renders Agenda header and cycle label", async () => {
     render(<Agenda />);
     await waitFor(() => {
-      expect(screen.getByText(/Agenda Escolar/i)).toBeInTheDocument();
-      expect(screen.getByText(/Planificación Estratégica/i)).toBeInTheDocument();
+      expect(screen.getByText(/Agenda Institucional/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Planificación estratégica de actividades/i),
+      ).toBeInTheDocument();
     });
   });
 
   it("Opens New Event Modal", async () => {
     render(<Agenda />);
-    fireEvent.click(screen.getByText(/Agendar Actividad/i));
-    await waitFor(() => {
-      expect(
-        screen.getByText(/Nueva Actividad Institucional/i),
-      ).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/Agendar Nueva Actividad/i));
+
+    const modalHeading = await screen.findByRole("heading", {
+      name: /Nueva Actividad/i,
+      level: 3,
     });
+
+    expect(modalHeading).toBeInTheDocument();
   });
 
   it("Adds a new event and views it", async () => {
     render(<Agenda />);
 
     // 1. Open Modal
-    fireEvent.click(screen.getByText(/Agendar Actividad/i));
+    fireEvent.click(screen.getByText(/Agendar Nueva Actividad/i));
+
+    await screen.findByRole("heading", {
+      name: /Nueva Actividad/i,
+      level: 3,
+    });
 
     // 2. Fill Form
     const titleInput = screen.getByPlaceholderText(
-      /Ej. Reunión de Consejo Técnico/i,
+      /Ej. Reunión de academia/i,
     );
     fireEvent.change(titleInput, { target: { value: "MyUniqueEvent" } });
 
     // 3. Save
-    const saveBtn = screen.getAllByText("Agendar Actividad")[1];
+    const saveBtn = screen.getByText("Agendar Actividad");
     fireEvent.click(saveBtn);
 
     await waitFor(() => {

@@ -70,43 +70,49 @@ describe("Dashboard Direccion Unit Tests", () => {
   it("renders Header correctly", async () => {
     render(<DashboardDireccion />);
     await waitFor(() => {
-      expect(screen.getByText(/COMMAND/i)).toBeInTheDocument();
-      expect(screen.getByText(/CENTER/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Vision sistemica institucional/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Generar reporte ejecutivo/i),
+      ).toBeInTheDocument();
     });
   });
 
   it("KPIs calculate correctly based on Store data", async () => {
     render(<DashboardDireccion />);
     await waitFor(() => {
-      const totalCard = screen.getByText(/POBLACIÓN TOTAL/i).closest("div");
+      const totalCard = screen
+        .getByText(/Poblacion total atendida/i)
+        .closest("div");
       expect(totalCard).toHaveTextContent("2");
 
-      const protocolsCard = screen
-        .getByText(/PROTOCOLOS ACTIVOS/i)
+      const alertsCard = screen
+        .getByText(/Casos criticos activos/i)
         .closest("div");
-      expect(protocolsCard).toHaveTextContent("1");
+      expect(alertsCard).toHaveTextContent("0");
     });
   });
 
-  it("Aprobaciones button routes correctly", async () => {
+  it("Expediente button routes correctly", async () => {
     render(<DashboardDireccion />);
-    const approveBtn = screen.getByText(/Aprobaciones/i);
-    fireEvent.click(approveBtn);
-    await waitFor(() => {
-      expect(mocks.setCurrentModule).toHaveBeenCalledWith(
-        AppModule.APROBACIONES_PERSONAL,
-      );
-    });
+
+    const expedienteBtn = await screen.findByText(
+      /Consultar expediente institucional/i,
+    );
+    fireEvent.click(expedienteBtn);
+
+    expect(mocks.setCurrentModule).toHaveBeenCalledWith(AppModule.EXPEDIENTES);
   });
 
   it("Export Report opens preview", async () => {
     render(<DashboardDireccion />);
 
-    const exportBtn = screen.getByText(/Exportar Log/i);
+    const exportBtn = screen.getByText(/Generar reporte ejecutivo/i);
     fireEvent.click(exportBtn);
 
     expect(
-      await screen.findByText(/RESUMEN EJECUTIVO DE OPERACIÓN INSTITUCIONAL/i),
+      await screen.findByText(/RESUMEN EJECUTIVO DE OPERACION INSTITUCIONAL/i),
     ).toBeInTheDocument();
   });
 });

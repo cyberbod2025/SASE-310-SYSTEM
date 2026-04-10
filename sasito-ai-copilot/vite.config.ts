@@ -1,12 +1,21 @@
-import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig, loadEnv} from 'vite';
 
-export default defineConfig(({mode}) => {
+export default defineConfig(async ({mode}) => {
   const env = loadEnv(mode, '.', '');
+  let tailwindPlugin: (() => unknown) | null = null;
+
+  try {
+    const tailwindModule = await import('@tailwindcss/vite');
+    tailwindPlugin = tailwindModule.default;
+  } catch {
+    // Allow this nested sample app to boot even when its optional Tailwind plugin
+    // has not been installed in the parent workspace.
+  }
+
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), ...(tailwindPlugin ? [tailwindPlugin()] : [])],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },

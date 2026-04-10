@@ -67,7 +67,7 @@ describe("Dashboard Enfermeria Unit Tests", () => {
   it("renders Header correctly", () => {
     render(<DashboardEnfermeria />);
     expect(
-      screen.getByRole("heading", { name: /MEDICAL/i }),
+      screen.getByText(/UNIDAD 01 \/\/ AREA DE ENFERMERIA/i),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/SISTEMA TÁCTICO DE SALUD INSTITUCIONAL/i),

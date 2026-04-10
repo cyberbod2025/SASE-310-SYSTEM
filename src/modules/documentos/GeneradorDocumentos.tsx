@@ -105,7 +105,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     if (tipoDoc === "citatorio_padres") {
       checkCitatoriosPrevios();
     }
-  }, [tipoDoc]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tipoDoc]);
 
   // Análisis en tiempo real del texto editado
   const advertencias: Advertencia[] = useMemo(() => {

@@ -53,7 +53,7 @@ describe("Dashboard Docente Unit Tests", () => {
   it("renders Header correctly", () => {
     render(<DashboardDocente />);
     expect(
-      screen.getByText(/DOCENTE_COMMAND_CENTRAL/i),
+      screen.getByText(/CENTRO DE MANDO DOCENTE/i),
     ).toBeInTheDocument();
   });
 

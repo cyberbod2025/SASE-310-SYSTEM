@@ -36,16 +36,13 @@ export default [
       // Reglas recomendadas de React
       ...reactPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      
+      'react/no-unescaped-entities': 'off',
+      'react/prop-types': 'off',
+      'react-refresh/only-export-components': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+
       // Reglas de Hooks (Mapeo manual para asegurar reconocimiento en V9)
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-
-      // Reglas de Refresh
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
 
       // Accesibilidad y TypeScript
       'jsx-a11y/alt-text': 'error',

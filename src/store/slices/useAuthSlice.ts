@@ -28,7 +28,7 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
       const diffTime = Math.abs(new Date().getTime() - createdDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-    setOnboardingDays(diffDays);
+      setOnboardingDays(diffDays);
       
       if (diffDays <= 1) setOnboardingPhase("intro");
       else if (diffDays <= 30) setOnboardingPhase("learning");

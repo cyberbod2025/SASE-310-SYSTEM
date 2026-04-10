@@ -246,10 +246,10 @@ export const Agenda: React.FC = () => {
                      <button onClick={() => setShowModal(false)}><span className="material-icons text-slate-400">close</span></button>
                   </div>
                   <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                     <GlassInput label="Nombre de Actividad" placeholder="Ej. Reunión de academia..." value={newEvent.title} onChange={e => setNewEvent({...newEvent, title: e.target.value})} />
+                     <GlassInput label="Nombre de Actividad" placeholder="Ej. Reunión de academia..." value={newEvent.title ?? ""} onChange={e => setNewEvent({...newEvent, title: e.target.value})} />
                      <div className="grid grid-cols-2 gap-4">
-                        <GlassInput label="Fecha" type="date" value={newEvent.date} onChange={e => setNewEvent({...newEvent, date: e.target.value})} />
-                        <GlassInput label="Hora" type="time" value={newEvent.time} onChange={e => setNewEvent({...newEvent, time: e.target.value})} />
+                        <GlassInput label="Fecha" type="date" value={newEvent.date ?? ""} onChange={e => setNewEvent({...newEvent, date: e.target.value})} />
+                        <GlassInput label="Hora" type="time" value={newEvent.time ?? ""} onChange={e => setNewEvent({...newEvent, time: e.target.value})} />
                      </div>
                      <div className="space-y-3">
                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block ml-1">Estatus / Categoría</label>
@@ -270,7 +270,7 @@ export const Agenda: React.FC = () => {
                      </div>
                      <div className="flex flex-col gap-2">
                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block ml-1">Notas Institucionales</label>
-                        <textarea title="Notas Institucionales" aria-label="Notas Institucionales" className="w-full h-24 bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold text-slate-700 outline-none focus:border-blue-500 transition-all resize-none" value={newEvent.description} onChange={e => setNewEvent({...newEvent, description: e.target.value})} />
+                         <textarea title="Notas Institucionales" aria-label="Notas Institucionales" className="w-full h-24 bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold text-slate-700 outline-none focus:border-blue-500 transition-all resize-none" value={newEvent.description ?? ""} onChange={e => setNewEvent({...newEvent, description: e.target.value})} />
                      </div>
                      <GlassButton variant="primary" className="w-full h-14" onClick={handleSaveEvent}>Agendar Actividad</GlassButton>
                   </div>

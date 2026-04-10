@@ -44,7 +44,13 @@ export const ProtocolsView: React.FC = () => {
 
   const filteredProtocols = protocols.filter((p) => {
     if (!p) return false;
-    if (filterType !== "all" && p.tipo !== filterType) return false;
+
+    const matchesFilter =
+      filterType === "all" ||
+      p.tipo === filterType ||
+      (filterType === "proteccion_civil" && p.tipo === "seguridad");
+
+    if (!matchesFilter) return false;
     if (searchQuery) {
       const searchLower = searchQuery.toLowerCase();
       return p.titulo?.toLowerCase()?.includes(searchLower) || p.activacion?.toLowerCase()?.includes(searchLower);
@@ -84,20 +90,20 @@ export const ProtocolsView: React.FC = () => {
                />
                
                <div className="space-y-3">
-                  <button onClick={() => setFilterType('all')} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === 'all' ? 'bg-blue-600 border-blue-500 text-white shadow-xl' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-blue-200'}`}>
+                  <button onClick={() => setFilterType("all")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "all" ? "bg-blue-600 border-blue-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-blue-200"}`}>
                      <span className="text-[11px] font-black uppercase tracking-widest">Todos</span>
                      <span className="font-black text-xs">{stats.all}</span>
                   </button>
-                  <button onClick={() => setFilterType('convivencia')} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === 'convivencia' ? 'bg-rose-600 border-rose-500 text-white shadow-xl' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-rose-200'}`}>
+                  <button onClick={() => setFilterType("convivencia")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "convivencia" ? "bg-rose-600 border-rose-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-rose-200"}`}>
                      <span className="text-[11px] font-black uppercase tracking-widest">Convivencia</span>
                      <span className="font-black text-xs">{stats.convivencia}</span>
                   </button>
-                  <button onClick={() => setFilterType('salud')} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === 'salud' ? 'bg-amber-600 border-amber-500 text-white shadow-xl' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-amber-200'}`}>
+                  <button onClick={() => setFilterType("salud")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "salud" ? "bg-amber-600 border-amber-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-amber-200"}`}>
                      <span className="text-[11px] font-black uppercase tracking-widest">Salud</span>
                      <span className="font-black text-xs">{stats.salud}</span>
                   </button>
-                  <button onClick={() => setFilterType('proteccion_civil')} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === 'proteccion_civil' ? 'bg-cyan-600 border-cyan-500 text-white shadow-xl' : 'bg-slate-50 border-slate-100 text-slate-500 hover:border-cyan-200'}`}>
-                     <span className="text-[11px] font-black uppercase tracking-widest">PC / Emergencias</span>
+                   <button onClick={() => setFilterType("proteccion_civil")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "proteccion_civil" ? "bg-cyan-600 border-cyan-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-cyan-200"}`}>
+                     <span className="text-[11px] font-black uppercase tracking-widest">Seguridad / PC</span>
                      <span className="font-black text-xs">{stats.pc}</span>
                   </button>
                </div>
@@ -147,10 +153,10 @@ export const ProtocolsView: React.FC = () => {
                                    <span className="material-icons text-3xl">{proto.icono || "menu_book"}</span>
                                 </div>
                                 <span className={`text-[8px] font-black px-2 py-0.5 rounded-full border shadow-sm uppercase tracking-widest ${
-                                  proto.tipo === 'convivencia' ? 'bg-rose-50 text-rose-600 border-rose-100' : 
-                                  proto.tipo === 'salud' ? 'bg-amber-50 text-amber-600 border-amber-100' : 
-                                  proto.tipo === 'seguridad' ? 'bg-indigo-50 text-indigo-600 border-indigo-100' :
-                                  'bg-cyan-50 text-cyan-600 border-cyan-100'
+                                  proto.tipo === "convivencia" ? "bg-rose-50 text-rose-600 border-rose-100" : 
+                                  proto.tipo === "salud" ? "bg-amber-50 text-amber-600 border-amber-100" : 
+                                  proto.tipo === "seguridad" ? "bg-indigo-50 text-indigo-600 border-indigo-100" :
+                                  "bg-cyan-50 text-cyan-600 border-cyan-100"
                                 }`}>
                                    {proto.tipo}
                                 </span>
@@ -162,9 +168,9 @@ export const ProtocolsView: React.FC = () => {
                           </div>
                           <div className="pt-8 flex items-center justify-between">
                              <div className="flex -space-x-2">
-                                {proto.roles_responsables.slice(0,3).map((rol, i) => (
+                                {proto.roles_responsables.slice(0, 3).map((rol, i) => (
                                    <div key={i} title={rol} className="size-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-400 uppercase">
-                                      {rol.slice(0,1)}
+                                      {rol.slice(0, 1)}
                                    </div>
                                 ))}
                              </div>

@@ -79,7 +79,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
         pantalla: "StudentAdvancedPanel",
       });
     }
-  }, [avisoAceptado]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [avisoAceptado]);
 
   // Registrar acceso por pestaña
   useEffect(() => {
@@ -103,7 +103,7 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
         pantalla: "StudentAdvancedPanel:LEGAL",
       });
     }
-  }, [activeTab, avisoAceptado]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeTab, avisoAceptado]);
 
   // Incident Form State
   const [showIncidentForm, setShowIncidentForm] = useState(false);

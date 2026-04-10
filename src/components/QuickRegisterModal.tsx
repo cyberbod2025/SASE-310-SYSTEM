@@ -7,6 +7,7 @@ import { supabase } from "../supabase/client";
 import { Protocol } from "../types";
 import { ProtocolDetailModal } from "./Protocols/ProtocolDetailModal";
 import { toast } from "react-hot-toast";
+import { NeoButton } from "./ui/NeoButton";
 
 export const QuickRegisterModal: React.FC = () => {
   const {
@@ -212,7 +213,7 @@ export const QuickRegisterModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden border border-white/20 animate-scale-up">
+      <div className="bg-white/80 backdrop-blur-2xl border border-white/40 rounded-[2.5rem] shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden animate-scale-up">
         {/* Header */}
         <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/80 sticky top-0 z-10">
           <div className="flex items-center gap-3">
@@ -243,8 +244,6 @@ export const QuickRegisterModal: React.FC = () => {
                   <div className="flex-1">
                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Grado</label>
                     <select 
-                      title="Seleccione Grado"
-                      aria-label="Seleccione Grado"
                       value={selectedGrado} 
                       onChange={(e) => { setSelectedGrado(e.target.value); setSelectedGrupo(""); }}
                       className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -256,8 +255,6 @@ export const QuickRegisterModal: React.FC = () => {
                   <div className="flex-1">
                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Grupo</label>
                     <select 
-                      title="Seleccione Grupo"
-                      aria-label="Seleccione Grupo"
                       value={selectedGrupo} 
                       onChange={(e) => setSelectedGrupo(e.target.value)}
                       className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
@@ -390,13 +387,11 @@ export const QuickRegisterModal: React.FC = () => {
                   <label className="flex items-center gap-3 cursor-pointer group">
                     <input 
                       type="checkbox" 
-                      title="Agendar Citatorio en Agenda Escolar"
-                      aria-label="Agendar Citatorio en Agenda Escolar"
                       className="sr-only" 
                       checked={generarCitatorio} 
                       onChange={(e) => setGenerarCitatorio(e.target.checked)} 
                     />
-                    <div className={`size-5 rounded-md border-2 transition-all flex items-center justify-center ${generarCitatorio ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
+                    <div className={`size-5 rounded-2xl border-2 transition-all flex items-center justify-center ${generarCitatorio ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
                       {generarCitatorio && <span className="material-icons text-[14px] text-white">check</span>}
                     </div>
                     <span className="font-bold">Agendar Citatorio en Agenda Escolar</span>
@@ -404,21 +399,19 @@ export const QuickRegisterModal: React.FC = () => {
                   
                   {generarCitatorio && (
                     <div className="ml-8 grid grid-cols-2 gap-4 animate-fade-in">
-                      <input type="date" title="Fecha del Citatorio" aria-label="Fecha del Citatorio" value={fechaCitatorio} onChange={(e) => setFechaCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-lg px-3 outline-none" />
-                      <input type="time" title="Hora del Citatorio" aria-label="Hora del Citatorio" value={horaCitatorio} onChange={(e) => setHoraCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-lg px-3 outline-none" />
+                      <input type="date" value={fechaCitatorio} onChange={(e) => setFechaCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-2xl px-3 outline-none" />
+                      <input type="time" value={horaCitatorio} onChange={(e) => setHoraCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-2xl px-3 outline-none" />
                     </div>
                   )}
 
                   <label className="flex items-center gap-3 cursor-pointer group">
                     <input 
                       type="checkbox" 
-                      title="Generar Acta o Hoja de Acuerdos"
-                      aria-label="Generar Acta o Hoja de Acuerdos"
                       className="sr-only" 
                       checked={generarActa} 
                       onChange={(e) => setGenerarActa(e.target.checked)} 
                     />
-                    <div className={`size-5 rounded-md border-2 transition-all flex items-center justify-center ${generarActa ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
+                    <div className={`size-5 rounded-2xl border-2 transition-all flex items-center justify-center ${generarActa ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
                       {generarActa && <span className="material-icons text-[14px] text-white">check</span>}
                     </div>
                     <span className="font-bold">Generar Acta / Hoja de Acuerdos</span>
@@ -426,8 +419,8 @@ export const QuickRegisterModal: React.FC = () => {
 
                   {generarActa && (
                     <div className="ml-8 flex gap-4 animate-fade-in">
-                      <button onClick={() => setTipoActa("hechos")} className={`px-4 py-2 rounded-lg border text-[10px] font-black uppercase ${tipoActa === "hechos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Acta de Hechos</button>
-                      <button onClick={() => setTipoActa("acuerdos")} className={`px-4 py-2 rounded-lg border text-[10px] font-black uppercase ${tipoActa === "acuerdos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Hoja de Acuerdos</button>
+                      <button onClick={() => setTipoActa("hechos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "hechos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Acta de Hechos</button>
+                      <button onClick={() => setTipoActa("acuerdos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "acuerdos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Hoja de Acuerdos</button>
                     </div>
                   )}
                 </div>
@@ -441,13 +434,13 @@ export const QuickRegisterModal: React.FC = () => {
               <h4 className="text-xl font-black text-slate-800 uppercase italic">Registro Exitoso</h4>
               <p className="text-sm text-slate-500 max-w-xs font-bold">La incidencia ha sido registrada institucionalmente y las notificaciones han sido enviadas.</p>
               {detectedProtocol && (
-                <button 
+                <NeoButton
                   onClick={() => setShowProtocolModal(true)}
-                  className="mt-4 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-amber-200 flex items-center gap-3"
+                  className="mt-4 px-6 py-3 bg-amber-500 text-white"
                 >
                   <span className="material-icons">security</span>
-                  Activar Protocolo: {detectedProtocol.titulo}
-                </button>
+                  Activar protocolo: {detectedProtocol.titulo}
+                </NeoButton>
               )}
             </div>
           )}
@@ -457,29 +450,29 @@ export const QuickRegisterModal: React.FC = () => {
         <div className="p-6 border-t border-slate-100 bg-white sticky bottom-0 z-10">
           {!isSuccess ? (
             <div className="flex gap-4">
-              <button 
+              <NeoButton
                 onClick={handleClose}
-                className="flex-1 h-14 bg-slate-100 hover:bg-slate-200 text-slate-500 font-black text-xs uppercase tracking-widest rounded-2xl transition-all"
+                className="flex-1 h-14 justify-center"
               >
                 Cancelar
-              </button>
-              <button 
+              </NeoButton>
+              <NeoButton
                 onClick={handleRegister}
                 disabled={!selectedStudentId && !studentNotFound}
-                className="flex-[2] h-14 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                className="flex-[2] h-14 justify-center bg-blue-600 text-white"
               >
                 <span className="material-icons">save</span>
                 Registrar
-              </button>
+              </NeoButton>
             </div>
           ) : (
-            <button 
+            <NeoButton
               onClick={handleClose}
-              className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3"
+              className="w-full h-14 justify-center bg-[#131B2C] text-slate-100"
             >
               <span className="material-icons">reply</span>
-              Volver al Sistema
-            </button>
+              Volver al sistema
+            </NeoButton>
           )}
         </div>
       </div>

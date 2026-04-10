@@ -1464,7 +1464,7 @@ export const DashboardSecretaria = () => {
                               </p>
                               <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest mt-1">
                                 {student.group}{" "}
-                                <span className="text-emerald-500/40">//</span>{" "}
+                                <span className="text-emerald-500/40">{"//"}</span>{" "}
                                 {student.matricula}
                               </p>
                             </div>

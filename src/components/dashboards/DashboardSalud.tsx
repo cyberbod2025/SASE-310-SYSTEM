@@ -5,6 +5,7 @@ import { IncidentType } from "../../types";
 import { GlassCard } from "../ui/GlassCard";
 import { GenericActionModal } from "../GenericActionModal";
 import toast from "react-hot-toast";
+import { NeoButton } from "../ui/NeoButton";
 
 export const DashboardSalud = () => {
   const { students, addIncident, updateBapInfo, printDocument } = useApp();
@@ -84,15 +85,14 @@ export const DashboardSalud = () => {
             <strong className="text-amber-400">Acceso confidencial.</strong>
           </p>
         </div>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+        <NeoButton
+          icon="campaign"
           onClick={handleNotifyTeachers}
-          className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/30 transition-colors text-sm font-medium flex items-center gap-2"
           disabled={notifying}
+          className="px-4 py-3"
         >
-          <span className="material-icons text-sm">campaign</span>
-          {notifying ? "Enviando notificacion..." : "Emitir alerta institucional"}
-        </motion.button>
+          {notifying ? "Enviando notificación..." : "Emitir alerta institucional"}
+        </NeoButton>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
@@ -138,18 +138,16 @@ export const DashboardSalud = () => {
                     {s.bapInfo?.diagnosisPrivate || "Inclusión generica"}
                   </p>
                   <div className="mt-4 flex gap-2">
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
+                    <NeoButton
                       onClick={() => {
                         setSelectedStudent(s);
                         setModalOpen(true);
                       }}
-                      className="min-h-[48px] min-w-[48px] px-3 rounded-2xl bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium"
+                      className="px-3 py-2"
                     >
                       Ajustes razonables
-                    </motion.button>
-                    <motion.button
-                      whileTap={{ scale: 0.95 }}
+                    </NeoButton>
+                    <NeoButton
                       onClick={() =>
                         printDocument({
                           type: "BITACORA",
@@ -157,14 +155,14 @@ export const DashboardSalud = () => {
                           data: {
                             ...s.bapInfo,
                             accommodations: s.bapInfo.accommodations || [],
-                            details: "Estrategias de intervencion para barreras identificadas.",
+                            details: "Estrategias de intervención para barreras identificadas.",
                           },
                         })
                       }
-                      className="min-h-[48px] min-w-[48px] px-3 rounded-2xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 transition-colors text-sm font-medium"
+                      className="px-3 py-2"
                     >
                       Generar reporte
-                    </motion.button>
+                    </NeoButton>
                   </div>
                 </div>
               ))
