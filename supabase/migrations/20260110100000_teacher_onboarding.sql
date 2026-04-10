@@ -1,5 +1,15 @@
 -- Migration: 20260110_teacher_onboarding_v2.sql
 
+-- Asegurar que la tabla existe (en entornos nuevos del CI puede no haberse creado)
+create table if not exists public.perfiles_usuario (
+  id uuid primary key references auth.users(id),
+  nombre_completo text,
+  rol text,
+  role text,
+  email text,
+  created_at timestamptz not null default now()
+);
+
 -- 1. Extend perfiles_usuario table with Institutional SASE fields
 alter table public.perfiles_usuario 
 add column if not exists estado_cuenta text default 'pendiente', -- pendiente, activo, rechazado, suspendido
