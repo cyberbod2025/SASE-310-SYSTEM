@@ -22,11 +22,12 @@
     "dompurify": "^3.2.6",
     "driver.js": "^1.4.0",
     "framer-motion": "^12.34.3",
+    "lucide-react": "^1.7.0",
     "puppeteer": "^24.34.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-hot-toast": "^2.6.0",
-    "lucide-react": "^1.7.0"
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@alloc/quick-lru": "^5.2.0",
@@ -36,8 +37,9 @@
     "@types/node": "^22.19.3",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.21.0",
+    "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.23",
     "dotenv": "^17.3.1",
     "eslint": "^9.18.0",

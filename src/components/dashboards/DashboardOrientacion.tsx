@@ -10,6 +10,7 @@ import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
 import { PrintPreviewModal } from "../PrintPreviewModal";
 import toast from "react-hot-toast";
 import { GlassCard } from "../ui/GlassCard";
+import { NeoButton } from "../ui/NeoButton";
 
 // --- MICRO-COMPONENTS ---
 
@@ -233,22 +234,20 @@ export const DashboardOrientacion = () => {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <motion.button
-            whileTap={{ scale: 0.95 }}
+          <NeoButton
+            icon="print"
             onClick={handlePrepareBitacora}
-            className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-white/5 border border-slate-200 text-slate-300 hover:text-white hover:bg-white/10 transition-colors text-sm font-medium flex items-center gap-2"
+            className="px-4 py-3"
           >
-            <span className="material-icons text-sm">print</span>
-            Generar bitacora institucional
-          </motion.button>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
+            Generar bitácora institucional
+          </NeoButton>
+          <NeoButton
+            icon="add_chart"
             onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
-            className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 transition-colors text-sm font-medium flex items-center gap-2"
+            className="px-4 py-3 text-amber-200"
           >
-            <span className="material-icons text-sm">add_chart</span>
-            Solicitar actualizacion de seguimiento
-          </motion.button>
+            Solicitar actualización de seguimiento
+          </NeoButton>
         </div>
       </div>
 
@@ -288,23 +287,21 @@ export const DashboardOrientacion = () => {
                       </span>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
+                      <NeoButton
                         onClick={() => {
                           setSelectedStudent(s);
                           setShowAdvancedPanel(true);
                         }}
-                        className="min-h-[48px] min-w-[48px] px-4 rounded-2xl bg-amber-600/20 text-amber-300 text-sm font-medium hover:bg-amber-600/30 transition-colors flex items-center justify-center"
+                        className="px-4 py-2"
                       >
-                        Iniciar intervencion
-                      </motion.button>
-                      <motion.button
-                        whileTap={{ scale: 0.95 }}
+                        Iniciar intervención
+                      </NeoButton>
+                      <NeoButton
                         onClick={() => handleNotifyAcademicRisk(s.id, "patron detectado")}
-                        className="min-h-[48px] min-w-[48px] px-4 rounded-2xl bg-white/5 text-slate-300 text-sm font-medium hover:bg-white/10 transition-colors flex items-center justify-center"
+                        className="px-4 py-2"
                       >
-                        Notificar al equipo academico
-                      </motion.button>
+                        Notificar al equipo académico
+                      </NeoButton>
                     </div>
                   </motion.div>
                 ))
@@ -321,31 +318,28 @@ export const DashboardOrientacion = () => {
           </div>
 
           <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 gap-3">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+            <NeoButton
+              icon="add_alert"
               onClick={() => setModalOpen("APPOINTMENT")}
-              className="w-full min-h-[48px] rounded-xl bg-emerald-500/20 text-emerald-300 text-sm font-bold hover:bg-emerald-500/30 transition-colors border border-emerald-500/30 flex items-center justify-center gap-2"
+              className="w-full justify-center py-3"
             >
-              <span className="material-icons text-sm">add_alert</span>
               Generar citatorio
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+            </NeoButton>
+            <NeoButton
+              icon="history_edu"
               onClick={() => setModalOpen("INTERVIEW")}
-              className="w-full min-h-[48px] rounded-xl bg-white/5 text-slate-300 text-sm font-bold hover:bg-white/10 transition-colors border border-slate-200 flex items-center justify-center gap-2"
+              className="w-full justify-center py-3"
             >
-              <span className="material-icons text-sm">history_edu</span>
               Registrar entrevista
-            </motion.button>
+            </NeoButton>
             {supportProtocol && (
-              <motion.button
-                whileTap={{ scale: 0.95 }}
+              <NeoButton
+                icon="menu_book"
                 onClick={() => setShowProtocol(true)}
-                className="w-full min-h-[48px] rounded-xl bg-rose-500/20 text-rose-300 text-sm font-bold hover:bg-rose-500/30 transition-colors border border-rose-500/30 flex items-center justify-center gap-2"
+                className="w-full justify-center py-3 text-rose-200"
               >
-                <span className="material-icons text-sm">menu_book</span>
-                Activar protocolo critico
-              </motion.button>
+                Activar protocolo crítico
+              </NeoButton>
             )}
           </div>
         </GlassCard>

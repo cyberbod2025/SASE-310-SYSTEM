@@ -74,10 +74,9 @@ describe("Dashboard Orientacion Unit Tests", () => {
 
   it("renders Header correctly", () => {
     render(<DashboardOrientacion />);
-    expect(screen.getByText(/NÚCLEO DE/i)).toBeInTheDocument();
-    expect(screen.getByText(/ORIENTACIÓN/i)).toBeInTheDocument();
+    expect(screen.getByText(/Orientacion Educativa/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/CENTRO DE APOYO PSICOEDUCATIVO/i),
+      screen.getByText(/Acompañamiento socioemocional/i),
     ).toBeInTheDocument();
   });
 
@@ -85,14 +84,14 @@ describe("Dashboard Orientacion Unit Tests", () => {
     render(<DashboardOrientacion />);
     expect(screen.getByText("Pattern Student")).toBeInTheDocument();
     expect(
-      screen.getByText(/ESTADO_ALERTA: PATRÓN DETECTADO/i),
+      screen.getByText(/Patron de riesgo socioemocional/i),
     ).toBeInTheDocument();
   });
 
   it("Print Report opens preview", async () => {
     render(<DashboardOrientacion />);
 
-    const printBtn = screen.getByText(/BITÁCORA_PDF/i);
+    const printBtn = screen.getByText(/Generar bitácora institucional/i);
     fireEvent.click(printBtn);
 
     expect(

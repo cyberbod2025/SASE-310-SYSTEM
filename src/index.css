@@ -23,16 +23,6 @@
   /* Mobile Safe Areas */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-
-  /* --- Institutional Soft Glass Tokens (Phase 1) --- */
-  --color-primary: #2563eb; /* blue-600 (Planeación) */
-  --color-lavanda: #8b5cf6; /* Color de marca SASE */
-  --color-bg: #f8fafc;      /* Fondo institucional claro */
-  --color-rol: var(--color-primary); /* Predeterminado a Docente */
-
-  --glass-bg: rgba(255, 255, 255, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
 }
 
 @layer base {
@@ -126,10 +116,6 @@
     @apply focus-glow;
   }
 
-  /* Global Premium Transition */
-  * {
-    transition: all 0.25s ease;
-  }
 }
 
 @keyframes sase-shimmer {
@@ -273,8 +259,8 @@
   /* === GLASS QUANTUM (Used for Sidebar/Header) === */
   .glass-card-quantum {
     background: rgba(11, 17, 32, 0.6);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
     backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
   }
@@ -416,8 +402,8 @@
 /* --- SASE PREMIUM TOUR (DRIVER.JS CUSTOMIZATION) --- */
 .driver-popover.sase-tour-popover {
   background: rgba(13, 17, 23, 0.85) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
   backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 24px !important;
   box-shadow:
@@ -653,6 +639,37 @@
 }
 
 
+/* === MESH GRADIENT ANIMATIONS === */
+@keyframes mesh-slow {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50% { transform: translate(5%, 5%) rotate(5deg) scale(1.1); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+@keyframes mesh-slower {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  50% { transform: translate(-5%, 8%) rotate(-3deg) scale(1.15); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+@keyframes mesh-fast {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(10%, -5%) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.animate-mesh-slow {
+  animation: mesh-slow 20s ease-in-out infinite alternate;
+}
+
+.animate-mesh-slower {
+  animation: mesh-slower 25s ease-in-out infinite alternate;
+}
+
+.animate-mesh-fast {
+  animation: mesh-fast 15s ease-in-out infinite alternate;
+}
+
 @layer utilities {
   .gpu-accelerated {
     transform: translateZ(0);
@@ -666,9 +683,5 @@
   .focus-glow:focus {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2), 0 0 18px rgba(59, 130, 246, 0.2);
     border-color: #3B82F6;
-  }
-
-  .sase-layout-light {
-    background: radial-gradient(circle at 10% 20%, rgba(216, 241, 230, 0.46) 0.1%, rgba(233, 226, 226, 0.28) 90.1%), #f1f5f9;
   }
 }

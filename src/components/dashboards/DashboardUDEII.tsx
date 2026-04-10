@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
 import { GenericActionModal } from "../GenericActionModal";
 import toast from "react-hot-toast";
+import { GlassCard } from "../ui/GlassCard";
 
 export const DashboardUDEII = () => {
   const { students, addIncident, updateBapInfo, printDocument } = useApp();
@@ -25,7 +26,7 @@ export const DashboardUDEII = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-indigo-500/30">
+    <GlassCard className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-[#0B1120]/60 relative overflow-y-auto custom-scrollbar font-sans selection:bg-indigo-500/30">
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
@@ -220,7 +221,7 @@ export const DashboardUDEII = () => {
         ]}
         onSubmit={handleUpdateAdjustment}
       />
-    </div>
+    </GlassCard>
   );
 };
 

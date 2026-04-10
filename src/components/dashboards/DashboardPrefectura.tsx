@@ -8,6 +8,8 @@ import {
   CaseState, CaseLabels,
 } from "../../types";
 import { printContent } from "../PrintButtons";
+import { GlassCard } from "../ui/GlassCard";
+import { NeoButton } from "../ui/NeoButton";
 
 // --- MICRO-COMPONENTS (TACTICAL UI) ---
 
@@ -278,7 +280,7 @@ export const DashboardPrefectura = () => {
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
 
   return (
-    <div className="flex-1 min-h-full p-4 lg:p-8 bg-transparent relative overflow-hidden custom-scrollbar pb-32">
+    <GlassCard className="flex-1 min-h-full p-4 lg:p-8 bg-[#0B1120]/60 relative overflow-hidden custom-scrollbar pb-32">
       {/* Background Ambient Glow */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-600/[0.04] blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-rose-600/[0.03] blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
@@ -313,20 +315,18 @@ export const DashboardPrefectura = () => {
               />
               <span>SINC_NUCLEO_ACTIVA</span>
             </div>
-            <button
+            <NeoButton
+              icon="print"
               onClick={() =>
                 printContent(
                   "Reporte Diario",
                   `<h1>Reporte Prefectura ${todayDisplay}</h1>`,
                 )
               }
-              className="px-4 md:px-6 py-2 md:py-3 bg-slate-100 border border-slate-200 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-white/[0.08] hover:text-white hover:border-white/20 transition-all flex items-center gap-2 md:gap-3"
+              className="uppercase tracking-widest text-[10px] md:text-[11px] px-5 py-3"
             >
-              <span className="material-icons text-base md:text-lg">
-                print
-              </span>
               Exportar
-            </button>
+            </NeoButton>
           </div>
         </div>
 
@@ -857,7 +857,7 @@ export const DashboardPrefectura = () => {
           </div>
         </div>
       </div>
-    </div>
+    </GlassCard>
   );
 };
 

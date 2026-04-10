@@ -53,7 +53,9 @@ describe("Dashboard Prefectura Unit Tests", () => {
 
   it("renders Header correctly", () => {
     render(<DashboardPrefectura />);
-    expect(screen.getByText(/FIELD/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /CENTRO DE CONTROL/i, level: 1 }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/CONTROL OPERATIVO/i)).toBeInTheDocument();
   });
 

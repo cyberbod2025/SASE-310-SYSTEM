@@ -12,14 +12,14 @@
   "lang": "es-MX",
   "icons": [
     {
-      "src": "/assets/branding/SASE_ICON_PREMIUM.png",
-      "sizes": "192x192",
+      "src": "/assets/branding/favicon.png",
+      "sizes": "1920x1920",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/branding/SASE_ICON_PREMIUM.png",
-      "sizes": "512x512",
+      "src": "/assets/branding/favicon.png",
+      "sizes": "1920x1920",
       "type": "image/png",
       "purpose": "any maskable"
     }

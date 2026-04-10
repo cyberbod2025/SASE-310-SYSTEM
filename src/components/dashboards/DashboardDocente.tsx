@@ -7,6 +7,7 @@ import { useAuth } from "../AuthProvider";
 import { startProductTour } from "../TourGuide";
 import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
 import { TestGlowCard } from "../TestGlowCard";
+import { GlassCard } from "../ui/GlassCard";
 
 export const DashboardDocente = () => {
   const {
@@ -158,7 +159,7 @@ export const DashboardDocente = () => {
   };
 
   return (
-    <div className="flex-1 min-h-full p-4 lg:p-8 bg-transparent relative overflow-hidden custom-scrollbar pb-32">
+    <GlassCard className="flex-1 min-h-full p-4 lg:p-8 bg-[#0B1120]/60 relative overflow-hidden custom-scrollbar pb-32">
       <div className="max-w-[420px] w-full mb-6">
         <TestGlowCard />
       </div>
@@ -1224,6 +1225,6 @@ export const DashboardDocente = () => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </GlassCard>
   );
 };
