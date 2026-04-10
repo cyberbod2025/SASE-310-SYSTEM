@@ -4,6 +4,8 @@
 alter table public.alumnos
   alter column curp drop not null;
 
+-- Actualización segura para evitar errores de duplicado usando el ID (UUID)
+-- para garantizar que cada CURP sea único incluso si hay colisiones lógicas.
 update public.alumnos
-set curp = 'SASE' || matricula || 'TEMPXXXX'
+set curp = 'SASE-' || left(id::text, 8) || '-' || matricula
 where curp is null;

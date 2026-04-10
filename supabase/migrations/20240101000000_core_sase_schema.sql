@@ -217,6 +217,10 @@ CREATE TABLE IF NOT EXISTS public.colectivo_respuestas_docentes (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Asegurar que la columna 'fecha' existe antes de intentar crear el índice
+-- (Resiliencia para entornos donde la tabla se creó sin ella o fue renombrada)
+ALTER TABLE public.auditoria ADD COLUMN IF NOT EXISTS fecha TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
 -- Índices institucionales de alta velocidad
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON public.profiles(role);
 CREATE INDEX IF NOT EXISTS idx_alumnos_matricula ON public.alumnos(matricula);
