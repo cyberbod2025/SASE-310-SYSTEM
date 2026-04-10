@@ -42,7 +42,7 @@ WITH CHECK (auth.role() = 'authenticated');
   USING (
     auth.uid() = user_id 
     OR 
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('direccion', 'secretaria', 'prefectura')
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('directivo', 'secretaria', 'prefectura')
   );
 
 -- 3. Alertas Patron Policies
@@ -55,14 +55,14 @@ FOR ALL
 TO authenticated
 USING (
   -- User matches assigned role (case insensitive)
-  LOWER(asignado_a_rol) = LOWER((SELECT rol FROM public.profiles WHERE id = auth.uid()))
+  LOWER(asignado_a_rol) = LOWER((SELECT role FROM public.profiles WHERE id = auth.uid()))
   OR
   -- Director sees everything
-  (SELECT rol FROM public.profiles WHERE id = auth.uid()) = 'direccion'
+  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'direccion'
 )
 WITH CHECK (
   -- Same condition for updates/inserts by users (if any)
-  LOWER(asignado_a_rol) = LOWER((SELECT rol FROM public.profiles WHERE id = auth.uid()))
+  LOWER(asignado_a_rol) = LOWER((SELECT role FROM public.profiles WHERE id = auth.uid()))
   OR
-  (SELECT rol FROM public.profiles WHERE id = auth.uid()) = 'direccion'
+  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'direccion'
 );
