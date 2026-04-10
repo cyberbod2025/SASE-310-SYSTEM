@@ -5,7 +5,10 @@
 
 -- 1) ACTUALIZAR VISTA: expediente_integral_alumno
 -- Asegurar que incluya todos los indicadores de vulnerabilidad
-CREATE OR REPLACE VIEW public.expediente_integral_alumno AS
+DROP VIEW IF EXISTS public.alumnos_en_riesgo;
+DROP VIEW IF EXISTS public.expediente_integral_alumno;
+
+CREATE VIEW public.expediente_integral_alumno AS
 SELECT 
     a.id AS alumno_id,
     a.nombre_completo AS nombre,
@@ -33,7 +36,7 @@ LEFT JOIN public.estudiantes e ON e.alumno_id = a.id;
 
 -- 2) CREAR VISTA: alumnos_en_riesgo
 -- Filtra y clasifica según la severidad del riesgo
-CREATE OR REPLACE VIEW public.alumnos_en_riesgo AS
+CREATE VIEW public.alumnos_en_riesgo AS
 SELECT 
     alumno_id,
     nombre,
