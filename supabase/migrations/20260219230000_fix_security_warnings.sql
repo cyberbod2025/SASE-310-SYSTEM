@@ -46,23 +46,33 @@ WITH CHECK (auth.role() = 'authenticated');
   );
 
 -- 3. Alertas Patron Policies
--- Drop insecure policy
-DROP POLICY IF EXISTS "Authenticated users full access" ON public.alertas_patron;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM pg_tables
+    WHERE schemaname = 'public'
+      AND tablename = 'alertas_patron'
+  ) THEN
+    -- Drop insecure policy
+    DROP POLICY IF EXISTS "Authenticated users full access" ON public.alertas_patron;
 
--- Create role-based access policy
-CREATE POLICY "Role-based access to alerts" ON public.alertas_patron
-FOR ALL
-TO authenticated
-USING (
-  -- User matches assigned role (case insensitive)
-  LOWER(asignado_a_rol) = LOWER((SELECT role FROM public.profiles WHERE id = auth.uid()))
-  OR
-  -- Director sees everything
-  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'direccion'
-)
-WITH CHECK (
-  -- Same condition for updates/inserts by users (if any)
-  LOWER(asignado_a_rol) = LOWER((SELECT role FROM public.profiles WHERE id = auth.uid()))
-  OR
-  (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'direccion'
-);
+    -- Create role-based access policy
+    CREATE POLICY "Role-based access to alerts" ON public.alertas_patron
+    FOR ALL
+    TO authenticated
+    USING (
+      -- User matches assigned role (case insensitive)
+      LOWER(asignado_a_rol) = LOWER((SELECT role FROM public.profiles WHERE id = auth.uid()))
+      OR
+      -- Director sees everything
+      (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'direccion'
+    )
+    WITH CHECK (
+      -- Same condition for updates/inserts by users (if any)
+      LOWER(asignado_a_rol) = LOWER((SELECT role FROM public.profiles WHERE id = auth.uid()))
+      OR
+      (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'direccion'
+    );
+  END IF;
+END $$;
