@@ -1,14 +1,7 @@
--- Create an onboarding entry for Professor Hugo Sánchez Resendiz
--- This pre-approves his email/CURP so when he registers, he gets the correct Role/Groups immediately.
--- Or if user already exists, updates it.
-
--- NOTE: This assumes 'perfiles_usuario' or 'user_profiles' is the target table for permissions.
--- Based on previous context, 'perfiles_usuario' seems to be the main profile table.
-
+-- Semilla/garantía: si el usuario ya existe en auth.users, se actualiza o crea su perfil institucional.
+-- Usamos el id de auth.users para no violar FK; si aún no se ha registrado, no insertamos nada aquí.
 INSERT INTO public.perfiles_usuario (
-    id, -- This would ideally be the auth.users id, but if user doesn't exist yet, we might need a staging table or handle it upon registration trigger.
-        -- For now, let's assume we are inserting into 'solicitudes_alta_personal' to be auto-approved 
-        -- OR updating an existing profile if it matches the email.
+    id,
     rol,
     nombre_completo,
     curp,
@@ -17,31 +10,33 @@ INSERT INTO public.perfiles_usuario (
     grupos,
     es_tutor,
     grupo_tutor,
-    estatus -- Assuming there's a status field
+    estatus
 )
-VALUES (
-    gen_random_uuid(), -- Placeholder, will be linked to auth.uid() upon registration if using a trigger, or we manually update later
-    'docente_tutor', -- Combined role
+SELECT
+    u.id,
+    'docente_tutor',
     'HUGO SANCHEZ RESENDIZ',
     'SARH840603HDFNSG02',
-    'hugo.sanchezr@aefcm.gob.mx',
+    lower('hugo.sanchezr@aefcm.gob.mx'),
     ARRAY['Matemáticas'],
     ARRAY['2º A', '2º B', '2º C', '2º D', '1º D'],
     true,
     '2º B',
     'aprobado'
-)
-ON CONFLICT (email) DO UPDATE SET
-    rol = 'docente_tutor',
-    nombre_completo = 'HUGO SANCHEZ RESENDIZ',
-    curp = 'SARH840603HDFNSG02',
-    materias = ARRAY['Matemáticas'],
-    grupos = ARRAY['2º A', '2º B', '2º C', '2º D', '1º D'],
-    es_tutor = true,
-    grupo_tutor = '2º B',
-    estatus = 'aprobado';
+FROM auth.users u
+WHERE lower(u.email) = lower('hugo.sanchezr@aefcm.gob.mx')
+ON CONFLICT (id) DO UPDATE SET
+    rol = EXCLUDED.rol,
+    nombre_completo = EXCLUDED.nombre_completo,
+    curp = EXCLUDED.curp,
+    email = EXCLUDED.email,
+    materias = EXCLUDED.materias,
+    grupos = EXCLUDED.grupos,
+    es_tutor = EXCLUDED.es_tutor,
+    grupo_tutor = EXCLUDED.grupo_tutor,
+    estatus = EXCLUDED.estatus;
 
--- Also insert into 'solicitudes_alta_personal' as 'APROBADA' to prevent duplicate requests
+-- Preaprobar la solicitud institucional para evitar duplicados manuales.
 INSERT INTO public.solicitudes_alta_personal (
     nombres,
     apellido_paterno,
@@ -49,21 +44,28 @@ INSERT INTO public.solicitudes_alta_personal (
     curp,
     correo_institucional,
     rol_solicitado,
+    turno,
     grupos,
     es_tutor,
     grupo_tutor,
     estado,
     observaciones_validacion
-) VALUES (
+)
+SELECT
     'HUGO',
     'SANCHEZ',
     'RESENDIZ',
     'SARH840603HDFNSG02',
-    'hugo.sanchezr@aefcm.gob.mx',
+    lower('hugo.sanchezr@aefcm.gob.mx'),
     ARRAY['DOCENTE'],
+    'matutino',
     ARRAY['2º A', '2º B', '2º C', '2º D', '1º D'],
     true,
     '2º B',
     'APROBADA',
     'Pre-aprobado por sistema (Admin Founder)'
+WHERE NOT EXISTS (
+    SELECT 1 FROM public.solicitudes_alta_personal s
+    WHERE lower(s.correo_institucional) = lower('hugo.sanchezr@aefcm.gob.mx')
+      AND s.curp = 'SARH840603HDFNSG02'
 );
