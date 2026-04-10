@@ -7,6 +7,12 @@ create table if not exists public.justificantes (
     creado_en timestamptz default now()
 );
 
+create table if not exists public.roles_permisos (
+    rol text primary key,
+    permisos jsonb default '{}'::jsonb,
+    actualizado_en timestamptz default now()
+);
+
 -- 1. Fix Advisors: Add table comments to satisfy 'docs_description_missing'
 comment on table public.justificantes is 'Almacena los justificantes de inasistencia de los alumnos.';
 comment on table public.alumnos is 'Tabla principal de información de estudiantes.';
