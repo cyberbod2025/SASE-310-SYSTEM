@@ -1,3 +1,12 @@
+-- 0. Crear tabla de justificantes si no existe (previo a comentarios/RLS)
+create table if not exists public.justificantes (
+    id uuid primary key default gen_random_uuid(),
+    alumno_id uuid references public.alumnos(id) on delete cascade,
+    motivo text,
+    fecha date default now(),
+    creado_en timestamptz default now()
+);
+
 -- 1. Fix Advisors: Add table comments to satisfy 'docs_description_missing'
 comment on table public.justificantes is 'Almacena los justificantes de inasistencia de los alumnos.';
 comment on table public.alumnos is 'Tabla principal de información de estudiantes.';
