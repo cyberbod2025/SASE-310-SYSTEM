@@ -114,10 +114,19 @@ jobs:
 
       - name: Start Supabase (Local Environment)
         run: |
+          set -euo pipefail
           echo "🚀 Starting local database for audit..."
-          # Arrancamos y permitimos que falle si hay error real de Docker
-          supabase db start --debug 2>&1 | grep -v "Downloading"
-          
+          # Preservamos el código de salida real de Supabase y filtramos solo el ruido.
+          start_log="$(mktemp)"
+          trap 'rm -f "$start_log"' EXIT
+
+          if ! supabase db start --debug >"$start_log" 2>&1; then
+            cat "$start_log"
+            exit 1
+          fi
+
+          grep -v "Downloading" "$start_log" || true
+
           echo "📊 Verifying system status..."
           supabase status
           
