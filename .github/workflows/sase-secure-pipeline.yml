@@ -1,0 +1,77 @@
+name: SASE Secure Pipeline
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate-frontend:
+    name: 🎨 Frontend Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Lint Check
+        run: npm run lint
+        
+      - name: Type Check
+        run: npm run type-check
+        
+      - name: Run Tests
+        run: npm run test
+        
+      - name: Build Check
+        run: npm run build
+
+  security-scan:
+    name: 🔐 Security & SQL Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          
+      - name: Secret Scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Frontend Secret Pattern Scan
+        run: |
+          echo "🔍 Scanning src/ for hardcoded secrets..."
+          # Scan for common patterns (sk-, AIza, eyJWT...)
+          if grep -rnE "(sk-|AIza|ey[a-zA-Z0-9._-]{50,})" src/ --exclude-dir=node_modules; then
+            echo "⚠️ Potential secrets found! Review logs."
+            # We don't fail here because of potential false positives in class names, 
+            # but Gitleaks above is the primary gate.
+          fi
+
+      - name: SQL Migration Audit
+        run: ./scripts/audit-migrations.sh
+
+  database-audit:
+    name: 🗄️ Database Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+          
+      - name: Local DB Lint
+        run: |
+          supabase db start
+          supabase db lint --local

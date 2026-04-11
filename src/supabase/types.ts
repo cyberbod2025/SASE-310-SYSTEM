@@ -480,8 +480,10 @@ export type Database = {
           alumno_id: string
           ciclo_escolar: string | null
           creado_en: string | null
+          created_at: string | null
           id: string
           materia: string
+          promedio: number | null
           promedio_final: number | null
           trimestre1: number | null
           trimestre2: number | null
@@ -493,8 +495,10 @@ export type Database = {
           alumno_id: string
           ciclo_escolar?: string | null
           creado_en?: string | null
+          created_at?: string | null
           id?: string
           materia: string
+          promedio?: number | null
           promedio_final?: number | null
           trimestre1?: number | null
           trimestre2?: number | null
@@ -506,8 +510,10 @@ export type Database = {
           alumno_id?: string
           ciclo_escolar?: string | null
           creado_en?: string | null
+          created_at?: string | null
           id?: string
           materia?: string
+          promedio?: number | null
           promedio_final?: number | null
           trimestre1?: number | null
           trimestre2?: number | null
@@ -915,10 +921,12 @@ export type Database = {
       incidencias: {
         Row: {
           alumno_id: string | null
+          created_at: string | null
           creado_en: string | null
           creado_por: string | null
           descripcion: string | null
           fecha: string | null
+          gravedad: string | null
           id: string
           nivel_gravedad: number
           reportado_por: string
@@ -927,10 +935,12 @@ export type Database = {
         }
         Insert: {
           alumno_id?: string | null
+          created_at?: string | null
           creado_en?: string | null
           creado_por?: string | null
           descripcion?: string | null
           fecha?: string | null
+          gravedad?: string | null
           id?: string
           nivel_gravedad?: number
           reportado_por: string
@@ -939,10 +949,12 @@ export type Database = {
         }
         Update: {
           alumno_id?: string | null
+          created_at?: string | null
           creado_en?: string | null
           creado_por?: string | null
           descripcion?: string | null
           fecha?: string | null
+          gravedad?: string | null
           id?: string
           nivel_gravedad?: number
           reportado_por?: string
