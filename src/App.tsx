@@ -8,6 +8,7 @@ import { LoadingSpinner } from "./components/ModuleRouter";
 import { GlobalModals } from "./components/GlobalModals";
 import { DocumentRenderer } from "./components/DocumentRenderer";
 import { AppShell } from "./components/AppShell";
+import { useSasitoPilotProbe } from "./hooks/useSasitoPilotProbe";
 import LaboratorioUI from "./pages/LaboratorioUI";
 
 const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
@@ -34,8 +35,9 @@ const App: React.FC = () => {
     fullName: string;
     email: string;
   } | null>(null);
-  
+
   const { session, loading } = useAuth();
+  useSasitoPilotProbe();
 
   const labParam = useMemo(() => {
     if (typeof window === "undefined") return null;

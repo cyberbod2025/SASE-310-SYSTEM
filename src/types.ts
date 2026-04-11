@@ -63,13 +63,8 @@ export const CaseLabels: Record<CaseState, string> = {
   [CaseState.CERRADO]: "Acompañamiento Concluido",
 };
 
-export const calculateState = (incidents: Incident[]): CaseState => {
-  const total = incidents.length;
 
-  if (total === 0) return CaseState.CERRADO;
-  if (total >= 3) return CaseState.PATRON_DETECTADO;
-  return CaseState.OBSERVADO;
-};
+
 
 export enum IncidentType {
   ASISTENCIA = "Asistencia / Falta",
