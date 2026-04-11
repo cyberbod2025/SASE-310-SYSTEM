@@ -50,6 +50,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
 
   return (
     <motion.div
+      {...(rest as any)}
       ref={cardRef}
       onMouseMove={handleMouseMove}
       initial={{ opacity: 0, y: 20 }}

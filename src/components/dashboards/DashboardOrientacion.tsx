@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
-import { CaseState, AppModule, Protocol } from "../../types";
+import { CaseState, AppModule, Protocol, CaseLabels } from "../../types";
 import { supabase } from "../../supabase/client";
 import { ProtocolDetailModal } from "../Protocols/ProtocolDetailModal";
 import { GenericActionModal } from "../GenericActionModal";
@@ -11,65 +11,7 @@ import { PrintPreviewModal } from "../PrintPreviewModal";
 import toast from "react-hot-toast";
 import { GlassCard } from "../ui/GlassCard";
 import { NeoButton } from "../ui/NeoButton";
-
-// --- MICRO-COMPONENTS ---
-
-const HolographicKPI = ({
-  icon,
-  label,
-  value,
-  trend,
-  color = "amber",
-  delay = 0,
-}: {
-  icon: string;
-  label: string;
-  value: string | number;
-  trend?: string;
-  color?: "indigo" | "amber" | "emerald" | "rose";
-  delay?: number;
-}) => {
-  const colors = {
-    indigo:
-      "text-indigo-400 border-indigo-500/20 bg-indigo-500/5 shadow-indigo-500/10",
-    amber:
-      "text-amber-400 border-amber-500/20 bg-amber-500/5 shadow-amber-500/10",
-    emerald:
-      "text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-emerald-500/10",
-    rose: "text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10",
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: delay * 0.1 }}
-      className={`card-sase p-4 border ${colors[color]} relative overflow-hidden group hover:bg-slate-100 transition-all`}
-    >
-      <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.03] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 group-hover:opacity-[0.06] transition-opacity"></div>
-      <div className="flex justify-between items-start mb-4">
-        <div
-          className={`p-2.5 rounded-xl border ${colors[color]} bg-transparent`}
-        >
-          <span className="material-icons text-xl">{icon}</span>
-        </div>
-        {trend && (
-          <span className="text-[10px] font-black px-2 py-0.5 rounded-2xl border border-slate-200 bg-white/5 text-slate-600 uppercase tracking-tighter">
-            {trend}
-          </span>
-        )}
-      </div>
-      <div>
-        <h4 className="text-3xl font-black text-slate-900 tracking-tighter italic mb-1">
-          {value}
-        </h4>
-        <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] italic">
-          {label}
-        </p>
-      </div>
-    </motion.div>
-  );
-};
+import { getStatusColors } from "../../utils/statusUtils";
 
 export const DashboardOrientacion = () => {
   const { students, setCurrentModule, addIncident } = useApp();
@@ -85,6 +27,18 @@ export const DashboardOrientacion = () => {
   const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
 
+  const highRiskStudents = students.filter(
+    (s) => s.caseState === CaseState.PATRON_DETECTADO || s.caseState === CaseState.INTERVENCION,
+  );
+  
+  const attentionRequired = students.filter(
+    (s) => s.caseState === CaseState.INTERVENCION,
+  ).length;
+  
+  const onObservation = students.filter(
+    (s) => s.caseState === CaseState.OBSERVADO,
+  ).length;
+
   const handlePrepareBitacora = () => {
     const html = `
       <h2>Bitácora Semanal de Orientación</h2>
@@ -95,12 +49,12 @@ export const DashboardOrientacion = () => {
         <tr><th>Categoría</th><th>Cantidad</th></tr>
         <tr><td>Casos en Intervención</td><td>${attentionRequired}</td></tr>
         <tr><td>Alumnos Observados</td><td>${onObservation}</td></tr>
-        <tr><td>Patrones de Riesgo IA</td><td>${patternAlerts.length}</td></tr>
+        <tr><td>Patrones de Riesgo IA</td><td>${highRiskStudents.length}</td></tr>
       </table>
 
       <h3>Resumen de Casos Críticos</h3>
       <ul>
-        ${patternAlerts
+        ${highRiskStudents
           .map(
             (s) => `
           <li>
@@ -161,22 +115,6 @@ export const DashboardOrientacion = () => {
     toast.success("Bitácora de entrevista guardada");
   };
 
-  const handleSaveContact = async (data: any) => {
-    if (!user) return;
-    const { error } = await supabase.from("contacts_log" as any).insert({
-      user_id: user.id,
-      student_id: data.student,
-      method: data.method,
-      notes: data.notes,
-      outcome: data.outcome,
-    });
-    if (error) {
-      toast.error("Error al registrar contacto");
-      throw error;
-    }
-    toast.success("Registro de contacto actualizado");
-  };
-
   const handleNotifyAcademicRisk = async (studentId: string, info: string) => {
     try {
       await addIncident(
@@ -201,16 +139,6 @@ export const DashboardOrientacion = () => {
     };
     fetchProtocol();
   }, []);
-
-  const patternAlerts = students.filter(
-    (s) => s.caseState === CaseState.PATRON_DETECTADO,
-  );
-  const attentionRequired = students.filter(
-    (s) => s.caseState === CaseState.INTERVENCION,
-  ).length;
-  const onObservation = students.filter(
-    (s) => s.caseState === CaseState.OBSERVADO,
-  ).length;
 
   return (
     <motion.div
@@ -255,7 +183,7 @@ export const DashboardOrientacion = () => {
         <GlassCard icon="psychology" title="Casos en intervencion activa" className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mt-4 space-y-3">
             <AnimatePresence>
-              {patternAlerts.length === 0 ? (
+              {highRiskStudents.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -264,7 +192,7 @@ export const DashboardOrientacion = () => {
                   Sin alertas de riesgo registradas en el sistema.
                 </motion.div>
               ) : (
-                patternAlerts.map((s, idx) => (
+                highRiskStudents.map((s, idx) => (
                   <motion.div
                     key={s.id}
                     initial={{ opacity: 0, y: 10 }}
@@ -276,14 +204,14 @@ export const DashboardOrientacion = () => {
                       <div>
                         <h3 className="text-white font-medium text-sm">{s.name}</h3>
                         <p className="text-slate-600 text-xs mt-1">
-                          Patron de riesgo socioemocional detectado
+                          {s.caseState === CaseState.INTERVENCION ? "Acompañamiento Intensivo" : "Patron de riesgo socioemocional detectado"}
                         </p>
                         <p className="text-slate-700 text-xs mt-1">
                           {s.group} · {s.matricula}
                         </p>
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 shadow-[0_0_10px_rgba(251,191,36,0.2)]">
-                        Caso en seguimiento activo
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColors(s.caseState)} shadow-lg`}>
+                        {CaseLabels[s.caseState]}
                       </span>
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">

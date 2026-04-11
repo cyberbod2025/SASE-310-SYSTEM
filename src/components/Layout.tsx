@@ -319,13 +319,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   id="nav-incidencias"
                   icon="report_problem"
                   label="Incidencias"
-                  active={currentModule === AppModule.INCIDENCIAS}
+                  active={currentModule === AppModule.BITACORA}
                   onClick={() => {
-                    setCurrentModule(AppModule.INCIDENCIAS);
+                    setCurrentModule(AppModule.BITACORA);
                     setIsSidebarOpen(false);
                   }}
                   color={currentUserRole}
-                  highlighted={highlightedModule === AppModule.INCIDENCIAS}
+                  highlighted={highlightedModule === AppModule.BITACORA}
                   collapsed={isSidebarCollapsed}
                 />
               </>

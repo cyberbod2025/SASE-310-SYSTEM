@@ -83,11 +83,6 @@ interface AppContextType {
   resolveSystemNotice: any;
   updateCredencialStatus: any;
 
-  // Students & Objects
-  addObjetoRetenido: any;
-  updateEstadoObjeto: any;
-  registrarDevolucion: any;
-
   // Inventory & Stats
   suministros: any;
   fetchSuministros: any;
@@ -232,6 +227,7 @@ export const AppProvider: React.FC<{
         userCreatedAt: auth.userCreatedAt,
         ...studentsSlice,
         ...ui,
+        systemState: ui.systemState as SystemState,
         ...aiSystem,
         ...notificationsSlice,
         // Students & Incidents

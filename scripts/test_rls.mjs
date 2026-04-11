@@ -40,7 +40,7 @@ async function testFetch() {
             id, objeto, motivo, fecha, responsable_id, responsable_nombre, responsable_rol, 
             estado, incidencia_id, created_at, fecha_devolucion, entregado_a, entregado_por, 
             lugar_retencion, categoria, observaciones, evidencia_url, autorizado_por
-          ),
+          )
         `);
 
     if (error) {
