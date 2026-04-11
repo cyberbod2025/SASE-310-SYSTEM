@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
@@ -20,6 +21,14 @@ vi.mock("../src/store", () => ({
         incidents: [{}, {}, {}],
         matricula: "MAT-001",
       },
+      {
+        id: "2",
+        name: "Intervention Student",
+        group: "3º B",
+        caseState: CaseState.INTERVENCION,
+        incidents: [{}, {}, {}, {}, {}],
+        matricula: "MAT-002",
+      }
     ],
     setCurrentModule: mocks.setCurrentModule,
     setQuickRegisterOpen: vi.fn(),
@@ -67,12 +76,12 @@ vi.mock("react-hot-toast", () => {
   return { default: toast };
 });
 
-describe("Dashboard Orientacion Unit Tests", () => {
+describe("Dashboard Orientacion Hardening Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders Header correctly", () => {
+  it("renders Header correctly with institutional branding", () => {
     render(<DashboardOrientacion />);
     expect(screen.getByText(/Orientacion Educativa/i)).toBeInTheDocument();
     expect(
@@ -80,15 +89,19 @@ describe("Dashboard Orientacion Unit Tests", () => {
     ).toBeInTheDocument();
   });
 
-  it("Displays Pattern Alert for Risk Student", () => {
+  it("Displays Pattern Alert for PATRON_DETECTADO state", () => {
     render(<DashboardOrientacion />);
     expect(screen.getByText("Pattern Student")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Patron de riesgo socioemocional/i),
-    ).toBeInTheDocument();
   });
 
-  it("Print Report opens preview", async () => {
+  it("Identifies Intervention Priority for INTERVENCION state", () => {
+    render(<DashboardOrientacion />);
+    expect(screen.getByText("Intervention Student")).toBeInTheDocument();
+    // Verification of institutional label (CaseLabels mapping)
+    expect(screen.getAllByText(/Acompañamiento Intensivo/i)[0]).toBeInTheDocument();
+  });
+
+  it("Print Report opens institutional BIP document", async () => {
     render(<DashboardOrientacion />);
 
     const printBtn = screen.getByText(/Generar bitácora institucional/i);

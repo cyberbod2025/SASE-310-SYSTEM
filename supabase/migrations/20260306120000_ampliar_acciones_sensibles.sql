@@ -18,7 +18,7 @@ BEGIN
     LIMIT 1;
     
     IF con_name IS NOT NULL THEN
-        EXECUTE 'ALTER TABLE public.auditoria_accesos DROP CONSTRAINT ' || quote_ident(con_name);
+        EXECUTE format('ALTER TABLE public.auditoria_accesos DROP CONSTRAINT %I', con_name);
     END IF;
 END $$;
 

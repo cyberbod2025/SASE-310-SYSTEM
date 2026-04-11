@@ -1,8 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../store";
-import { Student, UserRole, CaseState, CaseLabels } from "../types";
+import { Student, CaseState, CaseLabels } from "../types";
 import { getPrivacySafeAttributes } from "../utils/saseUtils";
+import { getStatusColors, getStatusIcon } from "../utils/statusUtils";
 
 interface StudentCardProps {
   student: Student;
@@ -22,12 +23,8 @@ export const StudentCard: React.FC<StudentCardProps> = ({
     setQuickRegisterOpen(true);
   };
 
-  const statusColor =
-    {
-      [CaseState.CERRADO]: "bg-emerald-500",
-      [CaseState.OBSERVADO]: "bg-blue-500",
-      [CaseState.PATRON_DETECTADO]: "bg-rose-500",
-    }[student.caseState] || "bg-slate-400";
+  const statusStyle = getStatusColors(student.caseState);
+  const statusIcon = getStatusIcon(student.caseState);
 
   return (
     <motion.div
@@ -57,12 +54,11 @@ export const StudentCard: React.FC<StudentCardProps> = ({
             </div>
             <motion.div
               layoutId={`status-${student.id}`}
-              className={`absolute -bottom-1 -right-1 size-7 rounded-full border-4 border-slate-950 flex items-center justify-center ${statusColor} shadow-xl shadow-black/50`}
+              className={`absolute -bottom-1 -right-1 size-7 rounded-full border-4 border-slate-950 flex items-center justify-center ${statusStyle} shadow-xl shadow-black/50`}
               title={`Estado: ${CaseLabels[student.caseState]}`}
             >
               <span className="material-icons text-[12px] text-white font-black">
-                {student.caseState === CaseState.PATRON_DETECTADO ? "warning" : 
-                 student.caseState === CaseState.OBSERVADO ? "visibility" : "check"}
+                {statusIcon}
               </span>
             </motion.div>
           </div>

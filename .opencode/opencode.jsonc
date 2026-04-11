@@ -4,7 +4,27 @@
     "TestSprite": {
       "type": "local",
       "enabled": true,
-      "command": ["npx", "@testsprite/testsprite-mcp@latest"]
+      "command": ["npx", "-y", "@testsprite/testsprite-mcp@latest"]
+    },
+    "Stitch": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "mcp-remote", "https://stitch.googleapis.com/mcp"]
+    },
+    "Supabase": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@supabase/mcp-server-supabase@latest"]
+    },
+    "NotebookLM": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@m4ykeldev/notebooklm-mcp@latest", "serve"]
+    },
+    "Figma": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "figma-dev-mode-mcp-server"]
     }
   }
 }

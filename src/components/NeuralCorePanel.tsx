@@ -15,6 +15,7 @@ const stateStyles: Record<SystemState, { accent: string; text: string; glow: str
   warning: { accent: "bg-amber-500/20", text: "text-amber-400", glow: "shadow-[0_0_15px_rgba(245,158,11,0.4)]" },
   alert: { accent: "bg-red-500/20", text: "text-red-400", glow: "shadow-[0_0_15px_rgba(239,68,68,0.4)]" },
   thinking: { accent: "bg-blue-500/20", text: "text-blue-400", glow: "shadow-[0_0_15px_rgba(59,130,246,0.4)]" },
+  rebooting: { accent: "bg-slate-500/20", text: "text-slate-400", glow: "shadow-[0_0_15px_rgba(148,163,184,0.4)]" },
 };
 
 export const NeuralCorePanel: React.FC<NeuralCorePanelProps> = ({
