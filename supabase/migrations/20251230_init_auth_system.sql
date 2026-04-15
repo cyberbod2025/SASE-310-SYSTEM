@@ -23,7 +23,7 @@ create policy "Users can update their own profile."
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, role, nombre)
+  insert into public.profiles (id, role, full_name)
   values (
     new.id,
     'docente', -- Default role

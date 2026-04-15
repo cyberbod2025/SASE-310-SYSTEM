@@ -122,10 +122,10 @@ export const DashboardHoy = () => {
     >
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 id="dashboard-header" className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">
-            {getGreeting()}, <span className="text-blue-600 capitalize">{currentUserRole}</span>
+          <h1 id="dashboard-header" className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
+            {getGreeting()}, <span className="text-blue-300 capitalize">{currentUserRole}</span>
           </h1>
-          <p className="text-slate-500 font-medium flex items-center gap-2">
+          <p className="text-slate-300 font-medium flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             Sistema SASE-310 operativo • {config.focus}
           </p>
@@ -143,13 +143,13 @@ export const DashboardHoy = () => {
       </div>
 
       {/* 🏛️ CALLOUT INSTITUCIONAL */}
-      <GlassCard className="mb-8 !bg-blue-50/50 !border-l-4 !border-l-blue-500 !border-t-0 p-6 flex flex-col md:flex-row items-center gap-6">
-        <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+      <GlassCard className="mb-8 !bg-blue-500/10 !border !border-blue-400/20 p-6 flex flex-col md:flex-row items-center gap-6 shadow-[0_20px_50px_rgba(37,99,235,0.08)]">
+        <div className="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-400/20 flex items-center justify-center text-blue-300 flex-shrink-0">
           <span className="material-icons text-3xl">info</span>
         </div>
         <div className="flex-1 text-center md:text-left">
-          <h4 className="text-blue-700 text-[10px] font-black uppercase tracking-[0.3em] mb-1">RECORDATORIO ADMINISTRATIVO</h4>
-          <p className="text-slate-700 text-lg font-bold italic">
+          <h4 className="text-blue-300 text-[10px] font-black uppercase tracking-[0.3em] mb-1">RECORDATORIO ADMINISTRATIVO</h4>
+          <p className="text-slate-100 text-lg font-bold italic">
             "SASE acompaña procesos, no persigue errores. Lo que no se documenta, se olvida."
           </p>
         </div>
@@ -163,9 +163,9 @@ export const DashboardHoy = () => {
               icon="event_note"
               className="h-full"
             >
-            <div className="h-64 flex flex-col items-center justify-center text-center p-8 bg-slate-50/50 rounded-xl mt-4 border border-slate-100">
-              <span className="material-icons text-slate-300 text-5xl mb-4">analytics</span>
-              <p className="text-slate-500 font-medium">
+            <div className="h-64 flex flex-col items-center justify-center text-center p-8 bg-white/5 rounded-xl mt-4 border border-white/10">
+              <span className="material-icons text-slate-500 text-5xl mb-4">analytics</span>
+              <p className="text-slate-200 font-medium">
                 Resumen estadístico de las últimas 24 horas.
               </p>
               <p className="text-slate-400 text-xs mt-1">
@@ -187,18 +187,18 @@ export const DashboardHoy = () => {
               <GlassCard className="h-full p-6">
                 <div className="flex items-center gap-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-sm border border-slate-100 ${
-                      stat.status === "good" ? "text-emerald-500" : 
-                      stat.status === "warning" ? "text-orange-500" : "text-blue-500"
-                    }`}
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white/8 border border-white/10 ${
+                        stat.status === "good" ? "text-emerald-500" : 
+                        stat.status === "warning" ? "text-orange-500" : "text-blue-500"
+                      }`}
                   >
                     <span className="material-icons text-2xl">{stat.icon}</span>
                   </div>
                   <div>
-                    <p className="text-slate-500 text-[11px] font-black uppercase tracking-wider">
+                    <p className="text-slate-400 text-[11px] font-black uppercase tracking-wider">
                       {stat.label}
                     </p>
-                    <p className="text-2xl font-black text-slate-800 tracking-tight">
+                    <p className="text-2xl font-black text-white tracking-tight">
                       {stat.value}
                     </p>
                   </div>
@@ -218,15 +218,15 @@ export const DashboardHoy = () => {
           ].map((item, index) => (
             <div
               key={index}
-              className="p-4 rounded-xl border border-slate-100 bg-white/50 hover:bg-white hover:shadow-md transition-all cursor-pointer group"
+              className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-blue-400/20 transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-1 rounded">
+                <span className="text-[9px] font-black text-blue-300 uppercase tracking-widest bg-blue-500/10 border border-blue-400/20 px-2 py-1 rounded">
                   {item.type}
                 </span>
                 <span className="text-xs font-bold text-slate-400">{item.time} h</span>
               </div>
-              <p className="text-slate-800 font-bold group-hover:text-blue-700 transition-colors">{item.task}</p>
+              <p className="text-slate-100 font-bold group-hover:text-blue-300 transition-colors">{item.task}</p>
             </div>
           ))}
         </div>

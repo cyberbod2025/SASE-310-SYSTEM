@@ -18,7 +18,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
   return (
     <div className="w-full space-y-2">
       {label && (
-        <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 pl-4 italic">
+        <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 pl-4 italic">
           {label}
         </label>
       )}
@@ -30,12 +30,12 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
         )}
         <select
           className={`
-            w-full bg-white/40 backdrop-blur-[20px] 
+            w-full bg-white/5 backdrop-blur-[20px] 
             rounded-2xl px-6 ${icon ? "pl-12" : ""} py-4 
-            text-sm font-black uppercase tracking-tight text-slate-700 
-            border border-slate-200 shadow-sm
+            text-sm font-black uppercase tracking-tight text-slate-100 
+            border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.2)]
             appearance-none outline-none transition-all duration-300
-            focus:bg-white/80 focus:border-blue-500 focus:shadow-xl
+            focus:bg-white/8 focus:border-blue-400 focus:shadow-[0_16px_40px_rgba(37,99,235,0.18)]
             cursor-pointer
             ${error ? "border-red-500 focus:border-red-500" : ""}
             ${className}
@@ -43,7 +43,7 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
           {...props}
         >
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value} className="bg-white text-slate-800 font-bold uppercase text-[10px]">
+            <option key={opt.value} value={opt.value} className="bg-slate-900 text-slate-100 font-bold uppercase text-[10px]">
               {opt.label}
             </option>
           ))}

@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:visual:glass": "node tests/visual-glass-smoke.js",
+    "smoke:t017": "tsx tests/smoke-t017.ts"
   },
   "dependencies": {
     "@_davideast/stitch-mcp": "^0.3.2",

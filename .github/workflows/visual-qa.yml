@@ -1,0 +1,58 @@
+name: Visual QA
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "src/**"
+      - "tests/visual-glass-smoke.js"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "tailwind.config.js"
+      - "src/index.css"
+
+concurrency:
+  group: visual-qa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual-smoke:
+    name: Glass Visual Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Vite
+        run: nohup npm run dev -- --host 127.0.0.1 > visual-qa-vite.log 2>&1 &
+
+      - name: Wait for app
+        run: |
+          for i in {1..30}; do
+            curl -fsS http://127.0.0.1:3100/ >/dev/null && exit 0
+            sleep 2
+          done
+          echo "Vite no respondió en 3100"
+          cat visual-qa-vite.log
+          exit 1
+
+      - name: Run visual smoke
+        run: node tests/visual-glass-smoke.js
+
+      - name: Upload visual artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-qa-artifacts
+          path: testsprite_tests/visual-audit/
+          if-no-files-found: error

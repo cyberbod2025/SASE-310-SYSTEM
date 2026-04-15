@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.solicitudes_alta_personal (
     acepta_privacidad BOOLEAN DEFAULT false,
     acepta_etica BOOLEAN DEFAULT false,
     acepta_auditoria BOOLEAN DEFAULT false,
-    estado TEXT DEFAULT 'PENDIENTE' CHECK (estado IN ('PENDIENTE', 'APROBADO', 'RECHAZADO')),
+    estado TEXT DEFAULT 'PENDIENTE' CHECK (estado IN ('PENDIENTE', 'APROBADA', 'RECHAZADA', 'OBSERVACIONES')),
     metadata JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -44,22 +44,5 @@ FOR INSERT
 TO anon, authenticated 
 WITH CHECK (true);
 
--- Permitir SELECT solo a quien la creo (si tiene sesion) o admins
--- En este caso, como es anonimo, no podra verla despues, pero el insert retornara el row si se usa 'select()'.
--- Supabase requiere policy SELECT para retornar el registro insertado si se usa .select().
-CREATE POLICY "Publico puede ver su propia solicitud insertada"
-ON public.solicitudes_alta_personal
-FOR SELECT
-TO anon, authenticated
-USING (true); -- Temporalmente abierto para el insert-return, idealmente se restringe por ID pero en insert anonimo es complejo.
-
--- 4. Permitir logs de auditoria anonimos para este caso
--- Audit log policy update
-CREATE POLICY "Anon puede registrar auditoria de alta"
-ON public.audit_log
-FOR INSERT
-TO anon
-WITH CHECK (
-    action_type = 'CREACION' AND 
-    target_table = 'solicitudes_alta_personal'
-);
+-- No crear policy SELECT publica: las solicitudes contienen PII y el frontend actual inserta sin `.select()`.
+-- No crear policy de auditoria anonima en `audit_log`: esa superficie se endurece en el flujo server-side.

@@ -3,8 +3,14 @@ name: Security Audit
 on:
   push:
     branches: [main, master, develop]
+    paths-ignore:
+      - "docs/**"
+      - "tooling/**"
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - "docs/**"
+      - "tooling/**"
   schedule:
     # Run weekly on Mondays at 9am UTC
     - cron: "0 9 * * 1"
@@ -33,6 +39,7 @@ jobs:
   dependency-audit:
     name: 📦 Dependency Vulnerability Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -48,18 +55,18 @@ jobs:
 
       - name: Run npm audit
         run: npm audit --audit-level=high
-        continue-on-error: true
 
       - name: Generate audit report
         run: |
           echo "## 📋 Dependency Audit Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          npm audit --json | jq -r '.metadata | "Total: \(.totalDependencies) deps | Vulnerabilities: \(.vulnerabilities.total)"' >> $GITHUB_STEP_SUMMARY || echo "No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+          node -e "const {execSync}=require('node:child_process'); try { const raw=execSync('npm audit --json',{stdio:['ignore','pipe','pipe']}).toString(); const data=JSON.parse(raw); const m=data.metadata || {}; console.log(`Total: ${m.totalDependencies ?? 'n/a'} deps | Vulnerabilities: ${m.vulnerabilities?.total ?? 'n/a'}`);} catch (err) { const out=err.stdout?.toString?.() || ''; if (!out) { console.log('No vulnerabilities found'); process.exit(0);} const data=JSON.parse(out); const m=data.metadata || {}; console.log(`Total: ${m.totalDependencies ?? 'n/a'} deps | Vulnerabilities: ${m.vulnerabilities?.total ?? 'n/a'}`); process.exit(0);} " >> $GITHUB_STEP_SUMMARY
 
   # Job 3: Security checklist validation
   security-checklist:
     name: ✅ Security Checklist
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -106,6 +113,7 @@ jobs:
     name: 🛡️ Supabase Database Audit
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'pull_request'
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -113,7 +121,7 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.90.0
 
       - name: Start Supabase (Local Environment)
         run: |

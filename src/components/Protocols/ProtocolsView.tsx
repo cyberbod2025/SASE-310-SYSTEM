@@ -70,17 +70,17 @@ export const ProtocolsView: React.FC = () => {
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10 animate-fade-in flex flex-col min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-           <h1 className="text-4xl font-extrabold text-slate-800 tracking-tight flex items-center gap-3 uppercase italic">
-              <span className="material-icons text-blue-600 text-3xl">gavel</span>
+           <h1 className="text-4xl font-extrabold text-white tracking-tight flex items-center gap-3 uppercase italic">
+              <span className="material-icons text-blue-300 text-3xl">gavel</span>
               Protocolos Normativos
            </h1>
-           <p className="text-slate-500 font-medium tracking-tight mt-1">Marco jurídico y operativo para la salvaguarda de la integridad estudiantil.</p>
+           <p className="text-slate-300 font-medium tracking-tight mt-1">Marco jurídico y operativo para la salvaguarda de la integridad estudiantil.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
          <div className="lg:col-span-1 space-y-6">
-            <GlassCard className="p-6 border border-slate-200 bg-white shadow-sm">
+            <GlassCard className="p-6 border-white/10 !bg-white/5 shadow-sm">
                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Filtros de Búsqueda</h3>
                <GlassInput 
                  placeholder="Buscar por caso..." 
@@ -90,31 +90,31 @@ export const ProtocolsView: React.FC = () => {
                />
                
                <div className="space-y-3">
-                  <button onClick={() => setFilterType("all")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "all" ? "bg-blue-600 border-blue-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-blue-200"}`}>
+                  <button onClick={() => setFilterType("all")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "all" ? "bg-blue-600 border-blue-500 text-white shadow-xl" : "bg-white/5 border-white/10 text-slate-300 hover:border-blue-400/20"}`}>
                      <span className="text-[11px] font-black uppercase tracking-widest">Todos</span>
                      <span className="font-black text-xs">{stats.all}</span>
                   </button>
-                  <button onClick={() => setFilterType("convivencia")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "convivencia" ? "bg-rose-600 border-rose-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-rose-200"}`}>
+                  <button onClick={() => setFilterType("convivencia")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "convivencia" ? "bg-rose-600 border-rose-500 text-white shadow-xl" : "bg-white/5 border-white/10 text-slate-300 hover:border-rose-400/20"}`}>
                      <span className="text-[11px] font-black uppercase tracking-widest">Convivencia</span>
                      <span className="font-black text-xs">{stats.convivencia}</span>
                   </button>
-                  <button onClick={() => setFilterType("salud")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "salud" ? "bg-amber-600 border-amber-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-amber-200"}`}>
+                  <button onClick={() => setFilterType("salud")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "salud" ? "bg-amber-600 border-amber-500 text-white shadow-xl" : "bg-white/5 border-white/10 text-slate-300 hover:border-amber-400/20"}`}>
                      <span className="text-[11px] font-black uppercase tracking-widest">Salud</span>
                      <span className="font-black text-xs">{stats.salud}</span>
                   </button>
-                   <button onClick={() => setFilterType("proteccion_civil")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "proteccion_civil" ? "bg-cyan-600 border-cyan-500 text-white shadow-xl" : "bg-slate-50 border-slate-100 text-slate-500 hover:border-cyan-200"}`}>
+                   <button onClick={() => setFilterType("proteccion_civil")} className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${filterType === "proteccion_civil" ? "bg-cyan-600 border-cyan-500 text-white shadow-xl" : "bg-white/5 border-white/10 text-slate-300 hover:border-cyan-400/20"}`}>
                      <span className="text-[11px] font-black uppercase tracking-widest">Seguridad / PC</span>
                      <span className="font-black text-xs">{stats.pc}</span>
                   </button>
                </div>
             </GlassCard>
 
-            <div className="p-6 bg-blue-50 border border-blue-100 rounded-[2rem]">
+            <div className="p-6 bg-blue-500/10 border border-blue-400/20 rounded-[2rem]">
                <div className="flex gap-4">
                   <span className="material-icons text-blue-600">verified_user</span>
                   <div>
-                     <p className="text-[10px] font-black text-blue-800 uppercase tracking-widest mb-1">Nota Legal</p>
-                     <p className="text-[10px] text-blue-700 font-medium leading-relaxed italic">
+                     <p className="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-1">Nota Legal</p>
+                     <p className="text-[10px] text-blue-200 font-medium leading-relaxed italic">
                         La aplicación de estos protocolos es de observancia obligatoria para todo el personal del plantel SASE-310.
                      </p>
                   </div>
@@ -129,7 +129,7 @@ export const ProtocolsView: React.FC = () => {
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sincronizando marco jurídico...</p>
                </div>
             ) : filteredProtocols.length === 0 ? (
-               <div className="h-96 flex flex-col items-center justify-center text-center opacity-30 grayscale grayscale-[50%] bg-white/40 border-2 border-slate-200 rounded-[3rem] border-dashed">
+               <div className="h-96 flex flex-col items-center justify-center text-center opacity-40 grayscale-[20%] bg-white/5 border-2 border-white/10 rounded-[3rem] border-dashed">
                   <span className="material-icons text-6xl mb-4">search_off</span>
                   <p className="text-xs font-black uppercase tracking-[0.2em]">Sin protocolos coincidentes</p>
                </div>
@@ -144,12 +144,12 @@ export const ProtocolsView: React.FC = () => {
                     >
                        <GlassCard 
                          hover 
-                         className="p-8 h-full flex flex-col justify-between border border-slate-200 bg-white group cursor-pointer"
+                         className="p-8 h-full flex flex-col justify-between border border-white/10 !bg-white/5 group cursor-pointer"
                          onClick={() => setSelectedProtocol(proto)}
                        >
                           <div className="space-y-6">
                              <div className="flex justify-between items-start">
-                                <div className="size-14 bg-slate-50 rounded-3xl border border-slate-100 flex items-center justify-center text-slate-400 transition-all group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:scale-110">
+                                <div className="size-14 bg-white/5 rounded-3xl border border-white/10 flex items-center justify-center text-slate-300 transition-all group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-xl group-hover:scale-110">
                                    <span className="material-icons text-3xl">{proto.icono || "menu_book"}</span>
                                 </div>
                                 <span className={`text-[8px] font-black px-2 py-0.5 rounded-full border shadow-sm uppercase tracking-widest ${
@@ -162,19 +162,19 @@ export const ProtocolsView: React.FC = () => {
                                 </span>
                              </div>
                              <div>
-                                <h3 className="text-lg font-black text-slate-800 uppercase italic tracking-tighter mb-2 leading-tight group-hover:text-blue-600 transition-colors">{proto.titulo}</h3>
-                                <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-3 italic">"{proto.objetivo}"</p>
+                                <h3 className="text-lg font-black text-white uppercase italic tracking-tighter mb-2 leading-tight group-hover:text-blue-300 transition-colors">{proto.titulo}</h3>
+                                <p className="text-xs text-slate-300 font-medium leading-relaxed line-clamp-3 italic">"{proto.objetivo}"</p>
                              </div>
                           </div>
                           <div className="pt-8 flex items-center justify-between">
                              <div className="flex -space-x-2">
                                 {proto.roles_responsables.slice(0, 3).map((rol, i) => (
-                                   <div key={i} title={rol} className="size-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-400 uppercase">
+                                    <div key={i} title={rol} className="size-8 rounded-full border-2 border-white/10 bg-white/5 flex items-center justify-center text-[9px] font-black text-slate-300 uppercase">
                                       {rol.slice(0, 1)}
                                    </div>
                                 ))}
                              </div>
-                             <div className="flex items-center gap-2 text-blue-600">
+                             <div className="flex items-center gap-2 text-blue-300">
                                 <span className="text-[10px] font-black uppercase tracking-widest">Protocolo Activo</span>
                                 <span className="material-icons text-sm">arrow_forward</span>
                              </div>

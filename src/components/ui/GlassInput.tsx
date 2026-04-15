@@ -16,7 +16,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   return (
     <div className="w-full space-y-2">
       {label && (
-        <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-500 pl-4">
+        <label className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 pl-4">
           {label}
         </label>
       )}
@@ -28,13 +28,13 @@ export const GlassInput: React.FC<GlassInputProps> = ({
         )}
         <input
           className={`
-            w-full bg-white/40 backdrop-blur-[20px] 
+            w-full bg-white/5 backdrop-blur-[20px] 
             rounded-2xl px-6 ${icon ? "pl-12" : ""} py-3.5 
-            text-sm font-medium text-slate-800 
-            border border-white/60 shadow-sm
-            placeholder:text-slate-400
+            text-sm font-medium text-slate-100 
+            border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.2)]
+            placeholder:text-slate-500
             outline-none transition-all duration-300
-            focus:bg-white/60 focus:border-blue-500 focus:ring-8 focus:ring-blue-500/5
+            focus:bg-white/8 focus:border-blue-400 focus:ring-8 focus:ring-blue-500/10
             ${error ? "border-red-500 focus:border-red-500 focus:ring-red-500/5" : ""}
             ${className}
           `}

@@ -213,15 +213,15 @@ export const QuickRegisterModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
-      <div className="bg-white/80 backdrop-blur-2xl border border-white/40 rounded-[2.5rem] shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden animate-scale-up">
+      <div className="bg-[#0B1120]/90 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden animate-scale-up">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/80 sticky top-0 z-10">
+        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <div className="bg-blue-600 p-2 rounded-xl text-white">
               <span className="material-icons text-lg">bolt</span>
             </div>
             <div>
-              <h3 className="text-xl font-black text-slate-800 uppercase italic tracking-tighter">
+              <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">
                 Registro Rápido SASE
               </h3>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -229,7 +229,7 @@ export const QuickRegisterModal: React.FC = () => {
               </p>
             </div>
           </div>
-          <button onClick={handleClose} className="size-10 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-red-600 transition-all flex items-center justify-center">
+          <button onClick={handleClose} className="size-10 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-red-300 transition-all flex items-center justify-center">
             <span className="material-icons">close</span>
           </button>
         </div>
@@ -246,7 +246,7 @@ export const QuickRegisterModal: React.FC = () => {
                     <select 
                       value={selectedGrado} 
                       onChange={(e) => { setSelectedGrado(e.target.value); setSelectedGrupo(""); }}
-                      className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-xs font-bold text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     >
                       <option value="">TODOS</option>
                       {grados.map(g => <option key={g} value={g}>{g}°</option>)}
@@ -257,7 +257,7 @@ export const QuickRegisterModal: React.FC = () => {
                     <select 
                       value={selectedGrupo} 
                       onChange={(e) => setSelectedGrupo(e.target.value)}
-                      className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl px-4 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-xs font-bold text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       disabled={!selectedGrado}
                     >
                       <option value="">TODOS</option>
@@ -269,10 +269,10 @@ export const QuickRegisterModal: React.FC = () => {
                 <div className="relative">
                   {selectedStudentId ? (
                     // Ficha del alumno seleccionado
-                    <div className="flex items-center gap-3 h-12 bg-blue-50 border border-blue-200 rounded-xl px-4">
-                      <span className="material-icons text-blue-600 text-lg">person_check</span>
+                    <div className="flex items-center gap-3 h-12 bg-blue-500/10 border border-blue-400/20 rounded-xl px-4">
+                      <span className="material-icons text-blue-300 text-lg">person_check</span>
                       <div className="flex-1">
-                        <p className="text-xs font-black text-blue-800 uppercase italic">{selectedStudentName}</p>
+                          <p className="text-xs font-black text-blue-100 uppercase italic">{selectedStudentName}</p>
                       </div>
                       <button
                         onClick={() => { setSelectedStudentId(""); setSelectedStudentName(""); setSearchTerm(""); setShowDropdown(false); }}
@@ -290,10 +290,10 @@ export const QuickRegisterModal: React.FC = () => {
                         onChange={(e) => { setSearchTerm(e.target.value); setShowDropdown(e.target.value.length > 1); }}
                         onFocus={() => { if (searchTerm.length > 1) setShowDropdown(true); }}
                         placeholder="Escribe nombre o matrícula..."
-                        className="w-full h-12 bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                         className="w-full h-12 bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 text-sm font-bold text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                       />
                       {showDropdown && filteredStudents.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto">
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-[#0B1120] border border-white/10 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto">
                           {filteredStudents.map(s => (
                             <button
                               key={s.id}
@@ -303,11 +303,11 @@ export const QuickRegisterModal: React.FC = () => {
                                 setSearchTerm("");
                                 setShowDropdown(false);
                               }}
-                              className="w-full text-left px-4 py-3 hover:bg-blue-50 flex items-center gap-3 transition-colors"
+                              className="w-full text-left px-4 py-3 hover:bg-blue-500/10 flex items-center gap-3 transition-colors"
                             >
                               <img src={s.avatar || "/SASE_ICON.png"} className="size-8 rounded-2xl object-cover" alt="" />
                               <div>
-                                <p className="text-xs font-black text-slate-800 uppercase italic">{s.name}</p>
+                                <p className="text-xs font-black text-slate-100 uppercase italic">{s.name}</p>
                                 <p className="text-[9px] font-bold text-slate-400 uppercase">{s.group} • {s.matricula}</p>
                               </div>
                             </button>
@@ -327,7 +327,7 @@ export const QuickRegisterModal: React.FC = () => {
                       key={t}
                       onClick={() => setType(t)}
                       className={`px-3 py-2 rounded-xl border text-[10px] font-black uppercase tracking-tight transition-all ${
-                        type === t ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'
+                        type === t ? 'bg-blue-500/10 border-blue-400/20 text-blue-200' : 'bg-white/5 border-white/10 text-slate-300 hover:border-white/20'
                       }`}
                     >
                       {t}
@@ -351,12 +351,12 @@ export const QuickRegisterModal: React.FC = () => {
               )}
 
               {/* Guías Rápidas */}
-              <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2">
                 {getQuickGuides(type).map((guide) => (
                   <button
                     key={guide}
                     onClick={() => handleQuickGuide(guide)}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-blue-100 text-slate-600 hover:text-blue-700 rounded-full text-[9px] font-bold uppercase tracking-wider transition-colors"
+                    className="px-3 py-1.5 bg-white/5 hover:bg-blue-500/10 text-slate-300 hover:text-blue-200 rounded-full border border-white/10 text-[9px] font-bold uppercase tracking-wider transition-colors"
                   >
                     + {guide}
                   </button>
@@ -368,7 +368,7 @@ export const QuickRegisterModal: React.FC = () => {
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full h-32 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                  className="w-full h-32 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs font-bold text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
                   placeholder="Describe la situación..."
                 />
                 <div className="absolute right-4 bottom-4">
@@ -377,7 +377,7 @@ export const QuickRegisterModal: React.FC = () => {
               </div>
 
               {/* Opciones de Documentación */}
-              <div className="space-y-4 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-xs text-blue-800">
+              <div className="space-y-4 p-4 bg-blue-500/10 rounded-2xl border border-blue-400/20 text-xs text-blue-100">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-icons text-sm">description</span>
                   <p className="font-black uppercase tracking-widest">Apoyo Institucional Automático</p>
@@ -399,8 +399,8 @@ export const QuickRegisterModal: React.FC = () => {
                   
                   {generarCitatorio && (
                     <div className="ml-8 grid grid-cols-2 gap-4 animate-fade-in">
-                      <input type="date" value={fechaCitatorio} onChange={(e) => setFechaCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-2xl px-3 outline-none" />
-                      <input type="time" value={horaCitatorio} onChange={(e) => setHoraCitatorio(e.target.value)} className="h-10 bg-white border border-blue-200 rounded-2xl px-3 outline-none" />
+                      <input type="date" value={fechaCitatorio} onChange={(e) => setFechaCitatorio(e.target.value)} className="h-10 bg-white/5 border border-blue-400/20 rounded-2xl px-3 outline-none text-slate-100" />
+                      <input type="time" value={horaCitatorio} onChange={(e) => setHoraCitatorio(e.target.value)} className="h-10 bg-white/5 border border-blue-400/20 rounded-2xl px-3 outline-none text-slate-100" />
                     </div>
                   )}
 
@@ -419,20 +419,20 @@ export const QuickRegisterModal: React.FC = () => {
 
                   {generarActa && (
                     <div className="ml-8 flex gap-4 animate-fade-in">
-                      <button onClick={() => setTipoActa("hechos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "hechos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Acta de Hechos</button>
-                      <button onClick={() => setTipoActa("acuerdos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "acuerdos" ? 'bg-blue-600 text-white' : 'bg-white border-blue-200'}`}>Hoja de Acuerdos</button>
+                       <button onClick={() => setTipoActa("hechos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "hechos" ? 'bg-blue-600 text-white' : 'bg-white/5 border-blue-400/20 text-slate-200'}`}>Acta de Hechos</button>
+                       <button onClick={() => setTipoActa("acuerdos")} className={`px-4 py-2 rounded-2xl border text-[10px] font-black uppercase ${tipoActa === "acuerdos" ? 'bg-blue-600 text-white' : 'bg-white/5 border-blue-400/20 text-slate-200'}`}>Hoja de Acuerdos</button>
                     </div>
                   )}
                 </div>
               </div>
             </>
           ) : (
-            <div className="py-12 flex flex-col items-center text-center space-y-4">
-              <div className="size-20 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
+              <div className="py-12 flex flex-col items-center text-center space-y-4">
+               <div className="size-20 bg-emerald-500/10 border border-emerald-400/20 rounded-full flex items-center justify-center text-emerald-300">
                 <span className="material-icons text-4xl">check_circle</span>
               </div>
-              <h4 className="text-xl font-black text-slate-800 uppercase italic">Registro Exitoso</h4>
-              <p className="text-sm text-slate-500 max-w-xs font-bold">La incidencia ha sido registrada institucionalmente y las notificaciones han sido enviadas.</p>
+               <h4 className="text-xl font-black text-white uppercase italic">Registro Exitoso</h4>
+               <p className="text-sm text-slate-300 max-w-xs font-bold">La incidencia ha sido registrada institucionalmente y las notificaciones han sido enviadas.</p>
               {detectedProtocol && (
                 <NeoButton
                   onClick={() => setShowProtocolModal(true)}
@@ -447,7 +447,7 @@ export const QuickRegisterModal: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 bg-white sticky bottom-0 z-10">
+        <div className="p-6 border-t border-white/10 bg-white/5 sticky bottom-0 z-10">
           {!isSuccess ? (
             <div className="flex gap-4">
               <NeoButton

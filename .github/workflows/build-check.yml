@@ -3,13 +3,26 @@ name: Build Check
 on:
   push:
     branches: [main, master]
+    paths-ignore:
+      - "docs/**"
+      - "tooling/**"
+      - "**/*.md"
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - "docs/**"
+      - "tooling/**"
+      - "**/*.md"
+
+concurrency:
+  group: build-check-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: 🏗️ Build & Lint Check
+    name: Frontend Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -23,8 +36,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run type-check
+        run: npm run type-check
+
+      - name: Run tests
+        run: npm run test
+
       - name: Build project
         run: npm run build
-
-      - name: Run lint
-        run: npm run lint || echo "No lint script found"
