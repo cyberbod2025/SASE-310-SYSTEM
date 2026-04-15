@@ -6,7 +6,7 @@
 - `tests/test-sprite-render.js`
 - `package.json`
 - `PRD.md`
-- `testsprite_tests/visual-audit/summary.json`
+- `qa_artifacts/visual-audit/summary.json`
 
 ## Hallazgos verificados
 
@@ -18,4 +18,4 @@
 ## Decision
 
 - Estandarizar los smokes manuales en `puppeteer`.
-- Mantener `testsprite_tests/visual-audit` como salida de evidencia.
+- Mantener `qa_artifacts/visual-audit` como salida de evidencia.

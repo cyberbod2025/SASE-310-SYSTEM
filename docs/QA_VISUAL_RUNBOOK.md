@@ -16,10 +16,10 @@ npm run test:visual:glass
 
 3. Revisa artefactos en:
 
-- `testsprite_tests/visual-audit/login.png`
-- `testsprite_tests/visual-audit/registro.png`
-- `testsprite_tests/visual-audit/laboratorio-ui.png`
-- `testsprite_tests/visual-audit/summary.json`
+- `qa_artifacts/visual-audit/login.png`
+- `qa_artifacts/visual-audit/registro.png`
+- `qa_artifacts/visual-audit/laboratorio-ui.png`
+- `qa_artifacts/visual-audit/summary.json`
 
 ## Smoke funcional T017
 
@@ -34,7 +34,6 @@ npm run smoke:t017
 - workflow: `Visual QA`
 - artefacto: `visual-qa-artifacts`
 
-## Nota TestSprite
+## Nota
 
 La base técnica de evidencia visual del repo es `puppeteer`, no `playwright`.
-Si TestSprite se integra después, debe reutilizar esta salida y los criterios visuales de `PRD.md`.
