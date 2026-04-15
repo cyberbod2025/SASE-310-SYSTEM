@@ -4,7 +4,7 @@
     "TestSprite": {
       "type": "local",
       "enabled": true,
-      "command": ["npx", "-y", "@testsprite/testsprite-mcp@latest"]
+      "command": ["bash", ".opencode/bin/testsprite-mcp.sh"]
     },
     "Stitch": {
       "type": "local",
