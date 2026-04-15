@@ -3,16 +3,18 @@
 -- Descripción: Corrección de Security Definer Views, hardening de funciones con search_path y restricción de políticas en tabla estudiantes.
 
 -- 1. Hardening de Funciones (Search Path) para evitar ataques de búsqueda de esquema
-ALTER FUNCTION public.trigger_update_student_risk() SET search_path = public;
-ALTER FUNCTION public.calculate_student_risk(uuid) SET search_path = public;
-ALTER FUNCTION public.get_my_role() SET search_path = public;
-ALTER FUNCTION public.log_semaphore_change() SET search_path = public;
-ALTER FUNCTION public.log_expediente_access() SET search_path = public;
-ALTER FUNCTION public.check_preguntometro_limit() SET search_path = public;
-ALTER FUNCTION public.finalizar_trivia_v2(uuid, uuid, integer) SET search_path = public;
-ALTER FUNCTION public.registrar_progreso_v2(uuid, uuid, integer) SET search_path = public;
-ALTER FUNCTION public.increment_visitantes(uuid) SET search_path = public;
-ALTER FUNCTION public.decrement_visitantes(uuid) SET search_path = public;
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'trigger_update_student_risk') THEN ALTER FUNCTION public.trigger_update_student_risk() SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'calculate_student_risk') THEN ALTER FUNCTION public.calculate_student_risk(uuid) SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'get_my_role') THEN ALTER FUNCTION public.get_my_role() SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'log_semaphore_change') THEN ALTER FUNCTION public.log_semaphore_change() SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'log_expediente_access') THEN ALTER FUNCTION public.log_expediente_access() SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'check_preguntometro_limit') THEN ALTER FUNCTION public.check_preguntometro_limit() SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'finalizar_trivia_v2') THEN ALTER FUNCTION public.finalizar_trivia_v2(uuid, uuid, integer) SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'registrar_progreso_v2') THEN ALTER FUNCTION public.registrar_progreso_v2(uuid, uuid, integer) SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'increment_visitantes') THEN ALTER FUNCTION public.increment_visitantes(uuid) SET search_path = public; END IF;
+    IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'decrement_visitantes') THEN ALTER FUNCTION public.decrement_visitantes(uuid) SET search_path = public; END IF;
+END $$;
 
 -- 2. Corrección de Vista con SECURITY DEFINER (Referencia a Hallazgo de Seguridad)
 -- Re-crear v_perfiles_activos como SECURITY INVOKER (comportamiento por defecto)

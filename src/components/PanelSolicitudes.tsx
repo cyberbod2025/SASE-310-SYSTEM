@@ -205,18 +205,18 @@ export const PanelSolicitudes: React.FC = () => {
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 min-h-full flex flex-col">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h2 className="text-4xl font-extrabold text-slate-800 tracking-tight flex items-center gap-3">
-            <span className="material-icons text-blue-600 text-3xl">assignment_turned_in</span>
+          <h2 className="text-4xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <span className="material-icons text-blue-300 text-3xl">assignment_turned_in</span>
             Gestión Institucional
           </h2>
-          <p className="text-slate-500 font-medium tracking-tight mt-1">
+          <p className="text-slate-300 font-medium tracking-tight mt-1">
             Administración de solicitudes, trámites y comunicados oficiales.
           </p>
         </div>
       </div>
 
       {/* Tabs Institucionales */}
-      <div className="flex gap-1 p-1 bg-slate-100 rounded-2xl w-fit">
+      <div className="flex gap-1 p-1 bg-white/5 border border-white/10 rounded-2xl w-fit backdrop-blur-xl">
         {[
           { id: "solicitudes", label: "Solicitudes", icon: "description" },
           { id: "comunicados", label: "Comunicados", icon: "campaign" },
@@ -227,8 +227,8 @@ export const PanelSolicitudes: React.FC = () => {
             onClick={() => setActiveTab(tab.id as any)}
             className={`px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-all flex items-center gap-2 ${
               activeTab === tab.id
-                ? "bg-white text-blue-600 shadow-sm border border-slate-200"
-                : "text-slate-500 hover:text-slate-800"
+                ? "bg-blue-500/15 text-blue-200 shadow-sm border border-blue-400/20"
+                : "text-slate-400 hover:text-white"
             }`}
           >
             <span className="material-icons text-lg">{tab.icon}</span>
@@ -250,13 +250,13 @@ export const PanelSolicitudes: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div className="lg:col-span-8 flex flex-col gap-4">
                 {solicitudes.length === 0 ? (
-                  <GlassCard className="p-12 text-center border-slate-200">
-                    <span className="material-icons text-slate-200 text-6xl mb-4">folder_open</span>
+                  <GlassCard className="p-12 text-center border-white/10 !bg-white/5">
+                    <span className="material-icons text-slate-500 text-6xl mb-4">folder_open</span>
                     <p className="text-slate-400 font-medium tracking-tight">No se registran solicitudes pendientes en el sistema.</p>
                   </GlassCard>
                 ) : (
                   solicitudes.map((sol) => (
-                    <GlassCard key={sol.id} className="p-6 border border-slate-200 hover:border-blue-200 transition-all">
+                    <GlassCard key={sol.id} className="p-6 border-white/10 !bg-white/5 hover:!border-blue-400/20 transition-all">
                       <div className="flex flex-col md:flex-row justify-between gap-4">
                          <div className="flex-1">
                             <div className="flex items-center gap-2 mb-3">
@@ -267,21 +267,21 @@ export const PanelSolicitudes: React.FC = () => {
                                  {sol.estado.replace("_", " ")}
                                </span>
                             </div>
-                            <h4 className="text-lg font-extrabold text-slate-800 mb-1 leading-tight">
+                             <h4 className="text-lg font-extrabold text-white mb-1 leading-tight">
                               {TIPOS_DOCUMENTO.find((t) => t.id === sol.tipo)?.label || sol.tipo}
                             </h4>
-                            <p className="text-sm text-slate-500 font-medium mb-4">{sol.descripcion}</p>
+                             <p className="text-sm text-slate-300 font-medium mb-4">{sol.descripcion}</p>
                             {sol.alumnoNombre && (
-                               <div className="flex items-center gap-2 bg-blue-50 w-fit px-3 py-1 rounded-full border border-blue-100">
-                                  <span className="material-icons text-blue-600 text-[14px]">person</span>
-                                  <span className="text-[10px] font-black text-blue-700 uppercase tracking-tight">{sol.alumnoNombre}</span>
+                               <div className="flex items-center gap-2 bg-blue-500/10 w-fit px-3 py-1 rounded-full border border-blue-400/20">
+                                  <span className="material-icons text-blue-300 text-[14px]">person</span>
+                                  <span className="text-[10px] font-black text-blue-200 uppercase tracking-tight">{sol.alumnoNombre}</span>
                                </div>
                             )}
                          </div>
                          <div className="text-left md:text-right flex flex-col justify-between">
                             <div>
                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Encargado/a</p>
-                               <p className="text-sm font-bold text-slate-700">{sol.asignadoNombre}</p>
+                               <p className="text-sm font-bold text-slate-100">{sol.asignadoNombre}</p>
                             </div>
                             {sol.fechaLimite && (
                                <div className="mt-4 flex items-center gap-2 md:justify-end text-orange-600">
@@ -296,17 +296,17 @@ export const PanelSolicitudes: React.FC = () => {
                 )}
               </div>
               <div className="lg:col-span-4 space-y-6">
-                 <GlassCard className="p-6 border border-slate-200">
+                 <GlassCard className="p-6 border-white/10 !bg-white/5">
                     <MiniCalendar />
                  </GlassCard>
-                 <GlassCard className="p-6 border border-slate-200 bg-slate-50/50">
+                 <GlassCard className="p-6 border-white/10 !bg-white/5">
                     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Carga Operativa</h3>
                     <div className="grid grid-cols-2 gap-4">
-                       <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                       <div className="p-4 bg-white/5 rounded-2xl border border-white/10 shadow-sm">
                           <p className="text-3xl font-black text-blue-600 leading-none">{solicitudes.length}</p>
                           <p className="text-[8px] font-black text-slate-400 uppercase mt-2 tracking-widest">Registros</p>
                        </div>
-                       <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                       <div className="p-4 bg-white/5 rounded-2xl border border-white/10 shadow-sm">
                           <p className="text-3xl font-black text-orange-600 leading-none">{solicitudes.filter(s => s.estado === "pendiente").length}</p>
                           <p className="text-[8px] font-black text-slate-400 uppercase mt-2 tracking-widest">Pendientes</p>
                        </div>
@@ -318,13 +318,13 @@ export const PanelSolicitudes: React.FC = () => {
 
           {activeTab === "nuevo" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               <GlassCard className="p-8 border border-slate-200">
+               <GlassCard className="p-8 border-white/10 !bg-white/5">
                   <div className="flex items-center gap-4 mb-8">
-                     <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                     <div className="w-12 h-12 bg-blue-500/10 border border-blue-400/20 rounded-2xl flex items-center justify-center text-blue-300">
                         <span className="material-icons">description</span>
                      </div>
                      <div>
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Solicitud de Documento</h3>
+                        <h3 className="text-xl font-black text-white tracking-tight">Solicitud de Documento</h3>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Control Escolar y Trámites</p>
                      </div>
                   </div>
@@ -393,13 +393,13 @@ export const PanelSolicitudes: React.FC = () => {
                   </div>
                </GlassCard>
 
-               <GlassCard className="p-8 border border-slate-200 bg-slate-50/30">
+               <GlassCard className="p-8 border-white/10 !bg-white/5">
                   <div className="flex items-center gap-4 mb-8">
-                     <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
+                     <div className="w-12 h-12 bg-purple-500/10 border border-purple-400/20 rounded-2xl flex items-center justify-center text-purple-300">
                         <span className="material-icons">campaign</span>
                      </div>
                      <div>
-                        <h3 className="text-xl font-black text-slate-800 tracking-tight">Comunicado Oficial</h3>
+                        <h3 className="text-xl font-black text-white tracking-tight">Comunicado Oficial</h3>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Difusión Institucional</p>
                      </div>
                   </div>
@@ -412,11 +412,11 @@ export const PanelSolicitudes: React.FC = () => {
           )}
 
           {activeTab === "comunicados" && (
-            <GlassCard className="p-12 text-center border-slate-200 border-dashed">
-               <span className="material-icons text-slate-200 text-6xl mb-4">history</span>
-               <h3 className="text-lg font-bold text-slate-400">Historial de Comunicados</h3>
-               <p className="text-sm text-slate-300 mt-2">No se registran envíos masivos recientemente.</p>
-            </GlassCard>
+             <GlassCard className="p-12 text-center border-white/10 border-dashed !bg-white/5">
+                <span className="material-icons text-slate-500 text-6xl mb-4">history</span>
+                <h3 className="text-lg font-bold text-slate-400">Historial de Comunicados</h3>
+                <p className="text-sm text-slate-300 mt-2">No se registran envíos masivos recientemente.</p>
+             </GlassCard>
           )}
         </motion.div>
       </AnimatePresence>

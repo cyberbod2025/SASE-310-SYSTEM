@@ -27,10 +27,10 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
 
   const variantStyles = {
     primary: "bg-blue-600 text-white shadow-[0_4px_15px_rgba(37,99,235,0.3)] hover:bg-blue-500 hover:shadow-[0_8px_25px_rgba(37,99,235,0.4)] border border-blue-400/30",
-    secondary: "bg-white/10 backdrop-blur-md text-slate-700 border border-white/20 hover:bg-white/20 hover:border-white/30",
+    secondary: "bg-white/8 backdrop-blur-xl text-slate-100 border border-white/10 hover:bg-white/12 hover:border-blue-400/30",
     danger: "bg-red-600 text-white shadow-[0_4px_15px_rgba(220,38,38,0.3)] hover:bg-red-500 hover:shadow-[0_8px_25px_rgba(220,38,38,0.4)] border border-red-400/30",
-    ghost: "bg-transparent text-slate-500 hover:bg-white/10 hover:text-slate-800",
-    outline: "bg-transparent border-2 border-slate-200 text-slate-500 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50/10"
+    ghost: "bg-transparent text-slate-300 hover:bg-white/8 hover:text-white",
+    outline: "bg-white/5 border border-white/10 text-slate-200 hover:border-blue-400/40 hover:text-blue-300 hover:bg-blue-500/10"
   };
 
   return (

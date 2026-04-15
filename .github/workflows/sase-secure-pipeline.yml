@@ -3,13 +3,26 @@ name: SASE Secure Pipeline
 on:
   push:
     branches: [main, master, develop]
+    paths-ignore:
+      - "docs/**"
+      - "tooling/**"
+      - "**/*.md"
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - "docs/**"
+      - "tooling/**"
+      - "**/*.md"
+
+concurrency:
+  group: secure-pipeline-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-frontend:
     name: 🎨 Frontend Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       
@@ -37,6 +50,7 @@ jobs:
   security-scan:
     name: 🔐 Security & SQL Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
         with:
@@ -63,13 +77,14 @@ jobs:
   database-audit:
     name: 🗄️ Database Integrity
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
       
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.90.0
           
       - name: Local DB Lint
         run: |

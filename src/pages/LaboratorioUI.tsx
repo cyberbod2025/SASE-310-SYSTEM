@@ -71,7 +71,7 @@ export const LaboratorioUI: React.FC = () => {
 
       <form
         onSubmit={enviar}
-        className="grid gap-4 bg-white/5/0 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-[0_20px_80px_rgba(0,0,0,0.35)]"
+        className="grid gap-4 bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-[0_20px_80px_rgba(0,0,0,0.35)]"
         style={{ backgroundColor: "rgba(15,20,35,0.65)" }}
       >
         <div className="space-y-2">

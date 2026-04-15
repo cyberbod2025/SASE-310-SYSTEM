@@ -117,9 +117,9 @@ export const Agenda: React.FC = () => {
     const hasEvents = events.some((e) => e.date === dateStr);
 
     if (isSelected) return "bg-blue-600 text-white shadow-lg z-10 scale-110 ring-4 ring-blue-100";
-    if (isToday) return "bg-blue-50 text-blue-600 font-extrabold border border-blue-100 shadow-inner";
-    if (hasEvents) return "bg-white text-slate-800 font-bold border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50";
-    return "text-slate-400 hover:bg-slate-50";
+    if (isToday) return "bg-blue-500/15 text-blue-200 font-extrabold border border-blue-400/20 shadow-inner";
+    if (hasEvents) return "bg-white/5 text-slate-100 font-bold border border-white/10 hover:border-blue-400/20 hover:bg-blue-500/10";
+    return "text-slate-400 hover:bg-white/5";
   };
 
   const filteredStudents = students.filter((s) => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -128,23 +128,23 @@ export const Agenda: React.FC = () => {
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10 min-h-full flex flex-col">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-800 mb-2 tracking-tight flex items-center gap-3">
-             <span className="material-icons text-blue-600 text-3xl">calendar_month</span>
+          <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight flex items-center gap-3">
+             <span className="material-icons text-blue-300 text-3xl">calendar_month</span>
              Agenda Institucional
           </h1>
-          <p className="text-slate-500 font-medium tracking-tight">Planificación estratégica de actividades y compromisos del ciclo escolar.</p>
+          <p className="text-slate-300 font-medium tracking-tight">Planificación estratégica de actividades y compromisos del ciclo escolar.</p>
         </div>
         <GlassButton variant="primary" onClick={() => setShowModal(true)}>Agendar Nueva Actividad</GlassButton>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-         <GlassCard className="lg:col-span-8 p-0 border border-slate-200 overflow-hidden bg-white/80">
-            <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+         <GlassCard className="lg:col-span-8 p-0 border-white/10 overflow-hidden !bg-white/5">
+            <div className="p-6 border-b border-white/10 bg-white/5 flex justify-between items-center">
                <div className="flex items-center gap-4">
                   <GlassButton variant="outline" className="p-2 h-10 w-10 min-w-0" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}>
                      <span className="material-icons">chevron_left</span>
                   </GlassButton>
-                  <h3 className="text-xl font-black text-slate-700 capitalize w-48 text-center">{monthLabel}</h3>
+                  <h3 className="text-xl font-black text-slate-100 capitalize w-48 text-center">{monthLabel}</h3>
                   <GlassButton variant="outline" className="p-2 h-10 w-10 min-w-0" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}>
                      <span className="material-icons">chevron_right</span>
                   </GlassButton>
@@ -185,7 +185,7 @@ export const Agenda: React.FC = () => {
          </GlassCard>
 
          <div className="lg:col-span-4 space-y-6">
-            <GlassCard className="p-8 border border-slate-200 bg-white min-h-[400px]">
+             <GlassCard className="p-8 border-white/10 !bg-white/5 min-h-[400px]">
                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-2">
                   <span className="material-icons text-blue-600 text-sm">event</span>
                   Compromisos del Día
@@ -200,20 +200,20 @@ export const Agenda: React.FC = () => {
                      selectedDateEvents.map(event => {
                         const cfg = TYPE_CONFIG[event.type] || TYPE_CONFIG.otro;
                         return (
-                           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={event.id} className={`p-5 rounded-3xl border ${cfg.border} ${cfg.bg} flex flex-col gap-3 shadow-sm`}>
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={event.id} className={`p-5 rounded-3xl border ${cfg.border} ${cfg.bg} flex flex-col gap-3 shadow-sm backdrop-blur-xl`}>
                               <div className="flex justify-between items-start">
                                  <div className={`flex items-center gap-2 ${cfg.color}`}>
                                     <span className="material-icons text-sm">{cfg.icon}</span>
                                     <span className="text-[9px] font-black uppercase tracking-widest">{cfg.label}</span>
                                  </div>
-                                 {event.time && <span className="text-[9px] font-black text-slate-500 bg-white/50 px-2 py-0.5 rounded-lg border border-slate-100">{event.time}</span>}
+                                 {event.time && <span className="text-[9px] font-black text-slate-300 bg-white/5 px-2 py-0.5 rounded-lg border border-white/10">{event.time}</span>}
                               </div>
-                              <h4 className="text-sm font-black text-slate-800 uppercase italic tracking-tight">{event.title}</h4>
+                               <h4 className="text-sm font-black text-slate-100 uppercase italic tracking-tight">{event.title}</h4>
                               {event.alumno_nombre && <p className="text-[9px] font-black text-blue-600 bg-blue-100/30 px-2 py-1 rounded-lg w-fit">Alumno: {event.alumno_nombre}</p>}
-                              {event.description && <p className="text-[10px] text-slate-500 font-medium leading-relaxed border-t border-slate-100 pt-2 italic">{event.description}</p>}
+                               {event.description && <p className="text-[10px] text-slate-300 font-medium leading-relaxed border-t border-white/10 pt-2 italic">{event.description}</p>}
                               
                               {event.para_todos_maestros && (
-                                <GlassButton onClick={() => handleBroadcastNotification(event)} loading={isSendingNotif === event.id} variant="outline" className="mt-2 h-9 text-[9px] font-black uppercase tracking-widest border-blue-200 text-blue-600 bg-white/50">
+                                 <GlassButton onClick={() => handleBroadcastNotification(event)} loading={isSendingNotif === event.id} variant="outline" className="mt-2 h-9 text-[9px] font-black uppercase tracking-widest border-blue-400/20 text-blue-200 bg-white/5">
                                    <span className="material-icons text-xs mr-2">send</span>
                                    Circular Maestra
                                 </GlassButton>
@@ -225,7 +225,7 @@ export const Agenda: React.FC = () => {
                </div>
             </GlassCard>
             
-            <GlassCard className="p-6 border border-slate-200 bg-amber-50">
+            <GlassCard className="p-6 border-amber-400/20 !bg-amber-500/10">
                <div className="flex gap-4">
                   <span className="material-icons text-amber-600">info</span>
                   <p className="text-[10px] font-bold text-amber-800 uppercase tracking-tight leading-relaxed">
@@ -239,10 +239,10 @@ export const Agenda: React.FC = () => {
       {/* Modal Nueva Actividad */}
       <AnimatePresence>
          {showModal && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
-               <GlassCard className="w-full max-w-lg p-0 bg-white border-slate-200 shadow-2xl overflow-hidden">
-                  <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                     <h3 className="text-xl font-black text-slate-800 uppercase italic tracking-tighter">Nueva Actividad</h3>
+               <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+                <GlassCard className="w-full max-w-lg p-0 !bg-[#0B1120]/90 border-white/10 shadow-2xl overflow-hidden">
+                   <div className="p-8 border-b border-white/10 flex justify-between items-center bg-white/5">
+                      <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Nueva Actividad</h3>
                      <button onClick={() => setShowModal(false)}><span className="material-icons text-slate-400">close</span></button>
                   </div>
                   <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
@@ -255,22 +255,22 @@ export const Agenda: React.FC = () => {
                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block ml-1">Estatus / Categoría</label>
                         <div className="grid grid-cols-2 gap-2">
                            {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-                             <button key={key} onClick={() => setNewEvent({...newEvent, type: key as any})} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${newEvent.type === key ? `${cfg.bg} ${cfg.border} ${cfg.color} ring-2 ring-current` : "bg-slate-50 border-slate-100 text-slate-400"}`}>
+                             <button key={key} onClick={() => setNewEvent({...newEvent, type: key as any})} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${newEvent.type === key ? `${cfg.bg} ${cfg.border} ${cfg.color} ring-2 ring-current` : "bg-white/5 border-white/10 text-slate-300"}`}>
                                 <span className="material-icons text-sm">{cfg.icon}</span>
                                 <span className="text-[9px] font-black uppercase">{cfg.label}</span>
                              </button>
                            ))}
                         </div>
                      </div>
-                     <div className="flex items-center gap-4 p-4 bg-blue-50/50 border border-blue-100 rounded-2xl cursor-pointer" onClick={() => setNewEvent({...newEvent, para_todos_maestros: !newEvent.para_todos_maestros})}>
+                      <div className="flex items-center gap-4 p-4 bg-blue-500/10 border border-blue-400/20 rounded-2xl cursor-pointer" onClick={() => setNewEvent({...newEvent, para_todos_maestros: !newEvent.para_todos_maestros})}>
                         <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${newEvent.para_todos_maestros ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300'}`}>
                            {newEvent.para_todos_maestros && <span className="material-icons text-[14px]">check</span>}
                         </div>
-                        <p className="text-[10px] font-black text-blue-800 uppercase tracking-widest">Notificar a toda la plantilla docente</p>
+                         <p className="text-[10px] font-black text-blue-100 uppercase tracking-widest">Notificar a toda la plantilla docente</p>
                      </div>
                      <div className="flex flex-col gap-2">
                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block ml-1">Notas Institucionales</label>
-                         <textarea title="Notas Institucionales" aria-label="Notas Institucionales" className="w-full h-24 bg-slate-50 border border-slate-100 rounded-2xl p-4 text-xs font-bold text-slate-700 outline-none focus:border-blue-500 transition-all resize-none" value={newEvent.description ?? ""} onChange={e => setNewEvent({...newEvent, description: e.target.value})} />
+                         <textarea title="Notas Institucionales" aria-label="Notas Institucionales" className="w-full h-24 bg-white/5 border border-white/10 rounded-2xl p-4 text-xs font-bold text-slate-100 outline-none focus:border-blue-500 transition-all resize-none" value={newEvent.description ?? ""} onChange={e => setNewEvent({...newEvent, description: e.target.value})} />
                      </div>
                      <GlassButton variant="primary" className="w-full h-14" onClick={handleSaveEvent}>Agendar Actividad</GlassButton>
                   </div>

@@ -6,7 +6,7 @@
 
 -- 1. ENUMS BÁSICOS
 DO $$ BEGIN
-    CREATE TYPE app_role AS ENUM ('directivo', 'docente', 'docente_tutor', 'prefectura', 'orientacion', 'trabajo_social', 'enfermeria', 'secretaria', 'medico_escolar', 'udeii', 'promotora_lectura', 'subdireccion');
+    CREATE TYPE app_role AS ENUM ('directivo', 'docente', 'docente_tutor', 'prefectura', 'orientacion', 'trabajo_social', 'enfermeria', 'secretaria', 'medico_escolar', 'udeii', 'promotora_lectura', 'subdireccion', 'admin', 'system_admin');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$ BEGIN
