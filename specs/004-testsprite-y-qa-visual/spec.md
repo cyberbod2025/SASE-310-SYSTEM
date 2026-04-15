@@ -14,7 +14,7 @@ El repo arrastraba scripts manuales inconsistentes (`playwright` sin dependencia
 
 - Unificar la base técnica de smoke visual alrededor de `puppeteer`.
 - Dejar scripts reproducibles para capturas y smoke funcional.
-- Formalizar el uso de `testsprite_tests/visual-audit` como carpeta de evidencia.
+- Formalizar el uso de `qa_artifacts/visual-audit` como carpeta de evidencia.
 
 ## Requisitos funcionales
 

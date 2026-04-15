@@ -9,8 +9,9 @@ Preparar la base técnica de QA visual de SASE para uso local, GitHub y futuras 
 - Corregir scripts rotos.
 - Añadir scripts npm explícitos.
 - Enlazar QA visual con un workflow dedicado.
+- Eliminar remanentes de TestSprite que nunca se pusieron en marcha.
 
 ## Validación
 
 - Ejecutar `node tests/visual-glass-smoke.js` con Vite local.
-- Confirmar generación de capturas en `testsprite_tests/visual-audit`.
+- Confirmar generación de capturas en `qa_artifacts/visual-audit`.

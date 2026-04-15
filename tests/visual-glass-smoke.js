@@ -3,7 +3,7 @@ import path from "node:path";
 import puppeteer from "puppeteer";
 
 const baseUrl = process.env.SASE_BASE_URL || "http://127.0.0.1:3100";
-const outputDir = path.resolve("testsprite_tests", "visual-audit");
+const outputDir = path.resolve("qa_artifacts", "visual-audit");
 
 const routes = [
   {
@@ -70,7 +70,7 @@ async function capturePage(page, route) {
   return {
     name: route.name,
     url: route.url,
-    screenshot: path.join("testsprite_tests", "visual-audit", `${route.name}.png`),
+    screenshot: path.join("qa_artifacts", "visual-audit", `${route.name}.png`),
     ...diagnostics,
   };
 }

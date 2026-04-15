@@ -25,8 +25,8 @@ import puppeteer from 'puppeteer';
 
     console.log('Orb/Sasito present:', hasOrb);
     
-    await page.screenshot({ path: 'testsprite_tests/render_check.png' });
-    console.log('Screenshot saved to testsprite_tests/render_check.png');
+    await page.screenshot({ path: 'qa_artifacts/render_check.png' });
+    console.log('Screenshot saved to qa_artifacts/render_check.png');
     
   } catch (e) {
     console.error('Error during test:', e);
