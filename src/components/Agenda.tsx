@@ -36,7 +36,7 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; bo
 
 export const Agenda: React.FC = () => {
   const { user } = useAuth();
-  const { students, addNotification } = useApp();
+  const { students, addNotification, setIsAssistantOpen, setAssistantSuggestion } = useApp();
   const [isSendingNotif, setIsSendingNotif] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(new Date().toISOString().split("T")[0]);
@@ -48,7 +48,14 @@ export const Agenda: React.FC = () => {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+    
+    // Proactive Sasito help
+    setIsAssistantOpen(true);
+    setAssistantSuggestion({
+      text: "¡Hola! Esta es la Agenda Institucional. ¿Sabías que al agendar un citatorio desde el Registro Rápido, aparecerá automáticamente aquí?",
+      state: "attention"
+    });
+  }, [setIsAssistantOpen, setAssistantSuggestion]);
 
   const fetchEvents = async () => {
     try {

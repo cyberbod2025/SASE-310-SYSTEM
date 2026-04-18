@@ -36,6 +36,11 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     notifications,
     currentUserProfile,
     isTourActive,
+    setIsTourActive,
+    tourStep,
+    setTourStep,
+    assistantSuggestion,
+    setAssistantSuggestion,
   } = useApp();
 
   const [localState, setLocalState] = useState<SasitoState>('calm');
@@ -49,7 +54,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
 
   // -- ONBOARDING LOGIC --
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('sase_onboarding_v1_completed');
+    const hasSeenWelcome = localStorage.getItem('sase_onboarding_v2_completed');
     if (!hasSeenWelcome && !minimal) {
       setTimeout(() => {
         setLocalState('attention');
@@ -62,6 +67,35 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       }, 3000);
     }
   }, [currentUserProfile, minimal]);
+
+  // Sync visuals with Tour Steps
+  useEffect(() => {
+    if (!isTourActive) return;
+    
+    // tourStep starts at 0
+    if (tourStep === 6) { // Radar de Riesgo Crítico
+      setLocalState('alert');
+    } else if (tourStep === 5 || tourStep === 7) { // Métricas o Focalización
+      setLocalState('attention');
+    } else if (tourStep === 10) { // Finalizada
+      setLocalState('calm');
+    } else {
+      setLocalState('calm');
+    }
+  }, [isTourActive, tourStep]);
+
+  // Sync with global suggestions (Proactive Help)
+  useEffect(() => {
+    if (assistantSuggestion) {
+      setCurrentSuggestion(assistantSuggestion as Suggestion);
+      if (assistantSuggestion.state) setLocalState(assistantSuggestion.state as SasitoState);
+      const timer = setTimeout(() => {
+        setCurrentSuggestion(null);
+        setAssistantSuggestion(null);
+      }, 12000);
+      return () => clearTimeout(timer);
+    }
+  }, [assistantSuggestion, setAssistantSuggestion]);
 
   // Sync with global system state
   useEffect(() => {
@@ -106,6 +140,33 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     return () => clearInterval(interval);
   }, [minimal, isBubbleExpanded, isChatOpen, saseSuggestions]);
 
+  const INTENT_RULES = [
+    {
+      intent: "Generar Documentos Legales",
+      keywords: ["acta de hechos", "hoja de acuerdos", "minuta", "imprimir", "documento", "citatorio"],
+      allowedRoles: [UserRole.TRABAJO_SOCIAL, UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.PREFECTURA, UserRole.ORIENTACION],
+      moduleTarget: AppModule.DOCUMENTACION, 
+      successText: "Abriendo el Sistema de Documentación Institucional para elaborar el oficio.",
+      deniedText: "Protocolo denegado: Solo Trabajo Social, Prefectura, Orientación o Dirección pueden emitir Actas de Hechos y Minutas Oficiales."
+    },
+    {
+      intent: "Solicitar Historial / Expedientes",
+      keywords: ["historial academico", "pedir historial", "expediente academico", "archivo", "calificaciones previas"],
+      allowedRoles: [UserRole.TRABAJO_SOCIAL, UserRole.DIRECTIVO, UserRole.ORIENTACION, UserRole.SUBDIRECCION],
+      moduleTarget: AppModule.EXPEDIENTES,
+      successText: "Enrutando al Archivo Central. Desde aquí puedes solicitar el historial a la plantilla docente.",
+      deniedText: "Acceso Restringido. Las solicitudes masivas de historial a docentes corresponden al área de Trabajo Social, Subdirección u Orientación."
+    },
+    {
+      intent: "Programar en Agenda y Calendario Escolar",
+      keywords: ["agendar evento", "semana de evaluaciones", "calendario", "recordatorio escolar", "programar junta"],
+      allowedRoles: [UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.SECRETARIA],
+      moduleTarget: AppModule.AGENDA,
+      successText: "Abriendo la Agenda Institucional. Aquí puedes programar el evento escolar y notificar automáticamente a los profesores.",
+      deniedText: "Modificación de calendario no autorizada. Agendar eventos globales y evaluaciones requiere validación Directiva o de Secretaría."
+    }
+  ];
+
   const processInput = (text: string) => {
     if (!text.trim()) return;
     setLocalState('processing');
@@ -148,26 +209,56 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       }
 
       // --- AUTHORIZED NAVIGATION & ACTIONS ---
-      if (normalized.includes("incidencia") || normalized.includes("reporte")) {
+      if (normalized.includes("incidencia") || normalized.includes("reporte rápido")) {
         setQuickRegisterOpen(true);
         setCurrentSuggestion({ text: "Entendido. Abriendo módulo de registro rápido de incidencias.", state: 'calm' });
         setIsChatOpen(false);
-      } else if (normalized.includes("tour") || normalized.includes("ayuda") || normalized.includes("instrucciones") || normalized.includes("cómo funciona") || normalized.includes("como se hace esto") || normalized.includes("manual")) {
+        return;
+      } else if (normalized.includes("tour") || normalized.includes("ayuda") || normalized.includes("instrucciones") || normalized.includes("manual")) {
         setCurrentSuggestion({ text: "Entendido. Iniciando protocolo de inducción personalizada. Sígueme...", state: 'calm' });
         setIsChatOpen(false);
         localStorage.setItem('sase_onboarding_completed', 'true');
-        import("../TourGuide").then(m => m.startProductTour(currentUserProfile?.full_name || "Docente", currentUserRole as any));
-      } else if (normalized.includes("agenda")) {
-        setCurrentModule(AppModule.AGENDA);
-        setCurrentSuggestion({ text: "Navegando a la Agenda Institucional.", state: 'calm' });
-        setIsChatOpen(false);
-      } else if (normalized.includes("reporte")) {
-        setCurrentModule(AppModule.REPORTES);
-        setCurrentSuggestion({ text: "Accediendo al panel de Reportes y Estadísticas.", state: 'calm' });
-        setIsChatOpen(false);
-      } else {
-        setCurrentSuggestion({ text: "Protocolo SASE recibido. He procesado tu solicitud satisfactoriamente.", state: 'calm' });
+        import("../TourGuide").then(m => m.startProductTour(
+          currentUserProfile?.full_name || "Docente", 
+          currentUserRole as any,
+          setIsTourActive,
+          setTourStep
+        ));
+        return;
       }
+
+      // Contextual semantic response
+      if (normalized.includes("como esta la escuela") || normalized.includes("estatus")) {
+        const highRisk = students.filter(s => s.caseState === 'INTERVENCION').length;
+        const unread = notifications.filter(n => !n.read).length;
+        if (highRisk > 0) {
+          setCurrentSuggestion({ text: `Situación Escolar: CRITICA. Tenemos ${highRisk} caso(s) en Intervención que requieren actuación inmediata.`, state: 'alert' });
+        } else if (unread > 0) {
+          setCurrentSuggestion({ text: `Situación Escolar: ESTABLE con pendientes. Tienes ${unread} notificaciones nuevas acumuladas.`, state: 'attention' });
+        } else {
+          setCurrentSuggestion({ text: `Situación Escolar: VERDE. Todo el ambiente institucional se encuentra bajo control en los parámetros operativos.`, state: 'calm' });
+        }
+        return;
+      }
+
+      // --- RBAC INTENT ENGINE ---
+      for (const rule of INTENT_RULES) {
+        if (rule.keywords.some(keyword => normalized.includes(keyword))) {
+          if (rule.allowedRoles.includes(currentUserRole as UserRole)) {
+            setCurrentModule(rule.moduleTarget);
+            setCurrentSuggestion({ text: rule.successText, state: 'calm' });
+            setIsChatOpen(false);
+          } else {
+            setLocalState('alert');
+            setCurrentSuggestion({ text: rule.deniedText, state: 'alert' });
+            toast.error(`Acceso denegado por jerarquía (${currentUserRole}).`);
+          }
+          return;
+        }
+      }
+
+      setCurrentSuggestion({ text: "Protocolo SASE recibido. Por el momento mi capacidad se limita a estas áreas, utiliza los menús laterales para acciones complejas.", state: 'calm' });
+
     }, 1500);
   };
 
@@ -223,7 +314,12 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                 <button 
                   onClick={() => {
                     setIsChatOpen(false);
-                    import("../TourGuide").then(m => m.startProductTour(currentUserProfile?.full_name || "Docente", currentUserRole as any));
+                    import("../TourGuide").then(m => m.startProductTour(
+                      currentUserProfile?.full_name || "Docente", 
+                      currentUserRole as any,
+                      setIsTourActive,
+                      setTourStep
+                    ));
                   }}
                   className="w-full py-4 bg-violet-600/20 border border-violet-500/30 rounded-2xl text-[10px] font-black text-violet-400 uppercase tracking-widest hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 shadow-xl shadow-violet-900/10"
                 >
@@ -269,7 +365,12 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                           onClick={() => {
                             if (currentSuggestion.actionType === "start-tour") {
                                localStorage.setItem('sase_onboarding_completed', 'true');
-                               import("../TourGuide").then(m => m.startProductTour(currentUserProfile?.full_name || "Docente", currentUserRole as any));
+                               import("../TourGuide").then(m => m.startProductTour(
+                                 currentUserProfile?.full_name || "Docente", 
+                                 currentUserRole as any,
+                                 setIsTourActive,
+                                 setTourStep
+                               ));
                             } else if (currentSuggestion.actionType?.startsWith("module-")) {
                                const module = currentSuggestion.actionType.replace("module-", "").toUpperCase();
                                setCurrentModule(module as any);

@@ -497,40 +497,55 @@
 /* --- SASE PREMIUM TOUR (DRIVER.JS CUSTOMIZATION) --- */
 .driver-popover.sase-tour-popover {
   background: rgba(13, 17, 23, 0.85) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 24px !important;
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(59, 130, 246, 0.15) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 40px !important; /* Más redondeado para parecer nube */
+  box-shadow: 
+    0 30px 60px -12px rgba(0, 0, 0, 0.6),
+    0 0 50px rgba(139, 92, 246, 0.2),
+    inset 0 0 30px rgba(255, 255, 255, 0.05) !important;
   color: #fff !important;
-  max-width: 380px !important;
-  padding: 28px !important;
+  max-width: 420px !important;
+  padding: 32px !important;
   position: relative !important;
   overflow: visible !important;
 }
 
-/* SASE Sentient Core floating near popover */
+/* Efecto "Colita" de la nube/burbuja */
+.driver-popover.sase-tour-popover::after {
+  content: "";
+  position: absolute;
+  bottom: -15px;
+  right: 50px;
+  width: 30px;
+  height: 30px;
+  background: inherit;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  transform: rotate(45deg);
+  z-index: -1;
+  backdrop-filter: blur(32px);
+}
+
+/* SASE Sentient Core floating near popover (Sasito) */
 .driver-popover.sase-tour-popover::before {
   content: "";
   position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 80px;
-  height: 80px;
-  background: radial-gradient(circle at 30% 30%, #8b5cf6, #000); /* Violet Base */
-  border-radius: 50%;
-  box-shadow:
-    0 0 30px rgba(139, 92, 246, 0.8),
-    0 0 60px rgba(6, 182, 212, 0.4),
-    inset 0 0 20px rgba(255, 255, 255, 0.2);
-  animation: float 3s ease-in-out infinite, sase-neural-pulse 2s ease-in-out infinite;
-  z-index: 10000;
-  border: 4px solid rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-  /* Glow extra */
+  top: -60px;
+  left: -40px;
+  width: 100px;
+  height: 100px;
   background: radial-gradient(circle at 35% 35%, #8b5cf6, #0ea5e9);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 40px rgba(139, 92, 246, 0.9),
+    0 0 80px rgba(6, 182, 212, 0.5),
+    inset 0 0 25px rgba(255, 255, 255, 0.4);
+  animation: float 4s ease-in-out infinite, sase-neural-pulse 2s ease-in-out infinite;
+  z-index: 10001;
+  border: 5px solid rgba(255, 255, 255, 0.5);
+  pointer-events: none;
 }
 
 .sase-tour-welcome-orb {

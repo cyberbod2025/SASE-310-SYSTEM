@@ -1,28 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "./ui/GlassCard";
+import { useApp } from "../store";
 
 export const ManualUsuario = () => {
+  const { 
+    setIsAssistantOpen, 
+    setAssistantStatus, 
+    setAssistantSuggestion 
+  } = useApp();
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  // Activar Sasito proactivamente al entrar al manual
+
+  useEffect(() => {
+    setIsAssistantOpen(true);
+    setAssistantSuggestion({
+      text: "¡Hola! He detectado que estás consultando el manual. ¿Necesitas ayuda con algún protocolo específico?",
+      state: "attention",
+      actionLabel: "GUÍAME EN EL TOUR",
+      actionType: "start-tour"
+    });
+  }, [setAssistantSuggestion, setIsAssistantOpen]);
 
   const faqs = [
     {
       id: 1,
-      title: "¿Como registrar una incidencia en clase?",
+      title: "¿Cómo registrar una incidencia en clase?",
       content:
-        "Dirigete al modulo de Deteccion Pedagogica, selecciona al alumno y haz clic en \"Reportar Incidencia\". SASE guardara la hora y fecha automaticamente.",
+        "Dirígete al módulo de Detección Pedagógica, selecciona al alumno y haz clic en \"Reportar Incidencia\". SASE guardará la hora y fecha automáticamente para asegurar la integridad del registro.",
     },
     {
       id: 2,
-      title: "¿Como funciona la Caja Negra de privacidad?",
+      title: "¿Cómo funciona la Caja Negra de privacidad?",
       content:
-        "La informacion sensible de UDEII y Enfermeria esta protegida. Solo el personal con el rol autorizado puede acceder a estos expedientes, dejando un rastro de auditoria.",
+        "La información sensible de UDEII y Enfermería está protegida por protocolos de cifrado. Solo el personal con el rol autorizado puede acceder a estos expedientes, y cada acceso queda registrado irreversiblemente en el log de auditoría.",
     },
     {
       id: 3,
-      title: "¿Como realizar un pase de lista?",
+      title: "¿Cómo realizar un pase de lista?",
       content:
-        "En el modulo de Asistencia veras la lista de tu grupo. Toca los botones de Presente (P), Retardo (R) o Falta (F) y luego \"Guardar Asistencia\".",
+        "En el módulo de Asistencia verás la lista sincronizada de tu grupo. Utiliza los selectores de presencia (P), Retardo (R) o Falta (F) y pulsa en \"Guardar Protocolo\" para finalizar.",
+    },
+    {
+      id: 4,
+      title: "¿Qué es el Semáforo de Riesgo?",
+      content:
+        "Es un algoritmo predictivo que analiza patrones de conducta, asistencia y desempeño académico. El estado 'INTERVENCION' indica que el núcleo SASE ha detectado una anomalía crítica que requiere actuación inmediata.",
     },
   ];
 
@@ -30,89 +54,124 @@ export const ManualUsuario = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex-1 p-6 lg:p-8 relative z-10 w-full max-w-4xl mx-auto h-full flex flex-col"
+      className="flex-1 p-6 lg:p-12 relative z-10 w-full max-w-5xl mx-auto h-full flex flex-col overflow-hidden"
     >
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
-          Manual y Centro de Ayuda
+      {/* Mesh Background Effects */}
+      <div className="absolute top-0 right-0 -z-10 w-96 h-96 bg-violet-600/10 blur-[120px] rounded-full animate-mesh-slow" />
+      <div className="absolute bottom-0 left-0 -z-10 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full animate-mesh-slower" />
+
+      <div className="mb-12 text-center relative">
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-black tracking-[0.2em] uppercase mb-4"
+        >
+          <span className="material-icons text-xs">info</span>
+          Centro de Inteligencia SASE
+        </motion.div>
+        <h1 className="text-4xl lg:text-5xl font-black text-white mb-4 tracking-tighter title-sase">
+          Manual del Usuario
         </h1>
-        <p className="text-slate-400 text-sm">
-          Resuelve tus dudas operativas o consultale directamente a Sasito.
+        <p className="text-slate-400 text-sm lg:text-base max-w-2xl mx-auto font-medium">
+          Optimiza tu interacción con el núcleo operativo. Resuelve dudas frecuentes o consulta directamente a Sasito para asistencia avanzada.
         </p>
       </div>
 
-      <GlassCard className="mb-8 p-4">
-        <div className="relative">
-          <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">search</span>
-          <input
-            type="text"
-            placeholder="Buscar en el manual (ej. como reportar retardo)..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all min-h-[48px]"
-          />
-        </div>
-      </GlassCard>
-
-      <div className="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2">
-        <h2 className="text-lg font-semibold text-slate-200 mb-4 px-2">
-          Temas principales
-        </h2>
-
-        {faqs.map((faq) => (
-          <GlassCard key={faq.id} className="p-0 overflow-hidden">
-            <button
-              onClick={() => setActiveFaq(activeFaq === faq.id ? null : faq.id)}
-              className="w-full px-6 py-4 flex items-center justify-between text-left focus:outline-none min-h-[48px]"
+      <div className="grid lg:grid-cols-3 gap-8 flex-1 overflow-hidden">
+        {/* FAQ Section */}
+        <div className="lg:col-span-2 flex flex-col gap-4 overflow-y-auto pr-4 custom-scrollbar">
+          <h2 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-2 px-2">
+            Protocolos Frecuentes
+          </h2>
+          
+          {faqs.map((faq) => (
+            <GlassCard 
+              key={faq.id} 
+              className="p-0 overflow-hidden border-white/5 hover:border-violet-500/30 transition-all duration-500"
+              hover
             >
-              <span className="text-white font-medium text-sm">{faq.title}</span>
-              <span
-                className="material-icons text-slate-400 transition-transform duration-300"
-                style={{
-                  transform: activeFaq === faq.id ? "rotate(180deg)" : "rotate(0deg)",
-                }}
+              <button
+                onClick={() => setActiveFaq(activeFaq === faq.id ? null : faq.id)}
+                className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none group min-h-[64px]"
               >
-                expand_more
-              </span>
-            </button>
+                <span className="text-white font-bold text-sm lg:text-base group-hover:text-violet-300 transition-colors">
+                  {faq.title}
+                </span>
+                <div className={`p-1 rounded-lg bg-white/5 transition-transform duration-500 ${activeFaq === faq.id ? 'rotate-180 bg-violet-500/20 text-violet-400' : 'text-slate-500'}`}>
+                  <span className="material-icons text-sm">expand_more</span>
+                </div>
+              </button>
 
-            <AnimatePresence>
-              {activeFaq === faq.id && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="px-6 pb-4 text-slate-400 text-sm leading-relaxed"
-                >
-                  <div className="pt-2 border-t border-white/10">
-                    {faq.content}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {activeFaq === faq.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                    className="px-6 pb-6 text-slate-400 text-sm leading-relaxed"
+                  >
+                    <div className="pt-4 border-t border-white/10 italic">
+                      {faq.content}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </GlassCard>
+          ))}
+        </div>
+
+        {/* Sasito Sidebar CTA */}
+        <div className="flex flex-col gap-6">
+          <h2 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-2 px-2">
+            Asistencia IA
+          </h2>
+          
+          <GlassCard 
+            className="border-violet-500/30 bg-violet-500/5 relative group h-fit"
+            onClick={() => setIsAssistantOpen(true)}
+          >
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="material-icons text-6xl">blur_on</span>
+            </div>
+            
+            <div className="flex flex-col gap-6 items-center text-center py-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-violet-500 blur-xl opacity-20 animate-pulse" />
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center shadow-2xl relative z-10 border border-white/20">
+                  <span className="material-icons text-white text-3xl">smart_toy</span>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-white font-black text-lg uppercase tracking-wider mb-2">¿Dudas complejas?</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">
+                  Sasito conoce cada rincón del sistema. Pregúntale lo que sea y él te guiará paso a paso.
+                </p>
+              </div>
+              
+              <button 
+                className="w-full py-3 bg-violet-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-violet-500/20 hover:bg-violet-400 transition-all transform group-hover:scale-105 active:scale-95"
+              >
+                Iniciando Consulta...
+              </button>
+            </div>
           </GlassCard>
-        ))}
-      </div>
 
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 flex items-center justify-between cursor-pointer group"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-purple-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-            <span className="material-icons text-purple-300">smart_toy</span>
-          </div>
-          <div>
-            <h3 className="text-white font-medium text-sm">¿No encuentras lo que buscas?</h3>
-            <p className="text-slate-400 text-xs mt-1">
-              Preguntale a Sasito, tu asistente institucional.
-            </p>
+          <div className="p-6 rounded-[2rem] border border-white/10 bg-white/5 backdrop-blur-3xl">
+             <div className="flex items-center gap-3 mb-4">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sincronización Activa</span>
+             </div>
+             <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                El Manual de SASE-310 se actualiza en tiempo real con cada despliegue oficial de ingeniería.
+             </p>
           </div>
         </div>
-        <span className="material-icons text-purple-400 group-hover:translate-x-1 transition-transform">
-          arrow_forward
-        </span>
-      </motion.div>
+      </div>
     </motion.div>
   );
 };
 
 export default ManualUsuario;
+
