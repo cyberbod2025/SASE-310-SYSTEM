@@ -52,6 +52,8 @@ interface AppContextType {
   quickRegisterType: any;
   openQuickRegister: any;
   assistantMessage: any;
+  assistantSuggestion: { text: string, state?: string, actionLabel?: string, actionType?: string } | null;
+  setAssistantSuggestion: (suggestion: { text: string, state?: string, actionLabel?: string, actionType?: string } | null) => void;
   isAssistantOpen: any;
   setIsAssistantOpen: any;
   isFeedbackOpen: any;
@@ -65,6 +67,8 @@ interface AppContextType {
   resetSystemState: () => void;
   isTourActive: boolean;
   setIsTourActive: (active: boolean) => void;
+  tourStep: number;
+  setTourStep: (step: number) => void;
   highlightedModule: AppModule | null;
   highlightModule: (moduleKey: string | AppModule) => void;
   autoNavigate: boolean;

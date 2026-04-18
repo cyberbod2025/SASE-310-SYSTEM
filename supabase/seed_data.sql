@@ -1,3 +1,6 @@
+-- Usuario semilla para incidencias
+INSERT INTO auth.users (id, email, raw_user_meta_data, role, aud, email_confirmed_at) VALUES ('00000000-0000-0000-0000-000000000000', 'admin@sase.mx', '{"full_name": "Administrador Sistema"}', 'authenticated', 'authenticated', now()) ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.profiles (id, full_name, role) VALUES ('00000000-0000-0000-0000-000000000000', 'Administrador Sistema', 'admin') ON CONFLICT (id) DO NOTHING;
 -- Semilla de Datos (Seed Data) para SASE-310
 -- Carga masiva de Grupos, Usuarios Simulados y Alumnos
 
@@ -35,18 +38,18 @@ on conflict (matricula) do nothing;
 
 -- 3. Crear Incidencias Iniciales (Para probar Dashboard)
 -- Carlos (3 Retardos -> Observado)
-insert into public.incidencias (alumno_id, tipo, descripcion, fecha) 
-select id, 'RETARDO', 'Llegada tarde 10 min', now() - interval '2 days' from public.alumnos where matricula = '2023-4492';
+insert into public.incidencias (alumno_id, tipo, descripcion, fecha, reportado_por) 
+select id, 'retardo', 'Llegada tarde 10 min', now() - interval '2 days'  , '00000000-0000-0000-0000-000000000000' from public.alumnos where matricula = '2023-4492';
 
-insert into public.incidencias (alumno_id, tipo, descripcion, fecha) 
-select id, 'RETARDO', 'Llegada tarde 15 min', now() - interval '1 day' from public.alumnos where matricula = '2023-4492';
+insert into public.incidencias (alumno_id, tipo, descripcion, fecha, reportado_por) 
+select id, 'retardo', 'Llegada tarde 15 min', now() - interval '1 day'  , '00000000-0000-0000-0000-000000000000' from public.alumnos where matricula = '2023-4492';
 
 -- Sofia (Conducta -> Patrón Detectado)
-insert into public.incidencias (alumno_id, tipo, descripcion, fecha) 
-select id, 'CONDUCTA', 'Uso de celular en clase', now() - interval '5 days' from public.alumnos where matricula = '2023-1122';
+insert into public.incidencias (alumno_id, tipo, descripcion, fecha, reportado_por) 
+select id, 'conducta', 'Uso de celular en clase', now() - interval '5 days'  , '00000000-0000-0000-0000-000000000000' from public.alumnos where matricula = '2023-1122';
 
-insert into public.incidencias (alumno_id, tipo, descripcion, fecha) 
-select id, 'UNIFORME', 'Sin uniforme completo', now() - interval '3 days' from public.alumnos where matricula = '2023-1122';
+insert into public.incidencias (alumno_id, tipo, descripcion, fecha, reportado_por) 
+select id, 'uniforme', 'Sin uniforme completo', now() - interval '3 days'  , '00000000-0000-0000-0000-000000000000' from public.alumnos where matricula = '2023-1122';
 
-insert into public.incidencias (alumno_id, tipo, descripcion, fecha) 
-select id, 'CONDUCTA', 'Falta de respeto a compañero', now() from public.alumnos where matricula = '2023-1122';
+insert into public.incidencias (alumno_id, tipo, descripcion, fecha, reportado_por) 
+select id, 'conducta', 'Falta de respeto a compañero', now()  , '00000000-0000-0000-0000-000000000000' from public.alumnos where matricula = '2023-1122';

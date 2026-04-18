@@ -26,7 +26,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
       case 'normal': return '#8b5cf6';    // Violeta Eléctrico
       case 'warning': return '#f59e0b';   // Ámbar Alerta
       case 'alert': return '#f43f5e';     // Magenta Acción
-      case 'thinking': return '#d946ef';  // Fucsia Neural
+      case 'thinking': return '#ffffff';  // Blanco y Violeta (Paleta Institucional)
       case 'rebooting': return '#06b6d4'; // Cian Cuántico
       default: return '#8b5cf6';
     }
@@ -65,7 +65,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
             id, 
             x: e.clientX, 
             y: e.clientY, 
-            color: getStateColor(state) 
+            color: state === 'thinking' ? '#ffffff' : getStateColor(state) 
           };
           setParticles(prev => [...prev.slice(-15), newParticle]);
           setTimeout(() => setParticles(prev => prev.filter(p => p.id !== id)), 1000);
@@ -79,6 +79,9 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
 
   // Exact 3D Gradients from source - ENHANCED for higher fidelity (Soft Radial Lavanda/Cian)
   const get3DGradient = (s: string) => {
+    if (s === 'thinking') {
+      return 'radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(139, 92, 246, 0.8) 40%, rgba(76, 29, 149, 0.4) 70%, transparent 100%)';
+    }
     return 'radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(139, 92, 246, 0.5) 40%, rgba(6, 182, 212, 0.2) 70%, transparent 100%)';
   };
 
@@ -119,19 +122,19 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
           y: [0, -12, 0],
           rotate: state === 'thinking' ? 360 : 0,
           filter: state === 'thinking' 
-            ? ['saturate(1.8) hue-rotate(0deg) contrast(1.3)', 'saturate(1.8) hue-rotate(360deg) contrast(1.3)'] 
+            ? ['saturate(1.8) hue-rotate(0deg) contrast(1.3)', 'saturate(2) hue-rotate(45deg) contrast(1.5)', 'saturate(1.8) hue-rotate(0deg) contrast(1.3)'] 
             : 'saturate(1.4) hue-rotate(0deg) contrast(1.1)',
           scale: state === 'warning' ? 1.08 : (state === 'thinking' ? 1.04 : 1),
           background: get3DGradient(state),
-          boxShadow: `0 0 40px rgba(139, 92, 246, 0.3)`,
+          boxShadow: state === 'thinking' ? `0 0 60px rgba(255, 255, 255, 0.6), inset 0 0 20px rgba(139, 92, 246, 0.5)` : `0 0 40px rgba(139, 92, 246, 0.3)`,
         }}
         transition={{
           y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
           rotate: { duration: state === 'thinking' ? 12 : 0, repeat: Infinity, ease: "linear" },
-          filter: { duration: state === 'thinking' ? 6 : 0, repeat: Infinity, ease: "linear" },
+          filter: { duration: state === 'thinking' ? 4 : 0, repeat: Infinity, ease: "easeInOut" },
           scale: { duration: 0.4 },
           background: { duration: 1 },
-          boxShadow: { duration: 1 }
+          boxShadow: { duration: state === 'thinking' ? 2 : 1, repeat: state === 'thinking' ? Infinity : 0 }
         }}
         className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden backdrop-blur-[8px] opacity-80 z-10 ring-2 ring-white/10"
         style={{
@@ -180,7 +183,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
                   repeatDelay: Math.random() * 0.3,
                   delay: i * 0.05
                 }}
-                className="absolute top-1/2 left-1/2 w-24 h-[2px] bg-white shadow-[0_0_20px_white,0_0_10px_cyan]"
+                className={`absolute top-1/2 left-1/2 w-24 h-[2px] bg-white ${state === 'thinking' ? 'shadow-[0_0_20px_white,0_0_10px_#8b5cf6]' : 'shadow-[0_0_20px_white,0_0_10px_red]'}`}
               />
             ))}
           </div>
@@ -235,7 +238,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({ state, className }
             className="absolute w-[240px] h-[240px] rounded-full border border-white/20 blur-md"
             style={{
               background: state === 'thinking' 
-                ? `conic-gradient(from ${i * 90}deg, #8b5cf6, #d946ef, #06b6d4, #8b5cf6)`
+                ? `conic-gradient(from ${i * 90}deg, #ffffff, #8b5cf6, #ffffff, #4c1d95)`
                 : `radial-gradient(circle, ${color}22 0%, transparent 70%)`
             }}
           />

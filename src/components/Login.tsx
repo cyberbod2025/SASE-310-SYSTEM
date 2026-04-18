@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import { supabase } from "../supabase/client";
 import toast from "react-hot-toast";
-import { SasinLoginOrb } from "./SasinLoginOrb";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 import { GlassCard } from "./ui/GlassCard";
 import { GlassButton } from "./ui/GlassButton";
 import { GlassInput } from "./ui/GlassInput";
@@ -145,7 +145,7 @@ export const Login: React.FC<LoginProps> = ({
             style={{ x: orbXSpring, y: orbYSpring }}
             className="mb-8"
           >
-            <SasinLoginOrb className="w-32 h-32" mouseX={orbPos.x} mouseY={orbPos.y} />
+            <SaseSplineOrb state="rebooting" className="w-32 h-32" />
           </motion.div>
 
           <h1 className="text-5xl font-black text-white mb-2 tracking-tighter text-center uppercase drop-shadow-md">SASE 310</h1>

@@ -19,6 +19,8 @@ export const QuickRegisterModal: React.FC = () => {
     addIncident,
     currentUserRole,
     addDocumentoInstitucional,
+    setIsAssistantOpen,
+    setAssistantSuggestion,
   } = useApp();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -64,8 +66,15 @@ export const QuickRegisterModal: React.FC = () => {
       if (!description) {
         setDescription(templates[quickRegisterType] || "");
       }
+
+      // Proactive Sasito help
+      setIsAssistantOpen(true);
+      setAssistantSuggestion({
+        text: "¡Hola! He activado el modo de registro rápido. ¿Sabías que también puedes usar tu voz para describir lo sucedido pulsando el micrófono?",
+        state: "attention"
+      });
     }
-  }, [quickRegisterOpen, quickRegisterType]);
+  }, [quickRegisterOpen, quickRegisterType, setIsAssistantOpen, setAssistantSuggestion]);
 
   // Load support protocols
   useEffect(() => {

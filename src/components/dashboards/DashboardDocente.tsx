@@ -119,6 +119,37 @@ export const DashboardDocente = () => {
     },
   ];
 
+  const [isLaunchingFeria, setIsLaunchingFeria] = useState(false);
+  const { session } = useAuth(); // Ensure we have access to the session
+
+  const handleLaunchFeria = async () => {
+    if (!session) {
+      toast.error("Sesión no válida");
+      return;
+    }
+    setIsLaunchingFeria(true);
+    try {
+      const resp = await fetch("/api/auth/launch-feria", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json", 
+          "Authorization": `Bearer ${session.access_token}` 
+        }
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || "Error al conectar con Feria");
+      
+      toast.success("Redirigiendo a Feria de Ciencias...");
+      setTimeout(() => { 
+        window.open(data.url, "_blank"); 
+        setIsLaunchingFeria(false); 
+      }, 1500);
+    } catch (error: any) {
+      toast.error(error.message);
+      setIsLaunchingFeria(false);
+    }
+  };
+
   const handleAttendanceChange = (
     studentId: string,
     status: "P" | "R" | "F",
@@ -523,6 +554,29 @@ export const DashboardDocente = () => {
                 ACCIONES_RÁPIDAS
               </h3>
               <div className="space-y-3">
+                <button
+                  onClick={handleLaunchFeria}
+                  disabled={isLaunchingFeria}
+                  className="w-full flex items-center gap-3 p-4 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 hover:border-blue-500/50 transition-all group text-left relative overflow-hidden"
+                >
+                  <div className="p-2 bg-blue-500/20 border border-blue-500/30 text-blue-400 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all">
+                    <span className="material-icons text-xl">
+                      {isLaunchingFeria ? "sync" : "rocket_launch"}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-white uppercase tracking-tight">
+                      {isLaunchingFeria ? "Iniciando..." : "Módulo Feria 2026"}
+                    </p>
+                    <p className="text-[9px] text-blue-400 font-black uppercase tracking-widest">
+                      Lanzamiento Seguro SASE
+                    </p>
+                  </div>
+                  {isLaunchingFeria && <motion.div layoutId="feria-loader" className="absolute bottom-0 left-0 h-1 bg-blue-500" initial={{ width: 0 }} animate={{ width: "100%" }} />}
+                </button>
+
+                <div className="h-px bg-white/5"></div>
+
                 <button
                   onClick={() => setCurrentModule(AppModule.AGENDA)}
                   title="Acceder al calendario institucional para agendar actividades"

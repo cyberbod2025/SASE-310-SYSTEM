@@ -318,13 +318,8 @@ export const useStudentsSlice = (
           alumno_id: studentId,
           tipo: type,
           descripcion: description,
-          reportado_por: user?.id,
-          reportado_por_docente: user?.id,
-          reporta: reporterName,
-          fecha: new Date().toISOString(),
-          estado: "Nuevo",
-          clasificacion: "Institucional",
-          evidencia: evidence,
+          reportado_por: user?.id || "unknown",
+          fecha: new Date().toISOString()
         },
       ]);
       if (error) throw error;
@@ -398,7 +393,14 @@ export const useStudentsSlice = (
     );
     try {
       await supabase.from("calificaciones").upsert(
-        grades.map((g) => ({ ...g, alumno_id: studentId })),
+        grades.map((g) => ({
+          alumno_id: studentId,
+          materia: g.materia,
+          trimestre1: g.trimestre1,
+          trimestre2: g.trimestre2,
+          trimestre3: g.trimestre3,
+          promedio_final: g.promedioFinal,
+        })),
         { onConflict: "alumno_id,materia" },
       );
       logAudit(

@@ -11,12 +11,14 @@ export const useUiSlice = (
   const [quickRegisterOpen, setQuickRegisterOpen] = useState(false);
   const [quickRegisterType, setQuickRegisterType] = useState<any>(null);
   const [assistantMessage, setAssistantMessage] = useState<string | null>(null);
+  const [assistantSuggestion, setAssistantSuggestion] = useState<{ text: string, state?: string, actionLabel?: string, actionType?: string } | null>(null);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [assistantStatus, setAssistantStatus] = useState<
     "idle" | "listening" | "thinking"
   >("idle");
   const [isTourActive, setIsTourActive] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
   const [activePrintJob, setActivePrintJob] = useState<any>(null);
   const [printModal, setPrintModal] = useState({
     isOpen: false,
@@ -99,6 +101,8 @@ export const useUiSlice = (
     setQuickRegisterType,
     openQuickRegister,
     assistantMessage,
+    assistantSuggestion,
+    setAssistantSuggestion,
     isAssistantOpen,
     setIsAssistantOpen,
     isFeedbackOpen,
@@ -107,6 +111,8 @@ export const useUiSlice = (
     setAssistantStatus,
     isTourActive,
     setIsTourActive,
+    tourStep,
+    setTourStep,
     systemState,
     activePrintJob,
     setActivePrintJob,
