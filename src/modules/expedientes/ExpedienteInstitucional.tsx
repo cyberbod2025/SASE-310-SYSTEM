@@ -229,6 +229,58 @@ export function ExpedienteInstitucional({
     return (suma / alumno.calificaciones.length).toFixed(1);
   }, [alumno.calificaciones]);
 
+  const plan90 = React.useMemo(() => {
+    const candidateDates = [
+      ...incidencias.map((inc) => inc.fecha),
+      ...documentos.map((doc) => doc.fecha),
+    ]
+      .map((value) => new Date(value))
+      .filter((date) => !Number.isNaN(date.getTime()))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    if (candidateDates.length === 0) {
+      return {
+        currentPhase: "Sin fase activa",
+        description: "Aún no hay suficiente historial para ubicar el acompañamiento dentro del esquema 30/60/90 días.",
+        daysElapsed: 0,
+      };
+    }
+
+    const firstDate = candidateDates[0];
+    const now = new Date();
+    const daysElapsed = Math.max(1, Math.floor((now.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1);
+
+    if (daysElapsed <= 30) {
+      return {
+        currentPhase: "Fase 1 · 30 días",
+        description: "Contención inicial: identificación del caso, primeros acuerdos y activación de responsables.",
+        daysElapsed,
+      };
+    }
+
+    if (daysElapsed <= 60) {
+      return {
+        currentPhase: "Fase 2 · 60 días",
+        description: "Seguimiento institucional: monitoreo, ajustes y revisión de evidencias de avance.",
+        daysElapsed,
+      };
+    }
+
+    if (daysElapsed <= 90) {
+      return {
+        currentPhase: "Fase 3 · 90 días",
+        description: "Cierre o redefinición: evaluación de resultados, cierre formal o rediseño del plan de apoyo.",
+        daysElapsed,
+      };
+    }
+
+    return {
+      currentPhase: "Seguimiento extendido",
+      description: "El caso superó los 90 días. Requiere revisión directiva para redefinir continuidad, cierre o nueva ruta de intervención.",
+      daysElapsed,
+    };
+  }, [documentos, incidencias]);
+
   const obtenerCorreoUsuario = async () => {
     if (correoUsuario) return correoUsuario;
     const { data } = await supabase.auth.getUser();
@@ -368,8 +420,8 @@ export function ExpedienteInstitucional({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#0B1120]/90 rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-white/10 backdrop-blur-3xl">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center px-4 pt-28 pb-10 bg-slate-900/80 backdrop-blur-md animate-fade-in overflow-y-auto">
+      <div className="bg-[#0B1120]/90 rounded-2xl w-full max-w-5xl flex flex-col shadow-2xl overflow-hidden border border-white/10 backdrop-blur-3xl">
         {/* ENCABEZADO */}
         <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5 shrink-0">
           <div className="flex items-center gap-4">
@@ -520,6 +572,51 @@ export function ExpedienteInstitucional({
                       <p className="text-2xl font-black text-white">
                         {documentos.length}
                       </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 shrink-0">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">
+                        Protocolo de Acompañamiento Institucional
+                      </p>
+                      <h3 className="text-xl font-black text-white uppercase tracking-tight">
+                        Plan de Seguimiento 30/60/90 Días
+                      </h3>
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="px-2 py-0.5 rounded bg-indigo-500/20 border border-indigo-400/30">
+                          <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-tight">Fase Actual:</span>
+                        </div>
+                        <p className="text-sm font-black text-white uppercase tracking-tight">
+                          {plan90.currentPhase}
+                        </p>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-relaxed mt-2 max-w-2xl">
+                        {plan90.description}
+                      </p>
+                    </div>
+                    <div className="px-4 py-3 rounded-2xl bg-white/5 border border-white/10 min-w-[110px] text-center">
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Días transcurridos</p>
+                      <p className="text-2xl font-black text-white tabular-nums mt-1">{plan90.daysElapsed}</p>
+                    </div>
+                  </div>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                    <div className={`rounded-xl p-3 border transition-all duration-500 ${plan90.daysElapsed <= 30 ? 'bg-indigo-500/10 border-indigo-400/40 shadow-[0_0_15px_rgba(129,106,184,0.1)]' : 'bg-white/5 border-white/10 opacity-50'}`}>
+                      <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${plan90.daysElapsed <= 30 ? 'text-indigo-300' : 'text-slate-400'}`}>30 días</p>
+                      <p className="text-[10px] text-slate-300">Diagnóstico inicial, responsables asignados y acuerdos base.</p>
+                      {plan90.daysElapsed <= 30 && <div className="mt-2 text-[8px] font-bold text-indigo-400 uppercase tracking-tighter">Fase Activa</div>}
+                    </div>
+                    <div className={`rounded-xl p-3 border transition-all duration-500 ${plan90.daysElapsed > 30 && plan90.daysElapsed <= 60 ? 'bg-emerald-500/10 border-emerald-400/40 shadow-[0_0_15px_rgba(175,166,60,0.1)]' : 'bg-white/5 border-white/10 opacity-50'}`}>
+                      <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${plan90.daysElapsed > 30 && plan90.daysElapsed <= 60 ? 'text-emerald-300' : 'text-slate-400'}`}>60 días</p>
+                      <p className="text-[10px] text-slate-300">Seguimiento activo, medición de avances y ajustes institucionales.</p>
+                      {plan90.daysElapsed > 30 && plan90.daysElapsed <= 60 && <div className="mt-2 text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Fase Activa</div>}
+                    </div>
+                    <div className={`rounded-xl p-3 border transition-all duration-500 ${plan90.daysElapsed > 60 ? 'bg-rose-500/10 border-rose-400/40 shadow-[0_0_15px_rgba(183,104,122,0.1)]' : 'bg-white/5 border-white/10 opacity-50'}`}>
+                      <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${plan90.daysElapsed > 60 ? 'text-rose-300' : 'text-slate-400'}`}>90 días</p>
+                      <p className="text-[10px] text-slate-300">Evaluación de cierre o redefinición formal del plan.</p>
+                      {plan90.daysElapsed > 60 && <div className="mt-2 text-[8px] font-bold text-rose-400 uppercase tracking-tighter">Fase Activa</div>}
                     </div>
                   </div>
                 </div>

@@ -9,12 +9,12 @@
     "Stitch": {
       "type": "local",
       "enabled": true,
-      "command": ["npx", "-y", "mcp-remote", "https://stitch.googleapis.com/mcp"]
+      "command": ["bash", ".opencode/bin/stitch-mcp.sh"]
     },
     "Supabase": {
       "type": "local",
       "enabled": true,
-      "command": ["npx", "-y", "@supabase/mcp-server-supabase@latest"]
+      "command": ["bash", ".opencode/bin/supabase-mcp.sh"]
     },
     "NotebookLM": {
       "type": "local",

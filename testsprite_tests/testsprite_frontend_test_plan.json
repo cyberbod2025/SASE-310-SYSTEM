@@ -1,0 +1,48 @@
+[
+  {
+    "id": "TC101",
+    "title": "Docente Fase 1 inicia sesión y ve solo módulos esenciales",
+    "description": "Verificar que un docente nuevo puede iniciar sesión, entrar al layout principal y ver únicamente Tablero, Asistencia y Detección Pedagógica en Fase 1.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      "Abrir http://127.0.0.1:3100/.",
+      "Si aparece el intro, hacer clic en 'Saltar Intro'.",
+      "Iniciar sesión con docente.testsprite@sase.mx y la contraseña configurada.",
+      "Esperar a que cargue el layout principal con sidebar.",
+      "Verificar que el sidebar muestre Tablero.",
+      "Verificar que el sidebar muestre Asistencia.",
+      "Verificar que el sidebar muestre Detección Pedagógica.",
+      "Verificar que el sidebar no muestre Expedientes, Agenda, Incidencias ni Protocolos."
+    ]
+  },
+  {
+    "id": "TC102",
+    "title": "Dashboard docente Fase 1 conserva Glass dark y Reporte Rápido",
+    "description": "Verificar que un docente nuevo en Fase 1 conserva consistencia visual Glass dark y expone Reporte Rápido dentro del dashboard docente.",
+    "category": "ui",
+    "priority": "High",
+    "steps": [
+      "Abrir http://127.0.0.1:3100/.",
+      "Saltar el intro si aparece.",
+      "Iniciar sesión con el docente de prueba.",
+      "Verificar que el dashboard docente cargue sin error fatal.",
+      "Localizar Reporte Rápido dentro del dashboard docente.",
+      "Comprobar que las superficies principales mantengan el lenguaje Glass dark y no usen paneles blancos sólidos fuera del sistema visual."
+    ]
+  },
+  {
+    "id": "TC103",
+    "title": "Registro público y laboratorio UI permanecen estables",
+    "description": "Verificar que el registro público y el laboratorio UI sigan accesibles y visualmente consistentes después de los cambios recientes.",
+    "category": "regression",
+    "priority": "High",
+    "steps": [
+      "Abrir http://127.0.0.1:3100/?registro=true y verificar que el formulario siga visible.",
+      "Comprobar consistencia Glass dark en registro público.",
+      "Abrir http://127.0.0.1:3100/?lab=ui.",
+      "Verificar que el laboratorio UI cargue sin error fatal.",
+      "Registrar cualquier glitch visual, overlay roto, clase inválida o contraste deficiente."
+    ]
+  }
+]

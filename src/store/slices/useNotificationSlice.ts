@@ -67,11 +67,13 @@ export const useNotificationSlice = () => {
       setNotifications((prev) =>
         prev.some((n) => n.id === mapped.id) ? prev : [mapped, ...prev],
       );
+      return true;
     } catch (err) {
       console.error("Error creando notificación", err);
       if (!options?.silent) {
         toast.error("No se pudo crear la notificación");
       }
+      return false;
     }
   };
 

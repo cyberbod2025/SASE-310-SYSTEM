@@ -172,7 +172,7 @@ export const DashboardOrientacion = () => {
           <NeoButton
             icon="add_chart"
             onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
-            className="px-4 py-3 text-amber-200"
+            className="px-4 py-3 text-sase-warning"
           >
             Solicitar actualización de seguimiento
           </NeoButton>
@@ -264,7 +264,7 @@ export const DashboardOrientacion = () => {
               <NeoButton
                 icon="menu_book"
                 onClick={() => setShowProtocol(true)}
-                className="w-full justify-center py-3 text-rose-200"
+                className="w-full justify-center py-3 text-sase-danger"
               >
                 Activar protocolo crítico
               </NeoButton>

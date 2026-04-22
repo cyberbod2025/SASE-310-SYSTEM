@@ -10,6 +10,11 @@ export const TutorialController: React.FC = () => {
   const { currentUserRole, isTutorMode } = useApp();
 
   useEffect(() => {
+    const autoTutorialEnabled = localStorage.getItem("sase_autotutorial_enabled") === "true";
+    if (!autoTutorialEnabled) {
+      return;
+    }
+
     // Pasos comunes para la navegación global
     const commonSteps = [
       {

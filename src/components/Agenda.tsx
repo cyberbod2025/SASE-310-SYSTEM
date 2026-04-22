@@ -34,27 +34,52 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; bo
   otro: { label: "Otros", color: "text-slate-600", bg: "bg-slate-50", border: "border-slate-100", icon: "event" },
 };
 
+const AUTO_TITLED_TYPES = new Set(Object.keys(TYPE_CONFIG).filter((key) => key !== "otro"));
+
+const getDefaultTitleForType = (type?: string) => {
+  if (!type || type === "otro") {
+    return "";
+  }
+
+  return TYPE_CONFIG[type]?.label || "";
+};
+
 export const Agenda: React.FC = () => {
   const { user } = useAuth();
-  const { students, addNotification, setIsAssistantOpen, setAssistantSuggestion } = useApp();
+  const { students, addNotification, setIsAssistantOpen, setAssistantSuggestion } = useApp() as {
+    students: any[];
+    addNotification?: (payload: any, options?: any) => Promise<boolean> | boolean | void;
+    setIsAssistantOpen?: (open: boolean) => void;
+    setAssistantSuggestion?: (payload: any) => void;
+  };
   const [isSendingNotif, setIsSendingNotif] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(new Date().toISOString().split("T")[0]);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [newEvent, setNewEvent] = useState<Partial<CalendarEvent>>({ date: new Date().toISOString().split("T")[0], type: "reunion", para_todos_maestros: false });
+  const [newEvent, setNewEvent] = useState<Partial<CalendarEvent>>({
+    date: new Date().toISOString().split("T")[0],
+    type: "reunion",
+    title: getDefaultTitleForType("reunion"),
+    para_todos_maestros: false,
+  });
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchEvents();
     
     // Proactive Sasito help
-    setIsAssistantOpen(true);
-    setAssistantSuggestion({
-      text: "¡Hola! Esta es la Agenda Institucional. ¿Sabías que al agendar un citatorio desde el Registro Rápido, aparecerá automáticamente aquí?",
-      state: "attention"
-    });
+    if (typeof setIsAssistantOpen === "function") {
+      setIsAssistantOpen(true);
+    }
+
+    if (typeof setAssistantSuggestion === "function") {
+      setAssistantSuggestion({
+        text: "¡Hola! Esta es la Agenda Institucional. ¿Sabías que al agendar un citatorio desde el Registro Rápido, aparecerá automáticamente aquí?",
+        state: "attention"
+      });
+    }
   }, [setIsAssistantOpen, setAssistantSuggestion]);
 
   const fetchEvents = async () => {
@@ -72,16 +97,87 @@ export const Agenda: React.FC = () => {
     }
   };
 
+  const handleTypeSelect = (type: CalendarEvent["type"]) => {
+    setNewEvent((prev) => ({
+      ...prev,
+      type,
+      title: type === "otro" ? "" : getDefaultTitleForType(type),
+    }));
+  };
+
+  const sendAgendaNotification = async (event: Pick<CalendarEvent, "title" | "date" | "time">) => {
+    if (typeof addNotification !== "function") {
+      return { successCount: 0, attempted: 0 };
+    }
+
+    const teacherRoles = [UserRole.DOCENTE, UserRole.DOCENTE_TUTOR];
+    const formattedDate = new Date(event.date).toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+    const timeLabel = event.time ? ` a las ${event.time}` : "";
+
+    const results = await Promise.all(
+      teacherRoles.map((role) =>
+        addNotification(
+          {
+            title: `Agenda: ${event.title}`,
+            message: `${event.title} programado para el ${formattedDate}${timeLabel}.`,
+            type: "SYSTEM",
+            targetRole: role,
+          },
+          { silent: true },
+        ),
+      ),
+    );
+
+    const successCount = results.filter(Boolean).length;
+    return { successCount, attempted: teacherRoles.length };
+  };
+
   const handleSaveEvent = async () => {
-    if (!newEvent.title || !newEvent.date || !newEvent.type) return toast.error("Complete los datos requeridos");
+    const finalTitle = AUTO_TITLED_TYPES.has(newEvent.type || "")
+      ? getDefaultTitleForType(newEvent.type)
+      : (newEvent.title || "").trim();
+
+    if (!finalTitle || !newEvent.date || !newEvent.type) return toast.error("Complete los datos requeridos");
+
     try {
       const { error } = await supabase.from("eventos").insert([{
-        titulo: newEvent.title, fecha: newEvent.date, hora: newEvent.time || null, tipo: newEvent.type,
+        titulo: finalTitle, fecha: newEvent.date, hora: newEvent.time || null, tipo: newEvent.type,
         descripcion: newEvent.description || null, creado_por: user?.id, alumno_id: newEvent.alumno_id || null, para_todos_maestros: newEvent.para_todos_maestros || false,
       }]);
       if (error) throw error;
-      toast.success("Actividad registrada oficialmente");
+
+      if (newEvent.para_todos_maestros) {
+        const { successCount, attempted } = await sendAgendaNotification({
+          title: finalTitle,
+          date: newEvent.date,
+          time: newEvent.time,
+        });
+
+        if (successCount === attempted && attempted > 0) {
+          toast.success("Actividad registrada y circular enviada");
+        } else if (successCount > 0) {
+          toast.success("Actividad registrada; la circular se envió parcialmente");
+        } else {
+          toast.success("Actividad registrada oficialmente");
+          toast.error("No se pudo crear la notificación para la plantilla docente");
+        }
+      } else {
+        toast.success("Actividad registrada oficialmente");
+      }
+
       setShowModal(false);
+      setNewEvent({
+        date: new Date().toISOString().split("T")[0],
+        type: "reunion",
+        title: getDefaultTitleForType("reunion"),
+        para_todos_maestros: false,
+        time: "",
+        description: "",
+      });
       fetchEvents();
     } catch (err) {
       toast.error("Error al registrar actividad");
@@ -91,12 +187,14 @@ export const Agenda: React.FC = () => {
   const handleBroadcastNotification = async (event: CalendarEvent) => {
     setIsSendingNotif(event.id);
     try {
-      await addNotification({
-        title: `📣 AVISO: ${event.title}`,
-        message: `Actividad institucional programada para el ${new Date(event.date).toLocaleDateString()}`,
-        type: "info", targetRole: UserRole.DOCENTE,
-      });
-      toast.success("Circular enviada a la plantilla");
+      const { successCount, attempted } = await sendAgendaNotification(event);
+      if (successCount === attempted && attempted > 0) {
+        toast.success("Circular enviada a la plantilla");
+      } else if (successCount > 0) {
+        toast.success("Circular enviada parcialmente");
+      } else {
+        toast.error("No se pudo crear la notificación");
+      }
     } finally {
       setIsSendingNotif(null);
     }
@@ -253,7 +351,7 @@ export const Agenda: React.FC = () => {
                      <button onClick={() => setShowModal(false)}><span className="material-icons text-slate-400">close</span></button>
                   </div>
                   <div className="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                     <GlassInput label="Nombre de Actividad" placeholder="Ej. Reunión de academia..." value={newEvent.title ?? ""} onChange={e => setNewEvent({...newEvent, title: e.target.value})} />
+                      <GlassInput label={newEvent.type === "otro" ? "Nombre de Actividad" : "Nombre de Actividad (Automático)"} placeholder={newEvent.type === "otro" ? "Ej. Reunión de academia..." : "Se toma de la categoría seleccionada"} value={newEvent.title ?? ""} readOnly={newEvent.type !== "otro"} onChange={e => setNewEvent({...newEvent, title: e.target.value})} />
                      <div className="grid grid-cols-2 gap-4">
                         <GlassInput label="Fecha" type="date" value={newEvent.date ?? ""} onChange={e => setNewEvent({...newEvent, date: e.target.value})} />
                         <GlassInput label="Hora" type="time" value={newEvent.time ?? ""} onChange={e => setNewEvent({...newEvent, time: e.target.value})} />
@@ -262,7 +360,7 @@ export const Agenda: React.FC = () => {
                         <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest block ml-1">Estatus / Categoría</label>
                         <div className="grid grid-cols-2 gap-2">
                            {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-                             <button key={key} onClick={() => setNewEvent({...newEvent, type: key as any})} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${newEvent.type === key ? `${cfg.bg} ${cfg.border} ${cfg.color} ring-2 ring-current` : "bg-white/5 border-white/10 text-slate-300"}`}>
+                              <button key={key} onClick={() => handleTypeSelect(key as CalendarEvent["type"])} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${newEvent.type === key ? `${cfg.bg} ${cfg.border} ${cfg.color} ring-2 ring-current` : "bg-white/5 border-white/10 text-slate-300"}`}>
                                 <span className="material-icons text-sm">{cfg.icon}</span>
                                 <span className="text-[9px] font-black uppercase">{cfg.label}</span>
                              </button>

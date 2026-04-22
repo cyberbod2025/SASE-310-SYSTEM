@@ -17,30 +17,30 @@ export const DashboardPromotora = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-emerald-500/30">
+    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-sase-clinical/30">
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
-          <div className="size-16 bg-[#0a0f18] border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.15)] relative overflow-hidden backdrop-blur-xl">
+          <div className="size-16 bg-[#0a0f18] border border-sase-clinical/30 rounded-2xl flex items-center justify-center text-sase-clinical shadow-[0_0_20px_rgba(16,185,129,0.15)] relative overflow-hidden backdrop-blur-xl">
             <span className="material-icons text-4xl">
               local_activity
             </span>
             <motion.div
               animate={{ top: ["0%", "100%", "0%"] }}
               transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              className="absolute left-0 w-full h-[1px] bg-emerald-500/50"
+              className="absolute left-0 w-full h-[1px] bg-sase-clinical/50"
             />
           </div>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-400 uppercase tracking-widest">
+              <span className="px-2 py-0.5 bg-sase-clinical/10 border border-sase-clinical/20 rounded text-[9px] font-black text-sase-clinical uppercase tracking-widest">
                 UNIT_05 // PROMOTION_CORE
               </span>
-              <div className="size-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
+              <div className="size-1.5 bg-sase-clinical rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
             </div>
             <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
               MANDO DE{" "}
-              <span className="text-emerald-400 italic">PROMOTORÍA</span>
+              <span className="text-sase-clinical italic">PROMOTORÍA</span>
             </h2>
           </div>
         </div>
@@ -48,19 +48,19 @@ export const DashboardPromotora = () => {
         <div className="flex bg-white/5 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
           <button
             onClick={() => setActiveTab("AVANCES")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "AVANCES" ? "bg-emerald-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "AVANCES" ? "bg-sase-clinical text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Avances
           </button>
           <button
             onClick={() => setActiveTab("EVENTOS")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVENTOS" ? "bg-emerald-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVENTOS" ? "bg-sase-clinical text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Eventos
           </button>
           <button
             onClick={() => setActiveTab("EVIDENCIAS")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVIDENCIAS" ? "bg-emerald-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "EVIDENCIAS" ? "bg-sase-clinical text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Evidencias
           </button>
@@ -121,10 +121,10 @@ export const DashboardPromotora = () => {
           {activeTab === "EVIDENCIAS" && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
               <div
-                className="card-sase p-6 border-emerald-500/10 flex flex-col items-center justify-center text-center group cursor-pointer"
+                className="card-sase p-6 border-sase-clinical/10 flex flex-col items-center justify-center text-center group cursor-pointer"
                 onClick={() => setIsModalOpen(true)}
               >
-                <span className="material-icons text-4xl text-emerald-500 mb-4 group-hover:scale-110 transition-transform">
+                <span className="material-icons text-4xl text-sase-clinical mb-4 group-hover:scale-110 transition-transform">
                   add_a_photo
                 </span>
                 <p className="text-[10px] font-black text-white uppercase tracking-widest">
@@ -138,9 +138,9 @@ export const DashboardPromotora = () => {
         </div>
 
         <div className="space-y-8">
-          <div className="card-sase p-8 border-emerald-500/20 bg-emerald-500/[0.02] relative overflow-hidden group">
-            <h3 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
-              <span className="size-2 bg-emerald-500 rounded-full"></span>
+          <div className="card-sase p-8 border-sase-clinical/20 bg-sase-clinical/[0.02] relative overflow-hidden group">
+            <h3 className="text-[10px] font-black text-sase-clinical uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
+              <span className="size-2 bg-sase-clinical rounded-full"></span>
               ESTADÍSTICAS_IMPACTO
             </h3>
             <div className="space-y-6">
@@ -188,12 +188,12 @@ export const DashboardPromotora = () => {
 // -- HELPER COMPONENTS --
 
 const ProgressCard = ({ title, pct, date, status }: any) => (
-  <div className="card-sase p-6 border-slate-100 bg-[#0a0f18]/30 group hover:border-emerald-500/30 transition-all">
+  <div className="card-sase p-6 border-slate-100 bg-[#0a0f18]/30 group hover:border-sase-clinical/30 transition-all">
     <div className="flex justify-between items-start mb-6">
       <h4 className="text-sm font-black text-white uppercase italic tracking-tighter">
         {title}
       </h4>
-      <span className="text-[9px] font-black text-emerald-500/60 uppercase">
+      <span className="text-[9px] font-black text-sase-clinical/60 uppercase">
         {date}
       </span>
     </div>
@@ -207,16 +207,16 @@ const ProgressCard = ({ title, pct, date, status }: any) => (
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${pct}%` }}
-        className="h-full bg-emerald-500"
+        className="h-full bg-sase-clinical"
       />
     </div>
   </div>
 );
 
 const EventRow = ({ title, time, room }: any) => (
-  <div className="p-6 flex items-center justify-between group hover:bg-emerald-500/[0.02] transition-colors">
+  <div className="p-6 flex items-center justify-between group hover:bg-sase-clinical/[0.02] transition-colors">
     <div className="flex items-center gap-5">
-      <div className="size-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-700 group-hover:text-emerald-400 transition-colors">
+      <div className="size-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-700 group-hover:text-sase-clinical transition-colors">
         <span className="material-icons">event</span>
       </div>
       <div>
@@ -228,7 +228,7 @@ const EventRow = ({ title, time, room }: any) => (
         </p>
       </div>
     </div>
-    <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-2xl border border-emerald-500/20">
+    <span className="text-[10px] font-mono text-sase-clinical bg-sase-clinical/10 px-3 py-1.5 rounded-2xl border border-sase-clinical/20">
       {time}
     </span>
   </div>
@@ -236,7 +236,7 @@ const EventRow = ({ title, time, room }: any) => (
 
 const EvidenceThumb = ({ label, type }: any) => (
   <div className="card-sase p-6 border-slate-100 bg-[#0a0f18]/20 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all">
-    <div className="size-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 mb-3 group-hover:text-emerald-500">
+    <div className="size-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 mb-3 group-hover:text-sase-clinical">
       <span className="material-icons text-3xl">
         insert_drive_file
       </span>

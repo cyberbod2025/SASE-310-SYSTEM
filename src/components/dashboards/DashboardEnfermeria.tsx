@@ -96,15 +96,15 @@ export const DashboardEnfermeria = () => {
   return (
     <div className="flex-1 w-full space-y-8 animate-fade-in pb-32">
       {/* TACTICAL COMMAND CENTER HEADER */}
-      <div className="card-sase p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 border-emerald-500/10 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-500/10 transition-colors duration-1000"></div>
-        <div className="absolute -left-10 -bottom-10 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px]"></div>
+      <div className="card-sase p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 border-sase-clinical/10 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-sase-clinical/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 group-hover:bg-sase-clinical/10 transition-colors duration-1000"></div>
+        <div className="absolute -left-10 -bottom-10 w-64 h-64 bg-sase-clinical/5 rounded-full blur-[80px]"></div>
 
         <div className="flex items-center gap-8 relative z-10">
           <div className="relative group/icon">
-            <div className="absolute -inset-4 bg-emerald-500/20 rounded-3xl blur-xl opacity-0 group-hover/icon:opacity-100 transition-all duration-700"></div>
-            <div className="size-20 bg-[#0a0f18]/80 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-emerald-400 relative shadow-[0_0_30px_rgba(16,185,129,0.2)] overflow-hidden backdrop-blur-xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-transparent"></div>
+            <div className="absolute -inset-4 bg-sase-clinical/20 rounded-3xl blur-xl opacity-0 group-hover/icon:opacity-100 transition-all duration-700"></div>
+            <div className="size-20 bg-[#0a0f18]/80 border border-sase-clinical/30 rounded-2xl flex items-center justify-center text-sase-clinical relative shadow-[0_0_30px_rgba(16,185,129,0.2)] overflow-hidden backdrop-blur-xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-sase-clinical/20 via-transparent to-transparent"></div>
               <span className="material-icons text-5xl group-hover/icon:scale-110 transition-transform duration-500">
                 medical_services
               </span>
@@ -112,17 +112,17 @@ export const DashboardEnfermeria = () => {
               <motion.div
                 animate={{ top: ["0%", "100%", "0%"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="absolute left-0 w-full h-[1px] bg-emerald-500/50 shadow-[0_0_10px_#10b981]"
+                className="absolute left-0 w-full h-[1px] bg-sase-clinical/50 shadow-[0_0_10px_#10b981]"
               />
             </div>
-            <div className="absolute -bottom-1 -right-1 size-6 bg-[#020408] border border-emerald-500/30 rounded-full flex items-center justify-center">
-              <div className="size-2 bg-emerald-500 rounded-full animate-ping"></div>
+            <div className="absolute -bottom-1 -right-1 size-6 bg-[#020408] border border-sase-clinical/30 rounded-full flex items-center justify-center">
+              <div className="size-2 bg-sase-clinical rounded-full animate-ping"></div>
             </div>
           </div>
 
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">
+              <span className="px-2 py-0.5 bg-sase-clinical/10 border border-sase-clinical/20 rounded text-[9px] font-black text-sase-clinical uppercase tracking-[0.2em]">
                 UNIDAD 01 // AREA DE ENFERMERIA
               </span>
               <span className="size-1 bg-slate-700 rounded-full"></span>
@@ -132,7 +132,7 @@ export const DashboardEnfermeria = () => {
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase italic leading-none">
               ESTACION{" "}
-              <span className="text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
+              <span className="text-sase-danger drop-shadow-[0_0_20px_rgba(244,63,94,0.4)]">
                 MEDICA
               </span>
             </h1>
@@ -154,9 +154,9 @@ export const DashboardEnfermeria = () => {
               <motion.div
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="size-1.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"
+                className="size-1.5 bg-sase-clinical rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"
               />
-              <span className="text-[9px] font-black text-emerald-500/60 uppercase tracking-[0.3em]">
+              <span className="text-[9px] font-black text-sase-clinical/60 uppercase tracking-[0.3em]">
                 SINCRONIZACION ACTIVA
               </span>
             </div>
@@ -165,12 +165,12 @@ export const DashboardEnfermeria = () => {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="w-1.5 h-6 bg-emerald-500/20 rounded-full overflow-hidden"
+                className="w-1.5 h-6 bg-sase-clinical/20 rounded-full overflow-hidden"
               >
                 <motion.div
                   animate={{ height: ["20%", "80%", "40%", "90%", "20%"] }}
                   transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                  className="w-full bg-emerald-500/60"
+                  className="w-full bg-sase-clinical/60"
                 />
               </div>
             ))}
@@ -201,10 +201,10 @@ export const DashboardEnfermeria = () => {
           </div>
 
           {/* CLINICAL DATA TERMINAL */}
-          <div className="card-sase border-emerald-500/10 overflow-hidden flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
+          <div className="card-sase border-sase-clinical/10 overflow-hidden flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
             <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between relative">
               <div className="flex items-center gap-5">
-                <div className="size-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                <div className="size-12 bg-sase-clinical/10 border border-sase-clinical/20 rounded-xl flex items-center justify-center text-sase-clinical shadow-[0_0_15px_rgba(16,185,129,0.1)]">
                   <span className="material-icons text-2xl font-black">
                     terminal
                   </span>
@@ -212,7 +212,7 @@ export const DashboardEnfermeria = () => {
                 <div>
                   <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] italic">
                     FLUJO DE DATOS:{" "}
-                    <span className="text-emerald-500">REGISTROS CLINICOS</span>
+                    <span className="text-sase-clinical">REGISTROS CLINICOS</span>
                   </h3>
                   <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-1">
                     FLUJO CONTINUO DE REGISTROS DE ATENCIÓN
@@ -220,12 +220,12 @@ export const DashboardEnfermeria = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                  <div className="px-3 py-1 bg-emerald-500/5 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-500/60 transition-all cursor-default">
+                  <div className="px-3 py-1 bg-sase-clinical/5 border border-sase-clinical/20 rounded text-[9px] font-black text-sase-clinical/60 transition-all cursor-default">
                     REGISTRO EN LINEA
                   </div>
                 <button
                   onClick={() => setCurrentModule(AppModule.REPORTES)}
-                  className="px-5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-emerald-500/10 hover:text-emerald-400 hover:border-emerald-500/30 transition-all active:scale-95 shadow-xl"
+                  className="px-5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-[10px] font-black text-slate-600 uppercase tracking-widest hover:bg-sase-clinical/10 hover:text-sase-clinical hover:border-sase-clinical/30 transition-all active:scale-95 shadow-xl"
                 >
                   EXPEDIENTE MAESTRO
                 </button>
@@ -275,10 +275,10 @@ export const DashboardEnfermeria = () => {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: idx * 0.1 }}
                           key={visit.id}
-                          className="hover:bg-emerald-500/[0.02] transition-colors group/row border-l-2 border-transparent hover:border-emerald-500/40"
+                          className="hover:bg-sase-clinical/[0.02] transition-colors group/row border-l-2 border-transparent hover:border-sase-clinical/40"
                         >
                           <td className="px-8 py-6">
-                            <span className="text-emerald-500 font-mono text-xs tabular-nums tracking-tighter bg-emerald-500/5 px-3 py-1.5 rounded-2xl border border-emerald-500/10 shadow-[0_0_10px_rgba(16,185,129,0.05)]">
+                            <span className="text-sase-clinical font-mono text-xs tabular-nums tracking-tighter bg-sase-clinical/5 px-3 py-1.5 rounded-2xl border border-sase-clinical/10 shadow-[0_0_10px_rgba(16,185,129,0.05)]">
                               {new Date(visit.date).toLocaleTimeString([], {
                                 hour: "2-digit",
                                 minute: "2-digit",
@@ -288,31 +288,31 @@ export const DashboardEnfermeria = () => {
                           </td>
                           <td className="px-8 py-6">
                             <div className="flex flex-col">
-                              <span className="font-black text-white text-sm italic uppercase tracking-tighter group-hover/row:text-emerald-400 transition-all duration-300">
+                              <span className="font-black text-white text-sm italic uppercase tracking-tighter group-hover/row:text-sase-clinical transition-all duration-300">
                                 {visit.studentName}
                               </span>
                               <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                                <span className="size-1 bg-emerald-500/30 rounded-full"></span>
+                                <span className="size-1 bg-sase-clinical/30 rounded-full"></span>
                                 SIG:{" "}
                                 {visit.studentId.substring(0, 8).toUpperCase()}
                               </span>
                             </div>
                           </td>
                           <td className="px-8 py-6 text-center">
-                            <span className="px-3 py-1 bg-[#0a0f18] border border-slate-200 rounded-2xl text-[9px] font-black text-slate-600 uppercase group-hover/row:border-emerald-500/30 transition-colors tracking-widest">
+                            <span className="px-3 py-1 bg-[#0a0f18] border border-slate-200 rounded-2xl text-[9px] font-black text-slate-600 uppercase group-hover/row:border-sase-clinical/30 transition-colors tracking-widest">
                               {visit.group}
                             </span>
                           </td>
                           <td className="px-8 py-6">
                             <div className="flex items-center gap-3">
-                              <div className="size-2 bg-emerald-500 rounded-full shadow-[0_0_8px_#10b981]"></div>
+                              <div className="size-2 bg-sase-clinical rounded-full shadow-[0_0_8px_#10b981]"></div>
                               <span className="text-[10px] font-black text-white/80 uppercase tracking-widest">
                                 {visit.type}
                               </span>
                             </div>
                           </td>
                           <td className="px-8 py-6 text-right">
-                            <button className="size-10 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 transition-all active:scale-90 shadow-2xl">
+                            <button className="size-10 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center hover:bg-sase-clinical/20 hover:text-sase-clinical hover:border-sase-clinical/40 transition-all active:scale-90 shadow-2xl">
                               <span className="material-icons text-[20px]">
                                 arrow_right_alt
                               </span>
@@ -331,24 +331,24 @@ export const DashboardEnfermeria = () => {
         {/* SIDEBAR TACTICAL STACK */}
         <div className="space-y-8">
           {/* URGENT MONITOR CARD */}
-          <div className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.03] relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-rose-500/20 transition-colors"></div>
+          <div className="card-sase p-8 border-sase-danger/20 bg-sase-danger/[0.03] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-sase-danger/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-sase-danger/20 transition-colors"></div>
 
             <div className="flex items-center gap-5 mb-8 relative z-10">
-              <div className="size-14 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center justify-center text-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.3)]">
+              <div className="size-14 bg-sase-danger/10 border border-sase-danger/30 rounded-2xl flex items-center justify-center text-sase-danger shadow-[0_0_20px_rgba(244,63,94,0.3)]">
                 <span className="material-icons text-3xl animate-pulse">
                   emergency_home
                 </span>
               </div>
               <div>
-                <h4 className="text-[11px] font-black text-rose-500 uppercase tracking-[0.4em] mb-1 italic">
+                <h4 className="text-[11px] font-black text-sase-danger uppercase tracking-[0.4em] mb-1 italic">
                   MONITOREO URGENTE
                 </h4>
                 <div className="flex items-center gap-2">
-                  <span className="size-1.5 bg-rose-500 rounded-full animate-ping"></span>
+                  <span className="size-1.5 bg-sase-danger rounded-full animate-ping"></span>
                   <p className="text-xl font-black text-white uppercase italic tracking-tighter">
                     {activeAlertsCount} ALERTAS{" "}
-                    <span className="text-rose-500 italic">ACTUALES</span>
+                    <span className="text-sase-danger italic">ACTUALES</span>
                   </p>
                 </div>
               </div>
@@ -366,7 +366,7 @@ export const DashboardEnfermeria = () => {
               <button
                 onClick={handleNotifyTeachers}
                 disabled={notifying}
-                className="w-full py-4 bg-rose-500 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl hover:bg-rose-600 transition-all shadow-[0_0_30px_rgba(244,63,94,0.3)] flex items-center justify-center gap-4 disabled:opacity-50 active:scale-95 group/btn"
+                className="w-full py-4 bg-sase-danger text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl hover:bg-sase-danger transition-all shadow-[0_0_30px_rgba(244,63,94,0.3)] flex items-center justify-center gap-4 disabled:opacity-50 active:scale-95 group/btn"
               >
                 {notifying ? (
                   <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -387,10 +387,10 @@ export const DashboardEnfermeria = () => {
           </div>
 
           {/* INVENTORY TRACKER */}
-          <div className="card-sase p-8 border-emerald-500/10 flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
+          <div className="card-sase p-8 border-sase-clinical/10 flex flex-col group bg-[#0a0f18]/40 backdrop-blur-xl">
             <div className="flex items-center justify-between mb-10 pb-5 border-b border-slate-100">
               <div className="flex items-center gap-4">
-                <div className="size-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-500">
+                <div className="size-10 bg-sase-warning/10 border border-sase-warning/20 rounded-xl flex items-center justify-center text-sase-warning">
                   <span className="material-icons text-xl">
                     package_2
                   </span>
@@ -405,7 +405,7 @@ export const DashboardEnfermeria = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="size-2 bg-amber-500/50 rounded-full animate-pulse"></div>
+                <div className="size-2 bg-sase-warning/50 rounded-full animate-pulse"></div>
               </div>
             </div>
 
@@ -419,7 +419,7 @@ export const DashboardEnfermeria = () => {
                 onClick={() =>
                   toast("Solicitud de reabastecimiento enviada", { icon: "📦" })
                 }
-                className="w-full py-4 bg-[#10b981]/5 hover:bg-[#10b981]/10 border border-emerald-500/20 rounded-2xl text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 group/btn shadow-[0_0_20px_rgba(16,185,129,0.05)] active:scale-95"
+                className="w-full py-4 bg-[#10b981]/5 hover:bg-[#10b981]/10 border border-sase-clinical/20 rounded-2xl text-[10px] font-black text-sase-clinical uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 group/btn shadow-[0_0_20px_rgba(16,185,129,0.05)] active:scale-95"
               >
                 <span className="material-icons text-[20px] group-hover/btn:translate-y-[-2px] transition-transform">
                   local_shipping
@@ -470,12 +470,12 @@ export const DashboardEnfermeria = () => {
 
 const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => {
   return (
-    <div className="card-sase p-6 border-emerald-500/10 bg-[#0a0f18]/40 backdrop-blur-xl relative overflow-hidden group cursor-default">
+    <div className="card-sase p-6 border-sase-clinical/10 bg-[#0a0f18]/40 backdrop-blur-xl relative overflow-hidden group cursor-default">
       {/* Scanning Line */}
       <motion.div
         animate={{ top: ["-10%", "110%"] }}
         transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-        className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent pointer-events-none z-0"
+        className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-clinical/30 to-transparent pointer-events-none z-0"
       />
 
       <div className="flex items-center justify-between mb-4 relative z-10">
@@ -489,14 +489,14 @@ const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => {
             {label}
           </span>
         </div>
-        <div className="size-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
+        <div className="size-2 bg-sase-clinical rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
       </div>
 
       <div className="flex items-end gap-3 mb-6 relative z-10">
         <span className="text-5xl font-black text-white italic tracking-tighter tabular-nums drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] scale-95 group-hover:scale-100 transition-transform duration-500 origin-left">
           {value}
         </span>
-        <span className="text-xs font-black text-emerald-500 uppercase tracking-widest mb-2 italic opacity-80 group-hover:opacity-100 transition-opacity">
+        <span className="text-xs font-black text-sase-clinical uppercase tracking-widest mb-2 italic opacity-80 group-hover:opacity-100 transition-opacity">
           {unit}
         </span>
       </div>
@@ -528,10 +528,10 @@ const VitalMonitor = ({ label, value, unit, icon, color, points }: any) => {
 const HealthMetricCard = ({ label, value, trend, color, icon }: any) => {
   const colors: any = {
     emerald:
-      "text-emerald-500 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5",
-    rose: "text-rose-500 bg-rose-500/10 border-rose-500/20 shadow-rose-500/5",
+      "text-sase-clinical bg-sase-clinical/10 border-sase-clinical/20 shadow-sase-clinical/5",
+    rose: "text-sase-danger bg-sase-danger/10 border-sase-danger/20 shadow-sase-danger/5",
     amber:
-      "text-amber-500 bg-amber-500/10 border-amber-500/20 shadow-amber-500/5",
+      "text-sase-warning bg-sase-warning/10 border-sase-warning/20 shadow-sase-warning/5",
   };
 
   return (
@@ -587,7 +587,7 @@ const InventoryList = ({
     <div className="space-y-8">
       {items.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-12 opacity-30">
-          <span className="material-icons text-4xl animate-spin text-emerald-500">
+          <span className="material-icons text-4xl animate-spin text-sase-clinical">
             progress_activity
           </span>
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600">
@@ -609,7 +609,7 @@ const InventoryList = ({
                     REF_{item.id.substring(0, 6)}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 bg-[#0a0f18] border border-slate-200 rounded-xl p-1.5 shadow-xl group-hover/item:border-emerald-500/30 transition-all">
+                <div className="flex items-center gap-3 bg-[#0a0f18] border border-slate-200 rounded-xl p-1.5 shadow-xl group-hover/item:border-sase-clinical/30 transition-all">
                   <button
                     onClick={() => onUpdate(item.id, -1)}
                     className="size-7 flex items-center justify-center hover:bg-white/5 rounded-2xl text-slate-700 hover:text-white transition-all active:scale-90"
@@ -621,8 +621,8 @@ const InventoryList = ({
                   <span
                     className={`text-[10px] font-black min-w-[70px] text-center px-3 py-1.5 rounded-2xl border tabular-nums italic ${
                       isLow
-                        ? "text-rose-500 bg-rose-500/10 border-rose-500/20 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
-                        : "text-emerald-500 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                        ? "text-sase-danger bg-sase-danger/10 border-sase-danger/20 shadow-[0_0_15px_rgba(244,63,94,0.1)]"
+                        : "text-sase-clinical bg-sase-clinical/10 border-sase-clinical/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
                     }`}
                   >
                     {item.cantidad} / {item.cantidadMaxima}
@@ -644,8 +644,8 @@ const InventoryList = ({
                   transition={{ duration: 1, ease: "easeOut" }}
                   className={`h-full rounded-full relative ${
                     isLow
-                      ? "bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.6)]"
-                      : "bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.6)]"
+                      ? "bg-sase-danger shadow-[0_0_15px_rgba(244,63,94,0.6)]"
+                      : "bg-sase-clinical shadow-[0_0_15px_rgba(16,185,129,0.6)]"
                   }`}
                 >
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>

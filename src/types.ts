@@ -10,6 +10,7 @@ export enum UserRole {
   UDEII = "udeii",
   PROMOTORA_LECTURA = "promotora_lectura",
   SECRETARIA = "secretaria",
+  ALUMNO = "alumno",
   GUEST = "guest",
   DEVELOPER = "developer",
   SYSTEM_ADMIN = "system_admin",
@@ -38,12 +39,14 @@ export const RoleLabels: Record<UserRole, string> = {
   [UserRole.TRABAJO_SOCIAL]: "Trabajo Social",
   [UserRole.MEDICO_ESCOLAR]: "Servicio Médico",
   [UserRole.SECRETARIA]: "Secretaría",
+  [UserRole.ALUMNO]: "Alumno",
   [UserRole.UDEII]: "UDEII",
   [UserRole.PROMOTORA_LECTURA]: "Fomento a la Lectura",
   [UserRole.GUEST]: "Invitado",
   [UserRole.DEVELOPER]: "Desarrollador (Acceso Total)",
   [UserRole.SYSTEM_ADMIN]: "Soporte Nivel 3 (Root)",
 };
+
 
 export enum CaseState {
   OBSERVADO = "OBSERVADO",
@@ -344,6 +347,9 @@ export enum AppModule {
   IA_SASE = "ia_sase",
   OBJETOS_RETENIDOS = "objetos_retenidos",
   MANUAL_USUARIO = "manual_usuario",
+  FERIA = "feria",
+  DIAGNOSTICO = "diagnostico",
+  MATE = "mate",
 }
 
 export interface Group {

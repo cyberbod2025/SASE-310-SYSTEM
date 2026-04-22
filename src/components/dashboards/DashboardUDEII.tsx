@@ -26,36 +26,36 @@ export const DashboardUDEII = () => {
   };
 
   return (
-    <GlassCard className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-[#0B1120]/60 relative overflow-y-auto custom-scrollbar font-sans selection:bg-indigo-500/30">
+    <GlassCard className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-[#0B1120]/60 relative overflow-y-auto custom-scrollbar font-sans selection:bg-sase-info/30">
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
-          <div className="size-16 bg-[#0a0f18] border border-indigo-500/30 rounded-2xl flex items-center justify-center text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.15)] relative overflow-hidden backdrop-blur-xl">
+          <div className="size-16 bg-[#0a0f18] border border-sase-info/30 rounded-2xl flex items-center justify-center text-sase-info shadow-[0_0_20px_rgba(99,102,241,0.15)] relative overflow-hidden backdrop-blur-xl">
             <span className="material-icons text-4xl">
               accessibility_new
             </span>
             <motion.div
               animate={{ top: ["0%", "100%", "0%"] }}
               transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              className="absolute left-0 w-full h-[1px] bg-indigo-500/50 shadow-[0_0_10px_#6366f1]"
+              className="absolute left-0 w-full h-[1px] bg-sase-info/50 shadow-[0_0_10px_#6366f1]"
             />
           </div>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <span className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded text-[9px] font-black text-indigo-400 uppercase tracking-widest">
+              <span className="px-2 py-0.5 bg-sase-info/10 border border-sase-info/20 rounded text-[9px] font-black text-sase-info uppercase tracking-widest">
                 UNIT_04 // INCLUSION_CORE
               </span>
-              <div className="size-1.5 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_8px_#6366f1]"></div>
+              <div className="size-1.5 bg-sase-info rounded-full animate-pulse shadow-[0_0_8px_#6366f1]"></div>
             </div>
             <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
-              CENTRO <span className="text-indigo-400 italic">UDEII</span>
+              CENTRO <span className="text-sase-info italic">UDEII</span>
             </h2>
           </div>
         </div>
 
         <button
           onClick={() => toast.success("Generando Reporte de Inclusión...")}
-          className="px-8 py-3.5 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 hover:bg-indigo-500 transition-all active:scale-95 flex items-center gap-3"
+          className="px-8 py-3.5 bg-sase-info text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-sase-info/20 hover:bg-sase-info transition-all active:scale-95 flex items-center gap-3"
         >
           <span className="material-icons text-xl">file_save</span>
           Generar reporte BAP
@@ -67,7 +67,7 @@ export const DashboardUDEII = () => {
         <div className="xl:col-span-2 card-sase border-slate-100 bg-[#0a0f18]/40 overflow-hidden flex flex-col group">
           <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between">
             <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] flex items-center gap-3 italic">
-              <span className="material-icons text-indigo-400">
+              <span className="material-icons text-sase-info">
                 monitoring
               </span>
               MONITOR DE BARRERAS (BAP)
@@ -92,13 +92,13 @@ export const DashboardUDEII = () => {
                 {studentsWithBAP.map((s) => (
                   <tr
                     key={s.id}
-                    className="hover:bg-indigo-500/[0.02] transition-colors group"
+                    className="hover:bg-sase-info/[0.02] transition-colors group"
                   >
                     <td className="px-8 py-6 font-mono text-[10px] text-slate-600">
                       {s.id.substring(0, 8).toUpperCase()}
                     </td>
                     <td className="px-8 py-6">
-                      <p className="font-black text-white text-sm uppercase italic tracking-tighter group-hover:text-indigo-400 transition-colors">
+                      <p className="font-black text-white text-sm uppercase italic tracking-tighter group-hover:text-sase-info transition-colors">
                         {s.name}
                       </p>
                       <p className="text-[9px] font-bold text-slate-600 uppercase mt-1">
@@ -106,7 +106,7 @@ export const DashboardUDEII = () => {
                       </p>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="px-2 py-1 bg-indigo-500/5 border border-indigo-500/20 text-[9px] font-black text-indigo-400 rounded uppercase">
+                      <span className="px-2 py-1 bg-sase-info/5 border border-sase-info/20 text-[9px] font-black text-sase-info rounded uppercase">
                         {s.bapInfo.diagnosisPrivate || "Inclusión Genérica"}
                       </span>
                     </td>
@@ -122,7 +122,7 @@ export const DashboardUDEII = () => {
                           setSelectedStudent(s);
                           setModalOpen(true);
                         }}
-                        className="size-10 bg-white/5 hover:bg-indigo-600 hover:text-white rounded-xl flex items-center justify-center transition-all group-hover:border-indigo-500/30 border border-transparent active:scale-90"
+                        className="size-10 bg-white/5 hover:bg-sase-info hover:text-white rounded-xl flex items-center justify-center transition-all group-hover:border-sase-info/30 border border-transparent active:scale-90"
                       >
                         <span className="material-icons text-lg">
                           edit_note
@@ -141,7 +141,7 @@ export const DashboardUDEII = () => {
                             },
                           })
                         }
-                        className="size-10 bg-white/5 hover:bg-indigo-600 hover:text-white rounded-xl flex items-center justify-center transition-all border border-transparent active:scale-90"
+                        className="size-10 bg-white/5 hover:bg-sase-info hover:text-white rounded-xl flex items-center justify-center transition-all border border-transparent active:scale-90"
                       >
                         <span className="material-icons text-lg">
                           print
@@ -157,9 +157,9 @@ export const DashboardUDEII = () => {
 
         {/* SIDEBAR TOOLS */}
         <div className="space-y-8">
-          <div className="card-sase p-8 border-indigo-500/20 bg-indigo-500/[0.02] relative overflow-hidden group">
-            <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
-              <span className="size-2 bg-indigo-500 rounded-full shadow-[0_0_8px_#6366f1]"></span>
+          <div className="card-sase p-8 border-sase-info/20 bg-sase-info/[0.02] relative overflow-hidden group">
+            <h3 className="text-[10px] font-black text-sase-info uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
+              <span className="size-2 bg-sase-info rounded-full shadow-[0_0_8px_#6366f1]"></span>
               Herramientas UDEII
             </h3>
 
@@ -168,7 +168,7 @@ export const DashboardUDEII = () => {
                 onClick={() => toast("Abriendo Guia de Ajustes Razonables...")}
                 className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
               >
-                <span className="material-icons text-indigo-400">
+                <span className="material-icons text-sase-info">
                   menu_book
                 </span>
                 <span className="text-[11px] font-black text-white uppercase tracking-widest italic">
@@ -179,7 +179,7 @@ export const DashboardUDEII = () => {
                 onClick={() => toast("Enviando comunicación a padres...")}
                 className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
               >
-                <span className="material-icons text-emerald-400">
+                <span className="material-icons text-sase-clinical">
                   mark_as_unread
                 </span>
                 <span className="text-[11px] font-black text-white uppercase tracking-widest italic">
@@ -189,8 +189,8 @@ export const DashboardUDEII = () => {
             </div>
           </div>
 
-          <div className="card-sase p-10 bg-indigo-900/10 border-indigo-500/10 flex flex-col items-center text-center">
-            <div className="size-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500 mb-6">
+          <div className="card-sase p-10 bg-sase-info/10 border-sase-info/10 flex flex-col items-center text-center">
+            <div className="size-16 bg-sase-info/10 rounded-2xl flex items-center justify-center text-sase-info mb-6">
               <span className="material-icons text-3xl font-black italic">
                 psychology
               </span>

@@ -59,6 +59,9 @@ export const FeedbackWidget = () => {
       [AppModule.UDEII_TRACKER]: "Inclusión UDEII",
       [AppModule.LECTURA_TRACKER]: "Lectura",
       [AppModule.MANUAL_USUARIO]: "Manual de usuario",
+      [AppModule.FERIA]: "Módulo Feria",
+      [AppModule.DIAGNOSTICO]: "Diagnóstico Colectivo",
+      [AppModule.MATE]: "Mate",
     }),
     [],
   );

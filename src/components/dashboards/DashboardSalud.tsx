@@ -82,7 +82,7 @@ export const DashboardSalud = () => {
           </h1>
           <p className="text-slate-600 text-sm">
             Monitoreo de bienestar y atencion a barreras para el aprendizaje (BAP).{" "}
-            <strong className="text-amber-400">Acceso confidencial.</strong>
+            <strong className="text-sase-warning">Acceso confidencial.</strong>
           </p>
         </div>
         <NeoButton
@@ -102,7 +102,7 @@ export const DashboardSalud = () => {
             <input
               type="text"
               placeholder="Buscar expediente medico..."
-              className="w-full bg-white/5 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-blue-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all min-h-[48px]"
+              className="w-full bg-white/5 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-sase-info focus:shadow-glow-info transition-all min-h-[48px]"
             />
           </div>
 

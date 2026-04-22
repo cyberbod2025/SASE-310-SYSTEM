@@ -10,10 +10,10 @@ import { getDocumentTemplate } from "../../utils/documentTemplates";
 
 const SocialMetric = ({ label, value, icon, color, pct }: any) => {
   const colors: any = {
-    orange: "text-orange-500 border-orange-500/20 bg-orange-500/5",
-    blue: "text-blue-500 border-blue-500/20 bg-blue-500/5",
-    rose: "text-rose-500 border-rose-500/20 bg-rose-500/5",
-    indigo: "text-indigo-500 border-indigo-500/20 bg-indigo-500/5",
+    orange: "text-sase-warning border-sase-warning/20 bg-sase-warning/5",
+    blue: "text-sase-info border-sase-info/20 bg-sase-info/5",
+    rose: "text-sase-danger border-sase-danger/20 bg-sase-danger/5",
+    indigo: "text-sase-info border-sase-info/20 bg-sase-info/5",
   };
 
   return (
@@ -147,29 +147,29 @@ export const DashboardTrabajoSocial = () => {
   }, [students]);
 
   return (
-    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-orange-500/30">
+    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-sase-warning/30">
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
-          <div className="size-16 bg-[#0a0f18] border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-500 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+          <div className="size-16 bg-[#0a0f18] border border-sase-warning/30 rounded-2xl flex items-center justify-center text-sase-warning shadow-2xl relative overflow-hidden backdrop-blur-xl">
             <span className="material-icons text-4xl">
               diversity_3
             </span>
             <motion.div
               animate={{ top: ["0%", "100%", "0%"] }}
               transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              className="absolute left-0 w-full h-[1px] bg-orange-500/50"
+              className="absolute left-0 w-full h-[1px] bg-sase-warning/50"
             />
           </div>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <span className="px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded text-[9px] font-black text-orange-400 uppercase tracking-widest">
+              <span className="px-2 py-0.5 bg-sase-warning/10 border border-sase-warning/20 rounded text-[9px] font-black text-sase-warning uppercase tracking-widest">
                 UNIDAD 03 // TRABAJO SOCIAL
               </span>
-              <div className="size-1.5 bg-orange-600 rounded-full animate-ping"></div>
+              <div className="size-1.5 bg-sase-warning rounded-full animate-ping"></div>
             </div>
             <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
-              TRABAJO <span className="text-orange-500 italic">SOCIAL</span>
+              TRABAJO <span className="text-sase-warning italic">SOCIAL</span>
             </h2>
             <p className="text-slate-600 text-sm mt-2">
               Vinculacion familiar, analisis de contexto y seguimiento institucional.
@@ -180,19 +180,19 @@ export const DashboardTrabajoSocial = () => {
         <div className="flex bg-white/5 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
           <button
             onClick={() => setActiveTab("justificantes")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-sase-warning text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Justificantes
           </button>
           <button
             onClick={() => setActiveTab("riesgos")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-sase-warning text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Riesgos ({dropoutRisk.length})
           </button>
           <button
             onClick={() => setActiveTab("comunidad")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-orange-600 text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-sase-warning text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
           >
             Análisis Comunidad
           </button>
@@ -203,7 +203,7 @@ export const DashboardTrabajoSocial = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* TERMINAL GENERATOR */}
           <div className="card-sase border-slate-100 p-8 bg-[#0a0f18]/40 backdrop-blur-xl">
-            <h3 className="text-xs font-black text-orange-500 uppercase tracking-[0.3em] mb-8 italic flex items-center gap-3">
+            <h3 className="text-xs font-black text-sase-warning uppercase tracking-[0.3em] mb-8 italic flex items-center gap-3">
               <span className="material-icons text-xl">
                 history_edu
               </span>
@@ -216,7 +216,7 @@ export const DashboardTrabajoSocial = () => {
                   OBJETIVO_ESTUDIANTE
                 </label>
                 <select
-                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
+                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none transition-all uppercase font-bold"
                   value={justForm.student}
                   title="Seleccionar alumno para justificante"
                   onChange={(e) =>
@@ -244,7 +244,7 @@ export const DashboardTrabajoSocial = () => {
                     onChange={(e) =>
                       setJustForm({ ...justForm, start: e.target.value })
                     }
-                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
+                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none"
                   />
                 </div>
                 <div className="space-y-2">
@@ -258,7 +258,7 @@ export const DashboardTrabajoSocial = () => {
                     onChange={(e) =>
                       setJustForm({ ...justForm, end: e.target.value })
                     }
-                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none"
+                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none"
                   />
                 </div>
               </div>
@@ -268,7 +268,7 @@ export const DashboardTrabajoSocial = () => {
                   NATURALEZA_DEL_MOTIVO
                 </label>
                 <select
-                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-orange-500/50 outline-none transition-all uppercase font-bold"
+                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none transition-all uppercase font-bold"
                   value={justForm.reason}
                   title="Motivo del justificante"
                   onChange={(e) =>
@@ -282,13 +282,13 @@ export const DashboardTrabajoSocial = () => {
               </div>
 
               <div
-                className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${justForm.distal ? "bg-orange-600/10 border-orange-500/30" : "bg-white/5 border-slate-200 opacity-50"}`}
+                className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${justForm.distal ? "bg-sase-warning/10 border-sase-warning/30" : "bg-white/5 border-slate-200 opacity-50"}`}
                 onClick={() =>
                   setJustForm({ ...justForm, distal: !justForm.distal })
                 }
               >
                 <div
-                  className={`size-6 rounded-2xl border-2 flex items-center justify-center transition-all ${justForm.distal ? "bg-orange-500 border-orange-500" : "border-slate-600"}`}
+                  className={`size-6 rounded-2xl border-2 flex items-center justify-center transition-all ${justForm.distal ? "bg-sase-warning border-sase-warning" : "border-slate-600"}`}
                 >
                   {justForm.distal && (
                     <span className="material-icons text-white text-sm">
@@ -326,14 +326,14 @@ export const DashboardTrabajoSocial = () => {
                     setJustForm({ ...justForm, desc: e.target.value })
                   }
                   placeholder="DATOS_ADICIONALES..."
-                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs h-24 text-white resize-none outline-none focus:border-orange-500/50"
+                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs h-24 text-white resize-none outline-none focus:border-sase-warning/50"
                 />
               </div>
 
               <button
                 onClick={handleGenerateJustificante}
                 disabled={!justForm.student || !justForm.start}
-                className="w-full py-5 bg-orange-600 hover:bg-orange-500 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-orange-600/20 active:scale-95 transition-all disabled:grayscale disabled:opacity-40"
+                className="w-full py-5 bg-sase-warning hover:bg-sase-warning text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-sase-warning/20 active:scale-95 transition-all disabled:grayscale disabled:opacity-40"
               >
                 TIMBRAR_REGISTRO_OFICIAL
               </button>
@@ -344,7 +344,7 @@ export const DashboardTrabajoSocial = () => {
           <div className="lg:col-span-2 card-sase border-slate-100 bg-[#0a0f18]/20 flex flex-col h-full">
             <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between">
               <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] flex items-center gap-3 italic">
-                <span className="material-icons text-orange-500">
+                <span className="material-icons text-sase-warning">
                   inventory
                 </span>
                 HISTORIAL_DE_EMISIÓN_SINCRO
@@ -372,7 +372,7 @@ export const DashboardTrabajoSocial = () => {
                         {j.folio}
                       </td>
                       <td className="px-8 py-6">
-                        <p className="font-black text-white text-sm uppercase italic tracking-tighter group-hover:text-orange-400 transition-colors">
+                        <p className="font-black text-white text-sm uppercase italic tracking-tighter group-hover:text-sase-warning transition-colors">
                           {j.studentName}
                         </p>
                         <p className="text-[9px] font-bold text-slate-600 uppercase mt-1">
@@ -385,7 +385,7 @@ export const DashboardTrabajoSocial = () => {
                         {j.endDate}
                       </td>
                       <td className="px-8 py-6">
-                        <span className="px-2.5 py-1 rounded bg-white/5 border border-slate-200 text-[9px] font-black text-slate-600 uppercase tracking-widest italic group-hover:border-orange-500/40">
+                        <span className="px-2.5 py-1 rounded bg-white/5 border border-slate-200 text-[9px] font-black text-slate-600 uppercase tracking-widest italic group-hover:border-sase-warning/40">
                           {j.reason}
                         </span>
                       </td>
@@ -406,7 +406,7 @@ export const DashboardTrabajoSocial = () => {
                               html: html,
                             });
                           }}
-                          className="size-10 bg-white/5 hover:bg-orange-600 hover:text-white rounded-xl flex items-center justify-center transition-all"
+                          className="size-10 bg-white/5 hover:bg-sase-warning hover:text-white rounded-xl flex items-center justify-center transition-all"
                         >
                           <span className="material-icons text-lg">
                             print
@@ -437,7 +437,7 @@ export const DashboardTrabajoSocial = () => {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1 flex items-center gap-3">
-                <span className="material-icons text-rose-500 animate-pulse">
+                <span className="material-icons text-sase-danger animate-pulse">
                   warning
                 </span>
                 Casos en vinculacion activa
@@ -466,9 +466,9 @@ export const DashboardTrabajoSocial = () => {
                   html,
                 });
               }}
-              className="px-6 py-3 bg-white/5 border border-slate-200 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all flex items-center gap-2 active:scale-95"
+              className="px-6 py-3 bg-white/5 border border-slate-200 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sase-danger transition-all flex items-center gap-2 active:scale-95"
             >
-              <span className="material-icons text-sm text-rose-400">
+              <span className="material-icons text-sm text-sase-danger">
                 print
               </span>
               Generar bitacora institucional
@@ -479,13 +479,13 @@ export const DashboardTrabajoSocial = () => {
             {dropoutRisk.map((s) => (
               <div
                 key={s.id}
-                className="card-sase p-8 border-rose-500/20 bg-rose-500/[0.02] group relative overflow-hidden border-l-4 border-l-rose-600"
+                className="card-sase p-8 border-sase-danger/20 bg-sase-danger/[0.02] group relative overflow-hidden border-l-4 border-l-sase-danger"
               >
                 <div className="flex justify-between items-start mb-6">
-                  <div className="size-14 bg-[#0a0f18] border border-slate-200 rounded-2xl flex items-center justify-center text-rose-500 text-2xl font-black italic">
+                  <div className="size-14 bg-[#0a0f18] border border-slate-200 rounded-2xl flex items-center justify-center text-sase-danger text-2xl font-black italic">
                     {s.name.charAt(0)}
                   </div>
-                  <span className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-2xl animate-pulse">
+                  <span className="px-3 py-1 bg-sase-danger text-white text-[9px] font-black uppercase tracking-widest rounded-2xl animate-pulse">
                     Seguimiento familiar en proceso
                   </span>
                 </div>
@@ -503,7 +503,7 @@ export const DashboardTrabajoSocial = () => {
 
                 <div className="space-y-3 mb-8">
                   <div className="flex items-center gap-3">
-                    <span className="material-icons text-rose-500 text-lg">
+                    <span className="material-icons text-sase-danger text-lg">
                       error
                     </span>
                     <p className="text-[10px] font-black text-slate-600 uppercase italic">
@@ -526,7 +526,7 @@ export const DashboardTrabajoSocial = () => {
                       setSelectedStudentId(s.id);
                       setIsModalOpen(true);
                     }}
-                    className="flex-1 py-3.5 bg-white/5 border border-slate-200 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 transition-all active:scale-95"
+                    className="flex-1 py-3.5 bg-white/5 border border-slate-200 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-sase-danger transition-all active:scale-95"
                   >
                     Registrar contacto o visita
                   </button>
@@ -537,7 +537,7 @@ export const DashboardTrabajoSocial = () => {
                         { icon: "📞" },
                       )
                     }
-                    className="size-12 bg-white/5 border border-slate-200 text-slate-700 rounded-2xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all active:scale-95"
+                    className="size-12 bg-white/5 border border-slate-200 text-slate-700 rounded-2xl flex items-center justify-center hover:bg-sase-clinical hover:text-white transition-all active:scale-95"
                   >
                     <span className="material-icons">call</span>
                   </button>
@@ -546,7 +546,7 @@ export const DashboardTrabajoSocial = () => {
             ))}
             {dropoutRisk.length === 0 && (
               <div className="col-span-full py-40 text-center opacity-30 flex flex-col items-center gap-6">
-                <span className="material-icons text-6xl text-emerald-500">
+                <span className="material-icons text-6xl text-sase-clinical">
                   verified_user
                 </span>
                 <p className="text-[11px] font-black uppercase tracking-[0.5em] italic">
@@ -592,12 +592,12 @@ export const DashboardTrabajoSocial = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="card-sase p-10 bg-slate-900 border-slate-100 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform">
-                <span className="material-icons text-8xl text-orange-500">
+                <span className="material-icons text-8xl text-sase-warning">
                   online_prediction
                 </span>
               </div>
               <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-6 flex items-center gap-4">
-                <span className="material-icons text-orange-500">
+                <span className="material-icons text-sase-warning">
                   auto_awesome
                 </span>
                 ANALISIS SOCIAL IA
@@ -609,19 +609,19 @@ export const DashboardTrabajoSocial = () => {
                 TRANSPORTE.
               </p>
               <div className="space-y-4">
-                <div className="flex items-center gap-3 text-orange-300 text-[10px] font-black uppercase tracking-widest">
-                  <span className="size-1.5 bg-orange-500 rounded-full"></span>
+                <div className="flex items-center gap-3 text-sase-warning text-[10px] font-black uppercase tracking-widest">
+                  <span className="size-1.5 bg-sase-warning rounded-full"></span>
                   ALTO IMPACTO EN MOVILIDAD GEOGRÁFICA
                 </div>
-                <div className="flex items-center gap-3 text-orange-300 text-[10px] font-black uppercase tracking-widest">
-                  <span className="size-1.5 bg-orange-500 rounded-full"></span>
+                <div className="flex items-center gap-3 text-sase-warning text-[10px] font-black uppercase tracking-widest">
+                  <span className="size-1.5 bg-sase-warning rounded-full"></span>
                   DEMANDA CRECIENTE DE APOYO PSICOPEDAGÓGICO
                 </div>
               </div>
             </div>
 
             <div className="card-sase p-10 border-2 border-dashed border-slate-100 flex flex-col flex-col items-center justify-center text-center group">
-              <div className="size-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6 group-hover:bg-orange-600 group-hover:text-white transition-all duration-500">
+              <div className="size-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6 group-hover:bg-sase-warning group-hover:text-white transition-all duration-500">
                 <span className="material-icons text-4xl">
                   analytics
                 </span>
@@ -636,7 +636,7 @@ export const DashboardTrabajoSocial = () => {
                  onClick={() =>
                    toast.success("Compilando Atlas Social del Plantel...")
                  }
-                 className="px-10 py-4 bg-orange-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-600/20 hover:bg-orange-500 transition-all active:scale-95"
+                 className="px-10 py-4 bg-sase-warning text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-sase-warning/20 hover:bg-sase-warning transition-all active:scale-95"
                >
                  Generar bitacora institucional
                </button>

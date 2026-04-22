@@ -283,6 +283,25 @@ export const InvitationGenerator: React.FC = () => {
         },
       ],
     },
+    [UserRole.ALUMNO]: {
+      icons: [
+        {
+          icon: "science",
+          label: "Feria de Ciencias",
+          desc: "Acceso interactivo a stands y ranking.",
+        },
+        {
+          icon: "qr_code_scanner",
+          label: "Check-in QR",
+          desc: "Registro de asistencia a experimentos.",
+        },
+        {
+          icon: "emoji_events",
+          label: "Reconocimientos",
+          desc: "Obtención de diplomas digitales.",
+        },
+      ],
+    },
   };
 
   const handlePrint = () => {

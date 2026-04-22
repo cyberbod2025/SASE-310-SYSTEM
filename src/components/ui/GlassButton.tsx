@@ -17,7 +17,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseStyles = "relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl font-bold uppercase tracking-[0.15em] text-[10px] transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyles = "relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl font-semibold uppercase tracking-[0.22em] text-[10px] transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const sizeStyles = {
     sm: "px-4 py-2 min-h-[40px]",
@@ -26,11 +26,11 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   };
 
   const variantStyles = {
-    primary: "bg-blue-600 text-white shadow-[0_4px_15px_rgba(37,99,235,0.3)] hover:bg-blue-500 hover:shadow-[0_8px_25px_rgba(37,99,235,0.4)] border border-blue-400/30",
-    secondary: "bg-white/8 backdrop-blur-xl text-slate-100 border border-white/10 hover:bg-white/12 hover:border-blue-400/30",
+    primary: "bg-[linear-gradient(135deg,#816ab8_0%,#9a89c2_100%)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_24px_40px_rgba(129,106,184,0.2)] hover:brightness-105 border border-[rgba(255,255,255,0.16)]",
+    secondary: "bg-[rgba(121,118,124,0.12)] backdrop-blur-xl text-[var(--sase-text-main)] border border-[rgba(227,221,236,0.14)] hover:bg-[rgba(121,118,124,0.16)] hover:border-[rgba(227,221,236,0.18)]",
     danger: "bg-red-600 text-white shadow-[0_4px_15px_rgba(220,38,38,0.3)] hover:bg-red-500 hover:shadow-[0_8px_25px_rgba(220,38,38,0.4)] border border-red-400/30",
-    ghost: "bg-transparent text-slate-300 hover:bg-white/8 hover:text-white",
-    outline: "bg-white/5 border border-white/10 text-slate-200 hover:border-blue-400/40 hover:text-blue-300 hover:bg-blue-500/10"
+    ghost: "bg-transparent text-[var(--sase-text-muted)] hover:bg-[rgba(121,118,124,0.08)] hover:text-white",
+    outline: "bg-[rgba(121,118,124,0.08)] border border-[rgba(227,221,236,0.14)] text-[var(--sase-text-main)] hover:border-[rgba(125,114,147,0.35)] hover:text-white hover:bg-[rgba(121,118,124,0.14)]"
   };
 
   return (

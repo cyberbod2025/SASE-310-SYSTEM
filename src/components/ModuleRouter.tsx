@@ -2,6 +2,8 @@ import React from "react";
 import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEcosystemModules } from "../hooks/useEcosystemModules";
+import { ExternalModuleLauncher } from "./ExternalModuleLauncher";
 
 // Loading Component
 export const LoadingSpinner = () => (
@@ -48,6 +50,11 @@ const ObjetosRetenidos = React.lazy(() => import("./ObjetosRetenidos").then((m) 
 
 export const ModuleRouter: React.FC = () => {
   const { currentModule, currentUserRole, setCurrentModule } = useApp();
+  const {
+    getModuleByAppModule,
+    isKnownExternalModule,
+    loading: ecosystemModulesLoading,
+  } = useEcosystemModules();
 
   return (
     <React.Suspense fallback={<LoadingSpinner />}>
@@ -61,6 +68,30 @@ export const ModuleRouter: React.FC = () => {
           className="h-full w-full"
         >
           {(() => {
+            const externalModule = getModuleByAppModule(currentModule);
+
+            // Restricción estricta para Alumnos: Solo Feria
+            if (currentUserRole === UserRole.ALUMNO) {
+              const feriaModule = getModuleByAppModule(AppModule.FERIA);
+              if (!feriaModule) {
+                return (
+                  <div className="p-8 text-center">
+                    <p className="text-rose-400 font-medium">Error: Módulo de Feria no encontrado para tu perfil.</p>
+                  </div>
+                );
+              }
+              return <ExternalModuleLauncher module={feriaModule} />;
+            }
+
+            if (externalModule) {
+              return <ExternalModuleLauncher module={externalModule} />;
+            }
+
+
+            if (isKnownExternalModule(currentModule)) {
+              return ecosystemModulesLoading ? <LoadingSpinner /> : <NotFound />;
+            }
+
             if (currentModule === AppModule.AGENDA) return <Agenda />;
             if (currentModule === AppModule.REPORTES) return <Reportes />;
             if (currentModule === AppModule.EXPEDIENTES) return <Expedientes />;
@@ -74,7 +105,7 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
             if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;
             if (currentModule === AppModule.ASISTENCIA) return <Asistencia />;
-             if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
+            if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
             if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
             if (currentModule === AppModule.HOME) {

@@ -109,11 +109,11 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
             transition={{ duration: 2, repeat: Infinity }}
             className="flex items-center gap-3 mb-8"
           >
-            <div className="h-[1px] w-12 bg-blue-500/30"></div>
-            <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.6em]">
-              Sincronización de Núcleo // Sasito IA
+            <div className="h-[1px] w-12 bg-[rgba(125,114,147,0.3)]"></div>
+            <span className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.6em]">
+              Núcleo IA // Radar Escolar
             </span>
-            <div className="h-[1px] w-12 bg-blue-500/30"></div>
+            <div className="h-[1px] w-12 bg-[rgba(125,114,147,0.3)]"></div>
           </motion.div>
 
           <div className="relative mb-12 flex flex-col items-center">
@@ -122,32 +122,22 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                transition={{ duration: 2, repeat: Infinity }}
                className="relative z-20"
              >
-                <SaseSplineOrb 
-                  state={loading ? "thinking" : "normal"} 
-                  className="size-40 md:size-56" 
-                />
-             </motion.div>
-             
-             {/* Dynamic Welcome Message from Sasito */}
-             <AnimatePresence>
-               {!loading && (
-                 <motion.div
-                   initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                   className="absolute -top-16 bg-white text-black px-6 py-3 rounded-2xl rounded-br-none shadow-2xl text-xs font-black uppercase tracking-widest italic"
-                 >
-                    ¡Sincronización completa! Bienvenido al núcleo SASE-310.
-                 </motion.div>
-               )}
-             </AnimatePresence>
+                 <SaseSplineOrb 
+                   state={loading ? "thinking" : "normal"} 
+                   className="size-40 md:size-56"
+                   accentColor="#22c55e"
+                   showAura={false}
+                   showGlow={false}
+                 />
+              </motion.div>
 
-             <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-[100px] animate-pulse -z-10" />
-          </div>
+              <div className="absolute inset-0 bg-[rgba(34,197,94,0.08)] rounded-full blur-[100px] animate-pulse -z-10" />
+           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase leading-none drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-            RADAR ESCOLAR <span className="text-blue-500">—</span> HOY
+          <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+            RADAR ESCOLAR <span className="text-[var(--sase-primary)]">—</span> HOY
           </h1>
-          <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.4em] mt-4">
+          <p className="text-[9px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.4em] mt-4">
             {loading ? "Analizando trayectoria de expedientes..." : "Resultados de monitoreo institucional"}
           </p>
         </div>
