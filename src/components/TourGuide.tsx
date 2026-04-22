@@ -9,13 +9,13 @@ export const startProductTour = (
   setIsTourActive?: (active: boolean) => void,
   setTourStep?: (step: number) => void,
 ) => {
-  if (setIsTourActive) setIsTourActive(true);
-  
   // Prevenir que se inicien múltiples tours al mismo tiempo
   if (document.querySelector(".driver-popover")) {
     console.warn("Tour ya está en ejecución");
     return;
   }
+
+  if (setIsTourActive) setIsTourActive(true);
 
   // Marcamos que el tour está activo para que el modal lo detecte
   localStorage.setItem("sase_tour_active", "true");
@@ -28,7 +28,7 @@ export const startProductTour = (
   });
 
   // 1. Pasos Base (Bienvenida + Sidebar Global)
-  const steps: any[] = [
+  const rawSteps: any[] = [
     {
       popover: {
         title: `NÚCLEO SASE-310: Hola, ${userName} 👋`,
@@ -83,6 +83,22 @@ export const startProductTour = (
     }
   ];
 
+  const steps = rawSteps.filter((step) => {
+    if (!step.element) {
+      return true;
+    }
+
+    return Boolean(document.querySelector(step.element));
+  });
+
+  if (steps.length === 0) {
+    localStorage.removeItem("sase_tour_active");
+    if (setIsTourActive) setIsTourActive(false);
+    if (setTourStep) setTourStep(0);
+    console.warn("No hay pasos válidos para el tour en la vista actual");
+    return;
+  }
+
   const driverObj = driver({
     showProgress: true,
     animate: true,
@@ -93,6 +109,8 @@ export const startProductTour = (
     nextBtnText: "SIGUIENTE FASE ➔",
     prevBtnText: "⬅ PROTOCOLO ANTERIOR",
     progressText: "ETAPA {{current}} DE {{total}}",
+    disableActiveInteraction: false,
+    smoothScroll: true,
     steps: steps,
     onHighlightStarted: (element, step, { state }) => {
       if (setTourStep) setTourStep(state.activeIndex);

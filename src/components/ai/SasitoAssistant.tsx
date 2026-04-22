@@ -49,10 +49,17 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [showDragHint, setShowDragHint] = useState(true);
   
   const constraintsRef = useRef(null);
 
-  // -- ONBOARDING LOGIC --
+  useEffect(() => {
+    if (minimal || isWidgetMode) return;
+    const timer = setTimeout(() => setShowDragHint(false), 7000);
+    return () => clearTimeout(timer);
+  }, [minimal, isWidgetMode]);
+
+  // -- ONBOARDING LOGIC (solo la primera vez, luego ya no insiste) --
   useEffect(() => {
     const hasSeenWelcome = localStorage.getItem('sase_onboarding_v2_completed');
     if (!hasSeenWelcome && !minimal) {
@@ -64,6 +71,8 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
           actionLabel: "SÍ, DAME EL TOUR ➔",
           actionType: "start-tour"
         });
+        // Marcar como mostrado para no volver a insistir
+        localStorage.setItem('sase_onboarding_v2_completed', 'true');
       }, 3000);
     }
   }, [currentUserProfile, minimal]);
@@ -106,9 +115,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   }, [aiSystemState]);
 
   const saseSuggestions = useMemo(() => {
-    const suggestions: Suggestion[] = [
-      { text: "¡Hola! Soy Sasito, tu copiloto en SASE 310. ¿Cómo te apoyo hoy?", state: 'calm' },
-    ];
+    const suggestions: Suggestion[] = [];
 
     if (currentUserRole === UserRole.PREFECTURA) {
       suggestions.push({ text: "¿Revisamos los alumnos que no han entrado a clase?", state: 'attention', actionLabel: "Ver Asistencias", actionType: "module-asistencia" });
@@ -127,16 +134,18 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     return suggestions;
   }, [currentUserRole, notifications, students]);
 
+  // Sugerencias proactivas — solo cuando hay algo relevante que decir
+  // Intervalo largo (90s) y baja probabilidad (15%) para no ser molesto
   useEffect(() => {
     if (minimal) return;
     const interval = setInterval(() => {
-      if (Math.random() > 0.6 && !isBubbleExpanded && !isChatOpen) {
+      if (saseSuggestions.length > 0 && Math.random() > 0.85 && !isBubbleExpanded && !isChatOpen) {
         const suggestion = saseSuggestions[Math.floor(Math.random() * saseSuggestions.length)];
         setCurrentSuggestion(suggestion);
         if (suggestion.state) setLocalState(suggestion.state);
         setTimeout(() => setCurrentSuggestion(null), 6000);
       }
-    }, 12000);
+    }, 90000);
     return () => clearInterval(interval);
   }, [minimal, isBubbleExpanded, isChatOpen, saseSuggestions]);
 
@@ -273,9 +282,10 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         <motion.div 
           drag
           dragConstraints={constraintsRef}
-          dragElastic={0.1}
-          layout
-          className={`absolute pointer-events-auto flex flex-col items-center gap-6 transition-all duration-1000 ${
+          dragElastic={0.02}
+          dragMomentum={false}
+          onDragStart={() => setShowDragHint(false)}
+          className={`absolute pointer-events-auto flex flex-col items-center gap-4 ${
             isWidgetMode 
               ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' 
               : 'bottom-12 right-12 items-end'
@@ -408,9 +418,18 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                 localState === 'alert' ? 'alert' : 
                 localState === 'attention' ? 'warning' : 'normal'
               } 
-              className={minimal ? "w-24 h-24" : "w-32 h-32"}
+              className={minimal ? "w-28 h-28" : "w-40 h-40"}
+              accentColor="#22c55e"
+              showAura={false}
+              showGlow={false}
             />
           </motion.div>
+
+          {showDragHint && !minimal && !isChatOpen && !currentSuggestion && !isWidgetMode && (
+            <div className="px-3 py-2 rounded-full border border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.14)] text-[9px] font-black uppercase tracking-[0.2em] text-[var(--sase-text-muted)]">
+              Arrastra para mover
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

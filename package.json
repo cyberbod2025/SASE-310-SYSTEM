@@ -11,7 +11,8 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:visual:glass": "node tests/visual-glass-smoke.js",
-    "smoke:t017": "tsx tests/smoke-t017.ts"
+    "smoke:t017": "tsx tests/smoke-t017.ts",
+    "smoke:sase:launch": "node ops/smoke-sase-launch.js"
   },
   "dependencies": {
     "@_davideast/stitch-mcp": "^0.3.2",
@@ -27,13 +28,13 @@
     "driver.js": "^1.4.0",
     "framer-motion": "^12.34.3",
     "lucide-react": "^1.7.0",
-    "puppeteer": "^24.34.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-hot-toast": "^2.6.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "puppeteer": "^24.34.0",
     "@alloc/quick-lru": "^5.2.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",

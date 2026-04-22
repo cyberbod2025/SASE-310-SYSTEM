@@ -8,10 +8,10 @@ import { CaseState, AppModule, IncidentType } from "../../types";
 
 const TacticalKPI = ({ label, value, icon, color, trend }: any) => {
   const colors: any = {
-    amber: "text-amber-500 border-amber-500/20 bg-amber-500/5",
-    blue: "text-blue-500 border-blue-500/20 bg-blue-500/5",
-    emerald: "text-emerald-500 border-emerald-500/20 bg-emerald-500/5",
-    rose: "text-rose-500 border-rose-500/20 bg-rose-500/5",
+    amber: "text-sase-warning border-sase-warning/20 bg-sase-warning/5",
+    blue: "text-sase-info border-sase-info/20 bg-sase-info/5",
+    emerald: "text-sase-clinical border-sase-clinical/20 bg-sase-clinical/5",
+    rose: "text-sase-danger border-sase-danger/20 bg-sase-danger/5",
   };
 
   return (
@@ -81,7 +81,7 @@ export const DashboardSubdireccion = () => {
   };
 
   return (
-    <div className="flex-1 h-full min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-orange-500/30">
+    <div className="flex-1 h-full min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-sase-warning/30">
       {/* Background Grid & FX */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:40px_40px]"></div>
@@ -91,28 +91,28 @@ export const DashboardSubdireccion = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 relative z-10 border-b border-slate-100 pb-10">
         <div className="flex items-center gap-6">
           <div className="relative group">
-            <div className="absolute -inset-2 bg-orange-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="size-16 bg-[#0a0f18] border border-orange-500/30 rounded-2xl flex items-center justify-center text-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.15)] relative overflow-hidden backdrop-blur-xl">
+            <div className="absolute -inset-2 bg-sase-warning/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="size-16 bg-[#0a0f18] border border-sase-warning/30 rounded-2xl flex items-center justify-center text-sase-warning shadow-[0_0_20px_rgba(249,115,22,0.15)] relative overflow-hidden backdrop-blur-xl">
               <span className="material-icons text-4xl">
                 architecture
               </span>
               <motion.div
                 animate={{ top: ["0%", "100%", "0%"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="absolute left-0 w-full h-[1px] bg-orange-500/50"
+                className="absolute left-0 w-full h-[1px] bg-sase-warning/50"
               />
             </div>
           </div>
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <span className="px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded text-[9px] font-black text-orange-400 uppercase tracking-widest">
+              <span className="px-2 py-0.5 bg-sase-warning/10 border border-sase-warning/20 rounded text-[9px] font-black text-sase-warning uppercase tracking-widest">
                 UNIT_02 // SUB_DIRECTORATE
               </span>
-              <div className="size-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
+              <div className="size-1.5 bg-sase-clinical rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
             </div>
             <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
               Mando{" "}
-              <span className="text-orange-500 italic drop-shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+              <span className="text-sase-warning italic drop-shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                 Académico
               </span>
             </h2>
@@ -136,7 +136,7 @@ export const DashboardSubdireccion = () => {
           <button
             onClick={() => handleQuickAction("sincronizar")}
             disabled={isSyncing}
-            className="px-8 py-3.5 bg-orange-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-600/20 hover:bg-orange-500 transition-all flex items-center gap-3 active:scale-95 disabled:opacity-50"
+            className="px-8 py-3.5 bg-sase-warning text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-sase-warning/20 hover:bg-sase-warning transition-all flex items-center gap-3 active:scale-95 disabled:opacity-50"
           >
             {isSyncing ? (
               <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
@@ -188,7 +188,7 @@ export const DashboardSubdireccion = () => {
           <div className="card-sase border-slate-100 overflow-hidden flex flex-col group h-full bg-[#0a0f18]/40 backdrop-blur-xl">
             <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between relative">
               <div className="flex items-center gap-4">
-                <div className="size-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500">
+                <div className="size-10 bg-sase-warning/10 rounded-xl flex items-center justify-center text-sase-warning">
                   <span className="material-icons text-xl font-black">
                     emergency
                   </span>
@@ -196,7 +196,7 @@ export const DashboardSubdireccion = () => {
                 <div>
                   <h3 className="text-[11px] font-black text-white uppercase tracking-[0.3em] italic">
                     FLUJO DE{" "}
-                    <span className="text-orange-500">INTERVENCIONES</span>
+                    <span className="text-sase-warning">INTERVENCIONES</span>
                   </h3>
                   <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest mt-1">
                     FLUJO DE INCIDENCIAS NIVEL 2 Y 3
@@ -221,7 +221,7 @@ export const DashboardSubdireccion = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
-                      className="p-5 bg-white/[0.02] border border-slate-100 rounded-2xl flex items-center justify-between group/row hover:border-orange-500/30 transition-all border-l-4 border-l-orange-600"
+                      className="p-5 bg-white/[0.02] border border-slate-100 rounded-2xl flex items-center justify-between group/row hover:border-sase-warning/30 transition-all border-l-4 border-l-sase-warning"
                     >
                       <div className="flex items-center gap-5">
                         <div className="size-12 rounded-xl bg-[#05070a] border border-slate-200 flex items-center justify-center text-slate-600 font-black italic">
@@ -229,22 +229,22 @@ export const DashboardSubdireccion = () => {
                         </div>
                         <div>
                           <div className="flex items-center gap-3">
-                            <h4 className="text-sm font-black text-white uppercase italic tracking-tighter transition-colors group-hover/row:text-orange-400">
+                            <h4 className="text-sm font-black text-white uppercase italic tracking-tighter transition-colors group-hover/row:text-sase-warning">
                               {s.name}
                             </h4>
                             <span className="px-2 py-0.5 bg-white/5 border border-slate-200 rounded text-[9px] font-black text-slate-700 uppercase tracking-widest">
                               {s.group}
                             </span>
                           </div>
-                          <p className="text-[9px] font-black text-orange-500/60 uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                            <span className="size-1 bg-orange-500 rounded-full animate-pulse"></span>
+                          <p className="text-[9px] font-black text-sase-warning/60 uppercase tracking-widest mt-1.5 flex items-center gap-2">
+                            <span className="size-1 bg-sase-warning rounded-full animate-pulse"></span>
                             PROTOCOLO DE SEGURIDAD ACTIVADO
                           </p>
                         </div>
                       </div>
                       <button
                         onClick={() => handleQuickAction(`revisar_${s.name}`)}
-                        className="px-5 py-2.5 bg-orange-600/10 border border-orange-500/20 text-orange-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-xl"
+                        className="px-5 py-2.5 bg-sase-warning/10 border border-sase-warning/20 text-sase-warning rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sase-warning hover:text-white transition-all active:scale-95 shadow-xl"
                       >
                         AUTORIZAR_PASO
                       </button>
@@ -271,20 +271,20 @@ export const DashboardSubdireccion = () => {
         <div className="space-y-8">
           <div className="card-sase p-8 border-slate-100 bg-[#0a0f18]/40 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-              <span className="material-icons text-8xl text-orange-500">
+              <span className="material-icons text-8xl text-sase-warning">
                 bolt
               </span>
             </div>
 
-            <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
-              <span className="size-2 bg-orange-500 rounded-full shadow-[0_0_8px_#f97316]"></span>
+            <h3 className="text-[10px] font-black text-sase-warning uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
+              <span className="size-2 bg-sase-warning rounded-full shadow-[0_0_8px_#f97316]"></span>
               Acciones de mando
             </h3>
 
             <div className="space-y-4">
               <button
                 onClick={() => handleQuickAction("protocolos")}
-                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-orange-600 hover:border-orange-500 active:scale-95 transition-all group/btn"
+                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-sase-warning hover:border-sase-warning active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
                   <span className="material-icons text-2xl">
@@ -303,7 +303,7 @@ export const DashboardSubdireccion = () => {
 
               <button
                 onClick={() => handleQuickAction("suplencia")}
-                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-blue-600 hover:border-blue-500 active:scale-95 transition-all group/btn"
+                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-sase-info hover:border-sase-info active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
                   <span className="material-icons text-2xl">
@@ -322,7 +322,7 @@ export const DashboardSubdireccion = () => {
 
               <button
                 onClick={() => handleQuickAction("planeaciones")}
-                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-emerald-600 hover:border-emerald-500 active:scale-95 transition-all group/btn"
+                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-sase-clinical hover:border-sase-clinical active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-600 group-hover/btn:bg-white/20 group-hover/btn:text-white">
                   <span className="material-icons text-2xl">
@@ -341,7 +341,7 @@ export const DashboardSubdireccion = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-orange-600 to-orange-800 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden group">
+          <div className="bg-gradient-to-br from-sase-warning to-sase-warning rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-110 transition-transform">
               <span className="material-icons text-6xl">
                 psychology
@@ -353,7 +353,7 @@ export const DashboardSubdireccion = () => {
               </span>
               IA_INSIGHT
             </h4>
-            <p className="text-xs font-medium text-orange-100 leading-relaxed uppercase italic">
+            <p className="text-xs font-medium text-sase-warning leading-relaxed uppercase italic">
               SE DETECTA ESTABILIDAD EN LOS GRUPOS DE 1ER AÑO. SE RECOMIENDA
               REFORZAR SEGUIMIENTO EN 3ER GRADO POR PRÓXIMO EXAMEN COMIPEMS.
             </p>

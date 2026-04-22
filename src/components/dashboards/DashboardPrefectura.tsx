@@ -30,12 +30,12 @@ const HolographicKPI = ({
 }) => {
   const colors = {
     amber:
-      "text-amber-400 border-amber-500/20 bg-amber-500/5 shadow-amber-500/10",
-    rose: "text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10",
+      "text-sase-warning border-sase-warning/20 bg-sase-warning/5 shadow-sase-warning/10",
+    rose: "text-sase-danger border-sase-danger/20 bg-sase-danger/5 shadow-sase-danger/10",
     indigo:
-      "text-indigo-400 border-indigo-500/20 bg-indigo-500/5 shadow-indigo-500/10",
+      "text-sase-info border-sase-info/20 bg-sase-info/5 shadow-sase-info/10",
     emerald:
-      "text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-emerald-500/10",
+      "text-sase-clinical border-sase-clinical/20 bg-sase-clinical/5 shadow-sase-clinical/10",
   };
 
   return (
@@ -43,7 +43,7 @@ const HolographicKPI = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay * 0.1, duration: 0.5 }}
-      className={`card-sase p-5 border ${colors[color]} relative overflow-hidden group hover:bg-slate-100 transition-all`}
+      className={`card-sase p-5 border ${colors[color]} relative overflow-hidden group hover:bg-[rgba(121,118,124,0.1)] transition-all`}
     >
       {/* Scanning Line */}
       <motion.div
@@ -63,21 +63,21 @@ const HolographicKPI = ({
           <span className="material-icons text-lg">{icon}</span>
         </div>
         {trend && (
-          <span className="text-[9px] font-black px-2 py-0.5 rounded-full border border-slate-200 bg-white/5 text-slate-600 uppercase tracking-tighter">
+          <span className="text-[9px] font-black px-2 py-0.5 rounded-full border border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] text-[var(--sase-text-muted)] uppercase tracking-tighter">
             {trend}
           </span>
         )}
       </div>
       <div className="relative z-10">
-        <h4 className="text-2xl font-black text-slate-900 tracking-tighter italic mb-0.5 drop-shadow-xl shadow-black/5">
+        <h4 className="text-2xl font-black text-white tracking-tighter italic mb-0.5 drop-shadow-xl shadow-black/5">
           {value}
         </h4>
-        <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em] group-hover:text-slate-600 transition-colors">
+        <p className="text-[9px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.2em] transition-colors">
           {label}
         </p>
       </div>
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-current to-transparent opacity-20"></div>
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
     </motion.div>
   );
 };
@@ -99,7 +99,7 @@ const TacticalActionButton = ({
   >
     <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors"></div>
     {/* Corner accent */}
-    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+    <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-0 group-hover:opacity-100 transition-opacity"></div>
     <span className="material-icons text-3xl mb-2 relative z-10 group-hover:scale-110 transition-transform">
       {icon}
     </span>
@@ -120,7 +120,7 @@ const TacticalBarChart = ({
   return (
     <div className="space-y-3">
       {data.length === 0 && (
-        <p className="text-[10px] text-slate-600 font-black italic uppercase tracking-widest">
+        <p className="text-[10px] text-[var(--sase-text-muted)] font-black italic uppercase tracking-widest">
           Sin suficientes datos
         </p>
       )}
@@ -132,7 +132,7 @@ const TacticalBarChart = ({
           transition={{ delay: i * 0.08 }}
           className="flex items-center gap-3"
         >
-          <span className="text-[10px] font-black text-slate-700 w-10 text-right uppercase tracking-tight">
+          <span className="text-[10px] font-black text-[var(--sase-text-muted)] w-10 text-right uppercase tracking-tight">
             {d.label}
           </span>
           <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
@@ -280,10 +280,10 @@ export const DashboardPrefectura = () => {
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
 
   return (
-    <GlassCard className="flex-1 min-h-full p-4 lg:p-8 bg-[#0B1120]/60 relative overflow-hidden custom-scrollbar pb-32">
+      <GlassCard className="flex-1 min-h-full p-4 lg:p-8 bg-[rgba(121,118,124,0.08)] relative overflow-hidden custom-scrollbar pb-32">
       {/* Background Ambient Glow */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-600/[0.04] blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-rose-600/[0.03] blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sase-warning/[0.04] blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sase-danger/[0.03] blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
       <div className="relative z-10 max-w-[1600px] mx-auto space-y-8">
         {/* TACTICAL HEADER */}
@@ -293,25 +293,25 @@ export const DashboardPrefectura = () => {
         >
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="h-[2px] w-12 bg-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.5)]"></span>
-              <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.5em] italic">
+              <span className="h-[2px] w-12 bg-sase-warning shadow-[0_0_15px_rgba(245,158,11,0.5)]"></span>
+              <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.5em] italic">
                 CONTROL OPERATIVO // PREFECTURA_UNIT
               </p>
             </div>
-            <h1 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase italic leading-none">
+            <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
               CENTRO DE{" "}
-              <span className="text-amber-500 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+              <span className="text-sase-warning drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
                 CONTROL
               </span>
             </h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 text-[9px] font-black rounded-2xl border border-emerald-500/20 tabular-nums uppercase tracking-widest">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-sase-clinical/10 text-sase-clinical text-[9px] font-black rounded-2xl border border-sase-clinical/20 tabular-nums uppercase tracking-widest">
               <motion.div
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="size-1.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]"
+                className="size-1.5 bg-sase-clinical rounded-full shadow-[0_0_8px_rgba(125,114,147,0.4)]"
               />
               <span>SINC_NUCLEO_ACTIVA</span>
             </div>
@@ -331,16 +331,16 @@ export const DashboardPrefectura = () => {
         </div>
 
         {/* MATRICULA SCANNER */}
-        <div className="card-sase p-4 border-amber-500/20 bg-amber-500/[0.02] relative overflow-hidden">
+        <div className="card-sase p-4 border-sase-warning/20 bg-sase-warning/[0.02] relative overflow-hidden">
           <motion.div
             animate={{ top: ["-10%", "110%"] }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent pointer-events-none z-0"
+            className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-warning/30 to-transparent pointer-events-none z-0"
           />
-          <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-amber-500/10 opacity-20"></div>
+          <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-sase-warning/10 opacity-20"></div>
           <div className="flex flex-col md:flex-row items-center gap-4 relative z-10">
             <div className="flex items-center gap-3 flex-1 w-full">
-              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              <div className="p-2.5 rounded-xl bg-sase-warning/10 border border-sase-warning/20 text-sase-warning">
                 <span className="material-icons text-xl">
                   qr_code_scanner
                 </span>
@@ -352,7 +352,7 @@ export const DashboardPrefectura = () => {
                   if (selectedStudentId) setSelectedStudentId(null);
                 }}
                 placeholder="MATRÍCULA..."
-                className="flex-1 h-10 md:h-12 rounded-xl border border-slate-200 bg-slate-100 px-3 md:px-4 font-mono text-sm md:text-lg font-black text-white focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/10 outline-none transition-all placeholder:text-slate-600 uppercase tracking-widest"
+                className="flex-1 h-10 md:h-12 rounded-xl border border-[var(--sase-border-ghost)] bg-[var(--sase-surface-low)] px-3 md:px-4 font-mono text-sm md:text-lg font-black text-white focus:border-sase-warning/50 focus:ring-2 focus:ring-sase-warning/10 outline-none transition-all placeholder:text-[var(--sase-text-muted)] uppercase tracking-widest"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     const s = students.find(
@@ -374,10 +374,10 @@ export const DashboardPrefectura = () => {
               <motion.div
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl"
+                className="flex items-center gap-3 px-4 py-2 bg-sase-warning/10 border border-sase-warning/20 rounded-xl"
               >
-                <div className="size-1.5 bg-amber-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">
+                <div className="size-1.5 bg-sase-warning rounded-full animate-pulse"></div>
+                <span className="text-[10px] font-black text-sase-warning uppercase tracking-widest">
                   Alumno: {selectedStudent.name.split(" ")[0]}
                 </span>
               </motion.div>
@@ -428,7 +428,7 @@ export const DashboardPrefectura = () => {
             {/* QUICK ACTION CARD */}
             <div
               id="pref-quick-register"
-              className="card-sase p-6 border-amber-500/20 bg-amber-500/[0.02] relative overflow-hidden"
+              className="card-sase p-6 border-sase-warning/20 bg-sase-warning/[0.02] relative overflow-hidden"
             >
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
@@ -437,13 +437,13 @@ export const DashboardPrefectura = () => {
                   repeat: Infinity,
                   ease: "linear",
                 }}
-                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent pointer-events-none z-0"
+                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-warning/20 to-transparent pointer-events-none z-0"
               />
-              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-amber-500/10 opacity-20"></div>
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-sase-warning/10 opacity-20"></div>
 
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100">
-                  <h3 className="text-[11px] font-black text-amber-500 uppercase tracking-[0.4em] italic">
+                  <h3 className="text-[11px] font-black text-sase-warning uppercase tracking-[0.4em] italic">
                     ACOMPAÑAMIENTO_INMEDIATO
                   </h3>
                   <span className="text-[9px] font-black text-slate-700 uppercase px-2 py-0.5 border border-slate-100 rounded">
@@ -456,12 +456,12 @@ export const DashboardPrefectura = () => {
                   <motion.div
                     animate={{ opacity: [0.5, 1, 0.5] }}
                     transition={{ duration: 3, repeat: Infinity }}
-                    className="mb-4 p-3 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-center gap-3"
+                    className="mb-4 p-3 bg-sase-warning/5 border border-sase-warning/10 rounded-xl flex items-center gap-3"
                   >
-                    <span className="material-icons text-amber-500 text-lg">
+                    <span className="material-icons text-sase-warning text-lg">
                       info
                     </span>
-                    <p className="text-[10px] text-amber-400/80 font-black uppercase tracking-widest">
+                    <p className="text-[10px] text-sase-warning/80 font-black uppercase tracking-widest">
                       Ingrese matrícula o seleccione alumno →
                     </p>
                   </motion.div>
@@ -471,7 +471,7 @@ export const DashboardPrefectura = () => {
                   <TacticalActionButton
                     label="Retardo"
                     icon="schedule"
-                    color="bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/40"
+                    color="bg-sase-warning/10 text-sase-warning border-sase-warning/20 hover:bg-sase-warning/20 hover:border-sase-warning/40"
                     onClick={() =>
                       handleAction(
                         "Retardo",
@@ -483,7 +483,7 @@ export const DashboardPrefectura = () => {
                   <TacticalActionButton
                     label="Uniforme"
                     icon="checkroom"
-                    color="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20 hover:border-indigo-500/40"
+                    color="bg-sase-info/10 text-sase-info border-sase-info/20 hover:bg-sase-info/20 hover:border-sase-info/40"
                     onClick={() =>
                       handleAction(
                         "Uniforme",
@@ -495,7 +495,7 @@ export const DashboardPrefectura = () => {
                   <TacticalActionButton
                     label="Falta"
                     icon="person_off"
-                    color="bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20 hover:border-rose-500/40"
+                    color="bg-sase-danger/10 text-sase-danger border-sase-danger/20 hover:bg-sase-danger/20 hover:border-sase-danger/40"
                     onClick={() =>
                       handleAction(
                         "Falta",
@@ -507,7 +507,7 @@ export const DashboardPrefectura = () => {
                   <TacticalActionButton
                     label="Fuera Aula"
                     icon="outbox_alt"
-                    color="bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20 hover:border-orange-500/40"
+                    color="bg-sase-warning/10 text-sase-warning border-sase-warning/20 hover:bg-sase-warning/20 hover:border-sase-warning/40"
                     onClick={() =>
                       handleAction(
                         "Fuera Aula",
@@ -519,7 +519,7 @@ export const DashboardPrefectura = () => {
                   <TacticalActionButton
                     label="Receso"
                     icon="timer_off"
-                    color="bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/40"
+                    color="bg-sase-info/10 text-sase-info border-sase-info/20 hover:bg-sase-info/20 hover:border-sase-info/40"
                     onClick={() =>
                       handleAction(
                         "Receso Tarde",
@@ -531,7 +531,7 @@ export const DashboardPrefectura = () => {
                   <TacticalActionButton
                     label="Objetos Ret"
                     icon="inventory_2"
-                    color="bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/40"
+                    color="bg-sase-warning/10 text-sase-warning border-sase-warning/20 hover:bg-sase-warning/20 hover:border-sase-warning/40"
                     onClick={() => setCurrentModule(AppModule.OBJETOS_RETENIDOS)}
                   />
                   <TacticalActionButton
@@ -552,7 +552,7 @@ export const DashboardPrefectura = () => {
 
             {/* PATTERN CHARTS (2 cols) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="card-sase p-6 border-slate-100 bg-white/[0.01] relative overflow-hidden group">
+              <div className="card-sase p-6 border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] relative overflow-hidden group">
                 <motion.div
                   animate={{ top: ["-10%", "110%"] }}
                   transition={{
@@ -560,21 +560,21 @@ export const DashboardPrefectura = () => {
                     repeat: Infinity,
                     ease: "linear",
                   }}
-                  className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent pointer-events-none z-0"
+                  className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-warning/20 to-transparent pointer-events-none z-0"
                 />
-                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                <h3 className="text-[10px] font-black text-amber-500 uppercase tracking-[0.3em] italic mb-4 relative z-10">
+                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                <h3 className="text-[10px] font-black text-sase-warning uppercase tracking-[0.3em] italic mb-4 relative z-10">
                   PATRÓN // RIESGO_POR_GRUPO
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
                     data={groupsWithDelays}
-                    color="bg-amber-500"
+                    color="bg-sase-warning"
                   />
                 </div>
               </div>
 
-              <div className="card-sase p-6 border-slate-100 bg-white/[0.01] relative overflow-hidden group">
+              <div className="card-sase p-6 border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] relative overflow-hidden group">
                 <motion.div
                   animate={{ top: ["-10%", "110%"] }}
                   transition={{
@@ -582,16 +582,16 @@ export const DashboardPrefectura = () => {
                     repeat: Infinity,
                     ease: "linear",
                   }}
-                  className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-rose-500/20 to-transparent pointer-events-none z-0"
+                  className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-danger/20 to-transparent pointer-events-none z-0"
                 />
-                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] italic mb-4 relative z-10">
+                <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
+                <h3 className="text-[10px] font-black text-sase-danger uppercase tracking-[0.3em] italic mb-4 relative z-10">
                   PATRÓN // TOP_RIESGOS_ACTIVOS
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
                     data={studentsWithIncidents}
-                    color="bg-rose-500"
+                    color="bg-sase-danger"
                   />
                 </div>
               </div>
@@ -600,23 +600,23 @@ export const DashboardPrefectura = () => {
             {/* RECENT ACTIVITY STREAM */}
             <div
               id="pref-recent-activity"
-              className="card-sase p-6 border-slate-100 bg-white/[0.01] relative overflow-hidden min-h-[300px] flex flex-col"
+              className="card-sase p-6 border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] relative overflow-hidden min-h-[300px] flex flex-col"
             >
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent pointer-events-none z-0"
+                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-warning/20 to-transparent pointer-events-none z-0"
               />
-              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20"></div>
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20"></div>
 
               <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100 relative z-10">
-                <h3 className="text-[11px] font-black text-amber-500 uppercase tracking-[0.4em] italic flex items-center gap-3">
-                  <span className="size-2 bg-amber-500 rounded-full animate-ping"></span>
+                <h3 className="text-[11px] font-black text-sase-warning uppercase tracking-[0.4em] italic flex items-center gap-3">
+                  <span className="size-2 bg-sase-warning rounded-full animate-ping"></span>
                   CANAL_ACTIVIDAD
                 </h3>
                 <button
                   onClick={() => setCurrentModule(AppModule.BITACORA)}
-                  className="text-[10px] font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-colors"
+                  className="text-[10px] font-black text-sase-info uppercase tracking-widest hover:text-white transition-colors"
                 >
                   Ver Bitácora →
                 </button>
@@ -649,7 +649,7 @@ export const DashboardPrefectura = () => {
                           })}
                         </span>
                         <div>
-                          <p className="text-xs font-black text-white uppercase tracking-tight group-hover/item:text-amber-400 transition-colors">
+                          <p className="text-xs font-black text-white uppercase tracking-tight group-hover/item:text-sase-warning transition-colors">
                             {item.studentName}
                           </p>
                           <p className="text-[10px] text-slate-700 font-bold">
@@ -669,7 +669,7 @@ export const DashboardPrefectura = () => {
                               data: item,
                             })
                           }
-                          className="size-8 bg-white/5 hover:bg-amber-600 hover:text-white rounded-2xl flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
+                          className="size-8 bg-white/5 hover:bg-sase-warning hover:text-white rounded-2xl flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
                         >
                           <span className="material-icons text-sm">
                             print
@@ -688,28 +688,28 @@ export const DashboardPrefectura = () => {
             {/* CRITICAL ALERTS */}
             <div
               id="pref-daily-alerts"
-              className="card-sase p-6 border-rose-500/20 bg-rose-500/[0.02] relative overflow-hidden"
+              className="card-sase p-6 border-sase-danger/20 bg-sase-danger/[0.02] relative overflow-hidden"
             >
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-rose-500/30 to-transparent pointer-events-none z-0"
+                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-danger/30 to-transparent pointer-events-none z-0"
               />
-              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-rose-500/10 opacity-20"></div>
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-sase-danger/10 opacity-20"></div>
               <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                <span className="material-icons text-[60px] text-rose-500">
+                <span className="material-icons text-[60px] text-sase-danger">
                   warning
                 </span>
               </div>
 
-              <h3 className="text-[11px] font-black text-rose-500 uppercase tracking-[0.4em] italic mb-5 relative z-10">
+              <h3 className="text-[11px] font-black text-sase-danger uppercase tracking-[0.4em] italic mb-5 relative z-10">
                 CRITICAL_ALERTS
               </h3>
 
               {activeAlerts.length === 0 ? (
-                <div className="flex items-center gap-3 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl relative z-10">
-                  <div className="size-2 bg-emerald-500 rounded-full"></div>
-                  <p className="text-[10px] font-black text-emerald-400 italic uppercase tracking-widest">
+                <div className="flex items-center gap-3 p-3 bg-sase-clinical/5 border border-sase-clinical/10 rounded-xl relative z-10">
+                  <div className="size-2 bg-sase-clinical rounded-full"></div>
+                  <p className="text-[10px] font-black text-sase-clinical italic uppercase tracking-widest">
                     SISTEMA ESTABLE
                   </p>
                 </div>
@@ -724,12 +724,12 @@ export const DashboardPrefectura = () => {
                         setSelectedStudentId(s.id);
                         setMatriculaInput("");
                       }}
-                      className="p-3 bg-slate-100 border border-rose-500/10 rounded-xl cursor-pointer hover:bg-white/[0.06] hover:border-rose-500/30 transition-all group/alert"
+              className="p-3 bg-[var(--sase-surface-low)] border border-sase-danger/10 rounded-xl cursor-pointer hover:bg-[rgba(121,118,124,0.12)] hover:border-sase-danger/30 transition-all group/alert"
                     >
-                      <p className="text-xs font-black text-white uppercase tracking-tight italic group-hover/alert:text-rose-400 transition-colors">
+                      <p className="text-xs font-black text-white uppercase tracking-tight italic group-hover/alert:text-sase-danger transition-colors">
                         {s.name}
                       </p>
-                      <p className="text-[9px] font-black text-rose-500/60 mt-1 uppercase tracking-widest">
+                      <p className="text-[9px] font-black text-sase-danger/60 mt-1 uppercase tracking-widest">
                         {s.incidents.length} Seguimientos en curso
                       </p>
                     </motion.div>
@@ -740,7 +740,7 @@ export const DashboardPrefectura = () => {
 
             {/* STUDENT CONTEXT PANEL */}
             <div
-              className={`card-sase p-6 border-slate-100 bg-white/[0.01] relative overflow-hidden h-fit sticky top-6 ${selectedStudent ? "border-amber-500/20 ring-1 ring-amber-500/10" : ""}`}
+              className={`card-sase p-6 border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] relative overflow-hidden h-fit sticky top-6 ${selectedStudent ? "border-sase-warning/20 ring-1 ring-sase-warning/10" : ""}`}
             >
               <motion.div
                 animate={{ top: ["-10%", "110%"] }}
@@ -749,18 +749,18 @@ export const DashboardPrefectura = () => {
                   repeat: Infinity,
                   ease: "linear",
                 }}
-                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent pointer-events-none z-0"
+                className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-warning/20 to-transparent pointer-events-none z-0"
               />
-              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20"></div>
+              <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20"></div>
 
-              <h3 className="text-[11px] font-black text-amber-500 uppercase tracking-[0.4em] italic mb-5 relative z-10">
+              <h3 className="text-[11px] font-black text-sase-warning uppercase tracking-[0.4em] italic mb-5 relative z-10">
                 CONTEXTO_ACTIVO
               </h3>
 
               {selectedStudent ? (
                 <div className="space-y-4 relative z-10 animate-fade-in">
-                  <div className="flex items-center gap-4 pb-4 border-b border-slate-100">
-                    <div className="w-12 h-12 bg-gradient-to-br from-amber-500/20 to-amber-700/10 border border-amber-500/20 rounded-xl overflow-hidden flex items-center justify-center text-amber-400 font-black text-xl italic">
+                  <div className="flex items-center gap-4 pb-4 border-b border-[var(--sase-border-ghost)]">
+                    <div className="w-12 h-12 bg-gradient-to-br from-sase-warning/20 to-sase-warning/10 border border-sase-warning/20 rounded-xl overflow-hidden flex items-center justify-center text-sase-warning font-black text-xl italic">
                       {selectedStudent.avatar ? (
                         <img
                           src={selectedStudent.avatar}
@@ -775,51 +775,51 @@ export const DashboardPrefectura = () => {
                       <p className="text-sm font-black text-white uppercase italic tracking-tight">
                         {selectedStudent.name}
                       </p>
-                      <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
+                      <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-widest">
                         {selectedStudent.group} • {selectedStudent.matricula}
                       </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-slate-100 border border-slate-100 p-3 rounded-xl text-center">
-                      <p className="text-[9px] text-slate-700 uppercase font-black tracking-widest">
+                    <div className="bg-[var(--sase-surface-low)] border border-[var(--sase-border-ghost)] p-3 rounded-xl text-center">
+                      <p className="text-[9px] text-[var(--sase-text-muted)] uppercase font-black tracking-widest">
                         Incidencias
                       </p>
                       <p className="text-xl font-black text-white italic tabular-nums mt-1">
                         {selectedStudent.incidents.length}
                       </p>
                     </div>
-                    <div className="bg-slate-100 border border-slate-100 p-3 rounded-xl text-center">
-                      <p className="text-[9px] text-slate-700 uppercase font-black tracking-widest">
+                    <div className="bg-[var(--sase-surface-low)] border border-[var(--sase-border-ghost)] p-3 rounded-xl text-center">
+                      <p className="text-[9px] text-[var(--sase-text-muted)] uppercase font-black tracking-widest">
                         Estado
                       </p>
-                      <p className="text-[10px] font-black text-amber-400 uppercase mt-2">
+                      <p className="text-[10px] font-black text-sase-warning uppercase mt-2">
                         {CaseLabels[selectedStudent.caseState || CaseState.CERRADO]}
                       </p>
                     </div>
                   </div>
 
                   {/* Short History */}
-                  <div className="bg-white/[0.02] border border-slate-100 rounded-xl p-3">
-                    <p className="text-[9px] font-black text-slate-700 uppercase tracking-widest mb-2">
+                  <div className="bg-[rgba(121,118,124,0.08)] border border-[var(--sase-border-ghost)] rounded-xl p-3">
+                    <p className="text-[9px] font-black text-[var(--sase-text-muted)] uppercase tracking-widest mb-2">
                       HISTORIAL_BREVE
                     </p>
                     <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
                       {selectedStudent.incidents.length === 0 ? (
-                        <p className="text-[10px] text-slate-600 italic">
+                        <p className="text-[10px] text-[var(--sase-text-muted)] italic">
                           Sin antecedentes
                         </p>
                       ) : (
                         selectedStudent.incidents.slice(0, 3).map((i) => (
                           <div
                             key={i.id}
-                            className="text-[10px] border-l-2 border-amber-500/30 pl-2"
+                            className="text-[10px] border-l-2 border-sase-warning/30 pl-2"
                           >
                             <span className="font-black text-white uppercase">
                               {i.type}
                             </span>{" "}
-                            <span className="text-slate-700">
+                            <span className="text-[var(--sase-text-muted)]">
                               - {new Date(i.date).toLocaleDateString()}
                             </span>
                           </div>
@@ -829,25 +829,25 @@ export const DashboardPrefectura = () => {
                   </div>
 
                   <div className="space-y-2 pt-2">
-                    <button className="w-full py-3 bg-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-amber-700 transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95">
+                    <button className="w-full py-3 bg-sase-warning text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-sase-warning transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95">
                       Notificar Tutor
                     </button>
-                    <button className="w-full py-3 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/[0.08] hover:text-white transition-all active:scale-95">
+                    <button className="w-full py-3 bg-[var(--sase-surface-low)] border border-[var(--sase-border-ghost)] text-[var(--sase-text-muted)] rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[rgba(121,118,124,0.12)] hover:text-white transition-all active:scale-95">
                       Escalar a Orientación
                     </button>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-10 opacity-30 hover:opacity-60 transition-opacity relative z-10">
-                  <div className="size-16 rounded-full border-2 border-dashed border-amber-500/30 flex items-center justify-center mx-auto mb-4">
-                    <span className="material-icons text-3xl text-amber-500/50">
+                  <div className="size-16 rounded-full border-2 border-dashed border-sase-warning/30 flex items-center justify-center mx-auto mb-4">
+                    <span className="material-icons text-3xl text-sase-warning/50">
                       person_search
                     </span>
                   </div>
-                  <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] leading-relaxed">
+                  <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.3em] leading-relaxed">
                     SELECCIONE ALUMNO
                     <br />
-                    <span className="text-amber-500/50">
+                    <span className="text-sase-warning/50">
                       O INGRESE MATRÍCULA
                     </span>
                   </p>

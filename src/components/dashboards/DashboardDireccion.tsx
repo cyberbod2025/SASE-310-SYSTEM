@@ -33,12 +33,12 @@ const HolographicKPI = ({
 }) => {
   const colors = {
     indigo:
-      "text-indigo-400 border-indigo-500/20 bg-indigo-500/5 shadow-indigo-500/10",
+      "text-sase-info border-sase-info/20 bg-sase-info/5 shadow-sase-info/10",
     amber:
-      "text-amber-400 border-amber-500/20 bg-amber-500/5 shadow-amber-500/10",
+      "text-sase-warning border-sase-warning/20 bg-sase-warning/5 shadow-sase-warning/10",
     emerald:
-      "text-emerald-400 border-emerald-500/20 bg-emerald-500/5 shadow-emerald-500/10",
-    rose: "text-rose-400 border-rose-500/20 bg-rose-500/5 shadow-rose-500/10",
+      "text-sase-clinical border-sase-clinical/20 bg-sase-clinical/5 shadow-sase-clinical/10",
+    rose: "text-sase-danger border-sase-danger/20 bg-sase-danger/5 shadow-sase-danger/10",
   };
 
   return (
@@ -47,7 +47,7 @@ const HolographicKPI = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay * 0.1 }}
-      className={`card-sase p-6 border ${colors[color]} relative overflow-hidden group hover:bg-slate-100 transition-all`}
+      className={`card-sase p-6 border ${colors[color]} relative overflow-hidden group hover:bg-[rgba(121,118,124,0.1)] transition-all`}
     >
       <div className="absolute top-0 right-0 w-24 h-24 bg-current opacity-[0.03] rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="flex justify-between items-start mb-4 relative z-10">
@@ -58,22 +58,22 @@ const HolographicKPI = ({
         </div>
         {trend && (
           <span
-            className={`text-[10px] font-black px-2 py-0.5 rounded-full border border-slate-200 bg-white/5 text-slate-600 uppercase tracking-tighter`}
+            className={`text-[10px] font-black px-2 py-0.5 rounded-full border border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] text-[var(--sase-text-muted)] uppercase tracking-tighter`}
           >
             {trend}
           </span>
         )}
       </div>
       <div className="relative z-10">
-        <h4 className="text-3xl font-black text-slate-900 tracking-tighter italic mb-1 drop-shadow-xl shadow-black/5">
+        <h4 className="text-3xl font-black text-white tracking-tighter italic mb-1 drop-shadow-xl shadow-black/5">
           {value}
         </h4>
-        <p className="text-[10px] font-black text-slate-700 uppercase tracking-[0.2em] group-hover:text-slate-600 transition-colors">
+        <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.2em] transition-colors">
           {label}
         </p>
       </div>
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-current to-transparent opacity-20"></div>
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
     </motion.div>
   );
 };
@@ -90,36 +90,36 @@ const SystemStabilityRadar = ({
 }) => {
   const config: any = {
     nominal: {
-      color: "text-emerald-400",
-      bg: "bg-emerald-400/10",
+      color: "text-sase-clinical",
+      bg: "bg-sase-clinical/10",
       label: "SISTEMA NOMINAL",
-      glow: "shadow-emerald-500/20",
+      glow: "shadow-sase-clinical/20",
     },
     warning: {
-      color: "text-amber-400",
-      bg: "bg-amber-400/10",
+      color: "text-sase-warning",
+      bg: "bg-sase-warning/10",
       label: "ALERTA PREVENTIVA",
-      glow: "shadow-amber-500/20",
+      glow: "shadow-sase-warning/20",
     },
     critical: {
-      color: "text-rose-400",
-      bg: "bg-rose-400/10",
+      color: "text-sase-danger",
+      bg: "bg-sase-danger/10",
       label: "INTERVENCION REQUERIDA",
-      glow: "shadow-rose-500/20",
+      glow: "shadow-sase-danger/20",
     },
   };
 
   const current = config[status] || config.nominal;
 
   return (
-    <div className="card-sase p-8 border-slate-100 bg-white/[0.01] relative overflow-hidden group min-h-[220px] flex flex-col justify-between">
+    <div className="card-sase p-8 border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] relative overflow-hidden group min-h-[220px] flex flex-col justify-between">
       <motion.div
         animate={{ top: ["-10%", "110%"] }}
         transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-        className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent pointer-events-none z-0"
+        className="absolute left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sase-info/30 to-transparent pointer-events-none z-0"
       />
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/[0.02] to-transparent pointer-events-none"></div>
-      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-slate-200 opacity-20 group-hover:opacity-100 transition-opacity"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-sase-info/[0.02] to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
 
       <div className="flex justify-between items-center relative z-10">
         <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ const SystemStabilityRadar = ({
             {current.label}
           </span>
         </div>
-        <span className="text-[9px] font-mono text-slate-700 uppercase tracking-widest bg-white/5 px-2 py-1 rounded border border-slate-100">
+        <span className="text-[9px] font-mono text-[var(--sase-text-muted)] uppercase tracking-widest bg-[rgba(121,118,124,0.08)] px-2 py-1 rounded border border-[var(--sase-border-ghost)]">
           OP_ESTABILIDAD_V3
         </span>
       </div>
@@ -142,10 +142,10 @@ const SystemStabilityRadar = ({
           {activeCases.toString().padStart(2, "0")}
         </h3>
         <div className="flex flex-col">
-          <span className="text-xs font-black text-slate-600 uppercase tracking-widest">
+          <span className="text-xs font-black text-[var(--sase-text-muted)] uppercase tracking-widest">
             Casos Criticos
           </span>
-          <span className="text-[10px] text-slate-600 font-bold uppercase mt-1">
+          <span className="text-[10px] text-[var(--sase-text-muted)] font-bold uppercase mt-1">
             Requieren atencion
           </span>
         </div>
@@ -304,14 +304,14 @@ export const DashboardDireccion = () => {
           <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
             Vision sistemica institucional
           </h1>
-          <p className="text-slate-600 text-sm">
+          <p className="text-[var(--sase-text-muted)] text-sm">
             Auditoria institucional, toma de decisiones estrategicas y cierre de casos escalados.
           </p>
         </div>
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={handleCreateReport}
-          className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 hover:bg-blue-600/30 transition-colors text-sm font-medium flex items-center gap-2"
+          className="min-h-[48px] min-w-[48px] px-4 py-2 rounded-xl bg-sase-info/20 border border-sase-info/40 text-sase-info hover:bg-sase-info/30 transition-colors text-sm font-medium flex items-center gap-2"
         >
           <span className="material-icons text-sm">print</span>
           Generar reporte ejecutivo
@@ -320,29 +320,29 @@ export const DashboardDireccion = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <GlassCard className="p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-sase-info/20 text-sase-info flex items-center justify-center">
             <span className="material-icons">groups</span>
           </div>
           <div>
-            <p className="text-slate-600 text-xs uppercase tracking-wider font-semibold">Poblacion total atendida</p>
+            <p className="text-[var(--sase-text-muted)] text-xs uppercase tracking-wider font-semibold">Poblacion total atendida</p>
             <p className="text-2xl font-bold text-white mt-1">{students.length}</p>
           </div>
         </GlassCard>
         <GlassCard className="p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-sase-danger/20 text-sase-danger flex items-center justify-center">
             <span className="material-icons">report</span>
           </div>
           <div>
-            <p className="text-slate-600 text-xs uppercase tracking-wider font-semibold">Casos criticos activos</p>
+            <p className="text-[var(--sase-text-muted)] text-xs uppercase tracking-wider font-semibold">Casos criticos activos</p>
             <p className="text-2xl font-bold text-white mt-1">{criticalCases.length}</p>
           </div>
         </GlassCard>
         <GlassCard className="p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-sase-warning/20 text-sase-warning flex items-center justify-center">
             <span className="material-icons">campaign</span>
           </div>
           <div>
-            <p className="text-slate-600 text-xs uppercase tracking-wider font-semibold">Comunicados institucionales activos</p>
+            <p className="text-[var(--sase-text-muted)] text-xs uppercase tracking-wider font-semibold">Comunicados institucionales activos</p>
             <p className="text-2xl font-bold text-white mt-1">{dbComunicados.length}</p>
           </div>
         </GlassCard>
@@ -352,16 +352,16 @@ export const DashboardDireccion = () => {
         <GlassCard icon="gavel" title="Casos escalados a Direccion" className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto custom-scrollbar mt-4 space-y-3">
             {combinedAlerts.length === 0 ? (
-              <div className="p-10 text-center text-slate-700">
+              <div className="p-10 text-center text-[var(--sase-text-muted)]">
                 No se registran casos escalados en este momento.
               </div>
             ) : (
               combinedAlerts.map((risk) => (
-                <div key={risk.id} className="p-4 rounded-xl border border-slate-100 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                <div key={risk.id} className="p-4 rounded-xl border border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] hover:bg-[rgba(121,118,124,0.12)] transition-colors">
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-white font-medium text-sm">{risk.name}</p>
-                      <p className="text-slate-700 text-xs mt-1">{risk.group} · {CaseLabels[risk.caseState]}</p>
+                      <p className="text-[var(--sase-text-muted)] text-xs mt-1">{risk.group} · {CaseLabels[risk.caseState]}</p>
                     </div>
                     <motion.button
                       whileTap={{ scale: 0.95 }}
@@ -380,16 +380,16 @@ export const DashboardDireccion = () => {
         <GlassCard icon="policy" title="Auditoria de protocolos institucionales" className="flex flex-col h-full">
           <div className="flex-1 overflow-y-auto custom-scrollbar mt-4 space-y-3">
             {dbComunicados.length === 0 ? (
-              <div className="p-10 text-center text-slate-700">
+              <div className="p-10 text-center text-[var(--sase-text-muted)]">
                 No hay comunicados institucionales registrados.
               </div>
             ) : (
               dbComunicados.map((com) => (
-                <div key={com.id} className="p-4 rounded-xl border border-slate-100 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                <div key={com.id} className="p-4 rounded-xl border border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.08)] hover:bg-[rgba(121,118,124,0.12)] transition-colors">
                   <p className="text-white text-sm font-medium">
                     {com.titulo || "Comunicado institucional"}
                   </p>
-                  <p className="text-slate-700 text-xs mt-1">
+                  <p className="text-[var(--sase-text-muted)] text-xs mt-1">
                     {com.tipo || "Aviso institucional"}
                   </p>
                 </div>

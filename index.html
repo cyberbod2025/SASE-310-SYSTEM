@@ -57,15 +57,59 @@
   </head>
   <body class="bg-[#020617] text-slate-50 antialiased selection:bg-blue-500/30">
     <div id="root"></div>
-    <script type="module" src="/src/index.tsx"></script>
     <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
+      const devHosts = ["localhost", "127.0.0.1"];
+      const isPrivateNetworkHost = /^(10\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)/.test(window.location.hostname);
+      const isDevPort = ["3100", "3101", "5173"].includes(window.location.port);
+      const isDevRuntime = devHosts.includes(window.location.hostname) || isPrivateNetworkHost || isDevPort;
+      const devCleanupFlag = "sase_dev_sw_cleanup_done";
+
+      const loadApp = () => {
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = "/src/index.tsx";
+        document.body.appendChild(script);
+      };
+
+      window.addEventListener("load", async () => {
+        if ("serviceWorker" in navigator && isDevRuntime) {
+          try {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            const hadServiceWorkers = registrations.length > 0 || Boolean(navigator.serviceWorker.controller);
+
+            await Promise.all(registrations.map((registration) => registration.unregister()));
+
+            if ("caches" in window) {
+              const cacheNames = await caches.keys();
+              await Promise.all(
+                cacheNames
+                  .filter((cacheName) => cacheName.startsWith("sase-cache"))
+                  .map((cacheName) => caches.delete(cacheName)),
+              );
+            }
+
+            if (hadServiceWorkers && !sessionStorage.getItem(devCleanupFlag)) {
+              sessionStorage.setItem(devCleanupFlag, "1");
+              window.location.reload();
+              return;
+            }
+          } catch (err) {
+            console.log("SW cleanup failed in dev:", err);
+          }
+
+          sessionStorage.removeItem(devCleanupFlag);
+          loadApp();
+          return;
+        }
+
+        if ("serviceWorker" in navigator && !isDevRuntime) {
           navigator.serviceWorker.register("/sw.js").catch((err) => {
             console.log("SW registration failed: ", err);
           });
-        });
-      }
+        }
+
+        loadApp();
+      });
     </script>
   </body>
 </html>

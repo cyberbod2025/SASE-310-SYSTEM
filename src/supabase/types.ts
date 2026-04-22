@@ -1252,6 +1252,115 @@ export type Database = {
         }
         Relationships: []
       }
+      modulos_ecosistema: {
+        Row: {
+          base_url: string
+          created_at: string
+          id: string
+          is_active: boolean
+          key: string
+          name: string
+        }
+        Insert: {
+          base_url: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key: string
+          name: string
+        }
+        Update: {
+          base_url?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      modulos_ecosistema_roles: {
+        Row: {
+          created_at: string
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          module_id: string
+          role: string
+          starts_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          module_id: string
+          role: string
+          starts_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          module_id?: string
+          role?: string
+          starts_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modulos_ecosistema_roles_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modulos_ecosistema"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      modulos_ecosistema_usuarios: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string | null
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          module_id: string
+          starts_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          module_id: string
+          starts_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          module_id?: string
+          starts_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modulos_ecosistema_usuarios_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modulos_ecosistema"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       preguntometro: {
         Row: {
           created_at: string | null
@@ -2174,11 +2283,23 @@ export type Database = {
     }
     Functions: {
       generar_matricula_sase: { Args: never; Returns: string }
+      get_modulos_ecosistema_visibles: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          is_active: boolean
+          key: string
+          name: string
+        }[]
+      }
+      get_my_normalized_email: { Args: never; Returns: string }
       get_my_rol_safe: { Args: never; Returns: string }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_my_role_text: { Args: never; Returns: string }
       get_user_role: { Args: never; Returns: string }
       registrar_auditoria_sase: {
         Args: {

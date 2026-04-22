@@ -28,6 +28,8 @@ const roleImages: Record<UserRole, string> = {
     "https://ui-avatars.com/api/?name=UDEII&background=e0e7ff&color=312e81",
   [UserRole.PROMOTORA_LECTURA]:
     "https://ui-avatars.com/api/?name=Lectura&background=fce7f3&color=701a75",
+  [UserRole.ALUMNO]:
+    "https://ui-avatars.com/api/?name=Alumno&background=e0e7ff&color=312e81",
   [UserRole.GUEST]:
     "https://ui-avatars.com/api/?name=Invitado&background=f1f5f9&color=0f172a",
   [UserRole.DEVELOPER]:
