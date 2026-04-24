@@ -13,10 +13,16 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   className = "",
   ...props
 }) => {
+  const inputId = props.id || label?.toLowerCase().replace(/\s+/g, '-');
+  const inputName = props.name || inputId;
+
   return (
     <div className="w-full space-y-2">
       {label && (
-        <label className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--sase-text-muted)] pl-4">
+        <label 
+          htmlFor={inputId}
+          className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--sase-text-muted)] pl-4 cursor-pointer"
+        >
           {label}
         </label>
       )}
@@ -27,6 +33,8 @@ export const GlassInput: React.FC<GlassInputProps> = ({
           </span>
         )}
         <input
+          id={inputId}
+          name={inputName}
           className={`
             w-full bg-[rgba(121,118,124,0.08)] backdrop-blur-[10px]
             rounded-2xl px-6 ${icon ? "pl-12" : ""} py-3.5 
