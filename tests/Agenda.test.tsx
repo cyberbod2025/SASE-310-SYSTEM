@@ -98,7 +98,7 @@ describe("Agenda Unit Tests", () => {
     });
 
     // 2. Fill Form
-    const titleInput = screen.getByPlaceholderText(
+    const titleInput = await screen.findByPlaceholderText(
       /Ej. Reunión de academia/i,
     );
     fireEvent.change(titleInput, { target: { value: "MyUniqueEvent" } });
