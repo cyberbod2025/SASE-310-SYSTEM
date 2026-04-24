@@ -90,7 +90,9 @@ describe("Agenda Unit Tests", () => {
     render(<Agenda />);
 
     // 1. Open Modal
-    fireEvent.click(screen.getByText(/Agendar Nueva Actividad/i));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Agendar Nueva Actividad/i }),
+    );
 
     await screen.findByRole("heading", {
       name: /Nueva Actividad/i,
@@ -98,8 +100,8 @@ describe("Agenda Unit Tests", () => {
     });
 
     // 2. Fill Form
-    const titleInput = await screen.findByPlaceholderText(
-      /Ej. Reunión de academia/i,
+    const titleInput = await screen.findByLabelText(
+      /Nombre de Actividad/i,
     );
     fireEvent.change(titleInput, { target: { value: "MyUniqueEvent" } });
 
