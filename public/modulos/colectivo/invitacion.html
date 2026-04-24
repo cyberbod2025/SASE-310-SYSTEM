@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convocatoria SIRDE-310 | Acceso Único</title>
+    <link rel="icon" href="logo_secundaria_310.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="styles.css?v=2026.2">
+    <link rel="stylesheet" href="../sase-theme.css?v=2026.4">
+    <script>
+        window.tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            'primary-green': '#816ab8',
+                            'secondary-orange': '#afa63c',
+                            'tertiary-green': '#b7687a',
+                            'primary-glow': 'rgba(129, 106, 184, 0.4)'
+                        },
+                        fontFamily: {
+                            'inter': ['Inter', 'sans-serif'],
+                            'space-grotesk': ['Space Grotesk', 'sans-serif']
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .activated-user {
+            opacity: 0.4;
+            filter: grayscale(1);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative">
+    <!-- Fondos Atmosféricos -->
+    <div class="fixed inset-0 z-[-1]">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/5 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div id="auth-wall" class="fixed inset-0 z-[100] bg-background flex items-center justify-center p-4">
+        <div class="card premium-glass w-full max-w-sm text-center space-y-8 animate-fade-up">
+            <div class="flex flex-col items-center gap-4">
+                <img src="logo_secundaria_310.svg" alt="Logo" class="h-20 w-auto opacity-90" style="filter: drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.3));">
+                <h1 class="text-xl font-black italic text-primary-green">GESTIÓN DE ACCESOS</h1>
+            </div>
+            <div class="space-y-2">
+                <label for="entry-pin" class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Validación de Dirección / Administración</label>
+                <p class="text-[10px] text-slate-500">Solo la cuenta administradora autorizada puede revelar PIN y generar invitaciones.</p>
+            </div>
+            <div class="space-y-6">
+                <div class="pin-container">
+                    <input type="password" id="entry-pin" placeholder="Ingresa tu clave de acceso" class="w-full pr-12">
+                    <button onclick="togglePinVisibility('entry-pin')" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+                <button onclick="checkAccess(document.getElementById('entry-pin').value)" class="btn-primary w-full py-4 rounded-2xl shadow-lg shadow-primary-green/20">ACCEDER A GESTIÓN DE PIN</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container max-w-6xl mx-auto px-4 py-6 sm:py-8 lg:py-12">
+        
+        <header class="text-center mb-12 flex flex-col items-center">
+            <div class="h-20 lg:h-24 mx-auto mb-2 animate-fade-up delay-100 flex items-center justify-center">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="opacity-90">
+                    <!-- Base edificio -->
+                    <rect x="12" y="34" width="56" height="36" rx="2" fill="var(--primary)" fill-opacity="0.1" stroke="var(--primary)" stroke-width="1.5"/>
+                    <!-- Techo -->
+                    <polygon points="6,34 40,10 74,34" fill="var(--primary)" fill-opacity="0.2" stroke="var(--primary)" stroke-width="1.5"/>
+                    <!-- Puerta -->
+                    <rect x="33" y="52" width="14" height="18" rx="1" fill="var(--primary)" fill-opacity="0.4" stroke="var(--primary)" stroke-width="1"/>
+                    <text x="40" y="28" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="9" font-weight="bold" fill="var(--primary)">310</text>
+                </svg>
+            </div>
+            
+            <h1 class="text-3xl lg:text-5xl font-black title-font text-gradient-animate tracking-tighter mb-3">ACTIVA TU ACCESO SIRDE</h1>
+            <p class="text-[10px] lg:text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-8">Ciclo Escolar 2025-2026 • Evaluación Colectiva</p>
+            <div class="no-print flex flex-wrap items-center justify-center gap-4 text-center">
+                <a href="dashboard.html" class="text-[9px] font-bold text-primary-green hover:underline uppercase tracking-widest">← Volver al análisis</a>
+                <button onclick="logoutSIRDE()" class="btn-link text-[9px] font-bold text-red-400 hover:text-red-600 uppercase tracking-widest">Cerrar Sesión Segura</button>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative animate-fade-up delay-300">
+            
+            <!-- LISTA -->
+            <section class="lg:col-span-7 premium-glass rounded-3xl p-5 lg:p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-black/5 pb-3 mb-4">
+                    <div>
+                        <h2 class="text-xl lg:text-2xl font-bold title-font text-primary-green">Nómina Institucional</h2>
+                    </div>
+                    <div class="flex w-full sm:w-auto flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 text-left sm:text-right">
+                        <button onclick="generatePrintableInvitations()" class="w-full sm:w-auto text-[10px] font-bold bg-secondary-orange px-3 py-2 rounded-full uppercase tracking-tighter hover:scale-105 transition-transform">
+                            Generar Invitaciones Imprimibles
+                        </button>
+                        <div class="hidden sm:block">
+                            <span class="block text-[9px] lg:text-[10px] font-bold uppercase text-slate-500 tracking-wider">Ya activados</span>
+                            <span id="progress-indicator" class="text-xl lg:text-2xl font-black title-font">0/0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="teacher-list" class="flex flex-col gap-2 max-h-[52vh] lg:max-h-[600px] overflow-y-auto pr-1 hide-scroll">
+                    <!-- Dynamic List -->
+                </div>
+            </section>
+
+            <!-- ACTION PANEL -->
+            <section class="lg:col-span-5 h-full relative">
+                <div id="action-panel" class="premium-glass rounded-3xl p-6 lg:p-8 text-center shadow-xl lg:sticky lg:top-6">
+                    <div class="w-14 h-14 lg:w-16 lg:h-16 mx-auto bg-primary-green/10 rounded-full flex items-center justify-center mb-4 border border-primary-green/30">
+                        <svg class="w-7 h-7 lg:w-8 lg:h-8 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    
+                    <h3 class="text-[10px] lg:text-xs font-bold tracking-widest text-slate-400 uppercase mb-1">Docente Identificado</h3>
+                    <div id="selected-name" class="text-xl lg:text-2xl font-black title-font text-on-surface min-h-[35px] mb-6">---</div>
+                    
+                    <div class="space-y-3">
+                        <button id="btn-reveal" onclick="revealPin()" disabled class="btn-glow w-full py-4 lg:py-5 rounded-2xl text-sm lg:text-base tracking-widest disabled:opacity-50">
+                            REVELAR MI PIN ÚNICO
+                        </button>
+                        <button onclick="cancelSelection()" class="btn-link text-[10px] font-bold text-slate-500 hover:text-primary-green uppercase tracking-widest p-2">
+                            Cancelar / Elegir otro
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <section id="printable-area" class="hidden mt-12 no-print-area">
+            <h2 class="section-title">Invitaciones de Acceso SIRDE / SASE</h2>
+            <div id="invitations-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            <div class="mt-8 flex justify-center no-print">
+                <button onclick="window.print()" class="btn-glow">IMPRIMIR TODAS LAS INVITACIONES</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL PIN -->
+    <div id="pin-modal" class="fixed inset-0 z-[200] bg-background/80 backdrop-blur-xl items-center justify-center p-4 hidden">
+        <div class="premium-glass max-w-md w-full p-8 text-center rounded-3xl border-2 border-primary-green/20">
+            <h3 class="text-3xl font-black title-font mb-2">TU PIN DE ACCESO</h3>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-8">Guárdalo en un lugar seguro</p>
+            <div id="show-pin" class="vault-pin text-4xl lg:text-5xl py-8 mb-8 rounded-2xl flex items-center justify-center">0000</div>
+            <button onclick="closeModal()" class="btn-primary w-full py-5 rounded-2xl text-sm font-bold tracking-widest">ENTENDIDO, YA LO ANOTÉ</button>
+        </div>
+    </div>
+
+    <script src="app.js?v=2026.2"></script>
+    <script>
+        let teachers = [];
+        let activeUser = null;
+
+        let invitationInitialized = false;
+
+        async function initInvitationPage(forceReload = false) {
+            if (forceReload) invitationInitialized = false;
+            if (invitationInitialized && !forceReload) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('colectivo_personal')
+                    .select('*')
+                    .order('nombre');
+                
+                if (error) throw error;
+                teachers = data.filter(u => u.rol !== 'secretaria');
+                invitationInitialized = true;
+                cancelSelection();
+                renderList();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderList() {
+            const list = document.getElementById('teacher-list');
+            const total = teachers.length;
+            const activated = teachers.filter(t => t.pin_entregado).length;
+            
+            document.getElementById('progress-indicator').innerText = `${activated}/${total}`;
+            
+            list.innerHTML = teachers.map(user => `
+                <div onclick="handleSelect(this, ${JSON.stringify(user).replace(/"/g, '&quot;')})" 
+                     class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 rounded-2xl cursor-pointer transition-all border border-black/5 hover:border-primary-green/30 ${user.pin_entregado ? 'activated-user' : 'bg-surface-container-low'}">
+                    <span class="font-bold text-sm uppercase min-w-0 break-words">${user.nombre}</span>
+                    <div class="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3 shrink-0">
+                        <span class="text-[9px] font-black italic px-2 py-1 rounded bg-surface-container-high text-slate-600">${user.rol}</span>
+                        <span class="text-sm font-black ${user.pin_entregado ? 'text-secondary-orange' : 'text-primary-green'}">${user.pin_entregado ? '✓' : '→'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSelect(element, user) {
+            if (user.pin_entregado) return;
+            activeUser = user;
+            document.getElementById('selected-name').innerText = user.nombre;
+            document.getElementById('btn-reveal').disabled = false;
+        }
+
+        async function revealPin() {
+            if (!activeUser) return;
+            const btn = document.getElementById('btn-reveal');
+            btn.disabled = true;
+            btn.innerHTML = 'REVELANDO...';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('colectivo_personal')
+                    .select('acceso_pin')
+                    .eq('id', activeUser.id)
+                    .single();
+
+                if (error) throw error;
+                
+                document.getElementById('show-pin').innerText = data.acceso_pin;
+                document.getElementById('pin-modal').classList.remove('hidden');
+                document.getElementById('pin-modal').classList.add('flex');
+                
+                await supabaseClient.from('colectivo_personal').update({ pin_entregado: true }).eq('id', activeUser.id);
+            } catch (err) {
+                alert(err.message);
+                btn.disabled = false;
+                btn.innerHTML = 'REVELAR MI PIN ÚNICO';
+            }
+        }
+
+        async function generatePrintableInvitations() {
+            const grid = document.getElementById('invitations-grid');
+            const area = document.getElementById('printable-area');
+            grid.innerHTML = '<p class="col-span-2 text-center py-10">Generando invitaciones...</p>';
+            area.classList.remove('hidden');
+
+            try {
+                const { data, error } = await supabaseClient.from('colectivo_personal').select('*').order('nombre');
+                if (error) throw error;
+
+                grid.innerHTML = data.filter(u => u.rol !== 'secretaria').map(user => `
+                    <div class="card p-5 sm:p-6 border-2 border-primary-green/20">
+                        <div class="flex flex-col sm:flex-row justify-between items-start gap-3 mb-6">
+                            <img src="logo_secundaria_310.svg" class="h-10 opacity-60">
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-primary-green">Invitación Institucional</span>
+                        </div>
+                        <h3 class="text-xl font-black title-font mb-4 uppercase break-words">${user.nombre}</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-surface-container p-3 rounded-lg border border-black/5">
+                                <label class="text-[9px] font-bold opacity-40 uppercase block mb-1">Usuario SASE</label>
+                                <p class="text-xs font-bold break-words">${user.nombre.split(' ')[0].toLowerCase()}.${user.id.substring(0,4)}</p>
+                            </div>
+                            <div class="bg-primary-green/10 p-3 rounded-lg border border-primary-green/20">
+                                <label class="text-[9px] font-bold text-primary-green uppercase block mb-1">Contraseña/PIN</label>
+                                <p class="text-sm font-black tracking-widest">${user.acceso_pin || '----'}</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-black/5 text-[9px] text-slate-500 italic">
+                            * Acceso único para Evaluación Colectiva 2025.
+                        </div>
+                    </div>
+                `).join('');
+                area.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('pin-modal').classList.add('hidden');
+            document.getElementById('pin-modal').classList.remove('flex');
+            initInvitationPage(true);
+        }
+
+        function cancelSelection() {
+            activeUser = null;
+            document.getElementById('selected-name').innerText = '---';
+            document.getElementById('btn-reveal').disabled = true;
+            document.getElementById('btn-reveal').innerHTML = 'REVELAR MI PIN ÚNICO';
+        }
+    </script>
+</body>
+</html>

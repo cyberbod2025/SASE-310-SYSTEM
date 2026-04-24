@@ -21,22 +21,21 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
   const sphereRef = useRef<HTMLDivElement>(null);
 
   // Map institutional states to official copilot colors
-  const getStateColor = (s: string) => {
-    if (accentColor) {
-      return accentColor;
-    }
 
+  // Map institutional states to official copilot colors
+  const getStateColor = (s: string) => {
+    if (accentColor) return accentColor;
     switch (s) {
-      case 'normal': return '#8b5cf6';    // Violeta Eléctrico
-      case 'warning': return '#f59e0b';   // Ámbar Alerta
-      case 'alert': return '#f43f5e';     // Magenta Acción
-      case 'thinking': return '#ffffff';  // Blanco y Violeta (Paleta Institucional)
-      case 'rebooting': return '#06b6d4'; // Cian Cuántico
-      default: return '#8b5cf6';
+      case 'warning': return '#FFB800';   // Radiant Amber
+      case 'alert': return '#FF4B91';     // Pulse Pink
+      case 'thinking': return '#22c55e';  // Green (Thinking/Active)
+      case 'normal':
+      default: return '#22c55e';          // Green Institutional (Main)
     }
   };
 
   const color = getStateColor(state);
+  const eyeMoveFactor = state === 'alert' ? 0.14 : 0.1;
 
   // Softer eye tracking keeps Sasito readable even in compact placements.
   const eyeX = useSpring(0, { stiffness: 250, damping: 20 });
@@ -53,8 +52,8 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
         const deltaY = e.clientY - centerY;
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         
-        const sensitivity = state === 'alert' ? 9 : 12;
-        const maxMove = state === 'alert' ? 14 : 10;
+        const sensitivity = state === 'alert' ? rect.width * 0.09 : rect.width * 0.12;
+        const maxMove = rect.width * eyeMoveFactor;
         
         const moveX = (deltaX / (distance || 1)) * Math.min(distance / sensitivity, maxMove);
         const moveY = (deltaY / (distance || 1)) * Math.min(distance / sensitivity, maxMove);
@@ -71,18 +70,13 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
 
   // Exact 3D Gradients from source - ENHANCED for higher fidelity (Soft Radial Lavanda/Cian)
   const get3DGradient = (s: string) => {
-    if (accentColor) {
-      return `radial-gradient(circle at 38% 35%, rgba(255,255,255,0.92) 0%, ${accentColor} 32%, rgba(15, 23, 42, 0.18) 68%, transparent 100%)`;
-    }
-
-    if (s === 'thinking') {
-      return 'radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(139, 92, 246, 0.8) 40%, rgba(76, 29, 149, 0.4) 70%, transparent 100%)';
-    }
-    return 'radial-gradient(circle at center, rgba(255,255,255,1) 0%, rgba(139, 92, 246, 0.5) 40%, rgba(6, 182, 212, 0.2) 70%, transparent 100%)';
+    const baseColor = getStateColor(s);
+    // Atmospheric Refraction: Professional Green with refractive depth
+    return `radial-gradient(circle at 35% 35%, rgba(255,255,255,1) 0%, ${baseColor} 38%, rgba(125, 114, 147, 0.25) 75%, transparent 100%)`;
   };
 
   return (
-    <div className={`relative flex items-center justify-center pointer-events-none ${className || "w-[180px] h-[180px]"}`}>
+    <div className={`relative flex items-center justify-center pointer-events-none [container-type:size] ${className || "w-[180px] h-[180px]"}`}>
       <svg className="hidden">
         <filter id="fractalNoise">
           <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
@@ -108,8 +102,8 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
           background: get3DGradient(state),
           boxShadow: showGlow
             ? state === 'thinking'
-              ? `0 0 60px rgba(255, 255, 255, 0.6), inset 0 0 20px rgba(139, 92, 246, 0.5)`
-              : `0 0 40px ${color}44`
+              ? `0 0 60px rgba(34, 197, 94, 0.45), inset 0 0 20px rgba(255, 255, 255, 0.3)`
+              : `0 0 45px ${color}33, inset 0 0 15px rgba(255, 255, 255, 0.25)`
             : 'none',
         }}
         transition={{
@@ -122,7 +116,10 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
         }}
         className="w-full h-full rounded-full flex items-center justify-center relative overflow-hidden backdrop-blur-[8px] opacity-80 z-10 ring-2 ring-white/10"
         style={{
-          filter: state === 'thinking' ? 'url(#fractalNoise)' : 'url(#subtleNoise)'
+          filter: state === 'thinking' ? 'url(#fractalNoise)' : 'url(#subtleNoise)',
+          ['--sasito-eye-width' as string]: '14cqw',
+          ['--sasito-eye-height' as string]: state === 'warning' ? '28cqh' : '24cqh',
+          ['--sasito-eye-gap' as string]: '22cqw',
         }}
       >
         <div className="absolute inset-0 opacity-10">
@@ -140,13 +137,13 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
 
         <motion.div 
           style={{ x: eyeX, y: eyeY }}
-          className="flex gap-6 -mt-6"
+          className="flex -mt-[12%] gap-[var(--sasito-eye-gap)]"
         >
           {[0, 1].map((i) => (
             <div key={i} className="relative">
               <motion.div
                 animate={{
-                  height: state === 'rebooting' ? 2 : state === 'warning' ? 28 : 22,
+                  height: state === 'rebooting' ? '4cqh' : 'var(--sasito-eye-height)',
                   scaleY: [1, 1, 0, 1, 1],
                 }}
                 transition={{
@@ -158,7 +155,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
                   },
                   height: { duration: 0.3 }
                 }}
-                className={`w-4 bg-white rounded-full ${showGlow ? 'shadow-[0_0_18px_rgba(255,255,255,0.95),0_0_36px_rgba(255,255,255,0.35)]' : ''}`}
+                className={`w-[var(--sasito-eye-width)] min-w-2 bg-white rounded-full ${showGlow ? 'shadow-[0_0_12px_rgba(255,255,255,0.9),0_0_24px_rgba(255,255,255,0.4)]' : ''}`}
               />
             </div>
           ))}
@@ -186,7 +183,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
               className="absolute w-[220px] h-[220px] rounded-full border border-white/12 blur-md"
               style={{
                 background: state === 'thinking' 
-                  ? `conic-gradient(from ${i * 90}deg, #ffffff, #8b5cf6, #ffffff, #4c1d95)`
+                  ? `conic-gradient(from ${i * 90}deg, #ffffff, #22c55e, #ffffff, #7d7293)`
                   : `radial-gradient(circle, ${color}22 0%, transparent 70%)`
               }}
             />
