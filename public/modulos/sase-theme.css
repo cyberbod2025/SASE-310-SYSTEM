@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700;800&display=swap');
+
+:root {
+  /* LUMINOUS REFRACTION — SASE Abril 2026 */
+  --sase-primary: #22c55e;
+  --sase-primary-rgb: 34, 197, 94;
+  --sase-secondary: #7d7293;
+  --sase-secondary-rgb: 125, 114, 147;
+  --sase-tertiary: #1a1625;
+  --sase-tertiary-rgb: 26, 22, 37;
+
+  --sase-bg: #F0F8FF;
+  --sase-bg-alt: #FFFFFF;
+  --sase-surface-low: rgba(255, 255, 255, 0.30);
+  --sase-surface: rgba(255, 255, 255, 0.45);
+  --sase-surface-high: rgba(255, 255, 255, 0.60);
+  --sase-surface-max: rgba(255, 255, 255, 0.70);
+  --sase-border: none;
+  --sase-border-ghost: none;
+
+  --sase-text-head: #0f172a;
+  --sase-text-main: #334155;
+  --sase-text-muted: #64748b;
+
+  --sase-danger: #ef4444;
+  --sase-warning: #f59e0b;
+
+  --sase-glass-bg: rgba(255, 255, 255, 0.40); /* 40% opacity */
+  --sase-glass-border: none; /* No 1px solid borders */
+  --sase-glass-blur: blur(30px); /* 20-40px blur */
+  
+  /* Shadows: 40-60px blur, 4-8% opacity, tinted with primary */
+  --sase-shadow-soft: 0 40px 60px rgba(34, 197, 94, 0.04);
+  --sase-shadow-strong: 0 60px 80px rgba(34, 197, 94, 0.08);
+
+  /* Bright mesh gradients (secondary + tertiary orbs) */
+  --sase-mesh:
+    radial-gradient(at 0% 0%, rgba(125, 114, 147, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(26, 22, 37, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(125, 114, 147, 0.08) 0px, transparent 50%);
+
+  --background: var(--sase-bg);
+  --surface: var(--sase-surface);
+  --surface-container-low: var(--sase-surface-low);
+  --surface-container: rgba(255, 255, 255, 0.50);
+  --surface-container-high: rgba(255, 255, 255, 0.60);
+  --surface-container-highest: rgba(255, 255, 255, 0.80);
+  --on-surface: var(--sase-text-head);
+  --on-surface-variant: var(--sase-text-muted);
+  --primary: var(--sase-primary);
+  --primary-container: rgba(34, 197, 94, 0.16);
+  --secondary: var(--sase-secondary);
+  --secondary-container: rgba(125, 114, 147, 0.16);
+  --tertiary: var(--sase-tertiary);
+  --tertiary-container: rgba(26, 22, 37, 0.16);
+  --on-primary: #ffffff;
+  --on-secondary: #ffffff;
+  --on-tertiary: #ffffff;
+  --error: var(--sase-danger);
+  --error-container: rgba(239, 68, 68, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--sase-bg);
+  background-image: var(--sase-mesh);
+  background-attachment: fixed;
+  color: var(--sase-text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+.title-font,
+.section-title,
+.font-headline,
+[class*='title-'] {
+  font-family: 'Space Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: -0.03em;
+  color: var(--sase-text-head);
+}
+
+select {
+  color-scheme: light;
+}
+
+select option,
+select optgroup {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Inputs: Semi-transparent, 20px blur, secondary glow on focus */
+input,
+select,
+textarea {
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  color: var(--sase-text-head) !important;
+  border: none !important; /* No-Line Rule */
+  box-shadow: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  /* Secondary glow on focus */
+  box-shadow: 0 0 15px rgba(125, 114, 147, 0.3), inset 0 0 0 2px var(--sase-secondary) !important;
+}
+
+/* Cards: No dividers, frosted edges, light-catching refraction */
+.glass-card,
+.glass-panel,
+.premium-card,
+.card,
+.premium-glass,
+.section {
+  background: var(--sase-glass-bg) !important;
+  backdrop-filter: var(--sase-glass-blur) !important;
+  -webkit-backdrop-filter: var(--sase-glass-blur) !important;
+  border: none !important; /* No-Line Rule */
+  /* Light-catching refraction instead of solid borders */
+  box-shadow: var(--sase-shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.05) !important;
+  color: var(--sase-text-head) !important;
+  border-radius: 24px !important;
+}
+
+.glass-card:hover,
+.premium-card:hover,
+.premium-glass:hover,
+.card:hover {
+  box-shadow: var(--sase-shadow-strong), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Buttons: 3D glass bead, pill shape, internal glow */
+button,
+.liquid-button,
+.btn-primary,
+.btn-glow,
+.action-glow {
+  border-radius: 9999px !important; /* Pill shape */
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+button:not(.btn-link):not(.btn-outline):not(.ghost),
+.liquid-button,
+.btn-primary,
+.btn-glow,
+.action-glow {
+  /* Signature gradient: primary -> secondary at 45 deg */
+  background: linear-gradient(45deg, var(--sase-primary), var(--sase-secondary)) !important;
+  color: #ffffff !important;
+  border: none !important; /* No-Line Rule */
+  /* Internal glow + shadow */
+  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.3) !important;
+}
+
+button:not(.btn-link):not(.btn-outline):not(.ghost):hover,
+.liquid-button:hover,
+.btn-primary:hover,
+.btn-glow:hover,
+.action-glow:hover {
+  box-shadow: 0 16px 32px rgba(34, 197, 94, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-2px);
+}
+
+.btn-link,
+.btn-outline {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--sase-text-head) !important;
+}
+
+/* Utility classes for text colors */
+.text-slate-900,
+.text-slate-800,
+.text-slate-700,
+.text-slate-600,
+.text-slate-500,
+.text-slate-400,
+.text-slate-300,
+.text-on-surface,
+.text-on-surface-variant {
+  color: var(--sase-text-main) !important;
+}
+
+.text-primary-green,
+.text-blue-300,
+.text-blue-400,
+.text-blue-500,
+.text-blue-600,
+.text-cyan-300,
+.text-cyan-400,
+.text-cyan-500,
+.text-indigo-400,
+.text-indigo-500 {
+  color: var(--sase-primary) !important;
+}
+
+/* Utility classes for backgrounds */
+.bg-white,
+.bg-white\/80,
+.bg-white\/50,
+.bg-white\/10,
+.bg-white\/5 {
+  background-color: var(--sase-surface) !important;
+}
