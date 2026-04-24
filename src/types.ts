@@ -347,6 +347,7 @@ export enum AppModule {
   IA_SASE = "ia_sase",
   OBJETOS_RETENIDOS = "objetos_retenidos",
   MANUAL_USUARIO = "manual_usuario",
+  PERFIL = "perfil",
   FERIA = "feria",
   DIAGNOSTICO = "diagnostico",
   MATE = "mate",
