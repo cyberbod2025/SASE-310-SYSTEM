@@ -2,6 +2,15 @@ import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import { UserRole } from "../types";
 
+const sasitoTourMarkup = (label: string) => `
+  <div class="sase-tour-sasito-row" aria-hidden="true">
+    <div class="sase-tour-sasito-orb">
+      <span></span><span></span>
+    </div>
+    <div class="sase-tour-sasito-label">${label}</div>
+  </div>
+`;
+
 // Tour Principal
 export const startProductTour = (
   userName: string = "Usuario",
@@ -20,66 +29,59 @@ export const startProductTour = (
   // Marcamos que el tour está activo para que el modal lo detecte
   localStorage.setItem("sase_tour_active", "true");
 
-  // Helper para añadir la "cara" de Sasito a cada paso si es necesario
-  const withSasito = (title: string, desc: string) => ({
-    title: `<div class='flex items-center gap-3'><span class='text-violet-400 font-bold'>🤖 SASITO:</span> <span class='text-white uppercase tracking-wider font-black text-xs'>${title}</span></div>`,
-    description: `<div class='sase-tour-step-orb-container'><div class='sase-tour-step-orb'></div></div>` + 
-                 `<div class='mt-4 text-slate-300 font-medium italic'>"${desc}"</div>`,
+  const buildPopover = (title: string, desc: string, label = "Sasito te guía") => ({
+    title: `<div class='text-[11px] font-black uppercase tracking-[0.28em] text-emerald-300'>${title}</div>`,
+    description: `${sasitoTourMarkup(label)}<div class='mt-3 text-[13px] leading-relaxed text-slate-200'>${desc}</div>`,
   });
 
-  // 1. Pasos Base (Bienvenida + Sidebar Global)
-  const rawSteps: any[] = [
+  const isCompactViewport = window.innerWidth < 1024;
+
+  const rawSteps: any[] = isCompactViewport
+    ? [
+        {
+          popover: {
+            title: `Guía rápida SASE`,
+            description: `${sasitoTourMarkup("Inicio guiado")}Hola, ${userName}. Esta guía compacta resume lo esencial: usa el menú lateral para navegar, MI PERFIL para corregir tus datos visibles, NOTIFICACIONES para atender avisos y REPORTE RÁPIDO para registrar acciones operativas. Los módulos del ecosistema aparecerán cuando tu cuenta tenga acceso.`,
+            side: "center",
+            align: "center",
+          },
+        },
+      ]
+    : [
     {
       popover: {
-        title: `NÚCLEO SASE-310: Hola, ${userName} 👋`,
-        description:
-          "<div style='margin-bottom: 20px; display: flex; justify-content: center;'>" +
-          "  <div class='sase-tour-welcome-orb'></div>" +
-          "</div>" +
-          "Soy <b>Sasito</b>, tu Copiloto IA. Mi núcleo de procesamiento está listo para optimizar tu gestión escolar.<br><br>" +
-          "Permíteme guiarte por los 11 protocolos clave para asegurar una operación institucional impecable.",
+        title: `Guía rápida SASE`,
+        description: `${sasitoTourMarkup("Inicio guiado")}Hola, ${userName}. Vamos a recorrer las zonas principales en orden para que sepas qué hace cada parte del sistema y dónde pedir apoyo.`,
         side: "center",
         align: "center",
       },
     },
     {
       element: "#sidebar-logo",
-      popover: withSasito("Paso 2: Rango Institucional 🛡️", `He verificado tu identidad como docente con rango: <b class="text-violet-400 uppercase">${role}</b>. Mis algoritmos se han adaptado a tus facultades específicas.`),
+      popover: buildPopover("Identidad institucional", `Tu sesión quedó validada con el rol <b class="text-emerald-300 uppercase">${role}</b>. Aquí se muestra tu contexto actual dentro del sistema.`),
     },
     {
       element: "#sidebar-nav",
-      popover: withSasito("Paso 3: Consola de Inteligencia 🧭", "Aquí convergen los nodos de información: Expedientes, Agendas y Metadatos. Todo está interconectado para tu comodidad."),
+      popover: buildPopover("Navegación principal", "Este menú concentra los módulos institucionales de uso diario. Si quieres volver a tu tablero o cambiar de área, siempre regresas aquí."),
     },
     {
-      element: "#sidebar-feedback",
-      popover: withSasito("Paso 4: Sincronización de Mejoras 🗣️", "¿Detectas alguna anomalía en mi núcleo? Este es tu enlace directo con mi equipo de ingeniería."),
+      element: "#sidebar-ecosistema",
+      popover: buildPopover("Ecosistema", "En este bloque deben aparecer Feria, Diagnóstico Colectivo y otros módulos externos habilitados para tu perfil."),
     },
     {
-      element: "#dashboard-header",
-      popover: withSasito("Paso 5: Centro de Comando 🏛️", "Desde aquí supervisas el pulso vital de la escuela. Una vista satelital de todo lo que importa ahora mismo."),
-    },
-    {
-      element: "#kpi-assist",
-      popover: withSasito("Paso 6: Métricas de Presencia 📈", "Monitoreo constante de asistencia. Mis sensores detectarán cualquier patrón de inasistencia inusual."),
-    },
-    {
-      element: "#kpi-risk",
-      popover: withSasito("Paso 7: Radar de Riesgo Crítico 🚨", "¡Cuidado aquí! Estas alertas requieren tu intervención inmediata. Son trayectorias que necesitan nuestro apoyo."),
-    },
-    {
-      element: "#panel-risk-groups",
-      popover: withSasito("Paso 8: Focalización Estratégica 🎯", "Aquí agrupo a los estudiantes con mayores índices de conflicto. Dirige tu atención aquí para maximizar el impacto."),
-    },
-    {
-      element: "#export-btn",
-      popover: withSasito("Paso 9: Inteligencia Documental 🖨️", "¿Necesitas un reporte? Genero documentos ejecutivos con un solo clic, listos para los protocolos oficiales."),
+      element: "#notification-bell",
+      popover: buildPopover("Notificaciones", "La campana avisa cuando hay pendientes nuevos. Si parpadea o cambia de color, abre el panel para revisar avisos y entrar al módulo relacionado."),
     },
     {
       element: "#quick-register-btn",
-      popover: withSasito("Paso 10: Registro Rápido ⚡", "¿Algo sucedió? Reporta incidencias en segundos. Yo me encargo de procesar la narrativa y preparar el acta."),
+      popover: buildPopover("Registro rápido", "Este acceso te lleva al flujo operativo más ágil del sistema para registrar incidencias o eventos sin perder contexto."),
     },
     {
-      popover: withSasito("Paso 11: Inducción Finalizada 🌟", "Sincronización completa. Ahora eres parte integral del núcleo SASE-310. Estaré aquí si me necesitas."),
+      element: "#sasito-assistant-anchor",
+      popover: buildPopover("Sasito", "Sasito permanece disponible para explicar funciones, iniciar este tour y ejecutar acciones permitidas por tu perfil. Si una acción no corresponde a tu rol, te lo dirá sin forzar el acceso."),
+    },
+    {
+      popover: buildPopover("Listo", "La guía terminó. El manual y Sasito siguen disponibles para resolver dudas sin sacarte del flujo de trabajo.", "Tour completado"),
     }
   ];
 
@@ -105,10 +107,10 @@ export const startProductTour = (
     allowClose: true,
     stagePadding: 8,
     popoverClass: "sase-tour-popover", 
-    doneBtnText: "FINALIZAR INDUCCIÓN",
-    nextBtnText: "SIGUIENTE FASE ➔",
-    prevBtnText: "⬅ PROTOCOLO ANTERIOR",
-    progressText: "ETAPA {{current}} DE {{total}}",
+    doneBtnText: isCompactViewport ? "Entendido" : "Cerrar guía",
+    nextBtnText: "Siguiente",
+    prevBtnText: "Atrás",
+    progressText: "Paso {{current}} de {{total}}",
     disableActiveInteraction: false,
     smoothScroll: true,
     steps: steps,

@@ -21,6 +21,15 @@ interface SasitoProps {
   isWidgetMode?: boolean;
 }
 
+const ACTION_MODULES: Record<string, AppModule> = {
+  asistencia: AppModule.ASISTENCIA,
+  dashboard: AppModule.DASHBOARD,
+  documentacion: AppModule.DOCUMENTACION,
+  expedientes: AppModule.EXPEDIENTES,
+  notifications: AppModule.NOTIFICATIONS,
+  reportes: AppModule.REPORTES,
+};
+
 /**
  * SasitoAssistant: Copiloto Institucional Único
  * Actúa como Wrapper de Lógica y UI de Chat, delegando el render visual a SaseSplineOrb.
@@ -50,6 +59,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   const [chatInput, setChatInput] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [showDragHint, setShowDragHint] = useState(true);
+  const currentUserName = currentUserProfile?.nombre_completo || currentUserProfile?.full_name || '';
   
   const constraintsRef = useRef(null);
 
@@ -66,27 +76,24 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       setTimeout(() => {
         setLocalState('attention');
         setCurrentSuggestion({
-          text: `¡Hola ${currentUserProfile?.full_name?.split(' ')[0] || ''}! Soy Sasito, tu Copiloto IA. Veo que es tu primera vez aquí. ¿Te gustaría que te dé un tour rápido por el núcleo SASE-310?`,
+          text: `¡Hola ${currentUserName.split(' ')[0] || ''}! Soy Sasito. Ya no voy a disparar un tour largo automáticamente; cuando quieras te acompaño desde el manual o desde ayuda contextual.`,
           state: 'attention',
-          actionLabel: "SÍ, DAME EL TOUR ➔",
-          actionType: "start-tour"
+          actionLabel: "ENTENDIDO"
         });
-        // Marcar como mostrado para no volver a insistir
         localStorage.setItem('sase_onboarding_v2_completed', 'true');
       }, 3000);
     }
-  }, [currentUserProfile, minimal]);
+  }, [currentUserName, minimal]);
 
   // Sync visuals with Tour Steps
   useEffect(() => {
     if (!isTourActive) return;
     
-    // tourStep starts at 0
-    if (tourStep === 6) { // Radar de Riesgo Crítico
+    if (tourStep === 4) {
       setLocalState('alert');
-    } else if (tourStep === 5 || tourStep === 7) { // Métricas o Focalización
+    } else if (tourStep === 3 || tourStep === 5) {
       setLocalState('attention');
-    } else if (tourStep === 10) { // Finalizada
+    } else if (tourStep >= 6) {
       setLocalState('calm');
     } else {
       setLocalState('calm');
@@ -173,6 +180,14 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       moduleTarget: AppModule.AGENDA,
       successText: "Abriendo la Agenda Institucional. Aquí puedes programar el evento escolar y notificar automáticamente a los profesores.",
       deniedText: "Modificación de calendario no autorizada. Agendar eventos globales y evaluaciones requiere validación Directiva o de Secretaría."
+    },
+    {
+      intent: "Consultar Notificaciones",
+      keywords: ["notificaciones", "avisos", "campana", "pendientes", "alertas"],
+      allowedRoles: Object.values(UserRole),
+      moduleTarget: AppModule.NOTIFICATIONS,
+      successText: "Abriendo el centro de notificaciones para revisar tus avisos pendientes.",
+      deniedText: "Tu perfil no tiene un centro de notificaciones configurado."
     }
   ];
 
@@ -218,7 +233,14 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       }
 
       // --- AUTHORIZED NAVIGATION & ACTIONS ---
+      const canUseQuickRegister = ![UserRole.ALUMNO, UserRole.GUEST].includes(currentUserRole as UserRole);
+
       if (normalized.includes("incidencia") || normalized.includes("reporte rápido")) {
+        if (!canUseQuickRegister) {
+          setLocalState('alert');
+          setCurrentSuggestion({ text: "Tu perfil no tiene configurado el registro rápido de incidencias. Pide apoyo a Prefectura, Orientación o Dirección.", state: 'alert' });
+          return;
+        }
         setQuickRegisterOpen(true);
         setCurrentSuggestion({ text: "Entendido. Abriendo módulo de registro rápido de incidencias.", state: 'calm' });
         setIsChatOpen(false);
@@ -228,7 +250,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         setIsChatOpen(false);
         localStorage.setItem('sase_onboarding_completed', 'true');
         import("../TourGuide").then(m => m.startProductTour(
-          currentUserProfile?.full_name || "Docente", 
+          currentUserName || "Docente", 
           currentUserRole as any,
           setIsTourActive,
           setTourStep
@@ -266,12 +288,10 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         }
       }
 
-      setCurrentSuggestion({ text: "Protocolo SASE recibido. Por el momento mi capacidad se limita a estas áreas, utiliza los menús laterales para acciones complejas.", state: 'calm' });
+      setCurrentSuggestion({ text: "No tengo esa acción configurada para tu perfil. Puedo iniciar el tour, abrir notificaciones, registrar incidencias si tu rol lo permite, o llevarte a módulos autorizados.", state: 'attention' });
 
     }, 1500);
   };
-
-  if (isTourActive) return null;
 
   return (
     <>
@@ -280,6 +300,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         className="fixed inset-0 pointer-events-none z-[9999]"
       >
         <motion.div 
+          id="sasito-assistant-anchor"
           drag
           dragConstraints={constraintsRef}
           dragElastic={0.02}
@@ -292,7 +313,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
           }`}
         >
         <AnimatePresence>
-          {isChatOpen && !minimal && (
+          {isChatOpen && !minimal && !isTourActive && (
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.9, transformOrigin: 'bottom right' }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -306,7 +327,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                 </div>
                 <button aria-label="Cerrar chat" title="Cerrar chat" onClick={() => setIsChatOpen(false)} className="size-8 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:text-white transition-all"><X size={14} /></button>
               </div>
-              <div className="mb-6 text-[11px] text-white/70 leading-relaxed font-medium">Hola {currentUserProfile?.full_name?.split(' ')[0] || ''}, ¿En qué puedo asistirte con el sistema SASE-310 hoy?</div>
+               <div className="mb-6 text-[11px] text-white/70 leading-relaxed font-medium">Hola {currentUserName.split(' ')[0] || ''}, ¿En qué puedo asistirte con el sistema SASE-310 hoy?</div>
               <div className="flex gap-2 mb-6">
                 <input
                   type="text"
@@ -325,8 +346,8 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                   onClick={() => {
                     setIsChatOpen(false);
                     import("../TourGuide").then(m => m.startProductTour(
-                      currentUserProfile?.full_name || "Docente", 
-                      currentUserRole as any,
+                       currentUserName || "Docente", 
+                       currentUserRole as any,
                       setIsTourActive,
                       setTourStep
                     ));
@@ -348,7 +369,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         </AnimatePresence>
 
         <AnimatePresence>
-          {currentSuggestion && !isChatOpen && !minimal && (
+          {currentSuggestion && !isChatOpen && !minimal && !isTourActive && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8, x: 20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -376,14 +397,15 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                             if (currentSuggestion.actionType === "start-tour") {
                                localStorage.setItem('sase_onboarding_completed', 'true');
                                import("../TourGuide").then(m => m.startProductTour(
-                                 currentUserProfile?.full_name || "Docente", 
+                                 currentUserName || "Docente", 
                                  currentUserRole as any,
                                  setIsTourActive,
                                  setTourStep
                                ));
                             } else if (currentSuggestion.actionType?.startsWith("module-")) {
-                               const module = currentSuggestion.actionType.replace("module-", "").toUpperCase();
-                               setCurrentModule(module as any);
+                               const moduleKey = currentSuggestion.actionType.replace("module-", "");
+                               const moduleTarget = ACTION_MODULES[moduleKey];
+                               if (moduleTarget) setCurrentModule(moduleTarget);
                             }
                             setCurrentSuggestion(null);
                           }}
@@ -406,22 +428,21 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         </AnimatePresence>
 
         <div className="relative flex items-center justify-center">
-          <motion.div
-            onClick={() => !minimal && setIsChatOpen(!isChatOpen)}
-            className="cursor-pointer pointer-events-auto"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+            <motion.div
+              onClick={() => !minimal && !isTourActive && setIsChatOpen(!isChatOpen)}
+              className={`cursor-pointer pointer-events-auto ${isTourActive ? 'opacity-90 pointer-events-none' : ''}`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
             <SaseSplineOrb 
               state={
                 localState === 'processing' ? 'thinking' : 
                 localState === 'alert' ? 'alert' : 
                 localState === 'attention' ? 'warning' : 'normal'
               } 
-              className={minimal ? "w-28 h-28" : "w-40 h-40"}
-              accentColor="#22c55e"
-              showAura={false}
-              showGlow={false}
+              className={minimal ? "w-20 h-20" : isTourActive ? "w-20 h-20" : "w-24 h-24"}
+              showAura={true}
+              showGlow={true}
             />
           </motion.div>
 

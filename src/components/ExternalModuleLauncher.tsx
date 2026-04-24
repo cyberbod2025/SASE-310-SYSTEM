@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import {
   AlertCircle,
   ArrowRight,
+  ChevronLeft,
   Loader2,
   Rocket,
   ShieldCheck,
@@ -15,6 +16,7 @@ import type { EcosystemModuleDescriptor } from "../hooks/useEcosystemModules";
 type LaunchStatus =
   | "verifying"
   | "launching"
+  | "embedded"
   | "error"
   | "denied"
   | "unavailable";
@@ -26,6 +28,8 @@ export const ExternalModuleLauncher: React.FC<{
   const { setCurrentModule } = useApp();
   const [status, setStatus] = useState<LaunchStatus>("verifying");
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [iframeUrl, setIframeUrl] = useState<string>("");
+  const [iframeReady, setIframeReady] = useState(false);
 
   const handleLaunch = async () => {
     if (!session) {
@@ -68,9 +72,11 @@ export const ExternalModuleLauncher: React.FC<{
       }
 
       setStatus("launching");
-      setTimeout(() => {
-        window.location.href = data.url;
-      }, 1200);
+      setIframeReady(false);
+      setIframeUrl(data.url);
+      window.setTimeout(() => {
+        setStatus("embedded");
+      }, 350);
     } catch (error: any) {
       console.error("External module launch error", error);
       setStatus("error");
@@ -83,14 +89,48 @@ export const ExternalModuleLauncher: React.FC<{
   }, []);
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="h-full w-full flex items-center justify-center p-4 md:p-6 bg-[var(--sase-bg)] bg-[radial-gradient(circle_at_0%_0%,rgba(129,106,184,0.15),transparent_45%),radial-gradient(circle_at_100%_0%,rgba(59,130,246,0.12),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(175,166,60,0.10),transparent_50%)]">
+      {status === "embedded" && iframeUrl ? (
+        <div className="h-full w-full rounded-[2rem] overflow-hidden border border-[rgba(255,255,255,0.10)] bg-[rgba(17,24,39,0.72)] shadow-[0_36px_90px_rgba(0,0,0,0.5),0_0_34px_rgba(129,106,184,0.18)] backdrop-blur-[34px] flex flex-col">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[rgba(11,10,14,0.82)]">
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                onClick={() => setCurrentModule(AppModule.HOME)}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-white/8 text-slate-100 hover:bg-white/14 border border-white/10 transition-colors text-xs font-black uppercase tracking-widest"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Volver a SASE
+              </button>
+              <div className="min-w-0">
+                <p className="text-white font-black leading-none truncate">{module.name}</p>
+                <p className="text-[11px] text-slate-400 uppercase tracking-[0.22em] truncate">Módulo integrado con paleta SASE</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative flex-1 bg-[#0b0a0e]">
+            {!iframeReady && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-[#0b0a0e]/92 text-slate-200">
+                <Loader2 className={`w-8 h-8 animate-spin ${module.accentClass}`} />
+                <p className="text-sm font-medium">Cargando {module.name} dentro de SASE...</p>
+              </div>
+            )}
+            <iframe
+              src={iframeUrl}
+              title={module.name}
+              className="w-full h-full border-0"
+              onLoad={() => setIframeReady(true)}
+            />
+          </div>
+        </div>
+      ) : (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-[#0B1120]/90 rounded-3xl shadow-2xl overflow-hidden border border-white/10"
+        className="max-w-md w-full bg-[rgba(17,24,39,0.78)] backdrop-blur-[34px] rounded-3xl shadow-[0_36px_90px_rgba(0,0,0,0.46),0_0_34px_rgba(129,106,184,0.16)] overflow-hidden border border-white/10"
       >
-        <div className="bg-slate-900 p-8 flex justify-center relative overflow-hidden border-b border-white/10">
-          <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-white/5 to-transparent" />
+        <div className="bg-[rgba(11,10,14,0.74)] p-8 flex justify-center relative overflow-hidden border-b border-white/10">
+          <div className="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_35%_20%,rgba(129,106,184,0.28),transparent_45%)]" />
           <motion.div
             animate={status === "launching" ? { y: [0, -10, 0] } : {}}
             transition={{ repeat: Infinity, duration: 2 }}
@@ -120,14 +160,14 @@ export const ExternalModuleLauncher: React.FC<{
                 <span>Acceso Autorizado</span>
               </div>
               <p className="text-slate-400">
-                Preparando handoff seguro. Estas siendo redirigido...
+                Preparando handoff seguro. El módulo se abrirá dentro de SASE...
               </p>
               <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-2">
                 <motion.div
                   initial={{ width: "0%" }}
                   animate={{ width: "100%" }}
                   transition={{ duration: 1.2, ease: "easeInOut" }}
-                  className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500"
+                  className="h-full bg-gradient-to-r from-[#816ab8] via-[#3b82f6] to-[#afa63c]"
                 />
               </div>
             </div>
@@ -176,10 +216,11 @@ export const ExternalModuleLauncher: React.FC<{
           )}
         </div>
 
-        <div className="px-8 py-4 bg-slate-950/80 border-t border-white/10 text-[10px] text-slate-500 text-center uppercase tracking-widest font-bold">
+        <div className="px-8 py-4 bg-[#0b0a0e]/80 border-t border-white/10 text-[10px] text-slate-500 text-center uppercase tracking-widest font-bold">
           Ecosistema SASE • Handoff firmado • {module.key}
         </div>
       </motion.div>
+      )}
     </div>
   );
 };

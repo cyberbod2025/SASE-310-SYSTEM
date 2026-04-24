@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useApp } from "../../store";
 import { GenericActionModal } from "../GenericActionModal";
 import toast from "react-hot-toast";
 import { GlassCard } from "../ui/GlassCard";
 
 export const DashboardUDEII = () => {
-  const { students, addIncident, updateBapInfo, printDocument } = useApp();
+  const { students, updateBapInfo, printDocument } = useApp();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
 
@@ -28,7 +28,7 @@ export const DashboardUDEII = () => {
   return (
     <GlassCard className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-[#0B1120]/60 relative overflow-y-auto custom-scrollbar font-sans selection:bg-sase-info/30">
       {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
+      <div id="udeii-header" className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/10 pb-10">
         <div className="flex items-center gap-6">
           <div className="size-16 bg-[#0a0f18] border border-sase-info/30 rounded-2xl flex items-center justify-center text-sase-info shadow-[0_0_20px_rgba(99,102,241,0.15)] relative overflow-hidden backdrop-blur-xl">
             <span className="material-icons text-4xl">
@@ -64,15 +64,15 @@ export const DashboardUDEII = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         {/* BAP MONITOR TABLE */}
-        <div className="xl:col-span-2 card-sase border-slate-100 bg-[#0a0f18]/40 overflow-hidden flex flex-col group">
-          <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between">
-            <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] flex items-center gap-3 italic">
+        <div id="udeii-list" className="xl:col-span-2 card-sase border-white/10 bg-[#0a0f18]/40 overflow-hidden flex flex-col group">
+          <div className="p-6 border-b border-white/10 bg-white/[0.01] flex items-center justify-between">
+            <h3 className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em] flex items-center gap-3 italic">
               <span className="material-icons text-sase-info">
                 monitoring
               </span>
               MONITOR DE BARRERAS (BAP)
             </h3>
-            <span className="px-3 py-1 bg-white/5 rounded-2xl text-[9px] font-black text-slate-700">
+            <span className="px-3 py-1 bg-white/5 rounded-2xl text-[9px] font-black text-slate-300">
               {studentsWithBAP.length} casos activos
             </span>
           </div>
@@ -80,7 +80,7 @@ export const DashboardUDEII = () => {
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-white/5 text-slate-700 text-[9px] uppercase font-black border-b border-slate-100 italic">
+                <tr className="bg-white/5 text-slate-300 text-[9px] uppercase font-black border-b border-white/10 italic">
                   <th className="px-8 py-5">Expediente</th>
                   <th className="px-8 py-5">ESTUDIANTE</th>
                   <th className="px-8 py-5">Condicion BAP</th>
@@ -94,25 +94,25 @@ export const DashboardUDEII = () => {
                     key={s.id}
                     className="hover:bg-sase-info/[0.02] transition-colors group"
                   >
-                    <td className="px-8 py-6 font-mono text-[10px] text-slate-600">
+                    <td className="px-8 py-6 font-mono text-[10px] text-slate-400">
                       {s.id.substring(0, 8).toUpperCase()}
                     </td>
                     <td className="px-8 py-6">
                       <p className="font-black text-white text-sm uppercase italic tracking-tighter group-hover:text-sase-info transition-colors">
                         {s.name}
                       </p>
-                      <p className="text-[9px] font-bold text-slate-600 uppercase mt-1">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase mt-1">
                         {s.group}
                       </p>
                     </td>
                     <td className="px-8 py-6">
                       <span className="px-2 py-1 bg-sase-info/5 border border-sase-info/20 text-[9px] font-black text-sase-info rounded uppercase">
-                        {s.bapInfo.diagnosisPrivate || "Inclusión Genérica"}
+                        {s.bapInfo?.diagnosisPrivate || "Inclusión Genérica"}
                       </span>
                     </td>
                     <td className="px-8 py-6">
-                      <p className="text-[10px] text-slate-600 font-medium italic line-clamp-1">
-                        {s.bapInfo.accommodations.join(", ") ||
+                      <p className="text-[10px] text-slate-400 font-medium italic line-clamp-1">
+                        {s.bapInfo?.accommodations?.join(", ") ||
                           "Sin ajustes registrados"}
                       </p>
                     </td>
@@ -157,7 +157,7 @@ export const DashboardUDEII = () => {
 
         {/* SIDEBAR TOOLS */}
         <div className="space-y-8">
-          <div className="card-sase p-8 border-sase-info/20 bg-sase-info/[0.02] relative overflow-hidden group">
+          <div id="udeii-new" className="card-sase p-8 border-sase-info/20 bg-sase-info/[0.02] relative overflow-hidden group">
             <h3 className="text-[10px] font-black text-sase-info uppercase tracking-[0.4em] mb-8 italic flex items-center gap-3">
               <span className="size-2 bg-sase-info rounded-full shadow-[0_0_8px_#6366f1]"></span>
               Herramientas UDEII
@@ -166,7 +166,7 @@ export const DashboardUDEII = () => {
             <div className="space-y-4">
               <button
                 onClick={() => toast("Abriendo Guia de Ajustes Razonables...")}
-                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
+                className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
               >
                 <span className="material-icons text-sase-info">
                   menu_book
@@ -177,7 +177,7 @@ export const DashboardUDEII = () => {
               </button>
               <button
                 onClick={() => toast("Enviando comunicación a padres...")}
-                className="w-full p-5 bg-slate-100 border border-slate-200 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
+                className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
               >
                 <span className="material-icons text-sase-clinical">
                   mark_as_unread
@@ -198,7 +198,7 @@ export const DashboardUDEII = () => {
             <h4 className="text-[11px] font-black text-white uppercase tracking-[0.2em] mb-2">
               Asesor de inclusion IA
             </h4>
-            <p className="text-[10px] font-medium text-slate-700 uppercase italic">
+            <p className="text-[10px] font-medium text-slate-300 uppercase italic">
               SE DETECTA NECESIDAD DE REFUERZO EN LECTOESCRITURA PARA EL 25% DE
               LOS CASOS BAP EN 1ER GRADO.
             </p>

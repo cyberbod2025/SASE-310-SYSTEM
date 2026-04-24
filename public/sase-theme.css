@@ -1,14 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700;800&display=swap');
 
 :root {
-  /* LUMINOUS REFRACTION — SASE Abril 2026 */
   --sase-primary: #816ab8;
   --sase-primary-rgb: 129, 106, 184;
   --sase-secondary: #3b82f6;
   --sase-secondary-rgb: 59, 130, 246;
   --sase-tertiary: #afa63c;
   --sase-tertiary-rgb: 175, 166, 60;
-
   --sase-bg: #0b0a0e;
   --sase-bg-alt: #121018;
   --sase-surface-low: rgba(255, 255, 255, 0.03);
@@ -17,23 +15,16 @@
   --sase-surface-max: rgba(255, 255, 255, 0.16);
   --sase-border: rgba(255, 255, 255, 0.08);
   --sase-border-ghost: rgba(227, 221, 236, 0.06);
-
   --sase-text-head: #ffffff;
   --sase-text-main: #e2e8f0;
   --sase-text-muted: #94a3b8;
-
   --sase-danger: #ef4444;
   --sase-warning: #f59e0b;
-
   --sase-glass-bg: rgba(17, 24, 39, 0.72);
   --sase-glass-border: 1px solid rgba(255, 255, 255, 0.10);
   --sase-glass-blur: blur(34px) saturate(145%);
-  
-  /* Shadows: 40-60px blur, 4-8% opacity, tinted with primary */
-  --sase-shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --sase-shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255,255,255,0.10);
   --sase-shadow-strong: 0 36px 90px rgba(0, 0, 0, 0.50), 0 0 34px rgba(129, 106, 184, 0.18);
-
-  /* Bright mesh gradients (secondary + tertiary orbs) */
   --sase-mesh:
     radial-gradient(at 0% 0%, rgba(129, 106, 184, 0.15) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
@@ -42,9 +33,9 @@
   --background: var(--sase-bg);
   --surface: var(--sase-surface);
   --surface-container-low: var(--sase-surface-low);
-  --surface-container: rgba(255, 255, 255, 0.05);
-  --surface-container-high: rgba(255, 255, 255, 0.12);
-  --surface-container-highest: rgba(255, 255, 255, 0.16);
+  --surface-container: rgba(227, 221, 236, 0.12);
+  --surface-container-high: rgba(227, 221, 236, 0.16);
+  --surface-container-highest: rgba(227, 221, 236, 0.22);
   --on-surface: var(--sase-text-head);
   --on-surface-variant: var(--sase-text-muted);
   --primary: var(--sase-primary);
@@ -54,8 +45,8 @@
   --tertiary: var(--sase-tertiary);
   --tertiary-container: rgba(175, 166, 60, 0.16);
   --on-primary: #ffffff;
-  --on-secondary: #ffffff;
-  --on-tertiary: #ffffff;
+  --on-secondary: #f6f2fb;
+  --on-tertiary: #16141b;
   --error: var(--sase-danger);
   --error-container: rgba(239, 68, 68, 0.12);
 }
@@ -90,7 +81,6 @@ h3,
 [class*='title-'] {
   font-family: 'Space Grotesk', 'Inter', sans-serif !important;
   letter-spacing: -0.03em;
-  color: var(--sase-text-head);
 }
 
 select {
@@ -103,29 +93,23 @@ select optgroup {
   color: #f8fafc !important;
 }
 
-/* Inputs: Semi-transparent, 20px blur, secondary glow on focus */
 input,
 select,
 textarea {
-  background: rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
   color: var(--sase-text-head) !important;
-  border: var(--sase-glass-border) !important;
+  border: 1px solid rgba(227, 221, 236, 0.12) !important;
   box-shadow: none;
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   outline: none !important;
-  /* Secondary glow on focus */
-  box-shadow: 0 0 15px rgba(129, 106, 184, 0.3), inset 0 0 0 2px var(--sase-primary) !important;
+  border-color: rgba(129, 106, 184, 0.48) !important;
+  box-shadow: 0 0 0 4px rgba(129, 106, 184, 0.14) !important;
 }
 
-/* Cards: No dividers, frosted edges, light-catching refraction */
 .glass-card,
 .glass-panel,
 .premium-card,
@@ -136,10 +120,8 @@ textarea:focus {
   backdrop-filter: var(--sase-glass-blur) !important;
   -webkit-backdrop-filter: var(--sase-glass-blur) !important;
   border: var(--sase-glass-border) !important;
-  /* Light-catching refraction instead of solid borders */
   box-shadow: var(--sase-shadow-soft) !important;
   color: var(--sase-text-head) !important;
-  border-radius: 24px !important;
 }
 
 .glass-card:hover,
@@ -149,16 +131,12 @@ textarea:focus {
   box-shadow: var(--sase-shadow-strong) !important;
 }
 
-/* Buttons: 3D glass bead, pill shape, internal glow */
 button,
 .liquid-button,
 .btn-primary,
 .btn-glow,
 .action-glow {
-  border-radius: 9999px !important; /* Pill shape */
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  border-radius: 1rem !important;
 }
 
 button:not(.btn-link):not(.btn-outline):not(.ghost),
@@ -166,31 +144,18 @@ button:not(.btn-link):not(.btn-outline):not(.ghost),
 .btn-primary,
 .btn-glow,
 .action-glow {
-  /* Signature gradient: primary -> secondary at 45 deg */
-  background: linear-gradient(45deg, var(--sase-primary), var(--sase-secondary)) !important;
+  background: linear-gradient(135deg, var(--sase-primary), var(--sase-secondary)) !important;
   color: #ffffff !important;
-  border: var(--sase-glass-border) !important;
-  /* Internal glow + shadow */
-  box-shadow: 0 12px 28px rgba(129, 106, 184, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.18) !important;
-}
-
-button:not(.btn-link):not(.btn-outline):not(.ghost):hover,
-.liquid-button:hover,
-.btn-primary:hover,
-.btn-glow:hover,
-.action-glow:hover {
-  box-shadow: 0 16px 32px rgba(129, 106, 184, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.24) !important;
-  transform: translateY(-2px);
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 12px 28px rgba(129, 106, 184, 0.24) !important;
 }
 
 .btn-link,
 .btn-outline {
   background: transparent !important;
   box-shadow: none !important;
-  color: var(--sase-text-head) !important;
 }
 
-/* Utility classes for text colors */
 .text-slate-900,
 .text-slate-800,
 .text-slate-700,
@@ -216,11 +181,10 @@ button:not(.btn-link):not(.btn-outline):not(.ghost):hover,
   color: var(--sase-primary) !important;
 }
 
-/* Utility classes for backgrounds */
 .bg-white,
 .bg-white\/80,
 .bg-white\/50,
 .bg-white\/10,
 .bg-white\/5 {
-  background-color: var(--sase-surface) !important;
+  background-color: rgba(255,255,255,0.04) !important;
 }

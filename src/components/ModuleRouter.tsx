@@ -20,6 +20,7 @@ const DashboardHoy = React.lazy(() => import("./DashboardHoy").then(m => ({ defa
 const DashboardDocente = React.lazy(() => import("./dashboards/DashboardDocente").then(m => ({ default: m.DashboardDocente })));
 const DashboardPrefectura = React.lazy(() => import("./dashboards/DashboardPrefectura").then((m) => ({ default: m.DashboardPrefectura })));
 const DashboardSalud = React.lazy(() => import("./dashboards/DashboardSalud").then((m) => ({ default: m.DashboardSalud })));
+const DashboardUDEII = React.lazy(() => import("./dashboards/DashboardUDEII").then((m) => ({ default: m.DashboardUDEII })));
 const DashboardOrientacion = React.lazy(() => import("./dashboards/DashboardOrientacion").then((m) => ({ default: m.DashboardOrientacion })));
 const DashboardTrabajoSocial = React.lazy(() => import("./dashboards/DashboardTrabajoSocial").then((m) => ({ default: m.DashboardTrabajoSocial })));
 const DashboardSecretaria = React.lazy(() => import("./dashboards/DashboardSecretaria").then((m) => ({ default: m.DashboardSecretaria })));
@@ -44,6 +45,10 @@ const OrbNavigation = React.lazy(() => import("./OrbNavigation").then((m) => ({ 
 const RegistroPersonal = React.lazy(() => import("./RegistroPersonal").then((m) => ({ default: m.RegistroPersonal })));
 const AprobacionesPersonal = React.lazy(() => import("./AprobacionesPersonal").then((m) => ({ default: m.AprobacionesPersonal })));
 const MisGrupos = React.lazy(() => import("./MisGrupos").then((m) => ({ default: m.MisGrupos })));
+const ManualUsuario = React.lazy(() => import("./ManualUsuario").then((m) => ({ default: m.ManualUsuario })));
+const PerfilUsuario = React.lazy(() => import("./PerfilUsuario").then((m) => ({ default: m.PerfilUsuario })));
+const Notificaciones = React.lazy(() => import("./Notificaciones").then((m) => ({ default: m.Notificaciones })));
+const DocumentacionInstitucional = React.lazy(() => import("./DocumentacionInstitucional").then((m) => ({ default: m.DocumentacionInstitucional })));
 
 const Asistencia = React.lazy(() => import("./Asistencia").then((m) => ({ default: m.Asistencia })));
 const ObjetosRetenidos = React.lazy(() => import("./ObjetosRetenidos").then((m) => ({ default: m.ObjetosRetenidos })));
@@ -105,7 +110,18 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
             if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;
             if (currentModule === AppModule.ASISTENCIA) return <Asistencia />;
+            if (currentModule === AppModule.NOTIFICATIONS) return <Notificaciones />;
             if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
+            if (currentModule === AppModule.DOCUMENTACION) return <DocumentacionInstitucional />;
+            if (currentModule === AppModule.MANUAL_USUARIO) return <ManualUsuario />;
+            if (currentModule === AppModule.PERFIL) return <PerfilUsuario />;
+            if (currentModule === AppModule.SALUD) return <DashboardSalud />;
+            if (currentModule === AppModule.CALIFICACIONES) return <DashboardDocente />;
+            if (currentModule === AppModule.SUBDIRECCION) return <DashboardSubdireccion />;
+            if (currentModule === AppModule.IA_SASE) return <ManualUsuario />;
+            if (currentModule === AppModule.TRABAJO_SOCIAL_TRACKER) return <DashboardTrabajoSocial />;
+            if (currentModule === AppModule.UDEII_TRACKER) return <DashboardUDEII />;
+            if (currentModule === AppModule.LECTURA_TRACKER) return <DashboardLectura />;
             if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 
             if (currentModule === AppModule.HOME) {
@@ -133,7 +149,7 @@ export const ModuleRouter: React.FC = () => {
               case UserRole.MEDICO_ESCOLAR:
                 return <DashboardSalud />;
               case UserRole.UDEII:
-                return <DashboardSalud />;
+                return <DashboardUDEII />;
               case UserRole.PROMOTORA_LECTURA:
                 return <DashboardLectura />;
               case UserRole.SECRETARIA:

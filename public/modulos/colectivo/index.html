@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema Interno de Respaldo Docente Escolar (SIRDE-310) - Herramienta tecnológica para el análisis colectivo y seguimiento de condiciones grupales.">
+    <title>SIRDE-310 | Respaldo Docente Institucional</title>
+    <link rel="icon" type="image/svg+xml" href="logo_secundaria_310.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=2026.2">
+    <link rel="stylesheet" href="../sase-theme.css?v=2026.4">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        window.tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        colors: {
+                            'primary-green': '#0ea5e9',
+                            'secondary-orange': '#10b981',
+                            'tertiary-green': '#f59e0b',
+                            'primary-glow': 'rgba(14, 165, 233, 0.6)'
+                        },
+                        fontFamily: {
+                            'inter': ['Inter', 'sans-serif'],
+                            'space-grotesk': ['Space Grotesk', 'sans-serif']
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="px-3 py-3 sm:px-4 sm:py-4 md:p-8 relative">
+    <!-- Animated Blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    
+    <div id="auth-wall" class="fixed inset-0 z-[100] bg-background flex items-center justify-center p-4">
+        <div class="card premium-glass w-full max-w-sm text-center space-y-8 animate-fade-up">
+            <div class="flex flex-col items-center gap-4">
+                <img src="logo_secundaria_310.svg" alt="Logo" class="h-20 w-auto opacity-90" style="filter: drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.3));">
+                <h1 class="text-xl font-black italic text-primary-green">CONTROL INSTITUCIONAL</h1>
+            </div>
+            <label for="entry-pin" class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest">Validación de Credenciales SIRDE</label>
+            <div class="space-y-6">
+                <div class="pin-container">
+                    <input type="password" id="entry-pin" placeholder="Ingresa tu clave de acceso" class="w-full pr-12">
+                    <button onclick="togglePinVisibility('entry-pin')" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+                <button onclick="checkAccess(document.getElementById('entry-pin').value)" class="btn-primary w-full py-4 rounded-2xl shadow-lg shadow-primary-green/20">ACCEDER AL SISTEMA</button>
+                <div class="pt-4 border-t border-white/5 space-y-2">
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">¿Aún no tienes tu PIN? Solicítalo a Dirección.</p>
+                    <a href="invitacion.html" class="text-[9px] font-bold text-primary-green hover:underline uppercase tracking-widest">Acceso exclusivo de Dirección para gestionar PIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container max-w-4xl mx-auto">
+        <header class="flex flex-col md:flex-row items-start sm:items-center justify-between border-b border-white/10 pb-6 mb-8 gap-6">
+            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full md:w-auto text-center sm:text-left">
+                <img src="logo_secundaria_310.svg" alt="Logo" class="h-16 w-auto opacity-90" style="filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.2));">
+                <div class="space-y-1">
+                    <h1 class="text-2xl font-black text-gradient-animate tracking-tighter m-0 title-font">SIRDE-310</h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Respaldo Docente Institucional</p>
+                </div>
+            </div>
+            <div class="flex flex-col items-start sm:items-center md:items-end gap-2 text-left sm:text-center md:text-right no-print w-full md:w-auto">
+                <span class="text-[10px] font-black bg-primary-green px-4 py-1.5 rounded-full uppercase italic">Trimestre 2 (2026)</span>
+                <input type="hidden" id="current-periodo" value="T2-2026">
+                <a href="dashboard.html" class="text-[10px] font-bold text-primary-green underline uppercase hover:opacity-80 transition-opacity">Ver Análisis del Grupo</a>
+            </div>
+        </header>
+
+        <div class="max-w-xl mx-auto mb-10 no-print">
+            <div class="stepper-shell">
+                <div class="stepper-track">
+                    <div class="absolute h-0.5 bg-white/5 w-full left-0 top-4 z-0"></div>
+                    <div id="prog-bar" class="absolute h-0.5 w-0 left-0 top-4 z-0 transition-all duration-500"></div>
+                
+                    <div class="stepper-node">
+                        <div id="step-dot-1" class="stepper-dot rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center text-[10px] font-black text-on-surface-variant transition-all">1</div>
+                        <span id="step-lbl-1" class="stepper-label font-bold text-slate-500 uppercase tracking-tighter">Paso 1</span>
+                    </div>
+                    <div class="stepper-node">
+                        <div id="step-dot-2" class="stepper-dot rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center text-[10px] font-black text-on-surface-variant transition-all">2</div>
+                        <span id="step-lbl-2" class="stepper-label font-bold text-slate-500 uppercase tracking-tighter">Paso 2</span>
+                    </div>
+                    <div class="stepper-node">
+                        <div id="step-dot-3" class="stepper-dot rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center text-[10px] font-black text-on-surface-variant transition-all">3</div>
+                        <span id="step-lbl-3" class="stepper-label font-bold text-slate-500 uppercase tracking-tighter">Paso 3</span>
+                    </div>
+                    <div class="stepper-node">
+                        <div id="step-dot-4" class="stepper-dot rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center text-[10px] font-black text-on-surface-variant transition-all">4</div>
+                        <span id="step-lbl-4" class="stepper-label font-bold text-slate-500 uppercase tracking-tighter">Paso 4</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="sirde-form" onsubmit="handleFormSubmit(event)" class="space-y-8">
+            
+            <!-- PASO 1: IDENTIFICACIÓN -->
+            <section id="step-1" class="card shadow-2xl border-white/5 animate-fade-in">
+                <h2 class="section-title">1. Identificación y Grupo</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="input-group">
+                        <label for="docente">Nombre del Docente</label>
+                        <select id="docente" name="docente" required onchange="onTeacherChange()" class="w-full"></select>
+                    </div>
+                    <div class="input-group">
+                        <label for="grupo">Grupo a Diagnosticar</label>
+                        <select id="grupo" name="grupo" required onchange="renderStudents()" class="w-full">
+                            <option value="">Seleccionar...</option>
+                            <optgroup label="1er Grado">
+                                <option value="1º A">1º A</option><option value="1º B">1º B</option><option value="1º C">1º C</option><option value="1º D">1º D</option>
+                            </optgroup>
+                            <optgroup label="2do Grado">
+                                <option value="2º A">2º A</option><option value="2º B">2º B</option><option value="2º C">2º C</option><option value="2º D">2º D</option>
+                            </optgroup>
+                            <optgroup label="3er Grado">
+                                <option value="3º A">3º A</option><option value="3º B">3º B</option><option value="3º C">3º C</option><option value="3º D">3º D</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="asignatura">Asignatura</label>
+                        <input type="text" id="asignatura" name="asignatura" required oninput="updateCampo()" placeholder="Ej. Matemáticas" class="w-full">
+                    </div>
+                    <div class="input-group">
+                        <label for="campo_formativo">Campo Formativo</label>
+                        <input type="text" id="campo_formativo" name="campo_formativo" readonly class="w-full opacity-60 bg-white/5 cursor-not-allowed">
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end">
+                    <button type="button" onclick="validateNext(1, 2)" class="w-full sm:w-auto px-10 py-4 btn-glow rounded-2xl text-xs uppercase tracking-widest shadow-lg">Continuar al Diagnóstico →</button>
+                </div>
+            </section>
+
+            <!-- PASO 2: ANÁLISIS COLECTIVO -->
+            <section id="step-2" class="card hidden border-white/5 animate-fade-in">
+                <h2 class="section-title">2. Diagnóstico Colectivo del Grupo</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-black uppercase text-slate-500">Factores de Impacto Curricular</p>
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                                <label for="impacto-concentracion" class="text-xs">Nivel de Concentración</label>
+                                <select id="impacto-concentracion" name="impacto-concentracion" class="impact-factor w-full sm:w-auto sm:min-w-[140px] text-xs bg-transparent border-none p-1" onchange="calculateImpact()"><option value="3">Óptimo</option><option value="2">Regular</option><option value="1">Deficiente</option></select>
+                            </div>
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                                <label for="impacto-tareas" class="text-xs">Cumplimiento de Tareas</label>
+                                <select id="impacto-tareas" name="impacto-tareas" class="impact-factor w-full sm:w-auto sm:min-w-[140px] text-xs bg-transparent border-none p-1" onchange="calculateImpact()"><option value="3">Alto</option><option value="2" selected>Medio</option><option value="1">Bajo</option></select>
+                            </div>
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                                <label for="impacto-convivencia" class="text-xs">Clima de Convivencia</label>
+                                <select id="impacto-convivencia" name="impacto-convivencia" class="impact-factor w-full sm:w-auto sm:min-w-[140px] text-xs bg-transparent border-none p-1" onchange="calculateImpact()"><option value="3">Sano</option><option value="2" selected>Tenso</option><option value="1">Hostil</option></select>
+                            </div>
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mt-2 p-3 bg-primary-green/5 rounded-xl border border-primary-green/10">
+                                <label for="impacto" class="text-[10px] font-black uppercase text-primary-green">Impacto Global Est.</label>
+                                <input type="text" id="impacto" name="impacto" readonly class="w-full sm:w-auto bg-transparent border-none text-left sm:text-right font-black text-primary-green pr-0" value="Medio">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-black uppercase text-slate-500">Variables de Gestión</p>
+                        <div class="input-group">
+                            <label for="tiempo_conducta" class="text-[11px] text-slate-400">Tiempo de Clase p/ Conducta:</label>
+                            <select id="tiempo_conducta" name="tiempo_conducta" class="w-full text-xs mt-1">
+                                <option value="<10%">&lt; 10%</option><option value="10-25%" selected>10% - 25%</option><option value="25-50%">25% - 50%</option><option value="+50%">&gt; 50%</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <p class="text-[11px] text-slate-400">Ambiente de Aula (Promedio):</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-1">
+                                <select id="amb-atencion" name="amb-atencion" aria-label="Nivel de Atención" class="text-[10px] p-2 bg-transparent"><option value="" disabled selected>Atención</option><option value="Alto">Alto</option><option value="Medio" selected>Medio</option><option value="Bajo">Bajo</option></select>
+                                <select id="amb-respeto" name="amb-respeto" aria-label="Nivel de Respeto" class="text-[10px] p-2 bg-transparent"><option value="" disabled selected>Respeto</option><option value="Alto">Alto</option><option value="Medio" selected>Medio</option><option value="Bajo">Bajo</option></select>
+                                <select id="amb-participacion" name="amb-participacion" aria-label="Nivel de Participación" class="text-[10px] p-2 bg-transparent"><option value="" disabled selected>Particip.</option><option value="Alto">Alto</option><option value="Medio" selected>Medio</option><option value="Bajo">Bajo</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-10 border-t border-white/5">
+                    <p class="text-[10px] font-black uppercase text-slate-500 mb-6 block">Factores Externos Detectados (Seleccione los necesarios)</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Disfunción Familiar">
+                            <span>Disfunción Familiar</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Nivel Económico">
+                            <span>Nivel Económico</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Violencia Entorno">
+                            <span>Violencia Entorno</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Adicciones">
+                            <span>Adicciones</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Salud Mental">
+                            <span>Salud Mental</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Inasistencias">
+                            <span>Inasistencias</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Duelo/Pérdida">
+                            <span>Duelo/Pérdida</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" name="fact-ext-chk" class="fact-ext-chk w-4 h-4 rounded-md accent-primary-green" value="Traslados largos">
+                            <span>Traslados largos</span>
+                        </label>
+                        <label for="fact-ext-otro-chk" class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-primary-green/5 hover:border-primary-green/30 transition-all text-[11px]">
+                            <input type="checkbox" id="fact-ext-otro-chk" name="fact-ext-chk-otro" class="w-4 h-4 rounded-md accent-primary-green" onchange="toggleOtroFactor(this.checked)">
+                            <span class="font-bold">Otro...</span>
+                        </label>
+                    </div>
+                    <div id="otro-factor-container" class="mt-4 hidden animate-fade-in">
+                        <label for="fact-ext-text" class="sr-only">Especifique el factor externo</label>
+                        <input type="text" id="fact-ext-text" name="fact-ext-text" placeholder="Especifique el factor externo..." class="w-full text-xs p-4 rounded-2xl bg-white/5 border-dashed border-primary-green/30 text-primary-green">
+                    </div>
+                </div>
+
+                <div class="mt-12 flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                    <button type="button" onclick="prevSection(1)" class="btn-link w-full sm:w-auto text-[10px] font-bold text-slate-500 uppercase hover:text-primary-green transition-colors">← Volver al Paso 1</button>
+                    <button type="button" onclick="validateNext(2, 3)" class="w-full sm:w-auto px-10 py-4 bg-primary-green font-black rounded-2xl text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary-green/20">Seguimiento Individual →</button>
+                </div>
+            </section>
+
+            <!-- PASO 3: SEGUIMIENTO INDIVIDUAL -->
+            <section id="step-3" class="card hidden border-white/5 animate-fade-in">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                    <h2 class="section-title">3. Seguimiento de Alumnos Focalizados</h2>
+                    <span id="group-name-badge" class="text-[10px] font-black py-1 px-3 bg-white/10 rounded-full text-slate-400">GRUPO: ---</span>
+                </div>
+                
+                <div id="student-list-instruction" class="hidden animate-fade-in mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex flex-col sm:flex-row items-start gap-4">
+                    <div class="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-black text-blue-400 uppercase tracking-tighter mb-1">Indicación para Docentes:</p>
+                        <p class="text-[10px] text-slate-300 font-medium leading-relaxed">Favor de seleccionar y llenar el seguimiento <span class="text-blue-400 font-bold">ÚNICAMENTE para aquellos casos especiales</span> que presentan conductas disruptivas o requieren atención focalizada. Si el alumno no presenta incidencias, deje su casilla vacía.</p>
+                    </div>
+                </div>
+
+                <div id="student-list" class="space-y-4 min-h-[100px] border-2 border-dashed border-white/5 rounded-2xl p-4">
+                    <p class="text-center text-slate-500 text-[10px] uppercase font-black py-10">Seleccione un grupo en el Paso 1 para ver el listado</p>
+                </div>
+                <div class="mt-4 flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3 sm:gap-4">
+                    <button type="button" onclick="renderStudents()" class="btn-link w-full sm:w-auto text-[9px] font-black text-primary-green/70 hover:text-primary-green transition-all uppercase tracking-widest">Recargar alumnos</button>
+                    <span class="hidden md:inline text-slate-700">|</span>
+                    <button type="button" onclick="addManualStudent()" class="btn-outline w-full sm:w-auto text-[9px] font-black text-blue-400 hover:text-primary-green transition-all uppercase tracking-widest border border-blue-400/20 px-4 py-2 rounded-xl">Registrar alumno no listado</button>
+                </div>
+
+                <div class="mt-12 flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-4">
+                    <button type="button" onclick="prevSection(2)" class="btn-link w-full sm:w-auto text-[10px] font-bold text-slate-500 uppercase hover:text-primary-green transition-colors">← Volver al Paso 2</button>
+                    <button type="button" onclick="validateNext(3, 4)" class="w-full sm:w-auto px-10 py-4 bg-primary-green font-black rounded-2xl text-xs uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary-green/20">Acciones y Estrategias →</button>
+                </div>
+            </section>
+
+            <!-- PASO 4: ESTRATEGIAS Y FINALIZAR -->
+            <section id="step-4" class="card hidden border-primary-green/20 animate-fade-in bg-primary-green/5">
+                <h2 class="section-title text-primary-green">4. Estrategias y Cierre del Reporte</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <p class="text-[10px] font-black uppercase text-slate-500">Acciones Institucionales Aplicadas</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 text-xs">
+                                <input type="checkbox" name="estrategia-chk" class="estrategia-chk w-4 h-4 rounded accent-primary-green" value="Entrevista Inicial">
+                                <span>Entrevista Inicial</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 text-xs">
+                                <input type="checkbox" name="estrategia-chk" class="estrategia-chk w-4 h-4 rounded accent-primary-green" value="Citatorio a Padres">
+                                <span>Citatorio a Padres</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 text-xs">
+                                <input type="checkbox" name="estrategia-chk" class="estrategia-chk w-4 h-4 rounded accent-primary-green" value="Reporte Escrito">
+                                <span>Reporte Escrito</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 text-xs">
+                                <input type="checkbox" name="estrategia-chk" class="estrategia-chk w-4 h-4 rounded accent-primary-green" value="Firma de Compromiso">
+                                <span>Firma de Compromiso</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 text-xs">
+                                <input type="checkbox" name="estrategia-chk" class="estrategia-chk w-4 h-4 rounded accent-primary-green" value="Canalización USAER/Orientación">
+                                <span>Canalización USAER/Orientación</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 text-xs">
+                                <input type="checkbox" name="estrategia-chk" class="estrategia-chk w-4 h-4 rounded accent-primary-green" value="Trabajo Especial">
+                                <span>Trabajo Especial</span>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 text-xs">
+                                <input type="checkbox" name="estrategia-chk" class="estrategia-chk w-4 h-4 rounded accent-primary-green" value="Suspensión">
+                                <span>Suspensión</span>
+                            </label>
+                            <div class="flex flex-col gap-2 p-3 bg-white/5 border border-white/10 rounded-xl">
+                                <span class="flex items-center gap-3 text-xs">
+                                    <input type="checkbox" id="chk-otra-est" class="w-4 h-4 rounded accent-primary-green" onchange="toggleOtraEstrategia(this.checked)">
+                                    <label for="chk-otra-est">Otra estrategia específica:</label>
+                                </span>
+                                <div id="otra-est-container" class="hidden animate-fade-in mt-1">
+                                    <input type="text" id="otra-est-text" name="otra-est-text" aria-label="Detalle de la otra estrategia" placeholder="Describa brevemente..." class="w-full text-[10px] p-4 bg-surface-container-high border border-white/10 rounded-xl text-on-surface">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="input-group">
+                            <label for="est-eficacia">Impacto de las Estrategias</label>
+                            <select id="est-eficacia" name="est-eficacia" class="w-full text-xs">
+                                <option value="Alto">Alto Impacto (Mejoró conducta)</option>
+                                <option value="Medio" selected>Medio Impacto (Sigue igual)</option>
+                                <option value="Bajo">Bajo Impacto (Empeoró)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="comentarios">Comentarios / Acuerdos del CTE</label>
+                            <textarea id="comentarios" name="comentarios" rows="5" placeholder="Escriba compromisos o acuerdos institucionales para este grupo..." class="w-full text-xs p-4 rounded-2xl bg-surface-container-low border-white/10"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-6">
+                    <button type="button" onclick="prevSection(3)" class="btn-link text-[10px] font-bold text-slate-500 uppercase hover:text-primary-green transition-colors">← Revisar Alumnos</button>
+                    <button type="submit" id="btn-submit" class="w-full md:w-auto px-10 md:px-16 py-5 bg-primary-green font-black rounded-2xl text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-primary-green/40">
+                        REGISTRAR DIAGNÓSTICO FINAL
+                    </button>
+                </div>
+            </section>
+
+        </form>
+    </main>
+
+    <footer class="container mt-12 mb-8 text-center no-print border-t border-white/5 pt-8">
+        <button onclick="logoutSIRDE()" class="btn-outline mb-4 text-[10px] font-bold text-red-500 hover:text-red-400 uppercase tracking-widest border border-red-500/20 px-6 py-2 rounded-xl transition-all">Cerrar Sesión Institucional</button>
+        <p class="text-[9px] font-bold text-slate-600 uppercase tracking-widest">© 2026 Respaldo Institucional SIRDE-310 • v1.0.1</p>
+    </footer>
+
+    <script src="app.js?v=2026.2"></script>
+</body>
+</html>

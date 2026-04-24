@@ -12,7 +12,6 @@ import { useAuth } from "./AuthProvider";
 import { SaseSplineOrb } from "./SaseSplineOrb";
 import { SasitoAssistant } from "./ai/SasitoAssistant";
 import { LiquidGlassFilters } from "./ui/LiquidGlassFilters";
-import { QuickRegister } from "./ui/QuickRegister";
 import { motion, AnimatePresence } from "framer-motion";
 import { EncuestaPulso } from "./onboarding/EncuestaPulso";
 import {
@@ -96,6 +95,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     setCurrentModule,
     notifications,
     markNotificationRead,
+    setAssistantSuggestion,
   } = useApp();
   const { user, profile } = useAuth();
   const { ecosystemModules } = useEcosystemModules();
@@ -118,6 +118,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProtocolDismissed, setIsProtocolDismissed] = useState(false);
+  const previousUnreadRef = useRef(0);
+  const unreadWatcherReadyRef = useRef(false);
   // Roles con acceso global a todas las notificaciones institucionales
   const ROLES_ACCESO_TOTAL = [UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
   const visibleNotifications = notifications.filter((n) => {
@@ -126,6 +128,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     return n.targetRole === currentUserRole;
   });
   const unreadCount = visibleNotifications.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    if (unreadWatcherReadyRef.current && unreadCount > previousUnreadRef.current) {
+      import("../utils/sound").then((sound) => sound.playNotificationSound()).catch(() => undefined);
+      setAssistantSuggestion({
+        text: `Entraron nuevas notificaciones institucionales. Revisa la campana para atenderlas sin perder contexto.`,
+        state: "attention",
+        actionLabel: "Ver avisos",
+        actionType: "module-notifications",
+      });
+    }
+    unreadWatcherReadyRef.current = true;
+    previousUnreadRef.current = unreadCount;
+  }, [setAssistantSuggestion, unreadCount]);
 
   const sidebarWidth = isSidebarCollapsed ? "w-20" : "w-72";
 
@@ -160,8 +176,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     return () => clearInterval(interval);
   }, [setIsTourActive]);
 
+  const profileAvatar = profile?.preferencias_dashboard?.avatar_url || null;
   const displayUserName =
-    profile?.nombre || user?.user_metadata?.full_name || "Usuario SASE";
+    profile?.nombre_completo || profile?.full_name || user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuario SASE";
   const displayUserRole =
     profile?.cargo_institucional || profile?.rol || currentUserRole;
   const neuralCoreState = aiSystemState;
@@ -219,12 +236,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <div className="flex items-center gap-4">
               <div className="relative group">
                 <div className="absolute -inset-1.5 bg-blue-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <img
-                  src={roleImages[currentUserRole]}
-                  alt={`Perfil de ${currentUserRole}`}
-                  title={`Usuario: ${displayUserName}`}
-                  className={`rounded-2xl border border-white shadow-lg relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
-                />
+                {profileAvatar ? (
+                  <img
+                    src={profileAvatar}
+                    alt={`Perfil de ${currentUserRole}`}
+                    title={`Usuario: ${displayUserName}`}
+                    className={`rounded-2xl border border-white shadow-lg relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
+                  />
+                ) : (
+                  <img
+                    src={roleImages[currentUserRole]}
+                    alt={`Perfil de ${currentUserRole}`}
+                    title={`Usuario: ${displayUserName}`}
+                    className={`rounded-2xl border border-white shadow-lg relative z-10 object-cover transition-all ${isSidebarCollapsed ? "w-10 h-10" : "w-12 h-12"}`}
+                  />
+                )}
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex-1 min-w-0 animate-fade-in text-[var(--sase-text-head)]">
@@ -240,6 +266,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                     </div>
                   </div>
                 </div>
+              )}
+              {!isSidebarCollapsed && (
+                <button
+                  onClick={() => {
+                    setCurrentModule(AppModule.PERFIL);
+                    setIsSidebarOpen(false);
+                  }}
+                  className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-[0.22em] text-slate-300 hover:bg-white/10 transition-all"
+                >
+                  Mi perfil
+                </button>
               )}
             </div>
           </div>
@@ -413,7 +450,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             )}
 
             {ecosystemModules.length > 0 && !isSidebarCollapsed && (
-              <span className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] block mt-6 mb-4">
+              <span id="sidebar-ecosistema" className="px-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] block mt-6 mb-4">
                 Ecosistema
               </span>
             )}
@@ -465,9 +502,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             <NavItem
               icon="menu_book"
               label="Manual de Uso"
-              active={false}
+              active={currentModule === AppModule.MANUAL_USUARIO}
               onClick={() => {
-                window.open("/docs/SASE_Manual_Integral.html", "_blank");
+                setCurrentModule(AppModule.MANUAL_USUARIO);
                 setIsSidebarOpen(false);
               }}
               color={currentUserRole}
@@ -522,7 +559,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Header */}
-        <header className="h-20 bg-white/40 backdrop-blur-[40px] border-b border-white/60 flex items-center justify-between px-6 shrink-0 z-40">
+        <header className="h-20 bg-[rgba(17,24,39,0.72)] backdrop-blur-[44px] border-b border-[rgba(255,255,255,0.14)] flex items-center justify-between px-6 shrink-0 z-40 shadow-[0_14px_40px_rgba(2,6,23,0.25)]">
           <div className="flex items-center gap-6">
             <button
               className="md:hidden size-10 flex items-center justify-center bg-white/60 border border-white/60 rounded-xl text-slate-600"
@@ -531,12 +568,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <span className="material-icons">menu</span>
             </button>
 
-            <div className="flex flex-col">
-              <h2 className="text-[11px] font-black text-slate-800 uppercase tracking-[0.4em]">
-                SASE <span className="text-blue-500/20 mx-1">/</span>{" "}
-                <span className="text-blue-600 uppercase">GESTIÓN_INSTITUCIONAL</span>
-              </h2>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-[rgba(121,118,124,0.14)] border border-[rgba(255,255,255,0.14)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_8px_24px_rgba(2,6,23,0.18)]">
+                    <img src="/assets/branding/favicon.png" alt="SASE Logo" className="w-6 h-6 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.22)]" />
+                  </div>
+                  <h2 className="text-lg font-black text-white uppercase tracking-[0.2em] flex items-center">
+                    SASE <span className="text-blue-400/50 mx-2 text-sm">/</span>{" "}
+                    <span className="text-blue-300 text-xs tracking-[0.3em] uppercase">GESTIÓN INSTITUCIONAL</span>
+                  </h2>
+                </div>
+              <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-1 ml-10">
                 Estatus: Operativo • v{VERSION.numero}
               </p>
             </div>
@@ -554,17 +596,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             <div className="relative" ref={notificationRef}>
               <button
+                id="notification-bell"
                 onClick={() => setShowNotifications(!showNotifications)}
-                className={`size-10 flex items-center justify-center rounded-xl border transition-all ${
+                aria-label={`Notificaciones${unreadCount > 0 ? `, ${unreadCount} sin leer` : ""}`}
+                className={`relative size-12 flex items-center justify-center rounded-2xl border transition-all ${
                   unreadCount > 0
-                    ? "bg-[rgba(175,166,60,0.12)] border-[rgba(175,166,60,0.2)] text-[var(--sase-tertiary)] animate-pulse-soft"
+                    ? "sase-notification-bell-active text-white"
                     : "bg-[rgba(121,118,124,0.12)] border-[rgba(227,221,236,0.14)] text-[var(--sase-text-muted)] hover:bg-[rgba(121,118,124,0.18)]"
                 }`}
               >
                 <div className="relative">
-                  <span className="material-icons">notifications</span>
+                  <span className={`material-icons ${unreadCount > 0 ? "text-3xl" : "text-2xl"}`}>notifications</span>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 size-2 bg-red-500 rounded-full border-2 border-white"></span>
+                    <span className="absolute -top-2 -right-3 min-w-5 h-5 px-1 bg-red-600 text-white rounded-full border-2 border-white text-[10px] font-black leading-4 text-center shadow-lg shadow-red-500/40">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
                   )}
                 </div>
               </button>
@@ -639,7 +685,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         <EncuestaPulso />
       </div>
 
-      <QuickRegister />
       <FeedbackWidget />
       <QuickRegisterModal />
     </div>
@@ -684,7 +729,7 @@ const NavItem: React.FC<{
       className={`w-full flex items-center gap-3 px-3 py-2.5 min-h-[48px] rounded-xl transition-all group my-1 border ${
         active
                   ? `bg-[rgba(129,106,184,0.14)] backdrop-blur-md text-[#e4daf4] shadow-[0_24px_40px_rgba(18,16,23,0.28)] font-semibold border-[rgba(227,221,236,0.14)] scale-[1.02]`
-                  : "text-[var(--sase-text-muted)] hover:bg-[rgba(121,118,124,0.08)] hover:text-white font-semibold border-transparent"
+                  : "text-[var(--sase-text-muted)] hover:bg-[rgba(121,118,124,0.08)] hover:text-white font-semibold border-[rgba(227,221,236,0.08)]"
       } ${highlighted ? "shadow-[0_0_25px_rgba(129,106,184,0.12)] border-[rgba(129,106,184,0.18)] bg-[rgba(129,106,184,0.08)] animate-pulse-soft" : ""} ${collapsed ? "justify-center px-0" : ""}`}
     >
       <span

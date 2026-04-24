@@ -3,34 +3,31 @@ import { motion } from "framer-motion";
 import { useApp } from "../../store";
 import { IncidentType } from "../../types";
 import { GlassCard } from "../ui/GlassCard";
-import { GenericActionModal } from "../GenericActionModal";
 import toast from "react-hot-toast";
 import { NeoButton } from "../ui/NeoButton";
 
 export const DashboardSalud = () => {
-  const { students, addIncident, updateBapInfo, printDocument } = useApp();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const { students, addIncident } = useApp();
   const [notifying, setNotifying] = useState(false);
 
-  const studentsWithBAP = useMemo(
-    () => students.filter((s) => s.bapInfo?.hasBAP),
+  const healthIncidents = useMemo(
+    () =>
+      students
+        .flatMap((s) =>
+          s.incidents.map((i) => ({
+            ...i,
+            studentId: s.id,
+            studentName: s.name,
+            group: s.group,
+          })),
+        )
+        .filter((i) => i.type === IncidentType.SALUD),
     [students],
   );
 
-  const healthIncidents = students
-    .flatMap((s) =>
-      s.incidents.map((i) => ({
-        ...i,
-        studentId: s.id,
-        studentName: s.name,
-        group: s.group,
-      })),
-    )
-    .filter((i) => i.type === IncidentType.SALUD);
-
-  const activeAlerts = students.filter(
-    (s) => s.medicalAlerts && s.medicalAlerts.length > 0,
+  const activeAlerts = useMemo(
+    () => students.filter((s) => s.medicalAlerts && s.medicalAlerts.length > 0),
+    [students],
   );
 
   const handleNotifyTeachers = async () => {
@@ -59,16 +56,6 @@ export const DashboardSalud = () => {
     }
   };
 
-  const handleUpdateAdjustment = async (data: any) => {
-    if (!selectedStudent) return;
-    await updateBapInfo(selectedStudent.id, {
-      ...selectedStudent.bapInfo,
-      accommodations: [data.adjustment],
-    });
-    toast.success(`Ajuste razonable actualizado para ${selectedStudent.name}`);
-    setModalOpen(false);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -78,10 +65,10 @@ export const DashboardSalud = () => {
       <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
-            Salud e Inclusion Educativa (UDEII)
+            Salud Escolar
           </h1>
           <p className="text-slate-600 text-sm">
-            Monitoreo de bienestar y atencion a barreras para el aprendizaje (BAP).{" "}
+            Monitoreo de atenciones médicas, alertas de salud y comunicación preventiva. {" "}
             <strong className="text-sase-warning">Acceso confidencial.</strong>
           </p>
         </div>
@@ -96,7 +83,7 @@ export const DashboardSalud = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
-        <GlassCard icon="medical_services" title="Atencion primaria" className="lg:col-span-2 flex flex-col">
+        <GlassCard icon="medical_services" title="Atención primaria" className="lg:col-span-2 flex flex-col">
           <div className="mb-4 relative">
             <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-700">search</span>
             <input
@@ -109,7 +96,7 @@ export const DashboardSalud = () => {
           <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3">
             {healthIncidents.length === 0 ? (
               <div className="p-10 text-center text-slate-700">
-                No se registran atenciones medicas.
+                No se registran atenciones médicas.
               </div>
             ) : (
               healthIncidents.map((inc) => (
@@ -123,46 +110,23 @@ export const DashboardSalud = () => {
           </div>
         </GlassCard>
 
-        <GlassCard icon="diversity_3" title="Seguimiento de BAP" className="flex flex-col">
+        <GlassCard icon="health_and_safety" title="Alertas médicas activas" className="flex flex-col">
           <div className="flex-1 overflow-y-auto custom-scrollbar mt-4 space-y-4">
-            {studentsWithBAP.length === 0 ? (
+            {activeAlerts.length === 0 ? (
               <div className="p-6 text-center text-slate-700">
-                No se registran casos con BAP.
+                No hay alertas médicas activas.
               </div>
             ) : (
-              studentsWithBAP.map((s) => (
+              activeAlerts.map((s) => (
                 <div key={s.id} className="p-4 rounded-xl border border-slate-100 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
                   <p className="text-white text-sm font-medium">{s.name}</p>
                   <p className="text-slate-700 text-xs mt-1">{s.group}</p>
-                  <p className="text-slate-600 text-xs mt-2">
-                    {s.bapInfo?.diagnosisPrivate || "Inclusión generica"}
-                  </p>
-                  <div className="mt-4 flex gap-2">
-                    <NeoButton
-                      onClick={() => {
-                        setSelectedStudent(s);
-                        setModalOpen(true);
-                      }}
-                      className="px-3 py-2"
-                    >
-                      Ajustes razonables
-                    </NeoButton>
-                    <NeoButton
-                      onClick={() =>
-                        printDocument({
-                          type: "BITACORA",
-                          studentId: s.id,
-                          data: {
-                            ...s.bapInfo,
-                            accommodations: s.bapInfo.accommodations || [],
-                            details: "Estrategias de intervención para barreras identificadas.",
-                          },
-                        })
-                      }
-                      className="px-3 py-2"
-                    >
-                      Generar reporte
-                    </NeoButton>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {s.medicalAlerts?.map((alert) => (
+                      <span key={alert} className="px-2 py-1 rounded-lg bg-red-500/10 border border-red-400/20 text-[10px] font-black uppercase tracking-widest text-red-300">
+                        {alert}
+                      </span>
+                    ))}
                   </div>
                 </div>
               ))
@@ -171,21 +135,6 @@ export const DashboardSalud = () => {
         </GlassCard>
       </div>
 
-      <GenericActionModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title="Actualizar ajustes razonables"
-        description={`Sincronizacion de estrategias para ${selectedStudent?.name}`}
-        fields={[
-          {
-            name: "adjustment",
-            label: "Descripcion del ajuste",
-            type: "textarea",
-            required: true,
-          },
-        ]}
-        onSubmit={handleUpdateAdjustment}
-      />
     </motion.div>
   );
 };
