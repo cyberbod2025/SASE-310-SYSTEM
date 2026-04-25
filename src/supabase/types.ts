@@ -7,61 +7,33 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.1"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
-      activaciones_protocolo: {
-        Row: {
-          estado: string | null
-          fecha_fin: string | null
-          fecha_inicio: string | null
-          id: string
-          incidencia_id: string | null
-          notas: string | null
-          protocolo_id: string
-          usuario_id: string | null
-        }
-        Insert: {
-          estado?: string | null
-          fecha_fin?: string | null
-          fecha_inicio?: string | null
-          id?: string
-          incidencia_id?: string | null
-          notas?: string | null
-          protocolo_id: string
-          usuario_id?: string | null
-        }
-        Update: {
-          estado?: string | null
-          fecha_fin?: string | null
-          fecha_inicio?: string | null
-          id?: string
-          incidencia_id?: string | null
-          notas?: string | null
-          protocolo_id?: string
-          usuario_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "activaciones_protocolo_incidencia_id_fkey"
-            columns: ["incidencia_id"]
-            isOneToOne: false
-            referencedRelation: "incidencias"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "activaciones_protocolo_protocolo_id_fkey"
-            columns: ["protocolo_id"]
-            isOneToOne: false
-            referencedRelation: "protocolos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       activities_log: {
         Row: {
           created_at: string | null
@@ -95,118 +67,198 @@ export type Database = {
         }
         Relationships: []
       }
-      alertas_patron: {
+      alumno_ciclo: {
         Row: {
-          alumno_id: string | null
-          asignado_a_rol: string | null
-          created_at: string | null
-          estado: string | null
+          alumno_id: string
+          ciclo_id: string
+          created_at: string
+          estatus: string
+          fecha_asignacion: string
+          grado: number
+          grupo: string | null
+          grupo_id: string | null
+          grupo_sugerido: string | null
           id: string
-          tipo_patron: string | null
+          locked: boolean
         }
         Insert: {
-          alumno_id?: string | null
-          asignado_a_rol?: string | null
-          created_at?: string | null
-          estado?: string | null
+          alumno_id: string
+          ciclo_id: string
+          created_at?: string
+          estatus?: string
+          fecha_asignacion?: string
+          grado: number
+          grupo?: string | null
+          grupo_id?: string | null
+          grupo_sugerido?: string | null
           id?: string
-          tipo_patron?: string | null
+          locked?: boolean
         }
         Update: {
-          alumno_id?: string | null
-          asignado_a_rol?: string | null
-          created_at?: string | null
-          estado?: string | null
+          alumno_id?: string
+          ciclo_id?: string
+          created_at?: string
+          estatus?: string
+          fecha_asignacion?: string
+          grado?: number
+          grupo?: string | null
+          grupo_id?: string | null
+          grupo_sugerido?: string | null
           id?: string
-          tipo_patron?: string | null
+          locked?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "alumno_ciclo_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alumno_ciclo_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "alumno_ciclo_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "alumno_ciclo_ciclo_id_fkey"
+            columns: ["ciclo_id"]
+            isOneToOne: false
+            referencedRelation: "ciclos_escolares"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alumno_ciclo_grupo_id_fkey"
+            columns: ["grupo_id"]
+            isOneToOne: false
+            referencedRelation: "grupos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       alumnos: {
         Row: {
-          avatar_url: string | null
-          creado_en: string | null
+          created_at: string
           curp: string | null
           datos_bap: Json | null
           datos_tutor: Json | null
-          estado_caso: string | null
+          estado_caso: Database["public"]["Enums"]["estado_caso_alumno"]
           estado_semaforo: string | null
           fecha_calculo_riesgo: string | null
-          fecha_nacimiento: string | null
-          genero: string | null
-          grado: string | null
-          grupo: string | null
+          grado: number
+          grupo: string
           id: string
-          matricula: string | null
-          modificado_en: string | null
-          modificado_por: string | null
-          nombre_completo: string | null
-          promedio_anterior: number | null
+          is_distancia: boolean | null
+          matricula: string
+          nombre_completo: string
           puntaje_riesgo: number | null
           riesgo_academico: number | null
           riesgo_asistencia: number | null
           riesgo_disciplina: number | null
           riesgo_socioemocional: number | null
-          tutor_escolar_id: string | null
         }
         Insert: {
-          avatar_url?: string | null
-          creado_en?: string | null
+          created_at?: string
           curp?: string | null
           datos_bap?: Json | null
           datos_tutor?: Json | null
-          estado_caso?: string | null
+          estado_caso?: Database["public"]["Enums"]["estado_caso_alumno"]
           estado_semaforo?: string | null
           fecha_calculo_riesgo?: string | null
-          fecha_nacimiento?: string | null
-          genero?: string | null
-          grado?: string | null
-          grupo?: string | null
+          grado?: number
+          grupo?: string
           id?: string
-          matricula?: string | null
-          modificado_en?: string | null
-          modificado_por?: string | null
-          nombre_completo?: string | null
-          promedio_anterior?: number | null
+          is_distancia?: boolean | null
+          matricula: string
+          nombre_completo: string
           puntaje_riesgo?: number | null
           riesgo_academico?: number | null
           riesgo_asistencia?: number | null
           riesgo_disciplina?: number | null
           riesgo_socioemocional?: number | null
-          tutor_escolar_id?: string | null
         }
         Update: {
-          avatar_url?: string | null
-          creado_en?: string | null
+          created_at?: string
           curp?: string | null
           datos_bap?: Json | null
           datos_tutor?: Json | null
-          estado_caso?: string | null
+          estado_caso?: Database["public"]["Enums"]["estado_caso_alumno"]
           estado_semaforo?: string | null
           fecha_calculo_riesgo?: string | null
-          fecha_nacimiento?: string | null
-          genero?: string | null
-          grado?: string | null
-          grupo?: string | null
+          grado?: number
+          grupo?: string
           id?: string
-          matricula?: string | null
-          modificado_en?: string | null
-          modificado_por?: string | null
-          nombre_completo?: string | null
-          promedio_anterior?: number | null
+          is_distancia?: boolean | null
+          matricula?: string
+          nombre_completo?: string
           puntaje_riesgo?: number | null
           riesgo_academico?: number | null
           riesgo_asistencia?: number | null
           riesgo_disciplina?: number | null
           riesgo_socioemocional?: number | null
-          tutor_escolar_id?: string | null
+        }
+        Relationships: []
+      }
+      asignacion_alumno_grupo: {
+        Row: {
+          alumno_ciclo_id: string
+          asignado_por: string | null
+          created_at: string
+          grupo_anterior: string | null
+          grupo_id: string
+          grupo_nuevo: string
+          id: string
+          origen: string
+        }
+        Insert: {
+          alumno_ciclo_id: string
+          asignado_por?: string | null
+          created_at?: string
+          grupo_anterior?: string | null
+          grupo_id: string
+          grupo_nuevo: string
+          id?: string
+          origen?: string
+        }
+        Update: {
+          alumno_ciclo_id?: string
+          asignado_por?: string | null
+          created_at?: string
+          grupo_anterior?: string | null
+          grupo_id?: string
+          grupo_nuevo?: string
+          id?: string
+          origen?: string
         }
         Relationships: [
           {
-            foreignKeyName: "alumnos_tutor_escolar_id_fkey"
-            columns: ["tutor_escolar_id"]
+            foreignKeyName: "asignacion_alumno_grupo_alumno_ciclo_id_fkey"
+            columns: ["alumno_ciclo_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "alumno_ciclo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asignacion_alumno_grupo_asignado_por_fkey"
+            columns: ["asignado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asignacion_alumno_grupo_grupo_id_fkey"
+            columns: ["grupo_id"]
+            isOneToOne: false
+            referencedRelation: "grupos"
             referencedColumns: ["id"]
           },
         ]
@@ -242,34 +294,28 @@ export type Database = {
       }
       atenciones_medicas: {
         Row: {
-          alumno_id: string | null
+          alumno_id: string
           atendido_por: string
-          created_at: string | null
+          hora: string
           id: string
-          motivo: string | null
-          se_fue_a_casa: boolean | null
           sintomas: string
-          tratamiento: string | null
+          tratamiento: string
         }
         Insert: {
-          alumno_id?: string | null
+          alumno_id: string
           atendido_por: string
-          created_at?: string | null
+          hora?: string
           id?: string
-          motivo?: string | null
-          se_fue_a_casa?: boolean | null
           sintomas: string
-          tratamiento?: string | null
+          tratamiento: string
         }
         Update: {
-          alumno_id?: string | null
+          alumno_id?: string
           atendido_por?: string
-          created_at?: string | null
+          hora?: string
           id?: string
-          motivo?: string | null
-          se_fue_a_casa?: boolean | null
           sintomas?: string
-          tratamiento?: string | null
+          tratamiento?: string
         }
         Relationships: [
           {
@@ -285,13 +331,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "alumnos_en_riesgo"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "atenciones_medicas_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "atenciones_medicas_alumno_id_fkey"
@@ -356,13 +395,6 @@ export type Database = {
             foreignKeyName: "attendance_logs_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "attendance_logs_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
           },
@@ -370,7 +402,6 @@ export type Database = {
       }
       auditoria: {
         Row: {
-          creado_en: string | null
           descripcion_accion: string | null
           email_usuario: string | null
           fecha: string | null
@@ -378,18 +409,14 @@ export type Database = {
           id_registro_objetivo: string | null
           ip_address: string | null
           new_values: Json | null
-          nombre_alumno_objetivo: string | null
-          nuevos_valores: Json | null
           old_values: Json | null
           rol_usuario: string | null
           tabla_objetivo: string | null
           tipo_accion: string
           user_agent: string | null
           usuario_id: string | null
-          valores_anteriores: Json | null
         }
         Insert: {
-          creado_en?: string | null
           descripcion_accion?: string | null
           email_usuario?: string | null
           fecha?: string | null
@@ -397,18 +424,14 @@ export type Database = {
           id_registro_objetivo?: string | null
           ip_address?: string | null
           new_values?: Json | null
-          nombre_alumno_objetivo?: string | null
-          nuevos_valores?: Json | null
           old_values?: Json | null
           rol_usuario?: string | null
           tabla_objetivo?: string | null
           tipo_accion: string
           user_agent?: string | null
           usuario_id?: string | null
-          valores_anteriores?: Json | null
         }
         Update: {
-          creado_en?: string | null
           descripcion_accion?: string | null
           email_usuario?: string | null
           fecha?: string | null
@@ -416,15 +439,12 @@ export type Database = {
           id_registro_objetivo?: string | null
           ip_address?: string | null
           new_values?: Json | null
-          nombre_alumno_objetivo?: string | null
-          nuevos_valores?: Json | null
           old_values?: Json | null
           rol_usuario?: string | null
           tabla_objetivo?: string | null
           tipo_accion?: string
           user_agent?: string | null
           usuario_id?: string | null
-          valores_anteriores?: Json | null
         }
         Relationships: []
       }
@@ -523,13 +543,6 @@ export type Database = {
             foreignKeyName: "behavior_metrics_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "behavior_metrics_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
           },
@@ -537,40 +550,28 @@ export type Database = {
       }
       calificaciones: {
         Row: {
-          actualizado_en: string | null
-          actualizado_por: string | null
-          alumno_id: string
-          ciclo_escolar: string | null
+          alumno_id: string | null
           creado_en: string | null
           id: string
           materia: string
-          promedio_final: number | null
           trimestre1: number | null
           trimestre2: number | null
           trimestre3: number | null
         }
         Insert: {
-          actualizado_en?: string | null
-          actualizado_por?: string | null
-          alumno_id: string
-          ciclo_escolar?: string | null
+          alumno_id?: string | null
           creado_en?: string | null
           id?: string
           materia: string
-          promedio_final?: number | null
           trimestre1?: number | null
           trimestre2?: number | null
           trimestre3?: number | null
         }
         Update: {
-          actualizado_en?: string | null
-          actualizado_por?: string | null
-          alumno_id?: string
-          ciclo_escolar?: string | null
+          alumno_id?: string | null
           creado_en?: string | null
           id?: string
           materia?: string
-          promedio_final?: number | null
           trimestre1?: number | null
           trimestre2?: number | null
           trimestre3?: number | null
@@ -594,17 +595,37 @@ export type Database = {
             foreignKeyName: "calificaciones_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "calificaciones_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
           },
         ]
+      }
+      ciclos_escolares: {
+        Row: {
+          activo: boolean
+          created_at: string
+          fecha_fin: string | null
+          fecha_inicio: string | null
+          id: string
+          nombre: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          fecha_fin?: string | null
+          fecha_inicio?: string | null
+          id?: string
+          nombre: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          fecha_fin?: string | null
+          fecha_inicio?: string | null
+          id?: string
+          nombre?: string
+        }
+        Relationships: []
       }
       citas_padres: {
         Row: {
@@ -637,227 +658,185 @@ export type Database = {
           motivo?: string
           observaciones?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "citas_padres_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "citas_padres_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "citas_padres_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+        ]
       }
       colectivo_alumnos: {
         Row: {
-          avatar_url: string | null
-          creado_en: string | null
-          curp: string | null
-          datos_bap: Json | null
-          datos_tutor: Json | null
-          estado_caso: string | null
-          estado_semaforo: string | null
-          fecha_calculo_riesgo: string | null
-          fecha_nacimiento: string | null
-          genero: string | null
-          grado: string | null
-          grupo: string | null
+          alumno_id: string | null
+          ciclo_escolar: string | null
+          created_at: string | null
+          evaluacion_general: string | null
           id: string
-          matricula: string | null
-          modificado_en: string | null
-          modificado_por: string | null
-          nombre_completo: string | null
-          promedio_anterior: number | null
-          puntaje_riesgo: number | null
-          riesgo_academico: number | null
-          riesgo_asistencia: number | null
-          riesgo_disciplina: number | null
-          riesgo_socioemocional: number | null
-          tutor_escolar_id: string | null
         }
         Insert: {
-          avatar_url?: string | null
-          creado_en?: string | null
-          curp?: string | null
-          datos_bap?: Json | null
-          datos_tutor?: Json | null
-          estado_caso?: string | null
-          estado_semaforo?: string | null
-          fecha_calculo_riesgo?: string | null
-          fecha_nacimiento?: string | null
-          genero?: string | null
-          grado?: string | null
-          grupo?: string | null
-          id: string
-          matricula?: string | null
-          modificado_en?: string | null
-          modificado_por?: string | null
-          nombre_completo?: string | null
-          promedio_anterior?: number | null
-          puntaje_riesgo?: number | null
-          riesgo_academico?: number | null
-          riesgo_asistencia?: number | null
-          riesgo_disciplina?: number | null
-          riesgo_socioemocional?: number | null
-          tutor_escolar_id?: string | null
+          alumno_id?: string | null
+          ciclo_escolar?: string | null
+          created_at?: string | null
+          evaluacion_general?: string | null
+          id?: string
         }
         Update: {
-          avatar_url?: string | null
-          creado_en?: string | null
-          curp?: string | null
-          datos_bap?: Json | null
-          datos_tutor?: Json | null
-          estado_caso?: string | null
-          estado_semaforo?: string | null
-          fecha_calculo_riesgo?: string | null
-          fecha_nacimiento?: string | null
-          genero?: string | null
-          grado?: string | null
-          grupo?: string | null
+          alumno_id?: string | null
+          ciclo_escolar?: string | null
+          created_at?: string | null
+          evaluacion_general?: string | null
           id?: string
-          matricula?: string | null
-          modificado_en?: string | null
-          modificado_por?: string | null
-          nombre_completo?: string | null
-          promedio_anterior?: number | null
-          puntaje_riesgo?: number | null
-          riesgo_academico?: number | null
-          riesgo_asistencia?: number | null
-          riesgo_disciplina?: number | null
-          riesgo_socioemocional?: number | null
-          tutor_escolar_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "colectivo_alumnos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colectivo_alumnos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "colectivo_alumnos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+        ]
       }
       colectivo_personal: {
         Row: {
-          acceso_pin: string | null
+          ciclo_escolar: string | null
           created_at: string | null
-          departamento: string | null
+          datos: Json | null
           id: string
-          nombre: string | null
-          pin_entregado: boolean | null
-          rol: string | null
+          personal_id: string | null
         }
         Insert: {
-          acceso_pin?: string | null
+          ciclo_escolar?: string | null
           created_at?: string | null
-          departamento?: string | null
-          id: string
-          nombre?: string | null
-          pin_entregado?: boolean | null
-          rol?: string | null
+          datos?: Json | null
+          id?: string
+          personal_id?: string | null
         }
         Update: {
-          acceso_pin?: string | null
+          ciclo_escolar?: string | null
           created_at?: string | null
-          departamento?: string | null
+          datos?: Json | null
           id?: string
-          nombre?: string | null
-          pin_entregado?: boolean | null
-          rol?: string | null
+          personal_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "colectivo_personal_personal_id_fkey"
+            columns: ["personal_id"]
+            isOneToOne: false
+            referencedRelation: "personal"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       colectivo_respuestas_docentes: {
         Row: {
-          agresiones: number | null
-          alumnos_reportados: Json | null
-          ambiente: Json | null
-          asignatura: string | null
-          campo_formativo: string | null
-          comentarios: string | null
-          conductas_grupales: string[] | null
-          dispositivos: number | null
-          docente: string | null
-          estrategias: string[] | null
-          factores_externos: Json | null
-          fecha: string | null
-          grupo: string | null
+          created_at: string | null
+          docente_id: string | null
           id: string
-          impacto: string | null
-          instrucciones: number | null
-          interrupciones: number | null
-          intervenciones: Json | null
-          movimiento: number | null
-          nivel_grupo: string | null
-          periodo: string | null
-          tiempo_conducta: string | null
+          respuestas: Json | null
         }
         Insert: {
-          agresiones?: number | null
-          alumnos_reportados?: Json | null
-          ambiente?: Json | null
-          asignatura?: string | null
-          campo_formativo?: string | null
-          comentarios?: string | null
-          conductas_grupales?: string[] | null
-          dispositivos?: number | null
-          docente?: string | null
-          estrategias?: string[] | null
-          factores_externos?: Json | null
-          fecha?: string | null
-          grupo?: string | null
-          id: string
-          impacto?: string | null
-          instrucciones?: number | null
-          interrupciones?: number | null
-          intervenciones?: Json | null
-          movimiento?: number | null
-          nivel_grupo?: string | null
-          periodo?: string | null
-          tiempo_conducta?: string | null
+          created_at?: string | null
+          docente_id?: string | null
+          id?: string
+          respuestas?: Json | null
         }
         Update: {
-          agresiones?: number | null
-          alumnos_reportados?: Json | null
-          ambiente?: Json | null
-          asignatura?: string | null
-          campo_formativo?: string | null
-          comentarios?: string | null
-          conductas_grupales?: string[] | null
-          dispositivos?: number | null
-          docente?: string | null
-          estrategias?: string[] | null
-          factores_externos?: Json | null
-          fecha?: string | null
-          grupo?: string | null
+          created_at?: string | null
+          docente_id?: string | null
           id?: string
-          impacto?: string | null
-          instrucciones?: number | null
-          interrupciones?: number | null
-          intervenciones?: Json | null
-          movimiento?: number | null
-          nivel_grupo?: string | null
-          periodo?: string | null
-          tiempo_conducta?: string | null
+          respuestas?: Json | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "colectivo_respuestas_docentes_docente_id_fkey"
+            columns: ["docente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       comunicados: {
         Row: {
-          audiencia: string[] | null
-          created_at: string
-          created_by: string | null
+          activo: boolean | null
+          audiencia: string[]
+          audiencia_especifica: string[] | null
+          creado_por: string | null
+          creado_por_nombre: string | null
+          creado_por_rol: string | null
+          created_at: string | null
           descripcion: string | null
           fecha_evento: string | null
           hora_evento: string | null
           id: string
           tipo: string
           titulo: string
+          updated_at: string | null
         }
         Insert: {
-          audiencia?: string[] | null
-          created_at?: string
-          created_by?: string | null
+          activo?: boolean | null
+          audiencia: string[]
+          audiencia_especifica?: string[] | null
+          creado_por?: string | null
+          creado_por_nombre?: string | null
+          creado_por_rol?: string | null
+          created_at?: string | null
           descripcion?: string | null
           fecha_evento?: string | null
           hora_evento?: string | null
           id?: string
           tipo: string
           titulo: string
+          updated_at?: string | null
         }
         Update: {
-          audiencia?: string[] | null
-          created_at?: string
-          created_by?: string | null
+          activo?: boolean | null
+          audiencia?: string[]
+          audiencia_especifica?: string[] | null
+          creado_por?: string | null
+          creado_por_nombre?: string | null
+          creado_por_rol?: string | null
+          created_at?: string | null
           descripcion?: string | null
           fecha_evento?: string | null
           hora_evento?: string | null
           id?: string
           tipo?: string
           titulo?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -889,7 +868,29 @@ export type Database = {
           student_id?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "contacts_log_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contacts_log_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "contacts_log_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+        ]
       }
       documentos_institucionales: {
         Row: {
@@ -950,13 +951,6 @@ export type Database = {
             foreignKeyName: "documentos_institucionales_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "documentos_institucionales_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
           },
@@ -967,11 +961,33 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_documentos_alumnos"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_documentos_alumnos"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "fk_documentos_alumnos"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
         ]
       }
       estudiantes: {
         Row: {
           alumno_id: string | null
+          created_at: string | null
           escaneos_realizados: number | null
           grado: number | null
           id: string
@@ -980,6 +996,7 @@ export type Database = {
         }
         Insert: {
           alumno_id?: string | null
+          created_at?: string | null
           escaneos_realizados?: number | null
           grado?: number | null
           id?: string
@@ -988,6 +1005,7 @@ export type Database = {
         }
         Update: {
           alumno_id?: string | null
+          created_at?: string | null
           escaneos_realizados?: number | null
           grado?: number | null
           id?: string
@@ -1008,13 +1026,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "alumnos_en_riesgo"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "estudiantes_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "estudiantes_alumno_id_fkey"
@@ -1036,7 +1047,7 @@ export type Database = {
           id: string
           para_todos_maestros: boolean | null
           tipo: string | null
-          titulo: string | null
+          titulo: string
         }
         Insert: {
           alumno_id?: string | null
@@ -1048,7 +1059,7 @@ export type Database = {
           id?: string
           para_todos_maestros?: boolean | null
           tipo?: string | null
-          titulo?: string | null
+          titulo: string
         }
         Update: {
           alumno_id?: string | null
@@ -1060,7 +1071,7 @@ export type Database = {
           id?: string
           para_todos_maestros?: boolean | null
           tipo?: string | null
-          titulo?: string | null
+          titulo?: string
         }
         Relationships: [
           {
@@ -1081,15 +1092,15 @@ export type Database = {
             foreignKeyName: "eventos_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "eventos_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "eventos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1134,46 +1145,55 @@ export type Database = {
       }
       examenes_trimestre: {
         Row: {
-          calificacion_ajustada: number | null
           calificacion_final: number | null
-          conducta: number | null
           created_at: string | null
           feedback: string | null
-          grado: number | null
+          grado: number
           grupo: string
           id: string
           nombre_alumno: string
-          participacion: number | null
-          responsabilidad: number | null
-          respuestas: Json | null
         }
         Insert: {
-          calificacion_ajustada?: number | null
           calificacion_final?: number | null
-          conducta?: number | null
           created_at?: string | null
           feedback?: string | null
-          grado?: number | null
+          grado?: number
           grupo: string
           id?: string
           nombre_alumno: string
-          participacion?: number | null
-          responsabilidad?: number | null
-          respuestas?: Json | null
         }
         Update: {
-          calificacion_ajustada?: number | null
           calificacion_final?: number | null
-          conducta?: number | null
           created_at?: string | null
           feedback?: string | null
-          grado?: number | null
+          grado?: number
           grupo?: string
           id?: string
           nombre_alumno?: string
-          participacion?: number | null
-          responsabilidad?: number | null
-          respuestas?: Json | null
+        }
+        Relationships: []
+      }
+      feria_pilotos: {
+        Row: {
+          activo: boolean | null
+          created_at: string | null
+          created_by: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          activo?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          activo?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          email?: string
+          id?: string
         }
         Relationships: []
       }
@@ -1203,58 +1223,64 @@ export type Database = {
       }
       incidencias: {
         Row: {
-          alumno_id: string | null
+          alumno_id: string
           clasificacion: string | null
           creado_en: string | null
-          creado_por: string | null
-          descripcion: string | null
+          created_at: string
+          descripcion: string
           estado: string | null
           evidencia: string[] | null
           fecha: string | null
           gravedad: string | null
+          grupo_id: string | null
           id: string
           nivel_gravedad: number
           notificado_whatsapp: boolean | null
+          prefecto_asignado: string | null
           reporta: string | null
           reportado_por: string
           reportado_por_docente: string | null
-          tipo: string | null
+          tipo: Database["public"]["Enums"]["tipo_incidencia"]
         }
         Insert: {
-          alumno_id?: string | null
+          alumno_id: string
           clasificacion?: string | null
           creado_en?: string | null
-          creado_por?: string | null
-          descripcion?: string | null
+          created_at?: string
+          descripcion: string
           estado?: string | null
           evidencia?: string[] | null
           fecha?: string | null
           gravedad?: string | null
+          grupo_id?: string | null
           id?: string
           nivel_gravedad?: number
           notificado_whatsapp?: boolean | null
+          prefecto_asignado?: string | null
           reporta?: string | null
           reportado_por: string
           reportado_por_docente?: string | null
-          tipo?: string | null
+          tipo: Database["public"]["Enums"]["tipo_incidencia"]
         }
         Update: {
-          alumno_id?: string | null
+          alumno_id?: string
           clasificacion?: string | null
           creado_en?: string | null
-          creado_por?: string | null
-          descripcion?: string | null
+          created_at?: string
+          descripcion?: string
           estado?: string | null
           evidencia?: string[] | null
           fecha?: string | null
           gravedad?: string | null
+          grupo_id?: string | null
           id?: string
           nivel_gravedad?: number
           notificado_whatsapp?: boolean | null
+          prefecto_asignado?: string | null
           reporta?: string | null
           reportado_por?: string
           reportado_por_docente?: string | null
-          tipo?: string | null
+          tipo?: Database["public"]["Enums"]["tipo_incidencia"]
         }
         Relationships: [
           {
@@ -1275,22 +1301,8 @@ export type Database = {
             foreignKeyName: "incidencias_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "incidencias_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "incidencias_creado_por_fkey"
-            columns: ["creado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "incidencias_reportado_por_fkey"
@@ -1329,50 +1341,51 @@ export type Database = {
           student_id?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "interventions_log_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interventions_log_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "interventions_log_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+        ]
       }
       justificantes: {
         Row: {
           alumno_id: string | null
           creado_en: string | null
-          descripcion: string | null
-          emitido_por: string
-          fecha_fin: string | null
-          fecha_inicio: string | null
-          folio: string | null
+          fecha: string | null
           id: string
           motivo: string | null
-          tipo: string | null
-          trabajo_distancia: boolean | null
-          valido_por: string | null
         }
         Insert: {
           alumno_id?: string | null
           creado_en?: string | null
-          descripcion?: string | null
-          emitido_por: string
-          fecha_fin?: string | null
-          fecha_inicio?: string | null
-          folio?: string | null
+          fecha?: string | null
           id?: string
           motivo?: string | null
-          tipo?: string | null
-          trabajo_distancia?: boolean | null
-          valido_por?: string | null
         }
         Update: {
           alumno_id?: string | null
           creado_en?: string | null
-          descripcion?: string | null
-          emitido_por?: string
-          fecha_fin?: string | null
-          fecha_inicio?: string | null
-          folio?: string | null
+          fecha?: string | null
           id?: string
           motivo?: string | null
-          tipo?: string | null
-          trabajo_distancia?: boolean | null
-          valido_por?: string | null
         }
         Relationships: [
           {
@@ -1393,29 +1406,8 @@ export type Database = {
             foreignKeyName: "justificantes_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "justificantes_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "justificantes_issued_by_fkey"
-            columns: ["emitido_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "justificantes_valido_por_fkey"
-            columns: ["valido_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
           },
         ]
       }
@@ -1644,13 +1636,6 @@ export type Database = {
             foreignKeyName: "objetos_retenidos_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "objetos_retenidos_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
           },
@@ -1661,45 +1646,11 @@ export type Database = {
             referencedRelation: "incidencias"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      pasos_protocolo: {
-        Row: {
-          accion: string
-          creado_en: string | null
-          descripcion_detalle: string | null
-          es_advertencia: boolean | null
-          id: string
-          orden: number
-          protocolo_id: string
-          rol_responsable: string | null
-        }
-        Insert: {
-          accion: string
-          creado_en?: string | null
-          descripcion_detalle?: string | null
-          es_advertencia?: boolean | null
-          id?: string
-          orden: number
-          protocolo_id: string
-          rol_responsable?: string | null
-        }
-        Update: {
-          accion?: string
-          creado_en?: string | null
-          descripcion_detalle?: string | null
-          es_advertencia?: boolean | null
-          id?: string
-          orden?: number
-          protocolo_id?: string
-          rol_responsable?: string | null
-        }
-        Relationships: [
           {
-            foreignKeyName: "pasos_protocolo_protocolo_id_fkey"
-            columns: ["protocolo_id"]
+            foreignKeyName: "objetos_retenidos_responsable_id_fkey"
+            columns: ["responsable_id"]
             isOneToOne: false
-            referencedRelation: "protocolos"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1707,6 +1658,7 @@ export type Database = {
       perfiles_usuario: {
         Row: {
           alcances: Json | null
+          created_at: string
           curp: string | null
           email: string | null
           es_tutor: boolean | null
@@ -1716,7 +1668,7 @@ export type Database = {
           grupo_tutor: string | null
           grupos: string[] | null
           id: string
-          materias: string | null
+          materias: string[] | null
           matricula_sase: string | null
           nombre_completo: string | null
           observaciones: string | null
@@ -1724,6 +1676,7 @@ export type Database = {
           preferencias_dashboard: Json | null
           rol: string | null
           rol_solicitado: string | null
+          role: string | null
           telefono: string | null
           turno: string | null
           updated_at: string | null
@@ -1731,6 +1684,7 @@ export type Database = {
         }
         Insert: {
           alcances?: Json | null
+          created_at?: string
           curp?: string | null
           email?: string | null
           es_tutor?: boolean | null
@@ -1740,7 +1694,7 @@ export type Database = {
           grupo_tutor?: string | null
           grupos?: string[] | null
           id: string
-          materias?: string | null
+          materias?: string[] | null
           matricula_sase?: string | null
           nombre_completo?: string | null
           observaciones?: string | null
@@ -1748,6 +1702,7 @@ export type Database = {
           preferencias_dashboard?: Json | null
           rol?: string | null
           rol_solicitado?: string | null
+          role?: string | null
           telefono?: string | null
           turno?: string | null
           updated_at?: string | null
@@ -1755,6 +1710,7 @@ export type Database = {
         }
         Update: {
           alcances?: Json | null
+          created_at?: string
           curp?: string | null
           email?: string | null
           es_tutor?: boolean | null
@@ -1764,7 +1720,7 @@ export type Database = {
           grupo_tutor?: string | null
           grupos?: string[] | null
           id?: string
-          materias?: string | null
+          materias?: string[] | null
           matricula_sase?: string | null
           nombre_completo?: string | null
           observaciones?: string | null
@@ -1772,6 +1728,7 @@ export type Database = {
           preferencias_dashboard?: Json | null
           rol?: string | null
           rol_solicitado?: string | null
+          role?: string | null
           telefono?: string | null
           turno?: string | null
           updated_at?: string | null
@@ -1781,100 +1738,175 @@ export type Database = {
       }
       personal: {
         Row: {
-          acceso_pin: string | null
           created_at: string | null
-          departamento: string | null
+          email: string | null
+          estatus: string | null
           id: string
-          nombre: string
-          rol: string | null
+          nombre_completo: string
+          rol: Database["public"]["Enums"]["app_role"]
         }
         Insert: {
-          acceso_pin?: string | null
           created_at?: string | null
-          departamento?: string | null
+          email?: string | null
+          estatus?: string | null
           id?: string
-          nombre: string
-          rol?: string | null
+          nombre_completo: string
+          rol: Database["public"]["Enums"]["app_role"]
         }
         Update: {
-          acceso_pin?: string | null
           created_at?: string | null
-          departamento?: string | null
+          email?: string | null
+          estatus?: string | null
           id?: string
-          nombre?: string
-          rol?: string | null
+          nombre_completo?: string
+          rol?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
+      personal_oficial: {
+        Row: {
+          created_at: string | null
+          department: string
+          full_name: string
+          full_name_normalized: string
+          id: string
+          is_active: boolean | null
+          role: string
+          temporary_code: string | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          department: string
+          full_name: string
+          full_name_normalized: string
+          id?: string
+          is_active?: boolean | null
+          role: string
+          temporary_code?: string | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          department?: string
+          full_name?: string
+          full_name_normalized?: string
+          id?: string
+          is_active?: boolean | null
+          role?: string
+          temporary_code?: string | null
+          updated_at?: string | null
+          username?: string | null
         }
         Relationships: []
       }
       profiles: {
         Row: {
-          activo: boolean | null
+          created_at: string
           full_name: string | null
           id: string
-          nombre: string | null
-          rol: string | null
           role: Database["public"]["Enums"]["app_role"]
         }
         Insert: {
-          activo?: boolean | null
+          created_at?: string
           full_name?: string | null
           id: string
-          nombre?: string | null
-          rol?: string | null
           role?: Database["public"]["Enums"]["app_role"]
         }
         Update: {
-          activo?: boolean | null
+          created_at?: string
           full_name?: string | null
           id?: string
-          nombre?: string | null
-          rol?: string | null
           role?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
       }
       protocolos: {
         Row: {
-          activacion: string | null
-          creado_en: string | null
-          fuente: string | null
+          activacion: string
+          created_at: string
+          fuente: string
           icono: string | null
           id: string
-          objetivo: string | null
-          palabras_clave: string[] | null
+          objetivo: string
           roles_responsables: string[] | null
           tipo: string
           titulo: string
         }
         Insert: {
-          activacion?: string | null
-          creado_en?: string | null
-          fuente?: string | null
+          activacion: string
+          created_at?: string
+          fuente: string
           icono?: string | null
           id?: string
-          objetivo?: string | null
-          palabras_clave?: string[] | null
+          objetivo: string
           roles_responsables?: string[] | null
           tipo: string
           titulo: string
         }
         Update: {
-          activacion?: string | null
-          creado_en?: string | null
-          fuente?: string | null
+          activacion?: string
+          created_at?: string
+          fuente?: string
           icono?: string | null
           id?: string
-          objetivo?: string | null
-          palabras_clave?: string[] | null
+          objetivo?: string
           roles_responsables?: string[] | null
           tipo?: string
           titulo?: string
         }
         Relationships: []
       }
+      recordatorios: {
+        Row: {
+          completado: boolean | null
+          creado_por: string | null
+          creado_por_nombre: string | null
+          created_at: string | null
+          descripcion: string | null
+          destinatario_id: string | null
+          destinatario_rol: string | null
+          fecha_recordatorio: string
+          hora_recordatorio: string | null
+          id: string
+          titulo: string
+          visto: boolean | null
+        }
+        Insert: {
+          completado?: boolean | null
+          creado_por?: string | null
+          creado_por_nombre?: string | null
+          created_at?: string | null
+          descripcion?: string | null
+          destinatario_id?: string | null
+          destinatario_rol?: string | null
+          fecha_recordatorio: string
+          hora_recordatorio?: string | null
+          id?: string
+          titulo: string
+          visto?: boolean | null
+        }
+        Update: {
+          completado?: boolean | null
+          creado_por?: string | null
+          creado_por_nombre?: string | null
+          created_at?: string | null
+          descripcion?: string | null
+          destinatario_id?: string | null
+          destinatario_rol?: string | null
+          fecha_recordatorio?: string
+          hora_recordatorio?: string | null
+          id?: string
+          titulo?: string
+          visto?: boolean | null
+        }
+        Relationships: []
+      }
       registro_lectura: {
         Row: {
-          alumno_id: string | null
+          alumno_id: string
           creado_por: string | null
           fecha: string | null
           id: string
@@ -1883,7 +1915,7 @@ export type Database = {
           proyecto_nombre: string | null
         }
         Insert: {
-          alumno_id?: string | null
+          alumno_id: string
           creado_por?: string | null
           fecha?: string | null
           id?: string
@@ -1892,7 +1924,7 @@ export type Database = {
           proyecto_nombre?: string | null
         }
         Update: {
-          alumno_id?: string | null
+          alumno_id?: string
           creado_por?: string | null
           fecha?: string | null
           id?: string
@@ -1914,13 +1946,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "alumnos_en_riesgo"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "registro_lectura_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "registro_lectura_alumno_id_fkey"
@@ -1929,80 +1954,62 @@ export type Database = {
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
           },
+          {
+            foreignKeyName: "registro_lectura_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       respuestas_docentes: {
         Row: {
-          agresiones: number | null
-          alumnos_reportados: Json | null
-          ambiente: Json | null
-          asignatura: string
-          campo_formativo: string | null
-          comentarios: string | null
-          conductas_grupales: string[] | null
-          dispositivos: number | null
-          docente: string | null
-          estrategias: string[] | null
-          factores_externos: Json | null
-          fecha: string | null
-          grupo: string
+          creado_por: string | null
+          created_at: string | null
           id: string
-          impacto: string
-          instrucciones: number | null
-          interrupciones: number | null
-          intervenciones: Json | null
-          movimiento: number | null
-          nivel_grupo: string | null
-          periodo: string | null
-          tiempo_conducta: string | null
+          pregunta_id: string | null
+          respuesta: string | null
         }
         Insert: {
-          agresiones?: number | null
-          alumnos_reportados?: Json | null
-          ambiente?: Json | null
-          asignatura: string
-          campo_formativo?: string | null
-          comentarios?: string | null
-          conductas_grupales?: string[] | null
-          dispositivos?: number | null
-          docente?: string | null
-          estrategias?: string[] | null
-          factores_externos?: Json | null
-          fecha?: string | null
-          grupo: string
+          creado_por?: string | null
+          created_at?: string | null
           id?: string
-          impacto: string
-          instrucciones?: number | null
-          interrupciones?: number | null
-          intervenciones?: Json | null
-          movimiento?: number | null
-          nivel_grupo?: string | null
-          periodo?: string | null
-          tiempo_conducta?: string | null
+          pregunta_id?: string | null
+          respuesta?: string | null
         }
         Update: {
-          agresiones?: number | null
-          alumnos_reportados?: Json | null
-          ambiente?: Json | null
-          asignatura?: string
-          campo_formativo?: string | null
-          comentarios?: string | null
-          conductas_grupales?: string[] | null
-          dispositivos?: number | null
-          docente?: string | null
-          estrategias?: string[] | null
-          factores_externos?: Json | null
-          fecha?: string | null
-          grupo?: string
+          creado_por?: string | null
+          created_at?: string | null
           id?: string
-          impacto?: string
-          instrucciones?: number | null
-          interrupciones?: number | null
-          intervenciones?: Json | null
-          movimiento?: number | null
-          nivel_grupo?: string | null
-          periodo?: string | null
-          tiempo_conducta?: string | null
+          pregunta_id?: string | null
+          respuesta?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "respuestas_docentes_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles_permisos: {
+        Row: {
+          actualizado_en: string | null
+          permisos: Json | null
+          rol: string
+        }
+        Insert: {
+          actualizado_en?: string | null
+          permisos?: Json | null
+          rol: string
+        }
+        Update: {
+          actualizado_en?: string | null
+          permisos?: Json | null
+          rol?: string
         }
         Relationships: []
       }
@@ -2010,8 +2017,6 @@ export type Database = {
         Row: {
           alergias: string | null
           alumno_id: string
-          creado_en: string | null
-          documento_url: string | null
           id: string
           medicamentos: string | null
           padecimiento: string | null
@@ -2020,8 +2025,6 @@ export type Database = {
         Insert: {
           alergias?: string | null
           alumno_id: string
-          creado_en?: string | null
-          documento_url?: string | null
           id?: string
           medicamentos?: string | null
           padecimiento?: string | null
@@ -2030,8 +2033,6 @@ export type Database = {
         Update: {
           alergias?: string | null
           alumno_id?: string
-          creado_en?: string | null
-          documento_url?: string | null
           id?: string
           medicamentos?: string | null
           padecimiento?: string | null
@@ -2051,13 +2052,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "alumnos_en_riesgo"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "salud_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "salud_alumno_id_fkey"
@@ -2095,7 +2089,7 @@ export type Database = {
       seguimiento_bap: {
         Row: {
           ajuste_razonable: string | null
-          alumno_id: string | null
+          alumno_id: string
           creado_en: string | null
           creado_por: string | null
           estatus: string | null
@@ -2104,7 +2098,7 @@ export type Database = {
         }
         Insert: {
           ajuste_razonable?: string | null
-          alumno_id?: string | null
+          alumno_id: string
           creado_en?: string | null
           creado_por?: string | null
           estatus?: string | null
@@ -2113,7 +2107,7 @@ export type Database = {
         }
         Update: {
           ajuste_razonable?: string | null
-          alumno_id?: string | null
+          alumno_id?: string
           creado_en?: string | null
           creado_por?: string | null
           estatus?: string | null
@@ -2139,22 +2133,22 @@ export type Database = {
             foreignKeyName: "seguimiento_bap_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "seguimiento_bap_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "seguimiento_bap_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
       seguimiento_social: {
         Row: {
           acuerdos: string | null
-          alumno_id: string | null
+          alumno_id: string
           creado_por: string | null
           es_sensible: boolean | null
           estatus: string | null
@@ -2165,7 +2159,7 @@ export type Database = {
         }
         Insert: {
           acuerdos?: string | null
-          alumno_id?: string | null
+          alumno_id: string
           creado_por?: string | null
           es_sensible?: boolean | null
           estatus?: string | null
@@ -2176,7 +2170,7 @@ export type Database = {
         }
         Update: {
           acuerdos?: string | null
-          alumno_id?: string | null
+          alumno_id?: string
           creado_por?: string | null
           es_sensible?: boolean | null
           estatus?: string | null
@@ -2204,15 +2198,15 @@ export type Database = {
             foreignKeyName: "seguimiento_social_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "seguimiento_social_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "seguimiento_social_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2257,13 +2251,6 @@ export type Database = {
             foreignKeyName: "socioeconomico_general_alumno_id_fkey"
             columns: ["alumno_id"]
             isOneToOne: true
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "socioeconomico_general_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: true
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
           },
@@ -2299,13 +2286,6 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "alumnos_en_riesgo"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "socioeconomico_privado_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: true
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "socioeconomico_privado_alumno_id_fkey"
@@ -2373,13 +2353,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "alumnos_en_riesgo"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "solicitudes_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "solicitudes_alumno_id_fkey"
@@ -2473,6 +2446,88 @@ export type Database = {
           turno?: string
         }
         Relationships: []
+      }
+      solicitudes_documentos: {
+        Row: {
+          alumno_id: string | null
+          alumno_nombre: string | null
+          asignado_a: string | null
+          asignado_nombre: string | null
+          completado_at: string | null
+          created_at: string | null
+          descripcion: string | null
+          documento_url: string | null
+          estado: string | null
+          fecha_limite: string | null
+          id: string
+          notas_seguimiento: string | null
+          prioridad: string | null
+          solicitante_id: string | null
+          solicitante_nombre: string | null
+          tipo_documento: string
+          updated_at: string | null
+        }
+        Insert: {
+          alumno_id?: string | null
+          alumno_nombre?: string | null
+          asignado_a?: string | null
+          asignado_nombre?: string | null
+          completado_at?: string | null
+          created_at?: string | null
+          descripcion?: string | null
+          documento_url?: string | null
+          estado?: string | null
+          fecha_limite?: string | null
+          id?: string
+          notas_seguimiento?: string | null
+          prioridad?: string | null
+          solicitante_id?: string | null
+          solicitante_nombre?: string | null
+          tipo_documento: string
+          updated_at?: string | null
+        }
+        Update: {
+          alumno_id?: string | null
+          alumno_nombre?: string | null
+          asignado_a?: string | null
+          asignado_nombre?: string | null
+          completado_at?: string | null
+          created_at?: string | null
+          descripcion?: string | null
+          documento_url?: string | null
+          estado?: string | null
+          fecha_limite?: string | null
+          id?: string
+          notas_seguimiento?: string | null
+          prioridad?: string | null
+          solicitante_id?: string | null
+          solicitante_nombre?: string | null
+          tipo_documento?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitudes_documentos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitudes_documentos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_documentos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+        ]
       }
       suministros: {
         Row: {
@@ -2576,74 +2631,12 @@ export type Database = {
         }
         Relationships: []
       }
-      alumnos_operativo: {
-        Row: {
-          avatar_url: string | null
-          creado_en: string | null
-          datos_bap: Json | null
-          estado_caso: string | null
-          fecha_nacimiento: string | null
-          genero: string | null
-          grado: string | null
-          grupo: string | null
-          id: string | null
-          matricula: string | null
-          modificado_en: string | null
-          modificado_por: string | null
-          nombre_completo: string | null
-          promedio_anterior: number | null
-          tutor_escolar_id: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          creado_en?: string | null
-          datos_bap?: Json | null
-          estado_caso?: string | null
-          fecha_nacimiento?: string | null
-          genero?: string | null
-          grado?: string | null
-          grupo?: string | null
-          id?: string | null
-          matricula?: string | null
-          modificado_en?: string | null
-          modificado_por?: string | null
-          nombre_completo?: string | null
-          promedio_anterior?: number | null
-          tutor_escolar_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          creado_en?: string | null
-          datos_bap?: Json | null
-          estado_caso?: string | null
-          fecha_nacimiento?: string | null
-          genero?: string | null
-          grado?: string | null
-          grupo?: string | null
-          id?: string | null
-          matricula?: string | null
-          modificado_en?: string | null
-          modificado_por?: string | null
-          nombre_completo?: string | null
-          promedio_anterior?: number | null
-          tutor_escolar_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "alumnos_tutor_escolar_id_fkey"
-            columns: ["tutor_escolar_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       expediente_integral_alumno: {
         Row: {
           alumno_id: string | null
           escaneos_gamificacion: number | null
-          estado_caso: string | null
-          grado: string | null
+          estado_caso: Database["public"]["Enums"]["estado_caso_alumno"] | null
+          grado: number | null
           grupo: string | null
           nickname_gamificacion: string | null
           nombre: string | null
@@ -2666,7 +2659,7 @@ export type Database = {
           fecha: string | null
           gravedad: string | null
           puntaje_base: number | null
-          tipo_evento: string | null
+          tipo_evento: Database["public"]["Enums"]["tipo_incidencia"] | null
         }
         Insert: {
           alumno_id?: string | null
@@ -2674,7 +2667,7 @@ export type Database = {
           fecha?: never
           gravedad?: string | null
           puntaje_base?: never
-          tipo_evento?: string | null
+          tipo_evento?: Database["public"]["Enums"]["tipo_incidencia"] | null
         }
         Update: {
           alumno_id?: string | null
@@ -2682,7 +2675,7 @@ export type Database = {
           fecha?: never
           gravedad?: string | null
           puntaje_base?: never
-          tipo_evento?: string | null
+          tipo_evento?: Database["public"]["Enums"]["tipo_incidencia"] | null
         }
         Relationships: [
           {
@@ -2698,13 +2691,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "alumnos_en_riesgo"
             referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "incidencias_alumno_id_fkey"
-            columns: ["alumno_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos_operativo"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "incidencias_alumno_id_fkey"
@@ -2730,18 +2716,9 @@ export type Database = {
         Args: { p_student_id: string }
         Returns: undefined
       }
-      decrement_visitantes: { Args: { stand_id: string }; Returns: undefined }
-      finalizar_trivia_v2: {
-        Args: {
-          p_estacion_id: string
-          p_estudiante_id: string
-          p_puntos_adicionales: number
-        }
+      ejecutar_promocion: {
+        Args: { p_ciclo_actual: string; p_ciclo_nuevo: string }
         Returns: Json
-      }
-      fn_get_score_by_gravedad: {
-        Args: { p_gravedad: string }
-        Returns: number
       }
       generar_matricula_sase: { Args: never; Returns: string }
       get_modulos_ecosistema_visibles: {
@@ -2755,14 +2732,23 @@ export type Database = {
         }[]
       }
       get_my_normalized_email: { Args: never; Returns: string }
-      get_my_rol_safe: { Args: never; Returns: string }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_my_role_text: { Args: never; Returns: string }
-      get_user_role: { Args: never; Returns: string }
-      increment_visitantes: { Args: { stand_id: string }; Returns: undefined }
+      log_audit: {
+        Args: {
+          p_action_description: string
+          p_action_type: string
+          p_new_values?: Json
+          p_old_values?: Json
+          p_target_record_id: string
+          p_target_student_name?: string
+          p_target_table: string
+        }
+        Returns: string
+      }
       registrar_auditoria_sase: {
         Args: {
           p_descripcion: string
@@ -2779,13 +2765,20 @@ export type Database = {
         Args: { p_alumno_id: string }
         Returns: undefined
       }
-      registrar_progreso_v2: {
-        Args: {
-          p_estacion_id: string
-          p_estudiante_id: string
-          p_puntos_ganados: number
-        }
-        Returns: undefined
+      simular_promocion: {
+        Args: { p_ciclo_id: string }
+        Returns: {
+          alumno_id: string
+          bap: boolean
+          decision_sugerida: string
+          faltas: number
+          faltas_consecutivas: number
+          grado: number
+          grupo: string
+          incidencias: number
+          nombre: string
+          promedio: number
+        }[]
       }
     }
     Enums: {
@@ -2798,19 +2791,26 @@ export type Database = {
         | "trabajo_social"
         | "enfermeria"
         | "secretaria"
+        | "medico_escolar"
         | "udeii"
-        | "promotora"
+        | "promotora_lectura"
         | "subdireccion"
         | "admin"
         | "system_admin"
-        | "developer"
-        | "guest"
       estado_caso_alumno:
         | "normal"
         | "observado"
         | "intervencion"
         | "seguimiento"
-      tipo_incidencia: "retardo" | "conducta" | "uniforme" | "otro"
+      tipo_incidencia:
+        | "retardo"
+        | "conducta"
+        | "uniforme"
+        | "otro"
+        | "asistencia"
+        | "academica"
+        | "socioemocional"
+        | "salud"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2936,6 +2936,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       app_role: [
@@ -2947,13 +2950,12 @@ export const Constants = {
         "trabajo_social",
         "enfermeria",
         "secretaria",
+        "medico_escolar",
         "udeii",
-        "promotora",
+        "promotora_lectura",
         "subdireccion",
         "admin",
         "system_admin",
-        "developer",
-        "guest",
       ],
       estado_caso_alumno: [
         "normal",
@@ -2961,7 +2963,17 @@ export const Constants = {
         "intervencion",
         "seguimiento",
       ],
-      tipo_incidencia: ["retardo", "conducta", "uniforme", "otro"],
+      tipo_incidencia: [
+        "retardo",
+        "conducta",
+        "uniforme",
+        "otro",
+        "asistencia",
+        "academica",
+        "socioemocional",
+        "salud",
+      ],
     },
   },
 } as const
+

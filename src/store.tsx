@@ -106,6 +106,7 @@ interface AppContextType {
   addInstitutionalDocument: any;
   addDocumentoInstitucional: any;
   deleteDocumentoInstitucional: any;
+  saveEvidence: (data: EvidenceInput) => Promise<void>;
 
   // Matricula Inteligente
   matricula: any;
@@ -218,6 +219,27 @@ export const AppProvider: React.FC<{
     );
   };
 
+  const saveEvidence = async (data: EvidenceInput) => {
+    try {
+      const { error } = await supabase.from("evidence_log").insert({
+        title: data.title,
+        link: data.link,
+        file_type: data.fileType,
+        notes: data.notes,
+        impacto_estimado: data.impactoEstimado,
+        proyecto_nombre: data.proyectoNombre,
+        role: data.role || auth.currentUserRole,
+        user_id: user?.id,
+      });
+
+      if (error) throw error;
+      toast.success("Evidencia guardada correctamente");
+    } catch (error: any) {
+      console.error("Error saving evidence:", error);
+      toast.error("Error al guardar evidencia");
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -243,6 +265,7 @@ export const AppProvider: React.FC<{
         addInstitutionalDocument,
         addDocumentoInstitucional: studentsSlice.addDocumentoInstitucional,
         deleteDocumentoInstitucional: studentsSlice.deleteDocumentoInstitucional,
+        saveEvidence,
         addObjetoRetenido: studentsSlice.addObjetoRetenido,
         updateEstadoObjeto: studentsSlice.updateEstadoObjeto,
         registrarDevolucion: studentsSlice.registrarDevolucion,
