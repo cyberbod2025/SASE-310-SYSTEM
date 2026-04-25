@@ -49,6 +49,8 @@ const ManualUsuario = React.lazy(() => import("./ManualUsuario").then((m) => ({ 
 const PerfilUsuario = React.lazy(() => import("./PerfilUsuario").then((m) => ({ default: m.PerfilUsuario })));
 const Notificaciones = React.lazy(() => import("./Notificaciones").then((m) => ({ default: m.Notificaciones })));
 const DocumentacionInstitucional = React.lazy(() => import("./DocumentacionInstitucional").then((m) => ({ default: m.DocumentacionInstitucional })));
+const MatriculaInteligente = React.lazy(() => import("./MatriculaInteligente").then((m) => ({ default: m.MatriculaInteligente })));
+const CierreCiclo = React.lazy(() => import("./CierreCiclo").then((m) => ({ default: m.CierreCiclo })));
 
 const Asistencia = React.lazy(() => import("./Asistencia").then((m) => ({ default: m.Asistencia })));
 const ObjetosRetenidos = React.lazy(() => import("./ObjetosRetenidos").then((m) => ({ default: m.ObjetosRetenidos })));
@@ -113,6 +115,8 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.NOTIFICATIONS) return <Notificaciones />;
             if (currentModule === AppModule.OBJETOS_RETENIDOS) return <ObjetosRetenidos />;
             if (currentModule === AppModule.DOCUMENTACION) return <DocumentacionInstitucional />;
+            if (currentModule === AppModule.MATRICULA_INTELIGENTE) return <MatriculaInteligente />;
+            if (currentModule === AppModule.CIERRE_CICLO) return <CierreCiclo />;
             if (currentModule === AppModule.MANUAL_USUARIO) return <ManualUsuario />;
             if (currentModule === AppModule.PERFIL) return <PerfilUsuario />;
             if (currentModule === AppModule.SALUD) return <DashboardSalud />;

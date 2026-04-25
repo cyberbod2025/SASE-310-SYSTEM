@@ -575,6 +575,39 @@ export const DashboardSecretaria = () => {
           </div>
         </div>
 
+        {/* --- CICLO ESCOLAR & MATRÍCULA --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+           {/* Matrícula Inteligente Card */}
+           <div className="card-sase p-8 flex items-center gap-6 group cursor-pointer hover:bg-sase-admin/5 transition-all"
+                onClick={() => setCurrentModule(AppModule.MATRICULA_INTELIGENTE)}>
+              <div className="size-16 rounded-2xl bg-sase-admin/10 border border-sase-admin/20 flex items-center justify-center text-sase-admin group-hover:scale-110 transition-transform duration-500">
+                <span className="material-icons text-3xl">auto_fix_high</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">Matrícula Inteligente</h3>
+                <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-widest mt-1">
+                  Distribución asistida por IA y Balanceo de Grupos
+                </p>
+              </div>
+              <span className="material-icons text-sase-admin opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all">east</span>
+           </div>
+
+           {/* Cierre de Ciclo Card */}
+           <div className="card-sase p-8 flex items-center gap-6 group cursor-pointer hover:bg-sase-danger/5 transition-all"
+                onClick={() => setCurrentModule(AppModule.CIERRE_CICLO)}>
+              <div className="size-16 rounded-2xl bg-sase-danger/10 border border-sase-danger/20 flex items-center justify-center text-sase-danger group-hover:scale-110 transition-transform duration-500">
+                <span className="material-icons text-3xl">history_edu</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-black text-white uppercase italic tracking-tighter">Cierre de Ciclo</h3>
+                <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-widest mt-1">
+                  Promoción, Egreso y Archivo Histórico
+                </p>
+              </div>
+              <span className="material-icons text-sase-danger opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all">east</span>
+           </div>
+        </div>
+
         {/* --- NUEVA SECCIÓN: CONTROL DE GRUPOS Y AVISOS --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
           {/* Estadísticas de Grupos */}
