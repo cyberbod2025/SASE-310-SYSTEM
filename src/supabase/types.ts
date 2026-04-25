@@ -62,6 +62,125 @@ export type Database = {
           },
         ]
       }
+      alumno_ciclo: {
+        Row: {
+          alumno_id: string
+          ciclo_id: string
+          created_at: string
+          estatus: string
+          fecha_asignacion: string
+          grado: number
+          grupo: string | null
+          grupo_id: string | null
+          grupo_sugerido: string | null
+          id: string
+          locked: boolean
+        }
+        Insert: {
+          alumno_id: string
+          ciclo_id: string
+          created_at?: string
+          estatus?: string
+          fecha_asignacion?: string
+          grado: number
+          grupo?: string | null
+          grupo_id?: string | null
+          grupo_sugerido?: string | null
+          id?: string
+          locked?: boolean
+        }
+        Update: {
+          alumno_id?: string
+          ciclo_id?: string
+          created_at?: string
+          estatus?: string
+          fecha_asignacion?: string
+          grado?: number
+          grupo?: string | null
+          grupo_id?: string | null
+          grupo_sugerido?: string | null
+          id?: string
+          locked?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alumno_ciclo_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alumno_ciclo_ciclo_id_fkey"
+            columns: ["ciclo_id"]
+            isOneToOne: false
+            referencedRelation: "ciclos_escolares"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alumno_ciclo_grupo_id_fkey"
+            columns: ["grupo_id"]
+            isOneToOne: false
+            referencedRelation: "grupos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      asignacion_alumno_grupo: {
+        Row: {
+          alumno_ciclo_id: string
+          asignado_por: string | null
+          created_at: string
+          grupo_anterior: string | null
+          grupo_id: string
+          grupo_nuevo: string
+          id: string
+          origen: string
+        }
+        Insert: {
+          alumno_ciclo_id: string
+          asignado_por?: string | null
+          created_at?: string
+          grupo_anterior?: string | null
+          grupo_id: string
+          grupo_nuevo: string
+          id?: string
+          origen?: string
+        }
+        Update: {
+          alumno_ciclo_id?: string
+          asignado_por?: string | null
+          created_at?: string
+          grupo_anterior?: string | null
+          grupo_id?: string
+          grupo_nuevo?: string
+          id?: string
+          origen?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asignacion_alumno_grupo_alumno_ciclo_id_fkey"
+            columns: ["alumno_ciclo_id"]
+            isOneToOne: false
+            referencedRelation: "alumno_ciclo"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asignacion_alumno_grupo_asignado_por_fkey"
+            columns: ["asignado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "asignacion_alumno_grupo_grupo_id_fkey"
+            columns: ["grupo_id"]
+            isOneToOne: false
+            referencedRelation: "grupos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activities_log: {
         Row: {
           created_at: string | null
@@ -389,6 +508,33 @@ export type Database = {
           user_email?: string | null
           user_id?: string | null
           user_role?: string | null
+        }
+        Relationships: []
+      }
+      ciclos_escolares: {
+        Row: {
+          activo: boolean
+          created_at: string
+          fecha_fin: string | null
+          fecha_inicio: string | null
+          id: string
+          nombre: string
+        }
+        Insert: {
+          activo?: boolean
+          created_at?: string
+          fecha_fin?: string | null
+          fecha_inicio?: string | null
+          id?: string
+          nombre: string
+        }
+        Update: {
+          activo?: boolean
+          created_at?: string
+          fecha_fin?: string | null
+          fecha_inicio?: string | null
+          id?: string
+          nombre?: string
         }
         Relationships: []
       }
@@ -2301,6 +2447,30 @@ export type Database = {
       }
       get_my_role_text: { Args: never; Returns: string }
       get_user_role: { Args: never; Returns: string }
+      simular_promocion: {
+        Args: {
+          p_ciclo_id: string
+        }
+        Returns: {
+          alumno_id: string
+          nombre: string
+          grado: number
+          grupo: string
+          faltas: number
+          faltas_consecutivas: number
+          promedio: number
+          incidencias: number
+          bap: boolean
+          decision_sugerida: string
+        }[]
+      }
+      ejecutar_promocion: {
+        Args: {
+          p_ciclo_actual: string
+          p_ciclo_nuevo: string
+        }
+        Returns: Json
+      }
       registrar_auditoria_sase: {
         Args: {
           p_descripcion: string
