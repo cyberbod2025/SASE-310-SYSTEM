@@ -234,6 +234,21 @@ export interface GamificacionData {
   nickname?: string;
 }
 
+export type BehaviorDriftLevel = "estable" | "leve" | "media" | "critica";
+
+export interface BehaviorMetric {
+  id: string;
+  alumnoId: string;
+  fecha: string;
+  calidad: number;
+  consistencia: number;
+  frecuencia: number;
+  tendencia: number;
+  derivaScore: number;
+  nivelDeriva: BehaviorDriftLevel;
+  createdAt: string;
+}
+
 export interface Student {
   id: string;
   matricula: string;
@@ -275,6 +290,7 @@ export interface Student {
   socioeconomicData?: SocioeconomicData;
   gamificacion?: GamificacionData;
   objetosRetenidos?: ObjetoRetenido[];
+  behaviorMetrics?: BehaviorMetric[];
 }
 
 export type ProtocolType =
