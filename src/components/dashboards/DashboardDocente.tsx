@@ -9,6 +9,7 @@ import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
 import { TestGlowCard } from "../TestGlowCard";
 import { GlassCard } from "../ui/GlassCard";
 import { useEcosystemModules } from "../../hooks/useEcosystemModules";
+import { BehaviorDriftCard } from "../BehaviorDriftCard";
 
 export const DashboardDocente = () => {
   const {
@@ -513,6 +514,8 @@ export const DashboardDocente = () => {
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
               </motion.div>
             </div>
+
+            <BehaviorDriftCard students={students} />
 
             {/* Acciones Rápidas */}
             <div className="card-sase p-6 border-[var(--sase-border-ghost)] relative overflow-hidden group/qa">

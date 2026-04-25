@@ -15,6 +15,7 @@ import {
   AuditActionType,
   ObjetoRetenido,
   EstadoObjetoRetenido,
+  BehaviorMetric,
 } from "../../types";
 import { evaluateEscalation } from "../../utils/saseUtils";
 import { sendWhatsAppNotification } from "../../utils/notifications";
@@ -95,6 +96,9 @@ export const useStudentsSlice = (
             id, objeto, motivo, fecha, responsable_id, responsable_nombre, responsable_rol, 
             estado, incidencia_id, created_at, fecha_devolucion, entregado_a, entregado_por, 
             lugar_retencion, categoria, observaciones, evidencia_url, autorizado_por
+          ),
+          behavior_metrics (
+            id, alumno_id, fecha, calidad, consistencia, frecuencia, tendencia, deriva_score, nivel_deriva, created_at
           )
         `);
 
@@ -207,6 +211,23 @@ export const useStudentsSlice = (
             autorizadoPor: o.autorizado_por,
             created_at: o.created_at,
           })),
+          behaviorMetrics: (d.behavior_metrics || [])
+            .map((metric: any): BehaviorMetric => ({
+              id: metric.id,
+              alumnoId: metric.alumno_id,
+              fecha: metric.fecha,
+              calidad: Number(metric.calidad || 0),
+              consistencia: Number(metric.consistencia || 0),
+              frecuencia: Number(metric.frecuencia || 0),
+              tendencia: Number(metric.tendencia || 0),
+              derivaScore: Number(metric.deriva_score || 0),
+              nivelDeriva: metric.nivel_deriva || "estable",
+              createdAt: metric.created_at,
+            }))
+            .sort(
+              (a: BehaviorMetric, b: BehaviorMetric) =>
+                new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+            ),
         }));
         setStudents(mappedStudents);
       }
