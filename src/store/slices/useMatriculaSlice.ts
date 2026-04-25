@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { supabase } from "../../supabase/client";
-import type { AlumnoCiclo, CicloEscolar, Group, AsignacionAlumnoGrupo } from "../../types";
+import type { AlumnoCiclo, CicloEscolar, Group } from "../../types";
 import toast from "react-hot-toast";
 
 interface MoveAction {
@@ -23,7 +23,7 @@ interface MatriculaState {
 
 export const useMatriculaSlice = (
   userId: string | undefined,
-  logAudit: (...args: any[]) => Promise<void>
+  logAudit: (action: string, description: string, table: string, recordId?: string, studentId?: string, oldValues?: any, newValues?: any) => Promise<void>
 ) => {
   const [matriculaState, setMatriculaState] = useState<MatriculaState>({
     cicloActivo: null,
@@ -58,8 +58,8 @@ export const useMatriculaSlice = (
         id: ciclos.id,
         nombre: ciclos.nombre,
         activo: ciclos.activo,
-        fechaInicio: ciclos.fecha_inicio,
-        fechaFin: ciclos.fecha_fin,
+        fechaInicio: ciclos.fecha_inicio || undefined,
+        fechaFin: ciclos.fecha_fin || undefined,
       };
 
       // 2. Alumnos del ciclo
@@ -68,7 +68,7 @@ export const useMatriculaSlice = (
         .select(`
           id, alumno_id, ciclo_id, grado, grupo, grupo_id,
           estatus, grupo_sugerido, locked,
-          alumnos!inner(nombre_completo, datos_bap, puntaje_riesgo)
+          alumnos!inner(nombre_completo, datos_bap)
         `)
         .eq("ciclo_id", ciclo.id)
         .eq("estatus", "activo")
@@ -87,7 +87,7 @@ export const useMatriculaSlice = (
         grado: ac.grado,
         grupo: ac.grupo || "",
         grupoId: ac.grupo_id,
-        estatus: ac.estatus,
+        estatus: ac.estatus as any,
         grupoSugerido: ac.grupo_sugerido,
         locked: ac.locked || false,
         nombreAlumno: ac.alumnos?.nombre_completo || "Sin nombre",

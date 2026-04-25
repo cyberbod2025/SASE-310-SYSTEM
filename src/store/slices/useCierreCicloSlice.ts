@@ -20,7 +20,7 @@ interface CierreCicloState {
 }
 
 export const useCierreCicloSlice = (
-  logAudit: (...args: any[]) => Promise<void>
+  logAudit: (action: string, description: string, table: string, recordId?: string, studentId?: string, oldValues?: any, newValues?: any) => Promise<void>
 ) => {
   const [cierreState, setCierreState] = useState<CierreCicloState>({
     cicloActivo: null,
@@ -42,8 +42,8 @@ export const useCierreCicloSlice = (
         .select("*")
         .order("created_at", { ascending: false });
 
-      const activo = ciclos?.find((c: any) => c.activo);
-      const nuevos = ciclos?.filter((c: any) => !c.activo) || [];
+      const activo = ciclos?.find((c) => c.activo);
+      const nuevos = ciclos?.filter((c) => !c.activo) || [];
 
       setCierreState((s) => ({
         ...s,
@@ -53,8 +53,8 @@ export const useCierreCicloSlice = (
               id: activo.id,
               nombre: activo.nombre,
               activo: activo.activo,
-              fechaInicio: activo.fecha_inicio,
-              fechaFin: activo.fecha_fin,
+              fechaInicio: activo.fecha_inicio || undefined,
+              fechaFin: activo.fecha_fin || undefined,
             }
           : null,
         cicloNuevo: nuevos.length > 0
@@ -122,7 +122,7 @@ export const useCierreCicloSlice = (
         return;
       }
 
-      const mapped: SimulacionPromocion[] = (data || []).map((row: any) => ({
+      const mapped: SimulacionPromocion[] = (data || []).map((row) => ({
         alumnoId: row.alumno_id,
         nombre: row.nombre,
         grado: row.grado,

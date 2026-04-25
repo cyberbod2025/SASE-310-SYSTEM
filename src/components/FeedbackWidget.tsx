@@ -63,6 +63,8 @@ export const FeedbackWidget = () => {
       [AppModule.FERIA]: "Módulo Feria",
       [AppModule.DIAGNOSTICO]: "Diagnóstico Colectivo",
       [AppModule.MATE]: "Mate",
+      [AppModule.MATRICULA_INTELIGENTE]: "Matrícula Inteligente",
+      [AppModule.CIERRE_CICLO]: "Cierre de Ciclo",
     }),
     [],
   );
