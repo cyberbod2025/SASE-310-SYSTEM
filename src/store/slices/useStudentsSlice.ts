@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../../supabase/client";
 import { User } from "@supabase/supabase-js";
+import type { Database } from "../../supabase/types";
 import {
   Student,
   Incident,
@@ -20,6 +21,31 @@ import {
 import { evaluateEscalation } from "../../utils/saseUtils";
 import { sendWhatsAppNotification } from "../../utils/notifications";
 import toast from "react-hot-toast";
+
+type TipoIncidencia = Database["public"]["Enums"]["tipo_incidencia"];
+type EstadoCasoDB = Database["public"]["Enums"]["estado_caso_alumno"];
+
+const mapIncidentTypeToDB = (type: IncidentType): TipoIncidencia => {
+  switch (type) {
+    case IncidentType.RETARDO: return "retardo";
+    case IncidentType.CONDUCTA: return "conducta";
+    case IncidentType.UNIFORME: return "uniforme";
+    case IncidentType.ASISTENCIA: return "asistencia";
+    case IncidentType.ACADEMICO: return "academica";
+    case IncidentType.SOCIOEMOCIONAL: return "socioemocional";
+    case IncidentType.SALUD: return "salud";
+    default: return "otro";
+  }
+};
+
+const mapCaseStateToDB = (state: CaseState): EstadoCasoDB => {
+  switch (state) {
+    case CaseState.OBSERVADO: return "observado";
+    case CaseState.INTERVENCION: return "intervencion";
+    case CaseState.SEGUIMIENTO: return "seguimiento";
+    default: return "normal";
+  }
+};
 
 // Production: No fictional data — students are loaded from Supabase
 const INITIAL_STUDENTS: Student[] = []; // v4.1 Sync
@@ -338,7 +364,7 @@ export const useStudentsSlice = (
       const { error } = await supabase.from("incidencias").insert([
         {
           alumno_id: studentId,
-          tipo: type,
+          tipo: mapIncidentTypeToDB(type),
           descripcion: description,
           reportado_por: user?.id || "unknown",
           fecha: new Date().toISOString()
@@ -391,7 +417,7 @@ export const useStudentsSlice = (
       if (data.isDistancia) {
         await supabase
           .from("alumnos")
-          .update({ estado_caso: "distancia" })
+          .update({ is_distancia: true })
           .eq("id", studentId);
       }
     } catch (err) {
@@ -421,7 +447,7 @@ export const useStudentsSlice = (
           trimestre1: g.trimestre1,
           trimestre2: g.trimestre2,
           trimestre3: g.trimestre3,
-          promedio_final: g.promedioFinal,
+
         })),
         { onConflict: "alumno_id,materia" },
       );
@@ -467,7 +493,7 @@ export const useStudentsSlice = (
     try {
       await supabase
         .from("alumnos")
-        .update({ estado_caso: isDistancia ? "distancia" : "activo" })
+        .update({ is_distancia: isDistancia })
         .eq("id", studentId);
       logAudit(
         "ACTUALIZACION",

@@ -103,7 +103,6 @@ interface AppContextType {
 
   // Extra (from original store)
   updateStudentAudit: any;
-  saveEvidence: any;
   addInstitutionalDocument: any;
   addDocumentoInstitucional: any;
   deleteDocumentoInstitucional: any;
@@ -196,34 +195,6 @@ export const AppProvider: React.FC<{
     );
   };
 
-  const saveEvidence = async (data: EvidenceInput) => {
-    if (!user) {
-      toast.error("No hay sesión activa para guardar evidencia");
-      return;
-    }
-
-    const payload = {
-      title: data?.title?.trim() || "Evidencia",
-      link: data?.link?.trim() || null,
-      file_type: data?.fileType?.trim() || null,
-      notes: data?.notes?.trim() || null,
-      impacto_estimado:
-        typeof data?.impactoEstimado === "number" ? data.impactoEstimado : null,
-      proyecto_nombre: data?.proyectoNombre?.trim() || null,
-      role: data?.role || currentUserRole,
-      user_id: data?.userId || user.id,
-    };
-
-    try {
-      const { error } = await supabase.from("evidence_log").insert(payload);
-      if (error) throw error;
-      toast.success("Evidencia registrada");
-    } catch (err) {
-      console.error("Error saving evidence", err);
-      toast.error("No se pudo guardar la evidencia");
-    }
-  };
-
   const updateCredencialStatus = (studentId: string, status: any) => {
     studentsSlice.setStudents((prev: any) =>
       prev.map((s: any) =>
@@ -268,7 +239,6 @@ export const AppProvider: React.FC<{
         ...statsSlice,
         ...audit,
         updateStudentAudit,
-        saveEvidence,
         updateCredencialStatus,
         addInstitutionalDocument,
         addDocumentoInstitucional: studentsSlice.addDocumentoInstitucional,

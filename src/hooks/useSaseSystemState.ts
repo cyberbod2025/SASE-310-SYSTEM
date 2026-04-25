@@ -34,7 +34,7 @@ export const useSaseSystemState = (
         .select("id", { count: "exact", head: true });
 
       if (role === "prefectura") {
-        query = query.eq("tipo", "Observación de Convivencia");
+        query = query.eq("tipo", "conducta");
       } else if (role === "docente") {
         query = query.eq("reportado_por", userId);
       }
