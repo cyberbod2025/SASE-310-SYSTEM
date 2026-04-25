@@ -1,7 +1,11 @@
 import { useState, useCallback } from "react";
 import { supabase } from "../../supabase/client";
 import type { SimulacionPromocion, CicloEscolar, DecisionPromocion } from "../../types";
+import type { Database } from "../../supabase/types";
 import toast from "react-hot-toast";
+
+type CicloEscolarRow = Database["public"]["Tables"]["ciclos_escolares"]["Row"];
+
 
 interface CierreCicloState {
   cicloActivo: CicloEscolar | null;
@@ -42,8 +46,8 @@ export const useCierreCicloSlice = (
         .select("*")
         .order("created_at", { ascending: false });
 
-      const activo = ciclos?.find((c) => c.activo);
-      const nuevos = ciclos?.filter((c) => !c.activo) || [];
+      const activo = (ciclos as CicloEscolarRow[] | null)?.find((c) => c.activo);
+      const nuevos = (ciclos as CicloEscolarRow[] | null)?.filter((c) => !c.activo) || [];
 
       setCierreState((s) => ({
         ...s,
@@ -122,7 +126,7 @@ export const useCierreCicloSlice = (
         return;
       }
 
-      const mapped: SimulacionPromocion[] = (data || []).map((row) => ({
+      const mapped: SimulacionPromocion[] = (data as any[] || []).map((row) => ({
         alumnoId: row.alumno_id,
         nombre: row.nombre,
         grado: row.grado,
@@ -191,7 +195,12 @@ export const useCierreCicloSlice = (
         return;
       }
 
-      const resultado = data as any;
+      const resultado = data as {
+        promovidos: number;
+        egresados: number;
+        bajas: number;
+        retenidos: number;
+      };
 
       await logAudit(
         "CIERRE_CICLO",
