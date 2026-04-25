@@ -318,7 +318,7 @@ export const DashboardDireccion = () => {
         </motion.button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <GlassCard
           className="p-5 flex items-center gap-4"
           onClick={() => setCurrentModule(AppModule.EXPEDIENTES)}
@@ -354,8 +354,21 @@ export const DashboardDireccion = () => {
             <span className="material-icons">campaign</span>
           </div>
           <div>
-            <p className="text-[var(--sase-text-muted)] text-xs uppercase tracking-wider font-semibold">Comunicados institucionales activos</p>
+            <p className="text-[var(--sase-text-muted)] text-xs uppercase tracking-wider font-semibold">Comunicados activos</p>
             <p className="text-2xl font-bold text-white mt-1">{dbComunicados.length}</p>
+          </div>
+        </GlassCard>
+        <GlassCard
+          className="p-5 flex items-center gap-4 border-rose-500/30 bg-rose-500/5"
+          onClick={() => setCurrentModule(AppModule.CIERRE_CICLO)}
+          hover
+        >
+          <div className="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center">
+            <span className="material-icons">history_edu</span>
+          </div>
+          <div>
+            <p className="text-[var(--sase-text-muted)] text-xs uppercase tracking-wider font-semibold">Ciclo Escolar</p>
+            <p className="text-sm font-bold text-rose-400 mt-1 uppercase italic">Gestión de Cierre</p>
           </div>
         </GlassCard>
       </div>

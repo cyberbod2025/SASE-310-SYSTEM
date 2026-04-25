@@ -14,6 +14,8 @@ import { useStudentsSlice } from "./store/slices/useStudentsSlice";
 import { useUiSlice } from "./store/slices/useUiSlice";
 import { useAuditLogic } from "./store/slices/useAuditLogic";
 import { useSystemStateSlice } from "./store/slices/useSystemStateSlice";
+import { useMatriculaSlice } from "./store/slices/useMatriculaSlice";
+import { useCierreCicloSlice } from "./store/slices/useCierreCicloSlice";
 import type { SystemState } from "./types/systemState";
 
 // Re-export types for backward compatibility
@@ -105,6 +107,24 @@ interface AppContextType {
   addInstitutionalDocument: any;
   addDocumentoInstitucional: any;
   deleteDocumentoInstitucional: any;
+
+  // Matricula Inteligente
+  matricula: any;
+  fetchMatricula: () => Promise<void>;
+  moveAlumno: (alumnoCicloId: string, grupoNuevo: string) => void;
+  undoLastMove: () => void;
+  solicitarSugerenciasIA: () => Promise<void>;
+  aprobarLote: () => Promise<void>;
+  toggleLock: (alumnoCicloId: string) => Promise<void>;
+
+  // Cierre de Ciclo
+  cierre: any;
+  fetchCiclos: () => Promise<void>;
+  crearCicloNuevo: (nombre: string) => Promise<void>;
+  simularPromocion: () => Promise<void>;
+  setOverride: (alumnoId: string, decision: any) => void;
+  ejecutarPromocion: () => Promise<void>;
+  resetCierre: () => void;
 }
 
 interface EvidenceInput {
@@ -155,6 +175,10 @@ export const AppProvider: React.FC<{
   const ui = useUiSlice(user, auth.currentUserRole, studentsSlice.students, auth.currentUserProfile);
 
   const aiSystem = useSystemStateSlice(ui.systemState as SystemState);
+
+  // 7. Matricula & Cierre Slices
+  const matriculaSlice = useMatriculaSlice(user?.id, audit.logAudit);
+  const cierreSlice = useCierreCicloSlice(audit.logAudit);
 
   // Compatibility functions for missing ones in slices
   const updateStudentAudit = async (studentId: string, modifiedBy: string) => {
@@ -252,6 +276,8 @@ export const AppProvider: React.FC<{
         addObjetoRetenido: studentsSlice.addObjetoRetenido,
         updateEstadoObjeto: studentsSlice.updateEstadoObjeto,
         registrarDevolucion: studentsSlice.registrarDevolucion,
+        ...matriculaSlice,
+        ...cierreSlice,
       }}
     >
       {children}

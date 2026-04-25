@@ -60,6 +60,8 @@ export const usePermissions = () => {
         ].includes(currentUserRole);
       case AppModule.INSCRIPCIONES:
       case AppModule.ARCHIVO:
+      case AppModule.MATRICULA_INTELIGENTE:
+      case AppModule.CIERRE_CICLO:
         return [
           UserRole.SECRETARIA,
           UserRole.DIRECTIVO,

@@ -369,6 +369,8 @@ export enum AppModule {
   FERIA = "feria",
   DIAGNOSTICO = "diagnostico",
   MATE = "mate",
+  MATRICULA_INTELIGENTE = "matricula_inteligente",
+  CIERRE_CICLO = "cierre_ciclo",
 }
 
 export interface Group {
@@ -376,6 +378,60 @@ export interface Group {
   nombre: string;
   tutor_id?: string;
   ciclo_escolar: string;
+}
+
+// ── Matrícula Inteligente + Cierre de Ciclo ──
+
+export interface CicloEscolar {
+  id: string;
+  nombre: string;
+  activo: boolean;
+  fechaInicio?: string;
+  fechaFin?: string;
+}
+
+export type EstatusAlumnoCiclo = "activo" | "promovido" | "retenido" | "baja" | "egresado";
+
+export interface AlumnoCiclo {
+  id: string;
+  alumnoId: string;
+  cicloId: string;
+  grado: number;
+  grupo: string;
+  grupoId?: string;
+  estatus: EstatusAlumnoCiclo;
+  grupoSugerido?: string;
+  locked: boolean;
+  nombreAlumno?: string;
+  promedioAlumno?: number;
+  incidenciasAlumno?: number;
+  bapAlumno?: boolean;
+}
+
+export interface AsignacionAlumnoGrupo {
+  id: string;
+  alumnoCicloId: string;
+  grupoId: string;
+  grupoAnterior?: string;
+  grupoNuevo: string;
+  asignadoPor?: string;
+  origen: "manual" | "ia" | "cierre";
+  createdAt: string;
+}
+
+export type DecisionPromocion = "promover" | "retener" | "baja" | "egresar";
+
+export interface SimulacionPromocion {
+  alumnoId: string;
+  nombre: string;
+  grado: number;
+  grupo: string;
+  faltas: number;
+  faltasConsecutivas: number;
+  promedio: number;
+  incidencias: number;
+  bap: boolean;
+  decisionSugerida: DecisionPromocion;
 }
 
 export interface TeacherAssignment {
