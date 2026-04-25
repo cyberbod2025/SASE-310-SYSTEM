@@ -10,6 +10,7 @@ let lastGroupSelected = "";
 let studentSelections = {}; // Almacena selecciones por ID: { checked, behaviors: { tipo: nivel } }
 
 const DASHBOARD_ALLOWED_ROLES = new Set(['directivo', 'subdireccion']);
+const SASE_ALLOWED_ROLES = new Set(['teacher', 'docente', 'docente_tutor', 'orientacion', 'trabajo_social', 'directivo', 'subdireccion', 'developer', 'system_admin']);
 
 function isDashboardPage() {
     return window.location.pathname.toLowerCase().endsWith('/dashboard.html') || window.location.pathname.toLowerCase().endsWith('dashboard.html');
@@ -46,6 +47,54 @@ function clearDashboardSession() {
     sessionStorage.removeItem('auth_sirde');
     sessionStorage.removeItem('sirde_user_name');
     sessionStorage.removeItem('sirde_session_pin');
+    sessionStorage.removeItem('sirde_sase_role');
+    sessionStorage.removeItem('sirde_sase_email');
+    sessionStorage.removeItem('sirde_sase_session');
+}
+
+function decodeBase64UrlJson(value) {
+    try {
+        const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+        return JSON.parse(atob(padded));
+    } catch (error) {
+        console.warn('Token SASE no legible.', error);
+        return null;
+    }
+}
+
+function parseSaseToken(token) {
+    if (!token || typeof token !== 'string') return null;
+    const [payload] = token.split('.');
+    const parsed = decodeBase64UrlJson(payload || '');
+    if (!parsed || parsed.module !== 'diagnostico') return null;
+    if (parsed.exp && Date.now() >= Number(parsed.exp) * 1000) return null;
+
+    const role = String(parsed.role || '').trim().toLowerCase();
+    if (!SASE_ALLOWED_ROLES.has(role)) return null;
+
+    return {
+        name: String(parsed.name || parsed.email || 'Personal SASE').trim(),
+        email: String(parsed.email || '').trim().toLowerCase(),
+        role,
+    };
+}
+
+function startSaseSession(payload) {
+    sessionStorage.setItem('auth_sirde', 'true');
+    sessionStorage.setItem('sirde_user_name', payload.name);
+    sessionStorage.setItem('sirde_sase_role', payload.role);
+    sessionStorage.setItem('sirde_sase_email', payload.email);
+    sessionStorage.setItem('sirde_sase_session', 'true');
+    sessionStorage.removeItem('sirde_session_pin');
+}
+
+function getSaseSession() {
+    if (sessionStorage.getItem('sirde_sase_session') !== 'true') return null;
+    const role = String(sessionStorage.getItem('sirde_sase_role') || '').toLowerCase();
+    const name = sessionStorage.getItem('sirde_user_name') || 'Personal SASE';
+    if (!SASE_ALLOWED_ROLES.has(role)) return null;
+    return { role, name };
 }
 
 function isDashboardAdmin(user) {
@@ -65,6 +114,12 @@ async function fetchUserByPin(pin) {
 }
 
 async function validateAdminSession() {
+    const saseSession = getSaseSession();
+    if (saseSession && ['directivo', 'subdireccion', 'developer', 'system_admin'].includes(saseSession.role)) {
+        hideAuthWall();
+        return true;
+    }
+
     const pin = sessionStorage.getItem('sirde_session_pin');
     if (!pin) {
         clearDashboardSession();
@@ -144,6 +199,32 @@ async function checkAccess(pin) {
         hideAuthWall();
         if (typeof updateProgress === 'function') updateProgress(1);
     } catch (e) { console.error("Critical error in checkAccess:", e); }
+}
+
+async function applySaseAccess() {
+    const saseSession = getSaseSession();
+    if (!saseSession) return false;
+
+    if (isAdminPage()) {
+        return validateAdminSession();
+    }
+
+    await initData();
+
+    const docInput = document.getElementById('docente');
+    if (docInput) {
+        const existingOption = Array.from(docInput.options || []).find(option => option.value === saseSession.name);
+        if (!existingOption) {
+            docInput.add(new Option(saseSession.name, saseSession.name));
+        }
+        docInput.value = saseSession.name;
+        docInput.disabled = true;
+        onTeacherChange();
+    }
+
+    hideAuthWall();
+    if (typeof updateProgress === 'function') updateProgress(1);
+    return true;
 }
 
 async function initData() {
@@ -614,7 +695,18 @@ function logoutSIRDE() { sessionStorage.clear(); location.reload(); }
 window.addEventListener('DOMContentLoaded', async () => {
     // SOPORTE PARA INTEGRACIÓN (IFRAME/URL PARAMS)
     const urlParams = new URLSearchParams(window.location.search);
+    const saseToken = urlParams.get('sase_token');
     const pinFromUrl = urlParams.get('pin');
+    const sasePayload = parseSaseToken(saseToken);
+    
+    if (sasePayload) {
+        console.log('LOG: Sesión SASE recibida. Omitiendo pantalla de PIN del módulo.');
+        startSaseSession(sasePayload);
+        urlParams.delete('sase_token');
+        const cleanSearch = urlParams.toString();
+        const newUrl = window.location.pathname + (cleanSearch ? '?' + cleanSearch : '') + window.location.hash;
+        window.history.replaceState({}, document.title, newUrl);
+    }
     
     if (pinFromUrl) {
         console.log("LOG: PIN recibido vía URL. Configurando sesión de módulo...");
@@ -640,6 +732,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (isIndexPage()) {
+        if (await applySaseAccess()) {
+            if (document.querySelector('.impact-factor')) calculateImpact();
+            return;
+        }
+
         const pin = sessionStorage.getItem('sirde_session_pin');
         if (pin) checkAccess(pin);
         if (document.querySelector('.impact-factor')) calculateImpact();
