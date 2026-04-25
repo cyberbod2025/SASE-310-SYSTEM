@@ -98,7 +98,7 @@ export const useStudentsSlice = (
             lugar_retencion, categoria, observaciones, evidencia_url, autorizado_por
           ),
           behavior_metrics (
-            id, alumno_id, fecha, calidad, consistencia, frecuencia, tendencia, deriva_score, nivel_deriva, created_at
+            id, alumno_id, fecha, calidad, consistencia, frecuencia, tendencia, deriva_score, nivel_deriva, estado_datos, created_at
           )
         `);
 
@@ -115,7 +115,7 @@ export const useStudentsSlice = (
           curp: d.curp,
           name: d.nombre_completo,
           group: d.grupo,
-          avatar: d.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + d.matricula,
+          avatar: d.avatar_url || '/SASE_ICON.png',
           caseState: (d.estado_semaforo as CaseState) || CaseState.CERRADO,
           puntajeRiesgo: d.puntaje_riesgo,
           estadoSemaforo: d.estado_semaforo,
@@ -222,6 +222,7 @@ export const useStudentsSlice = (
               tendencia: Number(metric.tendencia || 0),
               derivaScore: Number(metric.deriva_score || 0),
               nivelDeriva: metric.nivel_deriva || "estable",
+              estadoDatos: metric.estado_datos || "activo",
               createdAt: metric.created_at,
             }))
             .sort(

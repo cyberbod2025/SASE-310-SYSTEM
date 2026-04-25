@@ -319,7 +319,11 @@ export const DashboardDireccion = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <GlassCard className="p-5 flex items-center gap-4">
+        <GlassCard
+          className="p-5 flex items-center gap-4"
+          onClick={() => setCurrentModule(AppModule.EXPEDIENTES)}
+          hover
+        >
           <div className="w-12 h-12 rounded-xl bg-sase-info/20 text-sase-info flex items-center justify-center">
             <span className="material-icons">groups</span>
           </div>
@@ -328,7 +332,11 @@ export const DashboardDireccion = () => {
             <p className="text-2xl font-bold text-white mt-1">{students.length}</p>
           </div>
         </GlassCard>
-        <GlassCard className="p-5 flex items-center gap-4">
+        <GlassCard
+          className="p-5 flex items-center gap-4"
+          onClick={() => setCurrentModule(AppModule.REPORTES)}
+          hover
+        >
           <div className="w-12 h-12 rounded-xl bg-sase-danger/20 text-sase-danger flex items-center justify-center">
             <span className="material-icons">report</span>
           </div>
@@ -337,7 +345,11 @@ export const DashboardDireccion = () => {
             <p className="text-2xl font-bold text-white mt-1">{criticalCases.length}</p>
           </div>
         </GlassCard>
-        <GlassCard className="p-5 flex items-center gap-4">
+        <GlassCard
+          className="p-5 flex items-center gap-4"
+          onClick={() => setCurrentModule(AppModule.BITACORA)}
+          hover
+        >
           <div className="w-12 h-12 rounded-xl bg-sase-warning/20 text-sase-warning flex items-center justify-center">
             <span className="material-icons">campaign</span>
           </div>

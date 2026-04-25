@@ -22,6 +22,14 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error:", error, errorInfo);
+
+    if (typeof window !== "undefined" && shouldReloadForChunkError(error)) {
+      const reloadKey = "sase_chunk_reload_once";
+      if (!sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, "1");
+        window.location.reload();
+      }
+    }
   }
 
   public render() {
@@ -62,4 +70,13 @@ export class ErrorBoundary extends Component<Props, State> {
 
     return this.props.children;
   }
+}
+
+function shouldReloadForChunkError(error: Error | null) {
+  if (!error?.message) return false;
+  return (
+    error.message.includes("Failed to fetch dynamically imported module") ||
+    error.message.includes("Importing a module script failed") ||
+    error.message.includes("ChunkLoadError")
+  );
 }

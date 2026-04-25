@@ -2,10 +2,10 @@
 
 ## North Star: "The Radiant Prism"
 
-## Palette
-- Primary (Electric Lavender): #7B61FF
-- Secondary (Cyan Glow): #00F5FF
-- Tertiary (Soft Pink): #FF79C6
+## Palette (Verified Institutional)
+- Primary (Green Institutional): #22c55e
+- Secondary (Slate Purple): #7d7293
+- Tertiary (Deep Slate): #1a1625
 - Background (Neutral): #F0F8FF
 
 ## Rules

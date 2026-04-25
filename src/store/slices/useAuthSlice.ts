@@ -7,10 +7,15 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(initialRole);
   const [currentUserProfile, setCurrentUserProfile] = useState<any>(null);
   const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
-  const [currentModule, setCurrentModule] = useState<AppModule>(
-    AppModule.WELCOME,
-  );
+  const [currentModule, setCurrentModule] = useState<AppModule>(() => {
+    const saved = sessionStorage.getItem("sase_current_module");
+    return (saved as AppModule) || AppModule.WELCOME;
+  });
   const [isTutorMode, setIsTutorMode] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.setItem("sase_current_module", currentModule);
+  }, [currentModule]);
 
   const [onboardingDays, setOnboardingDays] = useState(0);
   const [onboardingPhase, setOnboardingPhase] = useState<"intro" | "learning" | "active" | "master">("intro");

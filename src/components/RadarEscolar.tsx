@@ -4,6 +4,7 @@ import { useApp } from "../store";
 import { CaseState, AppModule } from "../types";
 import { FeedbackWidget } from "./FeedbackWidget";
 import { SaseSplineOrb } from "./SaseSplineOrb";
+import { Activity, AlertTriangle, ShieldAlert, Stethoscope } from "lucide-react";
 
 export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
   onComplete,
@@ -89,6 +90,13 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
     },
   ];
 
+  const iconById = {
+    incidencias: AlertTriangle,
+    riesgo: ShieldAlert,
+    medicas: Stethoscope,
+    actividad: Activity,
+  } as const;
+
   return (
     <div className="fixed inset-0 z-[200] bg-[#020408] flex items-center justify-center p-6 font-sans overflow-hidden">
       {/* Background Ambience */}
@@ -172,9 +180,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                       }
                     `}
                     >
-                      <span className="material-icons text-3xl">
-                        {ind.icon}
-                      </span>
+                      {React.createElement(iconById[ind.id as keyof typeof iconById] || Activity, { className: "w-7 h-7" })}
                     </div>
                     {loading ? (
                       <div className="h-8 w-12 bg-white/5 animate-pulse rounded"></div>
@@ -220,9 +226,7 @@ export const RadarEscolar: React.FC<{ onComplete?: () => void }> = ({
                     className="w-full flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 group-hover:text-blue-300 transition-colors pt-4 border-t border-white/5"
                   >
                     <span>Acceder Módulo</span>
-                    <span className="material-icons text-sm group-hover:translate-x-1 transition-transform">
-                      arrow_forward
-                    </span>
+                    <span className="text-sm group-hover:translate-x-1 transition-transform">→</span>
                   </button>
                 </div>
               </motion.div>

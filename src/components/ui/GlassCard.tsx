@@ -68,20 +68,20 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       onClick={onClick}
       className={`
         relative overflow-hidden group
-        backdrop-blur-[30px]
-        bg-[rgba(255,255,255,0.55)]
-        rounded-3xl transition-all duration-300
+        backdrop-blur-[40px] saturate-[180%]
+        bg-[rgba(255,255,255,0.03)]
+        rounded-[2.5rem] transition-all duration-500
         ${onClick ? "cursor-pointer" : ""} 
         ${hover ? "card-sase-hover" : ""}
         ${className}
       `}
       style={{
-        boxShadow: "var(--sase-shadow-md), inset 0 1px 0 rgba(255,255,255,0.60)",
+        boxShadow: "0 20px 50px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -1px 1px rgba(123, 97, 255, 0.05)",
       }}
       {...rest}
     >
-      {/* 🔮 Frosted Edge (Light-catching refraction simulation) */}
-      <div className="absolute inset-0 rounded-3xl pointer-events-none z-0 bg-gradient-to-br from-white/35 via-transparent to-[rgba(123,97,255,0.03)]"></div>
+      {/* 🔮 Frosted Edge (Light-catching refraction simulation — No-Line boundary) */}
+      <div className="absolute inset-0 rounded-[2.5rem] pointer-events-none z-0 border border-white/5 bg-gradient-to-br from-white/10 via-transparent to-[rgba(123,97,255,0.05)] opacity-50"></div>
       
       {/* 🔦 Spotlight Effect (Cursor Follower) */}
       <motion.div 

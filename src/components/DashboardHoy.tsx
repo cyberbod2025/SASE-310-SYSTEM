@@ -66,6 +66,14 @@ export const DashboardHoy = () => {
     return "Buenas noches";
   };
 
+  const displayName =
+    currentUserProfile?.nombre_completo ||
+    currentUserProfile?.full_name ||
+    currentUserProfile?.nombre ||
+    String(currentUserRole);
+
+  const displayNameFirst = String(displayName).split(" ")[0] || String(currentUserRole);
+
   const handlePrimaryAction = () => {
     switch (currentUserRole) {
       case UserRole.DOCENTE:
@@ -123,7 +131,7 @@ export const DashboardHoy = () => {
       <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 id="dashboard-header" className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
-            {getGreeting()}, <span className="text-blue-300 capitalize">{currentUserRole}</span>
+            {getGreeting()}, <span className="text-sase-primary capitalize">{displayNameFirst}</span>
           </h1>
           <p className="text-slate-300 font-medium flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -212,22 +220,40 @@ export const DashboardHoy = () => {
       <GlassCard title="Tareas Pendientes y Calendario" icon="calendar_today">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           {[
-            { task: "Junta de Consejo Técnico", time: "18:00", type: "Reunión" },
-            { task: "Revisión de Expedientes", time: "11:00", type: "Administración" },
-            { task: "Seguimiento de Acuerdos", time: "12:30", type: "Pedagógico" },
+            { task: "Junta de Consejo Técnico", time: "18:00", type: "Reunión", target: AppModule.AGENDA },
+            { task: "Revisión de Expedientes", time: "11:00", type: "Administración", target: AppModule.EXPEDIENTES },
+            { task: "Seguimiento de Acuerdos", time: "12:30", type: "Pedagógico", target: AppModule.REPORTES },
           ].map((item, index) => (
-            <div
+            <motion.button
               key={index}
-              className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-blue-400/20 transition-all cursor-pointer group"
+              whileHover={{ 
+                scale: 1.03, 
+                backgroundColor: "rgba(255, 255, 255, 0.12)",
+                boxShadow: "0 15px 35px rgba(34, 197, 94, 0.15)"
+              }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setCurrentModule(item.target)}
+              className="p-5 rounded-3xl border border-white/5 bg-white/5 backdrop-blur-xl transition-all cursor-pointer group text-left relative overflow-hidden"
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[9px] font-black text-blue-300 uppercase tracking-widest bg-blue-500/10 border border-blue-400/20 px-2 py-1 rounded">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              
+              <div className="flex items-center justify-between mb-3 relative z-10">
+                <span className="text-[9px] font-black text-blue-300 uppercase tracking-widest bg-blue-500/10 border border-blue-400/20 px-3 py-1 rounded-full">
                   {item.type}
                 </span>
-                <span className="text-xs font-bold text-slate-400">{item.time} h</span>
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
+                  <span className="material-icons text-sm">schedule</span>
+                  {item.time} h
+                </div>
               </div>
-              <p className="text-slate-100 font-bold group-hover:text-blue-300 transition-colors">{item.task}</p>
-            </div>
+              
+              <div className="flex items-center justify-between gap-3 relative z-10">
+                <p className="text-slate-100 font-bold text-sm leading-tight group-hover:text-blue-200 transition-colors">{item.task}</p>
+                <div className="size-8 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-all">
+                  <span className="material-icons text-blue-400 text-lg group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                </div>
+              </div>
+            </motion.button>
           ))}
         </div>
       </GlassCard>

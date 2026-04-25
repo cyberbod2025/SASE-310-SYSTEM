@@ -142,7 +142,7 @@ export const Expedientes: React.FC = () => {
                     id: s.id,
                     nombre: s.name,
                     grupo: s.group,
-                    grado: s.group[0] || "1",
+                    grado: String(s.group || "1").charAt(0) || "1",
                     turno: "Vespertino",
                     curp: s.curp || s.matricula,
                     fecha_nacimiento: s.birthdate,
@@ -160,7 +160,7 @@ export const Expedientes: React.FC = () => {
                   className="w-full text-left bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50/10 p-5 rounded-[1.5rem] flex items-center gap-5 transition-all group shadow-sm active:scale-[0.98]"
                 >
                   <img
-                    src={s.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${s.name}`}
+                    src={s.avatar || "/SASE_ICON.png"}
                     className="w-14 h-14 rounded-2xl border border-slate-100 shadow-sm object-cover"
                     alt=""
                   />

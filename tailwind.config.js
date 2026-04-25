@@ -12,12 +12,12 @@ export default {
         sase: {
           dark: "#16141b",
           card: "rgba(121, 118, 124, 0.12)",
-          primary: "#816ab8",
+          primary: "#22c55e",
           cyan: "#7d7293",
           pink: "#b7687a",
           purple: "#816ab8",
           magenta: "#b7687a",
-          emerald: "#afa63c",
+          emerald: "#22c55e",
           // Semantic Tokens (opacity-aware via CSS vars)
           info: "rgb(var(--sase-info) / <alpha-value>)",
           warning: "rgb(var(--sase-warning) / <alpha-value>)",
@@ -28,7 +28,7 @@ export default {
       },
       boxShadow: {
         // Ambient tinted shadows (Luminous Refraction spec)
-        "glow-primary": "0 0 20px rgba(129, 106, 184, 0.22)",
+        "glow-primary": "0 0 20px rgba(34, 197, 94, 0.22)",
         "glow-cyan": "0 0 20px rgba(125, 114, 147, 0.22)",
         "glow-pink": "0 0 20px rgba(183, 104, 122, 0.22)",
         "glow-info": "0 0 20px rgb(var(--sase-info) / 0.3)",

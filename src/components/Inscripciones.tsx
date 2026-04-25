@@ -130,7 +130,7 @@ export const Inscripciones: React.FC = () => {
     };
 
     try {
-      let studentPhotoUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${fullName}`;
+      let studentPhotoUrl = "/SASE_ICON.png";
       let guardianPhotoUrl = "";
 
       if (fileStudent)

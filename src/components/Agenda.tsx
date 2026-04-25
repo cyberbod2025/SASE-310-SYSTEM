@@ -60,8 +60,8 @@ export const Agenda: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [newEvent, setNewEvent] = useState<Partial<CalendarEvent>>({
     date: new Date().toISOString().split("T")[0],
-    type: "reunion",
-    title: getDefaultTitleForType("reunion"),
+    type: "otro",
+    title: "",
     para_todos_maestros: false,
   });
   const [searchTerm, setSearchTerm] = useState("");

@@ -228,7 +228,7 @@ export const DashboardDocente = () => {
               </h2>
               <div className="flex items-center gap-2 justify-center opacity-30">
                 <span className="h-px w-4 bg-white/20"></span>
-                <span className="text-[7px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.3em] italic leading-tight">
+                <span className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.3em] italic leading-tight opacity-40">
                   CENTRO DE MANDO DOCENTE
                 </span>
                 <span className="h-px w-4 bg-white/20"></span>
