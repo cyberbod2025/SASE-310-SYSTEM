@@ -22,11 +22,16 @@ const App: React.FC = () => {
   
   // Estado para controlar la animación de introducción
   const [showIntro, setShowIntro] = useState(() => {
-    return sessionStorage.getItem("sase_intro_v4_shown") !== "true";
+    if (typeof window === "undefined") return true;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("skipIntro") === "1") {
+      return false;
+    }
+    return localStorage.getItem("sase_intro_v4_shown") !== "true";
   });
 
   const handleIntroComplete = () => {
-    sessionStorage.setItem("sase_intro_v4_shown", "true");
+    localStorage.setItem("sase_intro_v4_shown", "true");
     setShowIntro(false);
   };
 
@@ -52,6 +57,51 @@ const App: React.FC = () => {
       setIsRegistering(true);
       setShowIntro(false); 
     }
+    if (params.get("skipIntro") === "1") {
+      localStorage.setItem("sase_intro_v4_shown", "true");
+      setShowIntro(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const reloadKey = "sase_dynamic_chunk_reload_once";
+
+    const shouldRecover = (message: string | undefined) => {
+      if (!message) return false;
+      return (
+        message.includes("Failed to fetch dynamically imported module") ||
+        message.includes("Importing a module script failed") ||
+        message.includes("ChunkLoadError")
+      );
+    };
+
+    const recover = () => {
+      if (sessionStorage.getItem(reloadKey)) return;
+      sessionStorage.setItem(reloadKey, "1");
+      window.location.reload();
+    };
+
+    const onError = (event: ErrorEvent) => {
+      if (shouldRecover(event.message)) {
+        recover();
+      }
+    };
+
+    const onUnhandled = (event: PromiseRejectionEvent) => {
+      const reason = event.reason;
+      const message = typeof reason === "string" ? reason : reason?.message;
+      if (shouldRecover(message)) {
+        recover();
+      }
+    };
+
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onUnhandled);
+
+    return () => {
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onUnhandled);
+    };
   }, []);
 
   // Handle Browser Back Button for Registration

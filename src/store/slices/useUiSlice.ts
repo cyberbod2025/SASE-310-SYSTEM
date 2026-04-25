@@ -7,6 +7,7 @@ export const useUiSlice = (
   user: any,
   currentUserRole: UserRole,
   students: Student[],
+  profile?: any,
 ) => {
   const [quickRegisterOpen, setQuickRegisterOpen] = useState(false);
   const [quickRegisterType, setQuickRegisterType] = useState<any>(null);
@@ -71,7 +72,7 @@ export const useUiSlice = (
     if (!user) return;
     let msg = "";
     const rawName =
-      user?.user_metadata?.full_name || user?.email?.split("@")[0];
+      profile?.nombre_completo || profile?.full_name || user?.user_metadata?.full_name || user?.email?.split("@")[0];
     const roleLabel = RoleLabels[currentUserRole];
     const userName = rawName || roleLabel;
     const greeting = getSaludoConfig();
@@ -92,7 +93,7 @@ export const useUiSlice = (
         msg = `${greeting}, ${userName}. Bienvenido al núcleo SASE de la ESD 310.`;
     }
     setAssistantMessage(msg);
-  }, [currentUserRole, students, user]);
+  }, [currentUserRole, students, user, profile]);
 
   return {
     quickRegisterOpen,

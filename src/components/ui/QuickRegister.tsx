@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
-import { AppModule, IncidentType } from "../../types";
+import { AppModule, IncidentType, UserRole } from "../../types";
 
 export const QuickRegister = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { setCurrentModule, openQuickRegister } = useApp();
+  const { setCurrentModule, openQuickRegister, currentUserRole } = useApp();
 
-  const quickActions = [
+  const allQuickActions = [
     {
       id: "asistencia",
       label: "Asistencia Rápida",
@@ -16,6 +16,7 @@ export const QuickRegister = () => {
       glow: "hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]",
       border: "hover:border-emerald-500/50",
       action: () => setCurrentModule(AppModule.ASISTENCIA),
+      roles: [UserRole.DOCENTE, UserRole.DOCENTE_TUTOR, UserRole.PREFECTURA, UserRole.SECRETARIA],
     },
     {
       id: "incidencia",
@@ -25,6 +26,7 @@ export const QuickRegister = () => {
       glow: "hover:shadow-[0_0_15px_rgba(251,191,36,0.4)]",
       border: "hover:border-amber-500/50",
       action: () => openQuickRegister(IncidentType.CONDUCTA),
+      roles: [UserRole.DOCENTE, UserRole.DOCENTE_TUTOR, UserRole.PREFECTURA, UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.ORIENTACION, UserRole.TRABAJO_SOCIAL, UserRole.MEDICO_ESCOLAR, UserRole.UDEII, UserRole.DEVELOPER, UserRole.SYSTEM_ADMIN],
     },
     {
       id: "objeto",
@@ -34,8 +36,15 @@ export const QuickRegister = () => {
       glow: "hover:shadow-[0_0_15px_rgba(59,130,246,0.4)]",
       border: "hover:border-blue-500/50",
       action: () => setCurrentModule(AppModule.OBJETOS_RETENIDOS),
+      roles: [UserRole.PREFECTURA, UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.DEVELOPER, UserRole.SYSTEM_ADMIN],
     },
   ];
+
+  const quickActions = allQuickActions.filter((action) => action.roles.includes(currentUserRole as UserRole));
+
+  if (quickActions.length === 0) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-8 right-40 z-[2000] flex flex-col items-end">

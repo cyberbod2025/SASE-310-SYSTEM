@@ -16,10 +16,9 @@ export const ManualUsuario = () => {
   useEffect(() => {
     setIsAssistantOpen(true);
     setAssistantSuggestion({
-      text: "¡Hola! He detectado que estás consultando el manual. ¿Necesitas ayuda con algún protocolo específico?",
+      text: "¡Hola! Estás en el manual integrado. Si necesitas ayuda con un módulo concreto, te acompaño desde aquí sin reiniciar el tour largo.",
       state: "attention",
-      actionLabel: "GUÍAME EN EL TOUR",
-      actionType: "start-tour"
+      actionLabel: "ENTENDIDO"
     });
   }, [setAssistantSuggestion, setIsAssistantOpen]);
 
@@ -128,33 +127,27 @@ export const ManualUsuario = () => {
           </h2>
           
           <GlassCard 
-            className="border-violet-500/30 bg-violet-500/5 relative group h-fit"
+            className="border-violet-500/30 bg-violet-500/5 relative group h-fit cursor-pointer hover:bg-violet-500/10 transition-colors"
             onClick={() => setIsAssistantOpen(true)}
           >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span className="material-icons text-6xl">blur_on</span>
-            </div>
-            
-            <div className="flex flex-col gap-6 items-center text-center py-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-violet-500 blur-xl opacity-20 animate-pulse" />
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center shadow-2xl relative z-10 border border-white/20">
-                  <span className="material-icons text-white text-3xl">smart_toy</span>
-                </div>
+            <div className="flex flex-col gap-4 items-start py-2">
+              <div className="flex items-center gap-3">
+                <span className="material-icons text-violet-400 text-2xl">auto_awesome</span>
+                <h3 className="text-white font-black text-sm uppercase tracking-wider">Llamar a Sasito</h3>
               </div>
               
-              <div>
-                <h3 className="text-white font-black text-lg uppercase tracking-wider mb-2">¿Dudas complejas?</h3>
-                <p className="text-slate-400 text-xs leading-relaxed">
-                  Sasito conoce cada rincón del sistema. Pregúntale lo que sea y él te guiará paso a paso.
-                </p>
-              </div>
+              <p className="text-slate-400 text-xs leading-relaxed text-left">
+                Haz clic aquí o en la esfera flotante para abrir el chat del asistente interactivo.
+              </p>
               
-              <button 
-                className="w-full py-3 bg-violet-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-violet-500/20 hover:bg-violet-400 transition-all transform group-hover:scale-105 active:scale-95"
-              >
-                Iniciando Consulta...
-              </button>
+              <div className="w-full flex items-center justify-between mt-2 pt-4 border-t border-white/5">
+                <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest">
+                  Activar Copiloto
+                </span>
+                <span className="material-icons text-violet-400 text-sm group-hover:translate-x-1 transition-transform">
+                  arrow_forward
+                </span>
+              </div>
             </div>
           </GlassCard>
 
@@ -174,4 +167,3 @@ export const ManualUsuario = () => {
 };
 
 export default ManualUsuario;
-

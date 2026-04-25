@@ -198,14 +198,14 @@ async function resolveInstitutionalProfile(
 ): Promise<InstitutionalProfile | null> {
   const { data } = await supabase
     .from("perfiles_usuario")
-    .select("id, rol, role, email, nombre_completo, grupo_tutor, grupos")
+    .select("id, rol, email, nombre_completo, grupo_tutor, grupos")
     .eq("id", authUser.id)
     .maybeSingle();
 
   const institutionalProfile = data as Record<string, unknown> | null;
 
   if (institutionalProfile) {
-    const role = normalizeRole(institutionalProfile.rol ?? institutionalProfile.role);
+    const role = normalizeRole(institutionalProfile.rol);
     if (!role) return null;
 
     return {

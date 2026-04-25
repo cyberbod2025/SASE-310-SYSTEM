@@ -23,7 +23,6 @@ const requiredRuntimeEnv = [
   "SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
   "SASE_SHARED_SECRET",
-  "FERIA_APP_URL",
   "SASE_BASE_URL",
 ];
 
@@ -55,11 +54,13 @@ if (missingRuntimeEnv.length > 0) {
   );
 }
 
+const moduleKey = (process.env.SASE_MODULE || "feria").trim().toLowerCase();
 const supabaseUrl = process.env.SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const sharedSecret = process.env.SASE_SHARED_SECRET;
-const feriaAppUrl = process.env.FERIA_APP_URL;
+const moduleAppUrl = resolveModuleAppUrl(moduleKey);
 const saseBaseUrl = process.env.SASE_BASE_URL;
+const expectedHash = process.env.SASE_EXPECTED_HASH ?? (moduleKey === "feria" ? "#/docente" : "");
 
 const authKey =
   process.env.SASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || serviceRoleKey;
@@ -79,9 +80,9 @@ const results = {
 };
 
 async function main() {
-  await verifyFeriaReachability(feriaAppUrl);
-  const feriaModule = await verifyCatalogState(admin);
-  await verifyPilotRules(admin, feriaModule.id);
+  await verifyModuleReachability(moduleAppUrl);
+  const moduleRecord = await verifyCatalogState(admin, moduleKey);
+  await verifyPilotRules(admin, moduleRecord.id, moduleKey);
   await verifyRuntimeEndpoint(saseBaseUrl);
 
   const pilotToken = await resolveAccessToken(
@@ -98,7 +99,7 @@ async function main() {
     "no_autorizado",
   );
 
-  const positiveResponse = await launchModule(saseBaseUrl, pilotToken, "feria");
+  const positiveResponse = await launchModule(saseBaseUrl, pilotToken, moduleKey);
   results.positiveStatus = positiveResponse.status;
   if (positiveResponse.status !== 200) {
     fail(
@@ -115,10 +116,10 @@ async function main() {
   results.launchUrl = positiveResponse.body.url;
   console.log(`Launch URL: ${positiveResponse.body.url}`);
 
-  const decoded = verifyLaunchUrl(positiveResponse.body.url, feriaAppUrl, sharedSecret);
+  const decoded = verifyLaunchUrl(positiveResponse.body.url, moduleAppUrl, sharedSecret, moduleKey, expectedHash);
   console.log(`Token payload: ${JSON.stringify(decoded.payload, null, 2)}`);
 
-  const negativeResponse = await launchModule(saseBaseUrl, blockedToken, "feria");
+  const negativeResponse = await launchModule(saseBaseUrl, blockedToken, moduleKey);
   results.negativeStatus = negativeResponse.status;
   if (negativeResponse.status !== 403) {
     fail(
@@ -128,19 +129,19 @@ async function main() {
     );
   }
 
-  const auditRows = await verifyAudit(admin, decoded.payload.sub);
+  const auditRows = await verifyAudit(admin, decoded.payload.sub, moduleKey);
   console.log(`Auditoria reciente: ${JSON.stringify(auditRows, null, 2)}`);
 
   printSection("Resultado");
-  console.log("Smoke OK: SASE runtime authorized the pilot, denied the blocked user and preserved the Feria handoff URL.");
+  console.log(`Smoke OK: SASE runtime authorized the pilot, denied the blocked user and preserved the ${moduleKey} handoff URL.`);
 }
 
 main().catch((error) => {
   fail(error instanceof Error ? error.message : String(error));
 });
 
-async function verifyFeriaReachability(urlString) {
-  printSection("Feria");
+async function verifyModuleReachability(urlString) {
+  printSection("Modulo destino");
   const target = new URL(urlString);
   target.hash = "";
 
@@ -148,33 +149,33 @@ async function verifyFeriaReachability(urlString) {
     method: "GET",
     redirect: "manual",
   }).catch((error) => {
-    throw new Error(`FERIA_APP_URL no es accesible: ${error.message}`);
+    throw new Error(`La URL del modulo no es accesible: ${error.message}`);
   });
 
-  console.log(`- Feria reachable: HTTP ${response.status} @ ${target.toString()}`);
+  console.log(`- Destino reachable: HTTP ${response.status} @ ${target.toString()}`);
 }
 
-async function verifyCatalogState(adminClient) {
+async function verifyCatalogState(adminClient, currentModuleKey) {
   printSection("Catalogo");
   const { data, error } = await adminClient
     .from("modulos_ecosistema")
     .select("id, key, name, base_url, is_active")
-    .eq("key", "feria")
+    .eq("key", currentModuleKey)
     .maybeSingle();
 
   if (error || !data) {
-    throw new Error(`No se encontro el modulo feria en catalogo: ${error?.message || "sin datos"}`);
+    throw new Error(`No se encontro el modulo ${currentModuleKey} en catalogo: ${error?.message || "sin datos"}`);
   }
 
   if (!data.is_active) {
-    throw new Error("El modulo feria existe pero esta inactivo.");
+    throw new Error(`El modulo ${currentModuleKey} existe pero esta inactivo.`);
   }
 
-  console.log(`- Feria activa en catalogo: ${data.base_url}`);
+  console.log(`- ${currentModuleKey} activo en catalogo: ${data.base_url}`);
   return data;
 }
 
-async function verifyPilotRules(adminClient, moduleId) {
+async function verifyPilotRules(adminClient, moduleId, currentModuleKey) {
   printSection("Accesos");
   const pilotEmail = normalizeEmail(process.env.SASE_PILOT_EMAIL);
   const blockedEmail = normalizeEmail(process.env.SASE_BLOCKED_EMAIL);
@@ -191,7 +192,7 @@ async function verifyPilotRules(adminClient, moduleId) {
   const rows = data || [];
   console.log(`- Reglas por usuario cargadas: ${rows.length}`);
 
-  if (pilotEmail && !rows.some((row) => normalizeEmail(row.email) === pilotEmail && row.is_active)) {
+  if (currentModuleKey === "feria" && pilotEmail && !rows.some((row) => normalizeEmail(row.email) === pilotEmail && row.is_active)) {
     throw new Error(`El piloto ${pilotEmail} no aparece activo en modulos_ecosistema_usuarios.`);
   }
 
@@ -258,11 +259,11 @@ async function launchModule(baseUrl, accessToken, moduleKey) {
   };
 }
 
-function verifyLaunchUrl(launchUrl, expectedFeriaUrl, secret) {
+function verifyLaunchUrl(launchUrl, expectedModuleUrl, secret, expectedModuleKey, expectedHash) {
   const hashIndex = launchUrl.indexOf("#");
   const hash = hashIndex >= 0 ? launchUrl.slice(hashIndex) : "";
-  if (hash !== "#/docente") {
-    throw new Error(`El hash final no es #/docente. Recibido: ${hash || "(vacio)"}`);
+  if ((expectedHash || "") !== hash) {
+    throw new Error(`El hash final no coincide. Esperado: ${expectedHash || "(vacio)"} | Recibido: ${hash || "(vacio)"}`);
   }
 
   if (!launchUrl.includes("?sase_token=")) {
@@ -270,10 +271,10 @@ function verifyLaunchUrl(launchUrl, expectedFeriaUrl, secret) {
   }
 
   const url = new URL(hashIndex >= 0 ? launchUrl.slice(0, hashIndex) : launchUrl);
-  const expectedBase = new URL(expectedFeriaUrl.split("#")[0]);
+  const expectedBase = new URL(expectedModuleUrl.split("#")[0]);
   if (url.origin !== expectedBase.origin || url.pathname !== expectedBase.pathname) {
     throw new Error(
-      `La URL de handoff apunta a un destino distinto de FERIA_APP_URL. Recibido: ${url.toString()} | Esperado: ${expectedBase.toString()}`,
+      `La URL de handoff apunta a un destino distinto del modulo. Recibido: ${url.toString()} | Esperado: ${expectedBase.toString()}`,
     );
   }
 
@@ -306,7 +307,7 @@ function verifyLaunchUrl(launchUrl, expectedFeriaUrl, secret) {
   const payload = JSON.parse(fromBase64Url(payloadBase64Url).toString("utf8"));
   if (!payload.sub) throw new Error("El payload no incluye sub.");
   if (!payload.uid) throw new Error("El payload no incluye uid temporal.");
-  if (payload.module !== "feria") throw new Error(`El payload module es invalido: ${payload.module}`);
+  if (payload.module !== expectedModuleKey) throw new Error(`El payload module es invalido: ${payload.module}`);
   if (typeof payload.iat !== "number" || typeof payload.exp !== "number") {
     throw new Error("El payload no incluye iat/exp numericos.");
   }
@@ -317,13 +318,13 @@ function verifyLaunchUrl(launchUrl, expectedFeriaUrl, secret) {
   return { payload, token };
 }
 
-async function verifyAudit(adminClient, pilotUserId) {
+async function verifyAudit(adminClient, pilotUserId, currentModuleKey) {
   printSection("Auditoria");
   const { data, error } = await adminClient
     .from("auditoria")
     .select("tipo_accion, descripcion_accion, usuario_id, fecha, id_registro_objetivo")
     .eq("tabla_objetivo", "modulos_ecosistema")
-    .eq("id_registro_objetivo", "feria")
+    .eq("id_registro_objetivo", currentModuleKey)
     .order("fecha", { ascending: false })
     .limit(10);
 
@@ -368,6 +369,25 @@ function stripTrailingSlash(value) {
   return value.endsWith("/") ? value.slice(0, -1) : value;
 }
 
+function resolveModuleAppUrl(currentModuleKey) {
+  if (process.env.SASE_MODULE_URL) {
+    return process.env.SASE_MODULE_URL;
+  }
+
+  const envMap = {
+    feria: process.env.FERIA_APP_URL,
+    diagnostico: process.env.DIAGNOSTICO_APP_URL,
+    mate: process.env.MATE_APP_URL,
+  };
+
+  const url = envMap[currentModuleKey];
+  if (!url) {
+    throw new Error(`Falta la URL del modulo ${currentModuleKey}. Configura SASE_MODULE_URL o la variable especifica del modulo.`);
+  }
+
+  return url;
+}
+
 function loadEnvFile(filePath) {
   if (fs.existsSync(filePath)) {
     loadDotenv({ path: filePath, override: false });
@@ -396,10 +416,14 @@ function printHelp() {
 
   export SASE_BASE_URL="https://sase.midominio.com"
   export FERIA_APP_URL="https://feria.midominio.com/#/docente"
+  export DIAGNOSTICO_APP_URL="https://diagnostico.midominio.com/"
+  export MATE_APP_URL="https://mate.midominio.com/"
   export SUPABASE_URL="https://proyecto.supabase.co"
   export SUPABASE_SERVICE_ROLE_KEY="..."
   export SASE_SHARED_SECRET="..."
   export SASE_PUBLISHABLE_KEY="..."    # opcional, usa VITE_SUPABASE_ANON_KEY o service role como fallback
+  export SASE_MODULE="feria"           # opcional: feria | diagnostico | mate
+  export SASE_EXPECTED_HASH="#/docente" # opcional, por defecto solo feria usa hash
   export SASE_PILOT_EMAIL="docente.piloto@sase.mx"
   export SASE_PILOT_PASSWORD="..."
   export SASE_BLOCKED_EMAIL="usuario.no.autorizado@sase.mx"
@@ -409,9 +433,9 @@ function printHelp() {
 
 Este smoke valida:
 - variables de runtime de SASE
-- accesibilidad HTTP de Feria y del launcher real
-- modulo feria activo en catalogo
-- piloto presente en modulos_ecosistema_usuarios
+- accesibilidad HTTP del modulo y del launcher real
+- modulo activo en catalogo
+- piloto presente en reglas de acceso si aplica
 - handoff con ?sase_token=...#/docente
 - payload con sub y uid
 - firma base64url valida

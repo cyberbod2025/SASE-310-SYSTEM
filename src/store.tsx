@@ -152,7 +152,7 @@ export const AppProvider: React.FC<{
   );
 
   // 6. UI State Slice
-  const ui = useUiSlice(user, auth.currentUserRole, studentsSlice.students);
+  const ui = useUiSlice(user, auth.currentUserRole, studentsSlice.students, auth.currentUserProfile);
 
   const aiSystem = useSystemStateSlice(ui.systemState as SystemState);
 

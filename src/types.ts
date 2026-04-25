@@ -234,7 +234,8 @@ export interface GamificacionData {
   nickname?: string;
 }
 
-export type BehaviorDriftLevel = "estable" | "leve" | "media" | "critica";
+export type BehaviorDriftLevel = "estable" | "leve" | "media" | "critica" | "sin datos suficientes";
+export type BehaviorDataStatus = "insuficiente" | "activo";
 
 export interface BehaviorMetric {
   id: string;
@@ -246,6 +247,7 @@ export interface BehaviorMetric {
   tendencia: number;
   derivaScore: number;
   nivelDeriva: BehaviorDriftLevel;
+  estadoDatos: BehaviorDataStatus;
   createdAt: string;
 }
 

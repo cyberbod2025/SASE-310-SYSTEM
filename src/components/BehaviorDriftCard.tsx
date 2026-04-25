@@ -43,6 +43,14 @@ const driftConfig: Record<
     dot: "bg-rose-400 shadow-[0_0_16px_rgba(251,113,133,0.55)]",
     border: "border-rose-400/30 bg-rose-400/10",
   },
+  "sin datos suficientes": {
+    label: "Sin datos",
+    message: "Se requieren más registros para calcular deriva",
+    icon: "hourglass_empty",
+    tone: "text-slate-400",
+    dot: "bg-slate-400 shadow-[0_0_16px_rgba(148,163,184,0.35)]",
+    border: "border-slate-400/20 bg-slate-400/5",
+  },
 };
 
 const getLatestMetric = (student: Student): BehaviorMetric | null => {

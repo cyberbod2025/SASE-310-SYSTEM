@@ -110,10 +110,10 @@ export const Login: React.FC<LoginProps> = ({
 
   return (
     <div 
-      className="sase-layout-light min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-[var(--sase-bg)]"
+      className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-[var(--sase-bg)]"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(129,106,184,0.18),transparent_34%),radial-gradient(circle_at_80%_18%,rgba(125,114,147,0.14),transparent_28%),radial-gradient(circle_at_50%_85%,rgba(175,166,60,0.08),transparent_26%)] animate-pulse-slow pointer-events-none mix-blend-screen" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,rgba(18,16,23,0.2)_58%,rgba(18,16,23,0.6)_100%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,197,94,0.14),transparent_34%),radial-gradient(circle_at_80%_18%,rgba(125,114,147,0.12),transparent_28%),radial-gradient(circle_at_50%_85%,rgba(34,197,94,0.06),transparent_26%)] animate-pulse-slow pointer-events-none mix-blend-screen" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,rgba(18,16,23,0.25)_58%,rgba(18,16,23,0.7)_100%)] pointer-events-none" />
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -122,7 +122,7 @@ export const Login: React.FC<LoginProps> = ({
       >
         <GlassCard className="p-10 md:p-12 flex flex-col items-center !backdrop-blur-[40px] !bg-[rgba(121,118,124,0.1)] !border-[rgba(227,221,236,0.14)] shadow-[0_38px_100px_rgba(18,16,23,0.38)]">
           <div className="mb-6 self-center">
-            <SaseSplineOrb state="normal" className="w-52 h-52" accentColor="#22c55e" showAura={false} showGlow={false} />
+            <SaseSplineOrb state="normal" className="w-52 h-52" showAura={true} showGlow={true} />
           </div>
 
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-2 tracking-[-0.04em] text-center">SASE 310</h1>
@@ -132,8 +132,11 @@ export const Login: React.FC<LoginProps> = ({
 
           <form className="w-full space-y-6" onSubmit={handleLogin}>
             <GlassInput
+              id="email"
+              name="email"
               label="Correo Institucional"
               type="email"
+              autoComplete="username"
               placeholder="usuario@sase.mx"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -142,8 +145,11 @@ export const Login: React.FC<LoginProps> = ({
             />
 
             <GlassInput
+              id="password"
+              name="password"
               label="Contraseña"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
