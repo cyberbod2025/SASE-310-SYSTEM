@@ -27,28 +27,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "20"
-          cache: "pnpm"
+          cache: "npm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: HUSKY=0 npm ci
 
       - name: Run lint
-        run: pnpm run lint
+        run: npm run lint
 
       - name: Run type-check
-        run: pnpm run type-check
+        run: npm run type-check
 
       - name: Run tests
-        run: pnpm run test
+        run: npm run test
 
       - name: Build project
-        run: pnpm run build
+        run: npm run build
