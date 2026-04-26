@@ -101,6 +101,17 @@ async function main() {
 
   const positiveResponse = await launchModule(saseBaseUrl, pilotToken, moduleKey);
   results.positiveStatus = positiveResponse.status;
+  
+  console.log(`Debug Body: ${JSON.stringify(positiveResponse.body)}`);
+
+  await admin.from("smoke_test_logs").insert({
+    actor_email: process.env.SASE_PILOT_EMAIL,
+    action: "MODULE_LAUNCH",
+    module: moduleKey,
+    result: positiveResponse.status === 200 ? "SUCCESS" : "FAIL",
+    details: positiveResponse.body
+  });
+
   if (positiveResponse.status !== 200) {
     fail(
       `El launcher no autorizo al piloto. HTTP ${positiveResponse.status}: ${stringifyJson(
@@ -121,6 +132,15 @@ async function main() {
 
   const negativeResponse = await launchModule(saseBaseUrl, blockedToken, moduleKey);
   results.negativeStatus = negativeResponse.status;
+
+  await admin.from("smoke_test_logs").insert({
+    actor_email: process.env.SASE_BLOCKED_EMAIL,
+    action: "MODULE_LAUNCH",
+    module: moduleKey,
+    result: negativeResponse.status === 403 ? "SUCCESS_DENIED" : "FAIL_NOT_DENIED",
+    details: negativeResponse.body
+  });
+
   if (negativeResponse.status !== 403) {
     fail(
       `La prueba negativa no devolvio 403. HTTP ${negativeResponse.status}: ${stringifyJson(
