@@ -354,11 +354,12 @@ function parseRequestedModule(req: VercelRequest, forcedModuleKey?: ModuleKey): 
 function buildToken(profile: InstitutionalProfile, moduleKey: ModuleKey) {
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + TOKEN_TTL_SECONDS;
+  const handoffRole = moduleKey === "feria" ? "teacher" : mapTokenRole(profile.role);
   const payload = {
     sub: profile.id,
     uid: profile.id,
     email: normalizeEmail(profile.email),
-    role: mapTokenRole(profile.role),
+    role: handoffRole,
     name: profile.name,
     module: moduleKey,
     institutionId: DEFAULT_INSTITUTION_ID,
