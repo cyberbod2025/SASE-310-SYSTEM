@@ -6,7 +6,7 @@ type JsonRecord = Record<string, unknown>;
 const PROJECT_URL = process.env.SASE_PROJECT_URL || "http://127.0.0.1:54321";
 const PUBLISHABLE_KEY = process.env.SASE_PUBLISHABLE_KEY || "";
 const SECRET_KEY = process.env.SASE_SECRET_KEY || "";
-const PASSWORD = "SmokePass123!";
+const PASSWORD = process.env.TEST_DOCENTE_PASSWORD || "SmokePass123!";
 
 if (!PUBLISHABLE_KEY || !SECRET_KEY) {
   throw new Error("Faltan SASE_PUBLISHABLE_KEY o SASE_SECRET_KEY para el smoke T017.");
@@ -20,9 +20,9 @@ const publicClient = createClient(PROJECT_URL, PUBLISHABLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const SMOKE_EMAIL = "prueba.registro.smoke@sase.mx";
-const APPROVER_EMAIL = "directivo.smoke@sase.mx";
-const OUTSIDER_EMAIL = "externo.smoke@sase.mx";
+const SMOKE_EMAIL = process.env.TEST_SMOKE_REGISTRO_EMAIL || "prueba.registro.smoke@sase.mx";
+const APPROVER_EMAIL = process.env.TEST_DOCENTE_EMAIL || "directivo.smoke@sase.mx";
+const OUTSIDER_EMAIL = process.env.TEST_BLOQUEADO_EMAIL || "externo.smoke@sase.mx";
 const PHONE = "+525511112222";
 
 async function deleteUserByEmail(email: string) {

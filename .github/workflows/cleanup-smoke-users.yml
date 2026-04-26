@@ -1,0 +1,19 @@
+name: Cleanup Smoke Users
+on:
+  schedule:
+    - cron: '0 0 * * *' # Cada medianoche
+  workflow_dispatch: # Permitir ejecución manual
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx tsx scripts/cleanup-smoke-users.ts
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

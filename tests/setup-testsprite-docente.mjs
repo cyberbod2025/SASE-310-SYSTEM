@@ -11,8 +11,8 @@ const client = createClient(apiUrl, secretKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const email = "docente.testsprite@sase.mx";
-const password = "DocenteTest123!";
+const email = process.env.TEST_DOCENTE_EMAIL || "docente.testsprite@sase.mx";
+const password = process.env.TEST_DOCENTE_PASSWORD || "DocenteTest123!";
 
 const list = await client.auth.admin.listUsers();
 const existing = list.data?.users?.find((user) => user.email === email);
