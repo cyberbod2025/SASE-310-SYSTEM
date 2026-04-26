@@ -26,31 +26,27 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "20"
-          cache: "pnpm"
+          cache: "npm"
           
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: HUSKY=0 npm ci
         
       - name: Lint Check
-        run: pnpm run lint
+        run: npm run lint
         
       - name: Type Check
-        run: pnpm run type-check
+        run: npm run type-check
         
       - name: Run Tests
-        run: pnpm run test
+        run: npm run test
         
       - name: Build Check
-        run: pnpm run build
+        run: npm run build
 
   security-scan:
     name: 🔐 Security & SQL Audit
