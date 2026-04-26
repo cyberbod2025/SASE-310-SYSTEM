@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { supabase } from "../../supabase/client";
 import type { SimulacionPromocion, CicloEscolar, DecisionPromocion } from "../../types";
 import type { Database } from "../../supabase/types";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 type CicloEscolarRow = Database["public"]["Tables"]["ciclos_escolares"]["Row"];
 

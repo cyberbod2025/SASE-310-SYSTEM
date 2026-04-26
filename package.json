@@ -14,7 +14,7 @@
     "smoke:t017": "tsx tests/smoke-t017.ts",
     "smoke:sase:launch": "node ops/smoke-sase-launch.js",
     "sync:types": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/supabase/types.ts",
-    "prepare": "husky"
+    "prepare": "command -v husky >/dev/null 2>&1 && husky install || true"
   },
   "dependencies": {
     "@_davideast/stitch-mcp": "^0.3.2",
