@@ -42,13 +42,13 @@ const mockState: MockState = {
 function resetMockState() {
   mockState.sessionUser = {
     id: "teacher-1",
-    email: "pilot.docente@sase.mx",
+    email: process.env.TEST_DOCENTE_EMAIL || "pilot.docente@sase.mx",
     user_metadata: { full_name: "Docente Piloto" },
   };
   mockState.institutionalProfile = {
     id: "teacher-1",
     rol: "docente",
-    email: "pilot.docente@sase.mx",
+    email: process.env.TEST_DOCENTE_EMAIL || "pilot.docente@sase.mx",
     nombre_completo: "Docente Piloto",
     grupo_tutor: "2A",
     grupos: ["2A", "2B"],
@@ -214,7 +214,7 @@ describe("Launcher de modulos externos", () => {
     expect(url.hash).toBe("#/docente");
     expect(payload.sub).toBe("teacher-1");
     expect(payload.uid).toBe("teacher-1");
-    expect(payload.email).toBe("pilot.docente@sase.mx");
+    expect(payload.email).toBe(process.env.TEST_DOCENTE_EMAIL || "pilot.docente@sase.mx");
     expect(payload.role).toBe("teacher");
     expect(payload.module).toBe("feria");
     expect(payload.institutionId).toBe("09DES4310M");
