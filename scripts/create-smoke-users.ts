@@ -53,7 +53,8 @@ async function main() {
       console.log(`♻️ Usuario existente. Actualizando...`);
       await admin.auth.admin.updateUserById(user.id, {
         password: u.password,
-        user_metadata: { full_name: u.name, temporal: true, scope: "smoke_test" }
+        user_metadata: { full_name: u.name },
+        app_metadata: { temporal: true, scope: "smoke_test", simulation_mode: true }
       });
     } else {
       console.log(`➕ Creando nuevo usuario...`);
@@ -61,7 +62,8 @@ async function main() {
         email: u.email,
         password: u.password,
         email_confirm: true,
-        user_metadata: { full_name: u.name, temporal: true, scope: "smoke_test" }
+        user_metadata: { full_name: u.name },
+        app_metadata: { temporal: true, scope: "smoke_test", simulation_mode: true }
       });
       if (error) {
         console.error(`❌ Error creando ${u.email}:`, error.message);

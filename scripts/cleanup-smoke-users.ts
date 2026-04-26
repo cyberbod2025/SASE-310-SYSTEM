@@ -33,11 +33,12 @@ async function main() {
   let deletedCount = 0;
 
   for (const user of users) {
-    const isTemporal = user.user_metadata?.temporal === true;
+    const isTemporal = user.app_metadata?.temporal === true;
+    const isSmoke = user.app_metadata?.scope === "smoke_test";
     const createdAt = new Date(user.created_at).getTime();
     const ageMs = now - createdAt;
 
-    if (isTemporal && ageMs > oneDayMs) {
+    if (isTemporal && isSmoke && ageMs > oneDayMs) {
       console.log(`🗑️ Eliminando usuario temporal expirado: ${user.email} (Edad: ${Math.round(ageMs/3600000)}h)`);
       
       // Limpieza en cascada (aunque Supabase suele manejarla, aseguramos perfiles)
