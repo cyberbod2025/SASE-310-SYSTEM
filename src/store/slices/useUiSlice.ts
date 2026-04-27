@@ -2,6 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import { UserRole, Student, CaseState, RoleLabels } from "../../types";
 import { getSaludo as getSaludoConfig } from "../../config/sase.config";
 import { SystemState } from "../../types/systemState";
+import { getOnboarding, setOnboarding, OnboardingState } from "../../utils/onboardingStore";
+
+const LEGACY_TOUR_DISABLED = true;
 
 export const useUiSlice = (
   user: any,
@@ -20,6 +23,12 @@ export const useUiSlice = (
   >("idle");
   const [isTourActive, setIsTourActive] = useState(false);
   const [tourStep, setTourStep] = useState(0);
+  const [onboarding, setOnboardingState] = useState<OnboardingState>(getOnboarding());
+
+  const updateOnboarding = (data: Partial<OnboardingState>) => {
+    const newState = setOnboarding(data);
+    if (newState) setOnboardingState(newState);
+  };
   const [activePrintJob, setActivePrintJob] = useState<any>(null);
   const [printModal, setPrintModal] = useState({
     isOpen: false,
@@ -114,6 +123,8 @@ export const useUiSlice = (
     setIsTourActive,
     tourStep,
     setTourStep,
+    onboarding,
+    updateOnboarding,
     systemState,
     activePrintJob,
     setActivePrintJob,

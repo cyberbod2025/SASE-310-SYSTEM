@@ -142,8 +142,8 @@ importers:
         specifier: ^24.34.0
         version: 24.42.0(typescript@5.8.3)
       supabase:
-        specifier: ^2.92.1
-        version: 2.95.3
+        specifier: ^2.95.5
+        version: 2.95.5
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.19(tsx@4.21.0)(yaml@2.8.3)
@@ -3890,8 +3890,8 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
 
-  supabase@2.95.3:
-    resolution: {integrity: sha512-KsAEOmmZsnO8WYP8nI9LhXwLExcGgoPpIUrFnxm56eDsAaeBUiGJRMG6nerMuv/rDvqFByco16Po3IhUnFPpmQ==}
+  supabase@2.95.5:
+    resolution: {integrity: sha512-hpPn0pfOxJxB5Flgxbt7i4gx9WQ1ndUTDwLUFmGbD54xcXu7DFjz/CxckgpkNMs4Q09DSxBTw95x8HdTB6RXxg==}
     engines: {npm: '>=8'}
     hasBin: true
 
@@ -8393,7 +8393,7 @@ snapshots:
       tinyglobby: 0.2.16
       ts-interface-checker: 0.1.13
 
-  supabase@2.95.3:
+  supabase@2.95.5:
     dependencies:
       bin-links: 6.0.0
       https-proxy-agent: 9.0.0

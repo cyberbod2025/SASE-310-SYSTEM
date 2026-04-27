@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mic, MicOff, X, MessageSquare, Info, AlertTriangle, Zap } from 'lucide-react';
+import { Send, Mic, MicOff, X, MessageSquare, Info, AlertTriangle, Zap } from "lucide-react";
 import { useApp } from "../../store";
 import { UserRole, AppModule } from "../../types";
 import { SaseSplineOrb } from "../SaseSplineOrb";
@@ -50,6 +50,8 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     setTourStep,
     assistantSuggestion,
     setAssistantSuggestion,
+    onboarding,
+    updateOnboarding,
   } = useApp();
 
   const [localState, setLocalState] = useState<SasitoState>('calm');
@@ -69,21 +71,23 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     return () => clearTimeout(timer);
   }, [minimal, isWidgetMode]);
 
-  // -- ONBOARDING LOGIC (solo la primera vez, luego ya no insiste) --
+  // -- NEW ONBOARDING SYSTEM (Step 0 - Bienvenida) --
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem('sase_onboarding_v2_completed');
-    if (!hasSeenWelcome && !minimal) {
-      setTimeout(() => {
+    if (minimal || isWidgetMode) return;
+    
+    if (!onboarding.completed && onboarding.step === 0 && !currentSuggestion) {
+      const timer = setTimeout(() => {
         setLocalState('attention');
         setCurrentSuggestion({
-          text: `¡Hola ${currentUserName.split(' ')[0] || ''}! Soy Sasito. Ya no voy a disparar un tour largo automáticamente; cuando quieras te acompaño desde el manual o desde ayuda contextual.`,
+          text: `¡Hola ${currentUserName.split(' ')[0] || ''}! Soy Sasito. Para que aproveches SASE-310 al máximo, ¿te enseño lo esencial en 3 pasos?`,
           state: 'attention',
-          actionLabel: "ENTENDIDO"
+          actionLabel: "INICIAR",
+          actionType: "onboarding-start"
         });
-        localStorage.setItem('sase_onboarding_v2_completed', 'true');
       }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [currentUserName, minimal]);
+  }, [onboarding.completed, onboarding.step, minimal, isWidgetMode, currentUserName, currentSuggestion]);
 
   // Sync visuals with Tour Steps
   useEffect(() => {
@@ -200,6 +204,39 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     
     setTimeout(() => {
       setLocalState('calm');
+      
+      if (normalized.includes("onboarding-start")) {
+        updateOnboarding({ step: 1 });
+        setCurrentSuggestion({ 
+          text: "¡Excelente! Paso 1: El tablero central te muestra el pulso de la escuela en tiempo real. Usa el menú lateral para moverte entre áreas.", 
+          state: 'calm',
+          actionLabel: "ENTENDIDO",
+          actionType: "onboarding-step-1"
+        });
+        return;
+      }
+
+      if (normalized.includes("onboarding-step-1")) {
+        updateOnboarding({ step: 2 });
+        setCurrentSuggestion({ 
+          text: "Paso 2: Si necesitas reportar algo urgente, usa el botón rojo de REPORTE RÁPIDO. Es la herramienta operativa más ágil.", 
+          state: 'attention',
+          actionLabel: "SIGUIENTE",
+          actionType: "onboarding-step-2"
+        });
+        return;
+      }
+
+      if (normalized.includes("onboarding-step-2")) {
+        updateOnboarding({ completed: true, step: 3 });
+        setCurrentSuggestion({ 
+          text: "¡Listo! Ya puedes usar el sistema. Sasito y el manual estarán siempre aquí para apoyarte. ¡Mucho éxito!", 
+          state: 'calm',
+          actionLabel: "EMPEZAR",
+          actionType: "onboarding-finish"
+        });
+        return;
+      }
       
       // --- SECURITY & INSTITUTIONAL RULES ---
       if (normalized.includes("cambiar rol") || normalized.includes("hazme director") || 
@@ -394,14 +431,14 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                     <div className="flex gap-2 pt-2">
                         <button 
                           onClick={() => {
-                            if (currentSuggestion.actionType === "start-tour") {
-                               localStorage.setItem('sase_onboarding_completed', 'true');
-                               import("../TourGuide").then(m => m.startProductTour(
-                                 currentUserName || "Docente", 
-                                 currentUserRole as any,
-                                 setIsTourActive,
-                                 setTourStep
-                               ));
+                            if (currentSuggestion.actionType === "onboarding-start") {
+                               processInput("onboarding-start");
+                            } else if (currentSuggestion.actionType === "onboarding-step-1") {
+                               processInput("onboarding-step-1");
+                            } else if (currentSuggestion.actionType === "onboarding-step-2") {
+                               processInput("onboarding-step-2");
+                            } else if (currentSuggestion.actionType === "onboarding-finish") {
+                               setCurrentSuggestion(null);
                             } else if (currentSuggestion.actionType?.startsWith("module-")) {
                                const moduleKey = currentSuggestion.actionType.replace("module-", "");
                                const moduleTarget = ACTION_MODULES[moduleKey];
@@ -413,12 +450,17 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                         >
                           {currentSuggestion.actionLabel || "ENTENDIDO"}
                         </button>
-                      <button 
-                        onClick={() => setCurrentSuggestion(null)}
-                        className="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-white/10 transition-all"
-                      >
-                        Luego
-                      </button>
+                        <button 
+                          onClick={() => {
+                            if (currentSuggestion.actionType === "onboarding-start") {
+                              updateOnboarding({ completed: true });
+                            }
+                            setCurrentSuggestion(null);
+                          }}
+                          className="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-white/10 transition-all"
+                        >
+                          {currentSuggestion.actionType === "onboarding-start" ? "SALTAR" : "Luego"}
+                        </button>
                     </div>
                   </div>
                 </div>

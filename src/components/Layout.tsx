@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import toast from "react-hot-toast";
 import { useApp } from "../store";
 import { UserRole, AppModule, IncidentType } from "../types";
 import { QuickRegisterModal } from "./QuickRegisterModal";
@@ -9,6 +10,7 @@ import { FeedbackWidget } from "./FeedbackWidget";
 import { TutorialController } from "./Tutorials/TutorialController";
 import { VERSION, BRANDING } from "../config/sase.config";
 import { useAuth } from "./AuthProvider";
+import { resetOnboarding } from "../utils/onboardingStore";
 import { SaseSplineOrb } from "./SaseSplineOrb";
 import { SasitoAssistant } from "./ai/SasitoAssistant";
 import { LiquidGlassFilters } from "./ui/LiquidGlassFilters";
@@ -96,6 +98,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     notifications,
     markNotificationRead,
     setAssistantSuggestion,
+    updateOnboarding,
   } = useApp();
   const { user, profile } = useAuth();
   const { ecosystemModules } = useEcosystemModules();
@@ -429,11 +432,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </>
             )}
             
-            {canAccess(AppModule.BITACORA) && (currentUserRole === UserRole.SYSTEM_ADMIN || 
-              currentUserRole === UserRole.DEVELOPER || 
-              currentUserRole === UserRole.PREFECTURA ||
-              currentUserRole === UserRole.DIRECTIVO ||
-              currentUserRole === UserRole.SUBDIRECCION) && (
+            {canAccess(AppModule.BITACORA) && 
+              [UserRole.DIRECTIVO, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER].includes(currentUserRole as UserRole) && (
               <NavItem
                 id="nav-bitacora"
                 icon="history"
@@ -510,6 +510,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               color={currentUserRole}
               collapsed={isSidebarCollapsed}
             />
+
+            <NavItem
+              icon="restart_alt"
+              label="Reiniciar guía"
+              active={false}
+              onClick={() => {
+                resetOnboarding();
+                updateOnboarding({ completed: false, step: 0 });
+                toast.success("Guía reiniciada. Sasito te hablará en breve.");
+                setIsSidebarOpen(false);
+              }}
+              color={currentUserRole}
+              collapsed={isSidebarCollapsed}
+            />
           </nav>
 
           {/* Footer Sidebar */}
@@ -575,11 +589,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   </div>
                   <h2 className="text-lg font-black text-white uppercase tracking-[0.2em] flex items-center">
                     SASE <span className="text-blue-400/50 mx-2 text-sm">/</span>{" "}
-                    <span className="text-blue-300 text-xs tracking-[0.3em] uppercase">GESTIÓN INSTITUCIONAL</span>
+                    <span className="text-blue-300 text-xs tracking-[0.3em] uppercase">SISTEMA DE ACOMPAÑAMIENTO Y SEGUIMIENTO ESCOLAR</span>
                   </h2>
                 </div>
               <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-1 ml-10">
-                Estatus: Operativo • v{VERSION.numero}
+                Estatus: Operativo • v{VERSION.numero} • GESTIÓN INSTITUCIONAL DE NUEVA GENERACIÓN
               </p>
             </div>
           </div>

@@ -72,6 +72,8 @@ interface AppContextType {
   setIsTourActive: (active: boolean) => void;
   tourStep: number;
   setTourStep: (step: number) => void;
+  onboarding: any;
+  updateOnboarding: (data: any) => void;
   highlightedModule: AppModule | null;
   highlightModule: (moduleKey: string | AppModule) => void;
   autoNavigate: boolean;
@@ -256,6 +258,8 @@ export const AppProvider: React.FC<{
         systemState: ui.systemState as SystemState,
         ...aiSystem,
         ...notificationsSlice,
+        onboarding: ui.onboarding,
+        updateOnboarding: ui.updateOnboarding,
         // Students & Incidents
         students: studentsSlice.students,
         fetchStudents: studentsSlice.fetchStudents,
