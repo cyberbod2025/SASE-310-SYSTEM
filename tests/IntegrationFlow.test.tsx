@@ -6,7 +6,6 @@ import { DashboardPrefectura } from "../src/components/dashboards/DashboardPrefe
 import { DashboardDireccion } from "../src/components/dashboards/DashboardDireccion";
 
 // -- HOISTED MOCKS --
-// Allows using variables inside vi.mock factory
 const mocks = vi.hoisted(() => ({
   select: vi.fn(),
   insert: vi.fn(),
@@ -24,12 +23,7 @@ const mocks = vi.hoisted(() => ({
 // -- MOCK MODULES --
 
 vi.mock("../src/supabase/client", () => {
-  // Chain configuration:
-  // .from() -> returns { select, insert, update }
-  // .update() -> returns { eq }
-  // .eq() -> returns Promise (end of chain in store usage)
-
-  const queryChain = {
+  const queryChain: any = {
     gte: mocks.gte,
     order: mocks.order,
     limit: mocks.limit,
@@ -38,26 +32,28 @@ vi.mock("../src/supabase/client", () => {
     eq: mocks.eq,
   };
 
-  mocks.gte.mockReturnValue(queryChain);
-  mocks.ilike.mockReturnValue(queryChain);
-  mocks.order.mockReturnValue({ 
-    limit: mocks.limit,
-    then: (resolve: any) => resolve({ data: [], error: null })
+  // Promise-like behavior for all chain methods
+  const createThenable = (data: any = []) => ({
+    ...queryChain,
+    then: (resolve: any) => resolve({ data, error: null }),
+    catch: (reject: any) => reject(null),
   });
-  mocks.limit.mockResolvedValue({ data: [], error: null });
-  mocks.single.mockResolvedValue({ data: null, error: null });
-  
-  // eq must be chainable AND thenable (Promise-like)
-  mocks.eq.mockImplementation(() => ({
-    ...queryChain,
-    then: (resolve: any) => resolve({ data: [], error: null })
-  }));
 
-  mocks.select.mockImplementation(() => ({
-    ...queryChain,
-    data: mocks.selectData,
-    error: null,
-  }));
+  const defaultResponse = createThenable([]);
+
+  mocks.gte.mockReturnValue(defaultResponse);
+  mocks.ilike.mockReturnValue(defaultResponse);
+  mocks.order.mockReturnValue(defaultResponse);
+  mocks.limit.mockReturnValue(defaultResponse);
+  mocks.single.mockReturnValue(createThenable(null));
+  
+  mocks.eq.mockImplementation(() => createThenable([]));
+
+  mocks.select.mockImplementation(() => {
+    // If it's a select without further chaining that expects data immediately
+    const res = createThenable(mocks.selectData);
+    return res;
+  });
 
   mocks.from.mockReturnValue({
     select: mocks.select,
@@ -103,7 +99,6 @@ const FlowTester = () => {
   const { students } = useApp();
   return (
     <div>
-      {/* Helper to confirm data load state */}
       <div data-testid="student-count">{students.length}</div>
       <div data-testid="prefectura-section">
         <DashboardPrefectura />
@@ -119,7 +114,6 @@ describe("Integration: Docente -> Direccion Flow", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // 1. SELECT returns 1 student with 0 incidents
     mocks.selectData = [
       {
         id: "std-1",
@@ -136,10 +130,7 @@ describe("Integration: Docente -> Direccion Flow", () => {
       },
     ];
 
-    // 2. INSERT returns success
     mocks.insert.mockResolvedValue({ error: null });
-
-    // 3. UPDATE/EQ returns success
     mocks.eq.mockResolvedValue({ error: null });
   });
 
@@ -150,20 +141,17 @@ describe("Integration: Docente -> Direccion Flow", () => {
       </AppProvider>
     );
 
-    // 1. Wait for Supabase Fetch (Optimistic UI check)
-    // Ensure students are loaded before interacting
     await waitFor(() => {
-      expect(screen.getByTestId("student-count").textContent).toBe("1");
-    });
+      const count = screen.getByTestId("student-count").textContent;
+      expect(count).toBe("1");
+    }, { timeout: 4000 });
 
-    // 2. Add Incident in Prefectura
     const input = screen.getByPlaceholderText(/MATRÍCULA/i);
     const btn = screen.getByText("Retardo");
 
-    fireEvent.change(input, { target: { value: "TESTM" } }); // Matches mock matricula
+    fireEvent.change(input, { target: { value: "TESTM" } });
     fireEvent.click(btn);
 
-    // 3. Verify Database Insert was triggered
     await waitFor(() => {
       expect(mocks.insert).toHaveBeenCalled();
     });
