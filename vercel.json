@@ -1,5 +1,6 @@
 {
-  "installCommand": "HUSKY=0 npm ci",
+  "installCommand": "HUSKY=0 pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
   "routes": [
     {
       "src": "/sw.js",
@@ -12,7 +13,8 @@
     {
       "src": "/index.html",
       "headers": {
-        "cache-control": "no-cache, no-store, must-revalidate"
+        "cache-control": "no-cache, no-store, must-revalidate",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://fonts.icon; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co https://*.googleapis.com wss://*.supabase.co; frame-src 'self' https://*.supabase.co; media-src 'self' blob: data:;"
       },
       "continue": true
     },

@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint src",
     "type-check": "tsc --noEmit",
+    "check": "pnpm type-check && pnpm install --frozen-lockfile",
     "test": "vitest run",
     "test:visual:glass": "node tests/visual-glass-smoke.js",
     "smoke:t017": "tsx tests/smoke-t017.ts",
@@ -62,6 +63,7 @@
     "eslint-plugin-react-refresh": "^0.4.18",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
+    "lint-staged": "^16.4.0",
     "postcss": "^8.5.10",
     "puppeteer": "^24.34.0",
     "supabase": "^2.92.1",
@@ -92,5 +94,14 @@
   "bugs": {
     "url": "https://github.com/cyberbod2025/SASE-310-SYSTEM/issues"
   },
-  "homepage": "https://github.com/cyberbod2025/SASE-310-SYSTEM#readme"
+  "homepage": "https://github.com/cyberbod2025/SASE-310-SYSTEM#readme",
+  "lint-staged": {
+    "*.{ts,tsx,js,json}": [
+      "pnpm type-check"
+    ]
+  },
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
