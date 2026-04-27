@@ -111,6 +111,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const signOut = async () => {
+    try {
+      await supabase.rpc("log_event" as any, {
+        p_module: "AUTH",
+        p_action: "LOGOUT",
+        p_result: "SUCCESS",
+        p_details: { email: user?.email },
+      });
+    } catch (err) {
+      console.warn("Logout event logging failed:", err);
+    }
     await supabase.auth.signOut();
     setRole(null);
     setUser(null);

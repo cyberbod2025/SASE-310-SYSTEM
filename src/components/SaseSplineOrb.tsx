@@ -27,7 +27,7 @@ export const SaseSplineOrb: React.FC<SaseSplineOrbProps> = ({
     if (accentColor) return accentColor;
     switch (s) {
       case 'warning': return '#FFB800';   // Radiant Amber
-      case 'alert': return '#FF4B91';     // Pulse Pink
+      case 'alert': return '#FF3B30';     // System Red (Critical)
       case 'thinking': return '#22c55e';  // Green (Thinking/Active)
       case 'normal':
       default: return '#22c55e';          // Green Institutional (Main)

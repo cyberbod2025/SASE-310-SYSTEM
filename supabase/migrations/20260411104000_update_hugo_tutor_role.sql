@@ -14,12 +14,9 @@ SELECT
     ARRAY['2º A', '2º B', '2º C', '2º D', '1º D'], true, '2º B', 'aprobado'
 FROM auth.users u
 WHERE lower(u.email) = lower('hugo.sanchezr@aefcm.gob.mx')
-  AND NOT EXISTS (
-      SELECT 1 FROM public.perfiles_usuario 
-      WHERE email = lower('hugo.sanchezr@aefcm.gob.mx')
-  );
+ON CONFLICT (id) DO NOTHING;
 
--- 2. Solicitud de Alta
+/* -- Solicitud de Alta deshabilitada por incompatibilidad de esquema remoto
 INSERT INTO public.solicitudes_alta_personal (
     nombres, apellido_paterno, apellido_materno, curp, correo_institucional, 
     rol_solicitado, turno, grupos, es_tutor, grupo_tutor, estado
@@ -32,3 +29,4 @@ WHERE NOT EXISTS (
     SELECT 1 FROM public.solicitudes_alta_personal 
     WHERE correo_institucional = lower('hugo.sanchezr@aefcm.gob.mx')
 );
+*/

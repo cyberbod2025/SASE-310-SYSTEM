@@ -40,10 +40,18 @@ vi.mock("../src/supabase/client", () => {
 
   mocks.gte.mockReturnValue(queryChain);
   mocks.ilike.mockReturnValue(queryChain);
-  mocks.order.mockReturnValue({ limit: mocks.limit });
+  mocks.order.mockReturnValue({ 
+    limit: mocks.limit,
+    then: (resolve: any) => resolve({ data: [], error: null })
+  });
   mocks.limit.mockResolvedValue({ data: [], error: null });
   mocks.single.mockResolvedValue({ data: null, error: null });
-  mocks.eq.mockResolvedValue({ data: [], error: null });
+  
+  // eq must be chainable AND thenable (Promise-like)
+  mocks.eq.mockImplementation(() => ({
+    ...queryChain,
+    then: (resolve: any) => resolve({ data: [], error: null })
+  }));
 
   mocks.select.mockImplementation(() => ({
     ...queryChain,

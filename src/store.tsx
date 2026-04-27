@@ -16,6 +16,7 @@ import { useAuditLogic } from "./store/slices/useAuditLogic";
 import { useSystemStateSlice } from "./store/slices/useSystemStateSlice";
 import { useMatriculaSlice } from "./store/slices/useMatriculaSlice";
 import { useCierreCicloSlice } from "./store/slices/useCierreCicloSlice";
+import { useObservabilitySlice } from "./store/slices/useObservabilitySlice";
 import type { SystemState } from "./types/systemState";
 
 // Re-export types for backward compatibility
@@ -100,6 +101,7 @@ interface AppContextType {
   // Audit
   logAudit: any;
   logAccess: any;
+  logEvent: (module: string, action: string, result: string, details?: any) => Promise<any>;
 
   // Extra (from original store)
   updateStudentAudit: any;
@@ -179,6 +181,9 @@ export const AppProvider: React.FC<{
   // 7. Matricula & Cierre Slices
   const matriculaSlice = useMatriculaSlice(user?.id, audit.logAudit);
   const cierreSlice = useCierreCicloSlice(audit.logAudit);
+
+  // 8. Observability Slice (Realtime alerts)
+  const observability = useObservabilitySlice(aiSystem.setSystemState);
 
   // Compatibility functions for missing ones in slices
   const updateStudentAudit = async (studentId: string, modifiedBy: string) => {
