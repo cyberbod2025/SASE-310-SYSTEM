@@ -6,6 +6,7 @@ import { SaseSplineOrb } from "./SaseSplineOrb";
 import { GlassCard } from "./ui/GlassCard";
 import { GlassButton } from "./ui/GlassButton";
 import { GlassInput } from "./ui/GlassInput";
+import { useApp } from "../store";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -41,6 +42,8 @@ export const Login: React.FC<LoginProps> = ({
     q1: "¿Nombre de su primera escuela primaria?",
     q2: "¿Título de su libro favorito?",
   });
+
+  const { logEvent } = useApp();
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,16 +94,52 @@ export const Login: React.FC<LoginProps> = ({
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
       email: normalizedUsername,
       password,
     });
-
-    if (error) {
+    
+    if (signInError) {
       toast.error("Credenciales no válidas");
+      await logEvent("AUTH", "LOGIN", "FAILURE", { email: normalizedUsername, error: signInError.message });
       setLoading(false);
       return;
     }
+
+    // Verificar estado de seguridad en el perfil
+    const { data: perfil, error: perfilError } = await (supabase
+      .from("perfiles_usuario" as any)
+      .select("seguridad_status, blocked_until, risk_score")
+      .eq("id", user?.id)
+      .single() as any);
+
+    if (perfil) {
+      const now = new Date();
+      const blockedUntil = perfil.blocked_until ? new Date(perfil.blocked_until) : null;
+
+      if (perfil.seguridad_status === 'blocked') {
+        toast.error("Acceso denegado: Usuario bloqueado por seguridad institucional.");
+        await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'blocked_status' });
+        await supabase.auth.signOut();
+        setLoading(false);
+        return;
+      }
+
+      if (blockedUntil && now < blockedUntil) {
+        const minutesLeft = Math.ceil((blockedUntil.getTime() - now.getTime()) / 60000);
+        toast.error(`Acceso restringido temporalmente. Intente en ${minutesLeft} minutos.`);
+        await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'temporary_block', minutes_left: minutesLeft });
+        await supabase.auth.signOut();
+        setLoading(false);
+        return;
+      }
+      
+      if (perfil.seguridad_status === 'restricted') {
+        toast.success("Ingreso exitoso (Modo Restringido)");
+      }
+    }
+
+    await logEvent("AUTH", "LOGIN", "SUCCESS", { email: normalizedUsername, risk_score: perfil?.risk_score });
 
     if (onDemoEnter) {
       onDemoEnter();

@@ -13,7 +13,6 @@ with check (
   and (
     -- Solo permitimos editar campos de presentación, no el rol ni permisos institucionales
     rol is not distinct from rol
-    and role is not distinct from role
     and email is not distinct from email
     and matricula_sase is not distinct from matricula_sase
   )

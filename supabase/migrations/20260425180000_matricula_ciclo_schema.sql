@@ -73,7 +73,7 @@ insert into public.alumno_ciclo (alumno_id, ciclo_id, grado, grupo, grupo_id)
 select
   a.id,
   c.id,
-  a.grado,
+  a.grado::integer,
   a.grupo,
   g.id
 from public.alumnos a

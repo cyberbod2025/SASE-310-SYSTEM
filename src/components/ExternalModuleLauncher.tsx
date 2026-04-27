@@ -25,7 +25,7 @@ export const ExternalModuleLauncher: React.FC<{
   module: EcosystemModuleDescriptor;
 }> = ({ module }) => {
   const { session } = useAuth();
-  const { setCurrentModule } = useApp();
+  const { setCurrentModule, logEvent } = useApp();
   const [status, setStatus] = useState<LaunchStatus>("verifying");
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [iframeUrl, setIframeUrl] = useState<string>("");
@@ -55,6 +55,7 @@ export const ExternalModuleLauncher: React.FC<{
         if (response.status === 403) {
           setStatus("denied");
           setErrorMsg(data.error || module.deniedMessage);
+          await logEvent(module.key.toUpperCase(), "LAUNCH_MODULE", "DENIED", { error: data.error });
           return;
         }
 
@@ -74,6 +75,7 @@ export const ExternalModuleLauncher: React.FC<{
       setStatus("launching");
       setIframeReady(false);
       setIframeUrl(data.url);
+      await logEvent(module.key.toUpperCase(), "LAUNCH_MODULE", "SUCCESS");
       window.setTimeout(() => {
         setStatus("embedded");
       }, 350);

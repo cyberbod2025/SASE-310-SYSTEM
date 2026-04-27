@@ -9,44 +9,68 @@
 DO $$ 
 BEGIN
     -- 1.1 Perfiles de Usuario
-    ALTER TABLE public.perfiles_usuario ENABLE ROW LEVEL SECURITY;
-    DROP POLICY IF EXISTS "Usuarios ven su propio perfil" ON public.perfiles_usuario;
-    CREATE POLICY "Usuarios ven su propio perfil" ON public.perfiles_usuario
-        FOR SELECT TO authenticated USING (auth.uid() = id);
-    
-    DROP POLICY IF EXISTS "Staff ve todos los perfiles" ON public.perfiles_usuario;
-    CREATE POLICY "Staff ve todos los perfiles" ON public.perfiles_usuario
-        FOR SELECT TO authenticated USING (public.get_my_role() IN ('directivo', 'subdireccion', 'secretaria', 'system_admin'));
+    BEGIN
+        ALTER TABLE public.perfiles_usuario ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Usuarios ven su propio perfil" ON public.perfiles_usuario;
+        CREATE POLICY "Usuarios ven su propio perfil" ON public.perfiles_usuario
+            FOR SELECT TO authenticated USING (auth.uid() = id);
+        
+        DROP POLICY IF EXISTS "Staff ve todos los perfiles" ON public.perfiles_usuario;
+        CREATE POLICY "Staff ve todos los perfiles" ON public.perfiles_usuario
+            FOR SELECT TO authenticated USING (public.get_my_role() IN ('directivo', 'subdireccion', 'secretaria', 'system_admin'));
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'Table perfiles_usuario does not exist, skipping RLS reinforcement.';
+    END;
 
     -- 1.2 Sandbox Alertas
-    ALTER TABLE public.sandbox_alertas ENABLE ROW LEVEL SECURITY;
-    DROP POLICY IF EXISTS "Staff manage sandbox" ON public.sandbox_alertas;
-    CREATE POLICY "Staff manage sandbox" ON public.sandbox_alertas
-        FOR ALL TO authenticated USING (public.get_my_role() IS NOT NULL);
+    BEGIN
+        ALTER TABLE public.sandbox_alertas ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Staff manage sandbox" ON public.sandbox_alertas;
+        CREATE POLICY "Staff manage sandbox" ON public.sandbox_alertas
+            FOR ALL TO authenticated USING (public.get_my_role() IS NOT NULL);
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'Table sandbox_alertas does not exist, skipping RLS reinforcement.';
+    END;
 
     -- 1.3 Justificantes
-    ALTER TABLE public.justificantes ENABLE ROW LEVEL SECURITY;
-    DROP POLICY IF EXISTS "Staff manage justificantes" ON public.justificantes;
-    CREATE POLICY "Staff manage justificantes" ON public.justificantes
-        FOR ALL TO authenticated USING (public.get_my_role() IN ('directivo', 'orientacion', 'docente_tutor', 'secretaria'));
+    BEGIN
+        ALTER TABLE public.justificantes ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Staff manage justificantes" ON public.justificantes;
+        CREATE POLICY "Staff manage justificantes" ON public.justificantes
+            FOR ALL TO authenticated USING (public.get_my_role() IN ('directivo', 'orientacion', 'docente_tutor', 'secretaria'));
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'Table justificantes does not exist, skipping RLS reinforcement.';
+    END;
 
     -- 1.4 Roles y Permisos (Diccionario del sistema)
-    ALTER TABLE public.roles_permisos ENABLE ROW LEVEL SECURITY;
-    DROP POLICY IF EXISTS "Solo lectura para autenticados" ON public.roles_permisos;
-    CREATE POLICY "Solo lectura para autenticados" ON public.roles_permisos
-        FOR SELECT TO authenticated USING (true);
+    BEGIN
+        ALTER TABLE public.roles_permisos ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Solo lectura para autenticados" ON public.roles_permisos;
+        CREATE POLICY "Solo lectura para autenticados" ON public.roles_permisos
+            FOR SELECT TO authenticated USING (true);
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'Table roles_permisos does not exist, skipping RLS reinforcement.';
+    END;
 
     -- 1.5 Objetos Retenidos (Prefectura)
-    ALTER TABLE public.objetos_retenidos ENABLE ROW LEVEL SECURITY;
-    DROP POLICY IF EXISTS "Prefectura manage objetos" ON public.objetos_retenidos;
-    CREATE POLICY "Prefectura manage objetos" ON public.objetos_retenidos
-        FOR ALL TO authenticated USING (public.get_my_role() IN ('prefectura', 'directivo'));
+    BEGIN
+        ALTER TABLE public.objetos_retenidos ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Prefectura manage objetos" ON public.objetos_retenidos;
+        CREATE POLICY "Prefectura manage objetos" ON public.objetos_retenidos
+            FOR ALL TO authenticated USING (public.get_my_role() IN ('prefectura', 'directivo'));
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'Table objetos_retenidos does not exist, skipping RLS reinforcement.';
+    END;
 
     -- 1.6 Estudiantes (Gamificación)
-    ALTER TABLE public.estudiantes ENABLE ROW LEVEL SECURITY;
-    DROP POLICY IF EXISTS "Staff manage gamificacion" ON public.estudiantes;
-    CREATE POLICY "Staff manage gamificacion" ON public.estudiantes
-        FOR ALL TO authenticated USING (public.get_my_role() IS NOT NULL);
+    BEGIN
+        ALTER TABLE public.estudiantes ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Staff manage gamificacion" ON public.estudiantes;
+        CREATE POLICY "Staff manage gamificacion" ON public.estudiantes
+            FOR ALL TO authenticated USING (public.get_my_role() IS NOT NULL);
+    EXCEPTION WHEN undefined_table THEN
+        RAISE NOTICE 'Table estudiantes does not exist, skipping RLS reinforcement.';
+    END;
 END $$;
 
 -- 2. AUDITORÍA DEL REFUERZO

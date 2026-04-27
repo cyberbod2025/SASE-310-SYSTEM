@@ -57,5 +57,25 @@ export const useAuditLogic = (user: any, currentUserRole: UserRole) => {
     logAudit("CONSULTA", action, "alumnos", studentId, studentName);
   };
 
-  return { logAudit, logAccess };
+  const logEvent = async (
+    module: string,
+    action: string,
+    result: string,
+    details: any = {},
+  ) => {
+    try {
+      const { data, error } = await supabase.rpc("log_event" as any, {
+        p_module: module,
+        p_action: action,
+        p_result: result,
+        p_details: details,
+      });
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.warn("Log event failed:", err);
+    }
+  };
+
+  return { logAudit, logAccess, logEvent };
 };

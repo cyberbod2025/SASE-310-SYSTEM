@@ -697,6 +697,56 @@ export const useStudentsSlice = (
     }
   };
 
+  const addAtencionMedica = async (studentId: string, data: any) => {
+    try {
+      if (!user) {
+        toast.error("No hay sesión activa");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("atenciones_medicas")
+        .insert([{
+          alumno_id: studentId,
+          nombre_alumno: data.nombre_alumno,
+          grupo: data.grupo,
+          hora: data.hora || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          motivo: data.motivo,
+          sintomas: data.sintomas,
+          diagnostico: data.diagnostico,
+          signos_vitales: data.signos_vitales,
+          atencion_brindada: data.atencion_brindada,
+          medicamento: data.medicamento,
+          notificacion_padres: data.notificacion_padres || false,
+          acudieron_por_el: data.acudieron_por_el || false,
+          condiciones_entrega: data.condiciones_entrega,
+          observaciones: data.observaciones,
+          generado_por: user.id,
+          atendido_por: user.id
+        }]);
+
+      if (error) throw error;
+
+      toast.success("Atención médica guardada ✔️");
+      
+      // Auditoría
+      await logAudit(
+        "CREACION",
+        `Atención médica registrada: ${data.motivo}`,
+        "atenciones_medicas",
+        studentId,
+        data.nombre_alumno
+      );
+
+      fetchStudents();
+      return { success: true };
+    } catch (err: any) {
+      console.error("Error al guardar atención médica:", err);
+      toast.error("RLS me bloquea ❌ o hubo un error técnico");
+      return { success: false, error: err };
+    }
+  };
+
   const updateEstadoObjeto = async (objetoId: string, nuevoEstado: EstadoObjetoRetenido) => {
     try {
       const { error } = await (supabase as any)
@@ -760,6 +810,7 @@ export const useStudentsSlice = (
     addObjetoRetenido,
     updateEstadoObjeto,
     registrarDevolucion,
+    addAtencionMedica,
     markIncidentAsNotified: async (studentId: string, incidentId: string) => {
       setStudents((prev) =>
         prev.map((s) => {
