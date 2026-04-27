@@ -166,7 +166,7 @@ export const Login: React.FC<LoginProps> = ({
 
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-2 tracking-[-0.04em] text-center">SASE 310</h1>
           <p className="text-[var(--sase-text-muted)] text-[10px] text-center mb-10 font-semibold uppercase tracking-[0.32em] max-w-sm">
-            Gestión Institucional de Nueva Generación
+            Sistema de Acompañamiento y Seguimiento Escolar
           </p>
 
           <form className="w-full space-y-6" onSubmit={handleLogin}>
@@ -229,7 +229,7 @@ export const Login: React.FC<LoginProps> = ({
 
           <div className="mt-12 text-center pt-8 w-full">
             <p className="text-[10px] text-[var(--sase-text-muted)] font-semibold tracking-[0.22em] uppercase">
-              Secretaría de Educación Pública • SASE-310
+              Gestión Institucional de Nueva Generación • SASE-310
             </p>
           </div>
         </GlassCard>

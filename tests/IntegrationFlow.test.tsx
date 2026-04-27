@@ -131,7 +131,8 @@ describe("Integration: Docente -> Direccion Flow", () => {
     ];
 
     mocks.insert.mockResolvedValue({ error: null });
-    mocks.eq.mockResolvedValue({ error: null });
+    // No usar mockResolvedValue en eq, ya que rompe la cadena (order, limit, etc)
+    // mocks.eq ya tiene una implementación por defecto que devuelve un thenable con queryChain
   });
 
   it("Updates Dashboard KPIs when Incident is added", async () => {

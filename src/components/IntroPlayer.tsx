@@ -49,7 +49,7 @@ export const IntroPlayer: React.FC<IntroPlayerProps> = ({ onComplete }) => {
           onComplete();
         }}
       >
-        <source src="/assets/videos/intro_oficial_v2.mp4" type="video/mp4" />
+        <source src="/assets/videos/INTRO_OFICIAL.mp4?v=20260427_v3" type="video/mp4" />
         su navegador no soporta video.
       </video>
     </div>
