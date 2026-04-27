@@ -1,0 +1,9 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Validando proyecto antes de push..."
+
+pnpm install --frozen-lockfile || exit 1
+pnpm type-check || exit 1
+
+echo "✅ Todo correcto. Push permitido."

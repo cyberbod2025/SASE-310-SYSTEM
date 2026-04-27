@@ -296,24 +296,60 @@ export type Database = {
         Row: {
           alumno_id: string
           atendido_por: string
+          atencion_brindada: string | null
+          diagnostico: string | null
+          generado_por: string | null
+          grupo: string | null
           hora: string
           id: string
+          medicamento: string | null
+          motivo: string | null
+          nombre_alumno: string | null
+          notificacion_padres: string | null
+          acudieron_por_el: string | null
+          condiciones_entrega: string | null
+          observaciones: string | null
+          signos_vitales: string | null
           sintomas: string
           tratamiento: string
         }
         Insert: {
           alumno_id: string
           atendido_por: string
+          atencion_brindada?: string | null
+          diagnostico?: string | null
+          generado_por?: string | null
+          grupo?: string | null
           hora?: string
           id?: string
+          medicamento?: string | null
+          motivo?: string | null
+          nombre_alumno?: string | null
+          notificacion_padres?: string | null
+          acudieron_por_el?: string | null
+          condiciones_entrega?: string | null
+          observaciones?: string | null
+          signos_vitales?: string | null
           sintomas: string
           tratamiento: string
         }
         Update: {
           alumno_id?: string
           atendido_por?: string
+          atencion_brindada?: string | null
+          diagnostico?: string | null
+          generado_por?: string | null
+          grupo?: string | null
           hora?: string
           id?: string
+          medicamento?: string | null
+          motivo?: string | null
+          nombre_alumno?: string | null
+          notificacion_padres?: string | null
+          acudieron_por_el?: string | null
+          condiciones_entrega?: string | null
+          observaciones?: string | null
+          signos_vitales?: string | null
           sintomas?: string
           tratamiento?: string
         }

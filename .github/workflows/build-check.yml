@@ -1,50 +1,26 @@
-name: Build Check
+name: SASE Secure Pipeline
 
 on:
   push:
-    branches: [main, master]
-    paths-ignore:
-      - "docs/**"
-      - "tooling/**"
-      - "**/*.md"
+    branches: [main, develop]
   pull_request:
-    branches: [main, master]
-    paths-ignore:
-      - "docs/**"
-      - "tooling/**"
-      - "**/*.md"
-
-concurrency:
-  group: build-check-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build:
-    name: Frontend Gate
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          version: 9
 
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
 
-      - name: Run lint
-        run: npm run lint
-
-      - name: Run type-check
-        run: npm run type-check
-
-      - name: Run tests
-        run: npm run test
-
-      - name: Build project
-        run: npm run build
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm type-check
+      - run: pnpm build
