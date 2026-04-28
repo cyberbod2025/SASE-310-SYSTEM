@@ -23,6 +23,8 @@ import {
   OnboardingPhase,
 } from "../utils/onboardingLogic";
 import { useEcosystemModules } from "../hooks/useEcosystemModules";
+import { EmergencyButton } from "./emergency/EmergencyButton";
+import { EmergencyResponsePanel } from "./emergency/EmergencyResponsePanel";
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.DIRECTIVO]: "bg-white/70 backdrop-blur-xl border-r border-slate-200",
@@ -701,6 +703,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       <FeedbackWidget />
       <QuickRegisterModal />
+      <EmergencyButton />
+      <EmergencyResponsePanel />
     </div>
   );
 };
