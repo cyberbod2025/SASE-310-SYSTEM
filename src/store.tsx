@@ -18,8 +18,10 @@ import { useMatriculaSlice } from "./store/slices/useMatriculaSlice";
 import { useCierreCicloSlice } from "./store/slices/useCierreCicloSlice";
 import { useObservabilitySlice } from "./store/slices/useObservabilitySlice";
 import { useEmergencySlice } from "./store/slices/useEmergencySlice";
+import { useSecurityDashboardSlice } from "./store/slices/useSecurityDashboardSlice";
 import type { EmergencyCreateOptions } from "./types/emergency";
 import type { SystemState } from "./types/systemState";
+import type { SecurityDashboardSnapshot } from "./types";
 
 // Re-export types for backward compatibility
 export * from "./types";
@@ -106,6 +108,13 @@ interface AppContextType {
   logAudit: any;
   logAccess: any;
   logEvent: (module: string, action: string, result: string, details?: any) => Promise<any>;
+
+  // Seguridad
+  securityDashboard: SecurityDashboardSnapshot | null;
+  securityDashboardLoading: boolean;
+  securityDashboardError: string | null;
+  canViewSecurityDashboard: boolean;
+  fetchSecurityDashboard: () => Promise<void>;
 
   // Extra (from original store)
   updateStudentAudit: any;
@@ -198,7 +207,10 @@ export const AppProvider: React.FC<{
   // 8. Observability Slice (Realtime alerts)
   const observability = useObservabilitySlice(aiSystem.setSystemState);
 
-  // 9. Emergency Mode Slice
+  // 9. Security Dashboard Slice
+  const securityDashboard = useSecurityDashboardSlice(auth.currentUserRole);
+
+  // 10. Emergency Mode Slice
   const emergency = useEmergencySlice(user, auth.currentUserProfile);
 
   // Compatibility functions for missing ones in slices
@@ -283,6 +295,7 @@ export const AppProvider: React.FC<{
         markIncidentAsNotified: studentsSlice.markIncidentAsNotified,
         ...statsSlice,
         ...audit,
+        ...securityDashboard,
         updateStudentAudit,
         updateCredencialStatus,
         addInstitutionalDocument,

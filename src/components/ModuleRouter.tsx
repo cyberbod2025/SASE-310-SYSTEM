@@ -4,6 +4,7 @@ import { AppModule, UserRole } from "../types";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEcosystemModules } from "../hooks/useEcosystemModules";
 import { ExternalModuleLauncher } from "./ExternalModuleLauncher";
+import { canAccessSecurityDashboard } from "../utils/securityDashboardAccess";
 const Unauthorized = React.lazy(() => import("./Unauthorized").then(m => ({ default: m.Unauthorized })));
 
 // Loading Component
@@ -29,6 +30,7 @@ const DashboardDireccion = React.lazy(() => import("./dashboards/DashboardDirecc
 const DashboardSubdireccion = React.lazy(() => import("./dashboards/DashboardSubdireccion").then((m) => ({ default: m.DashboardSubdireccion })));
 const DashboardLectura = React.lazy(() => import("./dashboards/DashboardLectura"));
 const DashboardDeveloper = React.lazy(() => import("./dashboards/DashboardDeveloper").then((m) => ({ default: m.DashboardDeveloper })));
+const SecurityDashboard = React.lazy(() => import("./security/SecurityDashboard"));
 
 // Modules (Lazy Loaded)
 const Agenda = React.lazy(() => import("./Agenda").then((m) => ({ default: m.Agenda })));
@@ -109,6 +111,12 @@ export const ModuleRouter: React.FC = () => {
                 return <Unauthorized />;
               }
               return <BitacoraAuditoria />;
+            }
+            if (currentModule === AppModule.SEGURIDAD) {
+              if (!canAccessSecurityDashboard(currentUserRole as UserRole)) {
+                return <Unauthorized />;
+              }
+              return <SecurityDashboard />;
             }
             if (currentModule === AppModule.SOLICITUDES) return <PanelSolicitudes />;
             if (currentModule === AppModule.REPORTES_DOCENTES) return <SolicitudReportesDocentes />;

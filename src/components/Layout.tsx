@@ -23,6 +23,7 @@ import {
   OnboardingPhase,
 } from "../utils/onboardingLogic";
 import { useEcosystemModules } from "../hooks/useEcosystemModules";
+import { canAccessSecurityDashboard } from "../utils/securityDashboardAccess";
 import { EmergencyButton } from "./emergency/EmergencyButton";
 import { EmergencyResponsePanel } from "./emergency/EmergencyResponsePanel";
 
@@ -447,6 +448,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 }}
                 color={currentUserRole}
                 highlighted={highlightedModule === AppModule.BITACORA}
+                collapsed={isSidebarCollapsed}
+              />
+            )}
+
+            {canAccessSecurityDashboard(currentUserRole as UserRole) && (
+              <NavItem
+                id="nav-seguridad"
+                icon="security"
+                label="Seguridad"
+                active={currentModule === AppModule.SEGURIDAD}
+                onClick={() => {
+                  setCurrentModule(AppModule.SEGURIDAD);
+                  setIsSidebarOpen(false);
+                }}
+                color={currentUserRole}
+                highlighted={highlightedModule === AppModule.SEGURIDAD}
                 collapsed={isSidebarCollapsed}
               />
             )}
