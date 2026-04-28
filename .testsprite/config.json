@@ -2,7 +2,7 @@
   "status": "commited",
   "type": "frontend",
   "serverMode": "development",
-  "localEndpoint": "http://127.0.0.1:3100",
+  "localEndpoint": "http://127.0.0.1:3101",
   "scope": "codebase",
   "loginUser": "docente.testsprite@sase.mx",
   "loginPassword": "DocenteTest123!"
