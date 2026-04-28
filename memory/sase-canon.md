@@ -50,10 +50,10 @@ Objetivo: concentrar reglas verificadas del repo para futuros agentes y mantened
 
 ## 3. Reglas de build, test y verificacion
 
-- La cadena minima verificada del frontend es `npm ci` -> `npm run lint` -> `npm run type-check` -> `npm run test` -> `npm run build`.
-- `npm run lint` ejecuta `eslint src` y `npm run type-check` usa `tsc --noEmit`; ambas validaciones solo cubren `src/`.
-- `npm run test` usa Vitest + jsdom + `tests/setup.ts`.
-- Prueba focalizada por archivo: `npm run test -- tests/Agenda.test.tsx`.
+- La cadena minima verificada del frontend usa pnpm: `pnpm install --frozen-lockfile` -> `pnpm lint` -> `pnpm type-check` -> `pnpm test` -> `pnpm build`.
+- `pnpm lint` ejecuta `eslint src` y `pnpm type-check` usa `tsc --noEmit`; ambas validaciones solo cubren `src/`.
+- `pnpm test` usa Vitest + jsdom + `tests/setup.ts`.
+- Prueba focalizada por archivo: `pnpm test -- tests/Agenda.test.tsx`.
 - `tests/test-sprite-*.js` no entran al script `npm run test`; son scripts manuales de render.
 - Si el cambio toca SQL o RLS, ejecuta ademas `./scripts/audit-migrations.sh`, `supabase db start` y `supabase db lint --local`.
 
@@ -93,8 +93,8 @@ Objetivo: concentrar reglas verificadas del repo para futuros agentes y mantened
 
 ## 8. Workflows y automatizacion
 
-- CI usa Node 20.
-- `build-check.yml` y `sase-secure-pipeline.yml` se solapan; cualquier reforma futura debe consolidar o aclarar responsabilidades.
+- CI usa Node 20 y pnpm 9.
+- `sase-secure-pipeline.yml` es el gate oficial SASE SHIELD v2; `build-check.yml` queda como verificacion complementaria con lint, test y build.
 - `security-audit.yml` audita secretos, dependencias y Supabase, pero sus reglas no deben considerarse suficientes por si solas; deben alinearse con esta constitucion y con el expediente activo.
 
 ## 9. Scripts y artefactos peligrosos

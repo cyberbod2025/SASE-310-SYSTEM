@@ -1,18 +1,10 @@
-name: SASE Secure Pipeline
+name: 🛡️ SASE Secure Pipeline
 
 on:
   push:
-    branches: [main, master, develop]
-    paths-ignore:
-      - "docs/**"
-      - "tooling/**"
-      - "**/*.md"
+    branches: [main, develop, feat/**]
   pull_request:
-    branches: [main, master]
-    paths-ignore:
-      - "docs/**"
-      - "tooling/**"
-      - "**/*.md"
+    branches: [main]
 
 concurrency:
   group: secure-pipeline-${{ github.workflow }}-${{ github.ref }}
@@ -20,77 +12,33 @@ concurrency:
 
 jobs:
   validate-frontend:
-    name: 🎨 Frontend Validation
+    name: 🎯 Frontend Validation
     runs-on: ubuntu-latest
-timeout-minutes: 20
+    timeout-minutes: 20
+
     steps:
-      - uses: actions/checkout@v6
-       
-      - name: Install pnpm
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📦 Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
-          
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          
-      - name: Install Dependencies
-        run: pnpm install
-        
-      - name: Lint Check
-        run: pnpm lint
-        
-      - name: Type Check
+          node-version: 20
+          cache: "pnpm"
+
+      - name: 🔒 Install Dependencies (Strict)
+        run: pnpm install --frozen-lockfile
+
+      - name: 🧠 Type Check
         run: pnpm type-check
-        
-      - name: Run Tests
-        run: pnpm test
-        
-      - name: Build Check
+
+      - name: 🏗️ Build
         run: pnpm build
 
-  security-scan:
-    name: 🔐 Security & SQL Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          
-      - name: Secret Scan (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Frontend Secret Pattern Scan
-        run: |
-          echo "🔍 Scanning src/ for hardcoded secrets..."
-          # Scan for common patterns (sk-, AIza, eyJWT...)
-          if grep -rnE "(sk-|AIza|ey[a-zA-Z0-9._-]{50,})" src/ --exclude-dir=node_modules; then
-            echo "⚠️ Potential secrets found! Review logs."
-            # We don't fail here because of potential false positives in class names, 
-            # but Gitleaks above is the primary gate.
-          fi
-
-      - name: SQL Migration Audit
-        run: ./scripts/audit-migrations.sh
-
-  database-audit:
-    name: 🗄️ Database Integrity
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/checkout@v6
-      
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: 2.90.0
-          
-      - name: Local DB Lint
-        run: |
-          supabase db start
-          supabase db lint --local
+      - name: 🔐 Security Audit
+        run: pnpm audit || true

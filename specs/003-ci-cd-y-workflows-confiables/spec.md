@@ -19,7 +19,8 @@ Los workflows actuales no reflejan de forma consistente la cadena real de valida
 
 ## Requisitos funcionales
 
-- `build-check.yml` debe ejecutar `npm ci -> lint -> type-check -> test -> build`.
+- `build-check.yml` debe ejecutar `pnpm install --frozen-lockfile -> lint -> type-check -> test -> build`.
+- `sase-secure-pipeline.yml` debe ejecutar SASE SHIELD v2 con pnpm 9, install estricto, type-check, build y auditoria informativa.
 - Ningún gate principal debe ocultar fallos con `|| echo`.
 - Los workflows de Supabase deben usar versión fija del CLI.
 - Debe existir un workflow de QA visual con artefactos subidos a GitHub.

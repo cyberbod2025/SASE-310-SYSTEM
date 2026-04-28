@@ -61,7 +61,7 @@ Si la prosa contradice al codigo o la configuracion ejecutable, la fuente de ver
 
 ## Articulo VII. Puertas Minimas de Verificacion
 
-- La verificacion minima del frontend es: `npm ci` -> `npm run lint` -> `npm run type-check` -> `npm run test` -> `npm run build`.
+- La verificacion minima del frontend es: `pnpm install --frozen-lockfile` -> `pnpm lint` -> `pnpm type-check` -> `pnpm test` -> `pnpm build`.
 - Si el cambio toca `api/`, `supabase/functions/` o `tests/`, se debe agregar revision focalizada porque `lint` y `type-check` actuales solo cubren `src/`.
 - Los cambios de base de datos o RLS deben ejecutar ademas: `./scripts/audit-migrations.sh`, `supabase db start` y `supabase db lint --local`.
 
