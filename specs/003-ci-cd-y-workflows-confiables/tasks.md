@@ -5,4 +5,5 @@
 - [x] Agregar concurrency, timeout y filtros de paths donde aporte valor.
 - [x] Crear `visual-qa.yml` con artefactos.
 - [x] Agregar scripts reutilizables para smoke visual y smoke funcional.
-- [ ] Validar el comportamiento de los workflows en GitHub.
+- [x] Migrar gates principales a pnpm 9 y `--frozen-lockfile`.
+- [ ] Validar el comportamiento de los workflows en GitHub despues del cambio SASE SHIELD v2.
