@@ -23,7 +23,7 @@ if ! command -v psql >/dev/null 2>&1; then
 fi
 
 if [ -z "${DATABASE_URL:-}" ]; then
-  echo "ERROR: DATABASE_URL no definida"
+  echo "ERROR: DATABASE_URL requerida para autofix"
   echo "Exporta: export DATABASE_URL='postgresql://...'"
   exit 1
 fi

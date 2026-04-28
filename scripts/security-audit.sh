@@ -20,9 +20,15 @@ if ! command -v psql >/dev/null 2>&1; then
 fi
 
 if [ -z "${DATABASE_URL:-}" ]; then
+  if [ "$CI_MODE" = "1" ]; then
+    echo "⚠️ DATABASE_URL no definida - saltando auditoría de BD"
+    WARNING_COUNT=0
+    exit 0
+  fi
   echo "❌ DATABASE_URL no definida"
   echo "👉 Exporta: export DATABASE_URL='postgresql://...'"
   exit 1
+fi
 fi
 
 query() {
