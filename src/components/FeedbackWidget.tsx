@@ -65,6 +65,7 @@ export const FeedbackWidget = () => {
       [AppModule.MATE]: "Mate",
       [AppModule.MATRICULA_INTELIGENTE]: "Matrícula Inteligente",
       [AppModule.CIERRE_CICLO]: "Cierre de Ciclo",
+      [AppModule.SEGURIDAD]: "Dashboard de Seguridad",
     }),
     [],
   );

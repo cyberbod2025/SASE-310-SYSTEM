@@ -371,6 +371,48 @@ export enum AppModule {
   MATE = "mate",
   MATRICULA_INTELIGENTE = "matricula_inteligente",
   CIERRE_CICLO = "cierre_ciclo",
+  SEGURIDAD = "seguridad",
+}
+
+export type SecurityDashboardStatus = "ok" | "warning" | "critical" | "unauthorized";
+
+export interface SecurityDashboardFinding {
+  severidad?: "critical" | "warning" | "info" | string;
+  area?: string;
+  objeto?: string;
+  detalle?: string;
+  riesgo?: string;
+  accion?: string;
+}
+
+export interface SecurityDashboardSnapshot {
+  authorized: boolean;
+  generatedAt: string;
+  overallStatus: SecurityDashboardStatus;
+  counts: {
+    criticalFindings: number;
+    warningFindings: number;
+    activeAlerts: number;
+    openPolicies?: number;
+    storageBroadPolicies?: number;
+    sensitiveTablesWithoutRls?: number;
+    publicTablesWithoutRls?: number;
+    publicDefinerAnon?: number;
+    publicDefinerAuthenticated?: number;
+    legacySurfaces?: number;
+  };
+  sections: {
+    activeAlerts?: SecurityDashboardFinding[];
+    openPolicies?: SecurityDashboardFinding[];
+    storageBroadPolicies?: SecurityDashboardFinding[];
+    sensitiveTablesWithoutRls?: SecurityDashboardFinding[];
+    publicTablesWithoutRls?: SecurityDashboardFinding[];
+    publicDefinerAnon?: SecurityDashboardFinding[];
+    publicDefinerAuthenticated?: SecurityDashboardFinding[];
+    storageBuckets?: SecurityDashboardFinding[];
+    legacySurfaces?: SecurityDashboardFinding[];
+    manualChecks?: SecurityDashboardFinding[];
+  };
 }
 
 export interface Group {
