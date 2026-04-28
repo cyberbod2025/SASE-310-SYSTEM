@@ -101,7 +101,6 @@
       "pnpm type-check"
     ]
   },
-  "packageManager": "pnpm@10.17.1",
   "engines": {
     "node": ">=20.0.0"
   }
