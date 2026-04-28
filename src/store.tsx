@@ -17,6 +17,7 @@ import { useSystemStateSlice } from "./store/slices/useSystemStateSlice";
 import { useMatriculaSlice } from "./store/slices/useMatriculaSlice";
 import { useCierreCicloSlice } from "./store/slices/useCierreCicloSlice";
 import { useObservabilitySlice } from "./store/slices/useObservabilitySlice";
+import { useEmergencySlice } from "./store/slices/useEmergencySlice";
 import type { SystemState } from "./types/systemState";
 
 // Re-export types for backward compatibility
@@ -129,6 +130,15 @@ interface AppContextType {
   setOverride: (alumnoId: string, decision: any) => void;
   ejecutarPromocion: () => Promise<void>;
   resetCierre: () => void;
+
+  // Modo Emergencia
+  activeAlerts: any[];
+  myActiveAlert: any | null;
+  emergencyResponses: Record<string, any[]>;
+  emergencyLoading: boolean;
+  createEmergencyAlert: (tipo: any, grupo?: string, aula?: string) => Promise<void>;
+  respondToEmergency: (alertaId: string, respuesta: any) => Promise<void>;
+  closeEmergencyAlert: (alertaId: string) => Promise<void>;
 }
 
 interface EvidenceInput {
@@ -186,6 +196,9 @@ export const AppProvider: React.FC<{
 
   // 8. Observability Slice (Realtime alerts)
   const observability = useObservabilitySlice(aiSystem.setSystemState);
+
+  // 9. Emergency Mode Slice
+  const emergency = useEmergencySlice(user, auth.currentUserProfile);
 
   // Compatibility functions for missing ones in slices
   const updateStudentAudit = async (studentId: string, modifiedBy: string) => {
@@ -280,6 +293,7 @@ export const AppProvider: React.FC<{
         registrarDevolucion: studentsSlice.registrarDevolucion,
         ...matriculaSlice,
         ...cierreSlice,
+        ...emergency,
       }}
     >
       {children}
