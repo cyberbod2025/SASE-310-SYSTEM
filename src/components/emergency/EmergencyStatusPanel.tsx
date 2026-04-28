@@ -1,6 +1,6 @@
 import React from "react";
 import { useApp } from "../../store";
-import { EmergencyAlert, EmergencyResponse } from "../../types/emergency";
+import type { EmergencyAlert, EmergencyResponse } from "../../types/emergency";
 import { User, MapPin, Check, Info } from "lucide-react";
 
 interface EmergencyStatusPanelProps {
@@ -26,6 +26,26 @@ export const EmergencyStatusPanel: React.FC<EmergencyStatusPanelProps> = ({ aler
       <div className="flex items-center gap-2 mb-4">
         <Info className="h-4 w-4 text-blue-400" />
         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Estado en tiempo real</h4>
+      </div>
+
+      <div className="mb-4 grid grid-cols-2 gap-2">
+        <div className="rounded-xl border border-white/5 bg-white/[0.03] p-3">
+          <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Envio</p>
+          <p className="mt-1 text-xs font-bold text-white">
+            {alert.sync_status === 'pendiente_envio' ? 'Pendiente offline' : alert.sync_status === 'error_envio' ? 'Reintentando' : 'Enviada'}
+          </p>
+        </div>
+        <div className="rounded-xl border border-white/5 bg-white/[0.03] p-3">
+          <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">Escala</p>
+          <p className="mt-1 text-xs font-bold text-white">Nivel {alert.escalado_nivel ?? 0}</p>
+        </div>
+      </div>
+
+      <div className="mb-4 flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.03] p-3 text-slate-300">
+        <MapPin className="h-4 w-4 text-red-300" />
+        <p className="text-[10px] font-black uppercase tracking-wider">
+          {alert.metadata?.ubicacion || alert.aula || 'Ubicacion pendiente'}
+        </p>
       </div>
 
       <div className="flex-1 space-y-3 overflow-y-auto max-h-48 pr-2 custom-scrollbar">
