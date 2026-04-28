@@ -83,3 +83,15 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+self.addEventListener("sync", (event) => {
+  if (event.tag !== "sync-emergency-alerts") return;
+
+  event.waitUntil(
+    self.clients.matchAll({ includeUncontrolled: true, type: "window" }).then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({ type: "SYNC_EMERGENCY_ALERTS" });
+      });
+    })
+  );
+});

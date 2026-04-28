@@ -9,20 +9,22 @@ import {
   ChevronRight,
   Send
 } from "lucide-react";
-import { ResponseStatus } from "../../types/emergency";
+import type { ResponseStatus } from "../../types/emergency";
 import toast from "react-hot-toast";
+import { EmergencyBoard } from "./EmergencyBoard";
 
 export const EmergencyResponsePanel: React.FC = () => {
   const { 
     activeAlerts, 
     respondToEmergency, 
     currentUserProfile,
-    emergencyResponses,
     closeEmergencyAlert
   } = useApp();
 
   // Filtrar solo las alertas del staff (si el usuario es staff autorizado)
   const isStaff = ['directivo', 'subdireccion', 'prefectura', 'medico_escolar', 'system_admin', 'developer'].includes(currentUserProfile?.rol);
+
+  const activeOnly = activeAlerts.filter((alert) => alert.estado === 'activa');
 
   if (!isStaff || activeAlerts.length === 0) return null;
 
@@ -32,9 +34,12 @@ export const EmergencyResponsePanel: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-20 right-6 z-[90] w-full max-w-sm space-y-3">
+    <div className="fixed top-20 right-6 z-[90] w-full max-w-5xl space-y-3 px-4 md:px-0">
+      {currentUserProfile?.rol === 'directivo' || currentUserProfile?.rol === 'subdireccion' ? (
+        <EmergencyBoard alerts={activeAlerts} />
+      ) : null}
       <AnimatePresence>
-        {activeAlerts.map((alert) => (
+        {activeOnly.map((alert) => (
           <motion.div
             key={alert.id}
             initial={{ x: 100, opacity: 0 }}

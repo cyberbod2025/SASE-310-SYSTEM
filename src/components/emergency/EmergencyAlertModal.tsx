@@ -11,7 +11,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useApp } from "../../store";
-import { EmergencyType } from "../../types/emergency";
+import type { EmergencyLocation, EmergencyType } from "../../types/emergency";
 import { IncidentType } from "../../types";
 import { EmergencyStatusPanel } from "./EmergencyStatusPanel";
 import { EmergencyProtocolGuide } from "./EmergencyProtocolGuide";
@@ -21,9 +21,13 @@ interface EmergencyAlertModalProps {
 }
 
 export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClose }) => {
-  const { createEmergencyAlert, myActiveAlert, currentUserProfile } = useApp();
+  const app = useApp();
+  const { createEmergencyAlert, myActiveAlert, currentUserProfile, openQuickRegister, emergencyResponses } = app;
   const [step, setStep] = useState<'selection' | 'success'>(myActiveAlert ? 'success' : 'selection');
-  const [selectedType, setSelectedType] = useState<EmergencyType | null>(null);
+  const [ubicacion, setUbicacion] = useState<EmergencyLocation>('Aula');
+  const [silent, setSilent] = useState(false);
+
+  const locations: EmergencyLocation[] = ['Aula', 'Patio', 'Bano', 'Pasillo', 'Otro'];
 
   const emergencyOptions: { id: EmergencyType; label: string; icon: any; color: string; desc: string }[] = [
     { 
@@ -57,8 +61,12 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
   ];
 
   const handleSendAlert = async (type: EmergencyType) => {
-    setSelectedType(type);
-    await createEmergencyAlert(type);
+    await createEmergencyAlert(type, {
+      ubicacion,
+      aula: ubicacion,
+      grupo: currentUserProfile?.grupo_tutor || undefined,
+      silent,
+    });
     setStep('success');
   };
 
@@ -92,6 +100,38 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
         <div className="p-8">
           {step === 'selection' && (
             <div className="space-y-6">
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Ubicacion rapida</p>
+                <div className="flex flex-wrap gap-2">
+                  {locations.map((loc) => (
+                    <button
+                      key={loc}
+                      onClick={() => setUbicacion(loc)}
+                      className={`rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${
+                        ubicacion === loc
+                          ? 'border-red-400 bg-red-500/20 text-red-100'
+                          : 'border-white/10 bg-white/[0.03] text-slate-400 hover:bg-white/[0.07]'
+                      }`}
+                    >
+                      {loc === 'Bano' ? 'Bano' : loc}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <label className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3">
+                <span>
+                  <span className="block text-xs font-black uppercase tracking-widest text-white">Modo discreto</span>
+                  <span className="block text-[10px] font-medium text-slate-500">Sin sonido en esta pantalla docente; staff conserva aviso visual.</span>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={silent}
+                  onChange={(event) => setSilent(event.target.checked)}
+                  className="h-5 w-5 accent-red-600"
+                />
+              </label>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {emergencyOptions.map((opt) => (
                   <button
@@ -114,7 +154,7 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
               <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-4">
                 <p className="text-xs text-amber-200 font-bold leading-relaxed flex items-start gap-3">
                   <Clock className="h-4 w-4 shrink-0 mt-0.5" />
-                  Al activar una alerta, se notificará instantáneamente a Prefectura, Dirección y Servicio Médico con tu ubicación actual.
+                  Al activar una alerta, SASE la guarda primero en este dispositivo y luego la envia al personal responsable.
                 </p>
               </div>
             </div>
@@ -135,7 +175,11 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
                 <EmergencyStatusPanel alert={myActiveAlert} />
                 
                 {/* Guía de Sasito */}
-                <EmergencyProtocolGuide type={myActiveAlert.tipo_alerta} />
+                <EmergencyProtocolGuide
+                  type={myActiveAlert.tipo_alerta}
+                  alert={myActiveAlert}
+                  responders={emergencyResponses[myActiveAlert.id] || []}
+                />
               </div>
 
               <div className="pt-4 border-t border-white/5 flex gap-3">
@@ -148,8 +192,6 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
                 <button
                   onClick={() => {
                     onClose();
-                    // Abrir reporte formal (Conducta por defecto para emergencias)
-                    const { openQuickRegister } = useApp();
                     openQuickRegister(IncidentType.CONDUCTA);
                   }}
                   className="flex-1 rounded-xl bg-blue-600 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all"

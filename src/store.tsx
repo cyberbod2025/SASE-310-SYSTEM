@@ -18,6 +18,7 @@ import { useMatriculaSlice } from "./store/slices/useMatriculaSlice";
 import { useCierreCicloSlice } from "./store/slices/useCierreCicloSlice";
 import { useObservabilitySlice } from "./store/slices/useObservabilitySlice";
 import { useEmergencySlice } from "./store/slices/useEmergencySlice";
+import type { EmergencyCreateOptions } from "./types/emergency";
 import type { SystemState } from "./types/systemState";
 
 // Re-export types for backward compatibility
@@ -136,7 +137,7 @@ interface AppContextType {
   myActiveAlert: any | null;
   emergencyResponses: Record<string, any[]>;
   emergencyLoading: boolean;
-  createEmergencyAlert: (tipo: any, grupo?: string, aula?: string) => Promise<void>;
+  createEmergencyAlert: (tipo: any, options?: EmergencyCreateOptions) => Promise<void>;
   respondToEmergency: (alertaId: string, respuesta: any) => Promise<void>;
   closeEmergencyAlert: (alertaId: string) => Promise<void>;
 }
