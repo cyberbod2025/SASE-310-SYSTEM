@@ -3,7 +3,7 @@
 
 echo "🔍 Validando proyecto antes de push..."
 
-pnpm install --frozen-lockfile || exit 1
-pnpm type-check || exit 1
+npx -y pnpm@9 install --frozen-lockfile || exit 1
+npx -y tsc --noEmit || exit 1
 
 echo "✅ Todo correcto. Push permitido."
