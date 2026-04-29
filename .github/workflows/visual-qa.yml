@@ -25,6 +25,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Check lockfile exists
+        run: test -f pnpm-lock.yaml
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -35,6 +38,13 @@ jobs:
         with:
           node-version: "20"
           cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Prepare pnpm
+        run: corepack prepare pnpm@9.15.9 --activate
 
       - name: Install dependencies
         run: HUSKY=0 pnpm install --frozen-lockfile
