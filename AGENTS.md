@@ -13,10 +13,10 @@
 - Altas seguras de personal: `src/components/AprobacionesPersonal.tsx` debe usar `supabase/functions/approve-staff`; no vuelvas a crear perfiles o usuarios reales directamente desde el cliente.
 
 ## Verificación
-- CI usa Node 20 y este orden para frontend: `npm ci` -> `npm run lint` -> `npm run type-check` -> `npm run test` -> `npm run build`.
-- `npm run lint` y `npm run type-check` solo cubren `src/` (`eslint.config.js` y `tsconfig.json`); cambios en `api/`, `supabase/functions/` y `tests/` requieren revisión manual adicional.
-- `npm run test` usa Vitest + jsdom + `tests/setup.ts`. Foco por archivo: `npm run test -- tests/Agenda.test.tsx`.
-- `tests/test-sprite-*.js` no entra en `npm run test`; son scripts manuales de render/Puppeteer.
+- CI usa Node 20 y PNPM en este orden para frontend: `pnpm install --frozen-lockfile` -> `pnpm lint` -> `pnpm type-check` -> `pnpm test` -> `pnpm build`.
+- `pnpm lint` y `pnpm type-check` solo cubren `src/` (`eslint.config.js` y `tsconfig.json`); cambios en `api/`, `supabase/functions/` y `tests/` requieren revisión manual adicional.
+- `pnpm test` usa Vitest + jsdom + `tests/setup.ts`. Foco por archivo: `pnpm test -- tests/Agenda.test.tsx`.
+- `tests/test-sprite-*.js` no entra en `pnpm test`; son scripts manuales de render/Puppeteer.
 - Si tocas SQL/migraciones, además corre `./scripts/audit-migrations.sh` y `supabase db start` + `supabase db lint --local`.
 
 ## Entorno y gotchas
