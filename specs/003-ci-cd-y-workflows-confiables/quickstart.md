@@ -2,12 +2,12 @@
 
 ## Verificaciones locales equivalentes
 
-- `npm ci`
-- `npm run lint`
-- `npm run type-check`
-- `npm run test`
-- `npm run build`
-- `npm run test:visual:glass`
+- `pnpm install --frozen-lockfile`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm test`
+- `pnpm build`
+- `pnpm test:visual:glass`
 
 ## Workflows tocados
 
