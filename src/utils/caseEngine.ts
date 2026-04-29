@@ -172,15 +172,23 @@ export const getTeacherRequests = (students: Student[]): TeacherRequest[] => stu
     const reporter = String(incident.reporta || incident.reportedBy || "").toLowerCase();
     return reporter.includes("docente") || reporter.includes("tutor") || incident.type === IncidentType.ACADEMICO;
   })
-  .map(({ student, incident }) => ({
-    id: incident.id,
-    docente: incident.reporta || incident.reportedBy || "Docente",
-    alumno: student.name,
-    grupo: student.group,
-    tipo: incident.type,
-    fecha: (incident.fecha || incident.date || "").slice(0, 10),
-    prioridad: incident.gravedad === "critica" || riskOf(student) >= 75 ? "critica" : incident.gravedad === "grave" || riskOf(student) >= 50 ? "alta" : "media",
-    accion: incident.type === IncidentType.ACADEMICO ? "Revisar apoyo académico" : "Responder solicitud docente",
-  }))
+  .map(({ student, incident }) => {
+    const prioridad: OperationalPriority = incident.gravedad === "critica" || riskOf(student) >= 75
+      ? "critica"
+      : incident.gravedad === "grave" || riskOf(student) >= 50
+        ? "alta"
+        : "media";
+
+    return {
+      id: incident.id,
+      docente: incident.reporta || incident.reportedBy || "Docente",
+      alumno: student.name,
+      grupo: student.group,
+      tipo: incident.type,
+      fecha: (incident.fecha || incident.date || "").slice(0, 10),
+      prioridad,
+      accion: incident.type === IncidentType.ACADEMICO ? "Revisar apoyo académico" : "Responder solicitud docente",
+    };
+  })
   .sort((a, b) => b.fecha.localeCompare(a.fecha))
   .slice(0, 8);
