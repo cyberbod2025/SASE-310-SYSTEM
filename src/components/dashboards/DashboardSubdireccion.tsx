@@ -316,7 +316,7 @@ export const DashboardSubdireccion = () => {
             <button type="button" onClick={() => setIsAssistantOpen(true)} className="min-h-[44px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 text-xs font-black uppercase tracking-widest text-white">
               Sasito operativo
             </button>
-            <SOSButton compact onActivate={() => toast.success("Prefectura y Orientación fueron notificadas")} />
+            <SOSButton compact onActivate={() => { toast.success("Prefectura y Orientación fueron notificadas"); }} />
           </div>
         </div>
       </header>
