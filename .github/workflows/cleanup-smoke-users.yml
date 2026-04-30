@@ -22,5 +22,5 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec tsx scripts/cleanup-smoke-users.ts
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

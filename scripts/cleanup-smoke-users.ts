@@ -7,11 +7,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL || "";
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 if (!supabaseUrl || !serviceRoleKey) {
-  console.error("❌ Faltan variables de entorno de Supabase.");
+  console.error("❌ Faltan variables de entorno de Supabase: SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY.");
   process.exit(1);
 }
 
