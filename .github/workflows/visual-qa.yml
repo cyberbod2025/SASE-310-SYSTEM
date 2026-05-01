@@ -9,6 +9,7 @@ on:
       - "tests/visual-glass-smoke.js"
       - "package.json"
       - "pnpm-lock.yaml"
+      - ".github/workflows/visual-qa.yml"
       - "vite.config.ts"
       - "tailwind.config.js"
       - "src/index.css"
@@ -41,19 +42,21 @@ jobs:
         run: HUSKY=0 pnpm install --frozen-lockfile
 
       - name: Start Vite
-        run: nohup pnpm dev -- --host 127.0.0.1 > visual-qa-vite.log 2>&1 &
+        run: nohup pnpm dev --host 127.0.0.1 --port 3101 --strictPort > visual-qa-vite.log 2>&1 &
 
       - name: Wait for app
         run: |
           for i in {1..30}; do
-            curl -fsS http://127.0.0.1:3100/ >/dev/null && exit 0
+            curl -fsS http://127.0.0.1:3101/ >/dev/null && exit 0
             sleep 2
           done
-          echo "Vite no respondió en 3100"
+          echo "Vite no respondió en 3101"
           cat visual-qa-vite.log
           exit 1
 
       - name: Run visual smoke
+        env:
+          SASE_BASE_URL: http://127.0.0.1:3101
         run: node tests/visual-glass-smoke.js
 
       - name: Upload visual artifacts
