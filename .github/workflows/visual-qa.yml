@@ -13,6 +13,9 @@ on:
       - "tailwind.config.js"
       - "src/index.css"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: visual-qa-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -33,7 +36,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "pnpm"
           cache-dependency-path: pnpm-lock.yaml
 

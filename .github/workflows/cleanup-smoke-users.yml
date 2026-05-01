@@ -4,6 +4,9 @@ on:
     - cron: '0 0 * * *' # Cada medianoche
   workflow_dispatch: # Permitir ejecución manual
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
@@ -16,7 +19,7 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
