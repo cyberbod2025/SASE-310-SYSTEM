@@ -80,7 +80,7 @@ export const PERMISOS_POR_ROL: Record<string, PermisosSASE> = {
     can_view_names: true,
     can_register: true,
     can_edit: true,
-    can_close: true,
+    can_close: false,
     can_escalate: true,
     can_view_audit: false,
     can_approve_staff: false,
