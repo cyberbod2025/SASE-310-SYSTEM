@@ -1,81 +1,82 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { DashboardTrabajoSocial } from "../src/components/dashboards/DashboardTrabajoSocial";
+import { CaseState, IncidentType } from "../src/types";
 
-// -- HOISTED MOCKS --
-const mocks = vi.hoisted(() => ({
-  addJustificante: vi.fn(),
-  addIncident: vi.fn(),
-  printDocument: vi.fn(),
-  setPrintModal: vi.fn(),
-}));
-
-// -- MOCK STORE --
 vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
       {
-        id: "1",
-        name: "Social Student",
-        group: "1º A",
-        justificantes: [], // Empty history
+        id: "student-critical",
+        matricula: "A-001",
+        name: "Alumno Sin Respuesta",
+        group: "2A",
+        avatar: "",
+        caseState: CaseState.INTERVENCION,
+        puntajeRiesgo: 91,
+        incidents: [
+          {
+            id: "inc-1",
+            studentId: "student-critical",
+            type: IncidentType.SOCIOEMOCIONAL,
+            description: "Seguimiento familiar requerido",
+            date: "2026-04-01T10:00:00.000Z",
+            reportedBy: "Orientacion",
+            gravedad: "critica",
+          },
+        ],
+        justificantes: [],
+      },
+      {
+        id: "student-follow-up",
+        matricula: "A-002",
+        name: "Alumno En Seguimiento",
+        group: "1B",
+        avatar: "",
+        caseState: CaseState.SEGUIMIENTO,
+        puntajeRiesgo: 62,
         incidents: [],
-        socioeconomicData: undefined,
+        justificantes: [],
       },
     ],
-    addJustificante: mocks.addJustificante,
-    addIncident: mocks.addIncident,
-    printDocument: mocks.printDocument,
-    setPrintModal: mocks.setPrintModal,
   }),
 }));
 
-// -- MOCK COMPLEX COMPONENTS --
-vi.mock("../src/components/PrintButtons", () => ({
-  PrintButtons: () => <button>Imprimir</button>,
-}));
+describe("DashboardTrabajoSocial", () => {
+  it("renders role header and execution queue", () => {
+    render(<DashboardTrabajoSocial />);
 
-vi.mock("../src/components/VoiceInput", () => ({
-  VoiceInput: ({ onTranscript }: any) => (
-    <button type="button" onClick={() => onTranscript("Texto Simulado")}>
-      Mic
-    </button>
-  ),
-}));
-
-describe("Dashboard Trabajo Social Unit Tests", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+    expect(screen.getByText("TRABAJO SOCIAL")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Intervención en campo/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Casos asignados/i })).toBeInTheDocument();
+    expect(screen.getAllByText("Alumno Sin Respuesta").length).toBeGreaterThan(0);
   });
 
-  it("renders Header", () => {
+  it("highlights three unanswered citatorios as a critical institutional rule", () => {
     render(<DashboardTrabajoSocial />);
-    expect(
-      screen.getByRole("heading", { name: /TRABAJO/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Justificantes/i }),
-    ).toBeInTheDocument();
+
+    expect(screen.getAllByText(/3 citatorios sin respuesta/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("alert")).toHaveTextContent(/Padres no han respondido a 3 citatorios/i);
   });
 
-  it("Voice Input updates Textarea", () => {
+  it("registers a quick family contact without creating a new incident", () => {
     render(<DashboardTrabajoSocial />);
-    const micBtn = screen.getByText("Mic");
-    fireEvent.click(micBtn);
 
-    const textArea = screen.getByPlaceholderText(
-      /DATOS_ADICIONALES/i
-    );
-    expect((textArea as HTMLTextAreaElement).value).toContain(
-      "Texto Simulado",
-    );
+    fireEvent.change(screen.getByPlaceholderText(/Resultado breve del contacto/i), {
+      target: { value: "Tutor confirma llamada de seguimiento." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^Llamada$/i }));
+
+    expect(screen.getByText("Contacto familiar registrado.")).toBeInTheDocument();
+    expect(screen.getByText("Tutor confirma llamada de seguimiento.")).toBeInTheDocument();
   });
 
-  it("Submit is disabled without Student", () => {
+  it("blocks final closure and exposes escalation path instead", () => {
     render(<DashboardTrabajoSocial />);
-    const submitBtn = screen.getByText(/TIMBRAR_REGISTRO_OFICIAL/i);
-    // Should be disabled initially
-    expect(submitBtn).toBeDisabled();
+
+    expect(screen.getByText(/Cierre final bloqueado/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Escalar a Direccion/i })).toBeEnabled();
+    expect(screen.queryByRole("button", { name: /Cerrar caso/i })).not.toBeInTheDocument();
   });
 });
