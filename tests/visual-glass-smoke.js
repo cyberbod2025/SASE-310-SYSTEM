@@ -2,23 +2,23 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import puppeteer from "puppeteer";
 
-const baseUrl = process.env.SASE_BASE_URL || "http://127.0.0.1:3100";
+const BASE_URL = process.env.SASE_BASE_URL || "http://localhost:3101";
 const outputDir = path.resolve("qa_artifacts", "visual-audit");
 
 const routes = [
   {
     name: "login",
-    url: `${baseUrl}/`,
+    url: `${BASE_URL}/`,
     readySelector: "form, main, button",
   },
   {
     name: "registro",
-    url: `${baseUrl}/?registro=true`,
+    url: `${BASE_URL}/?registro=true`,
     readySelector: "form, main, textarea, input, button",
   },
   {
     name: "laboratorio-ui",
-    url: `${baseUrl}/?lab=ui`,
+    url: `${BASE_URL}/?lab=ui`,
     readySelector: "form, header",
   },
 ];
@@ -79,7 +79,7 @@ async function main() {
   await ensureOutputDir();
 
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: "new",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
