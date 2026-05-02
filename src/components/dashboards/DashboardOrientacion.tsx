@@ -1,373 +1,310 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useApp } from "../../store";
-import { CaseState, AppModule, Protocol, CaseLabels } from "../../types";
-import { supabase } from "../../supabase/client";
-import { ProtocolDetailModal } from "../Protocols/ProtocolDetailModal";
-import { GenericActionModal } from "../GenericActionModal";
-import { useAuth } from "../AuthProvider";
-import { StudentAdvancedPanel } from "../StudentAdvancedPanel";
-import { PrintPreviewModal } from "../PrintPreviewModal";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useApp } from "../../store";
+import { useAuth } from "../AuthProvider";
 import { GlassCard } from "../ui/GlassCard";
-import { NeoButton } from "../ui/NeoButton";
-import { getStatusColors } from "../../utils/statusUtils";
+import { OrientacionRoleHeader } from "../orientacion/OrientacionRoleHeader";
+import { OrientacionInsights } from "../orientacion/OrientacionInsights";
+import { OrientacionCaseInbox } from "../orientacion/OrientacionCaseInbox";
+import { OrientacionCaseDetail } from "../orientacion/OrientacionCaseDetail";
+import { StudentInstitutionalHistory } from "../orientacion/StudentInstitutionalHistory";
+import { TeacherDiagnosisRequests } from "../orientacion/TeacherDiagnosisRequests";
+import { InterventionPlanEditor } from "../orientacion/InterventionPlanEditor";
+import { OrientacionFollowUpPanel } from "../orientacion/OrientacionFollowUpPanel";
+import { OrientacionReportPreview } from "../orientacion/OrientacionReportPreview";
+import {
+  abrirCasoOrientacion,
+  crearPlanIntervencion,
+  derivarTrabajoSocial,
+  escalarDireccion,
+  loadDocentes,
+  loadOrientacionCasos,
+  loadStudentHistory,
+  solicitarDiagnostico,
+} from "../orientacion/orientacionApi";
+import type {
+  OrientacionCaseSummary,
+  OrientacionDiagnosisRequest,
+  OrientacionDocenteOption,
+  OrientacionFollowUp,
+  OrientacionHistoryItem,
+  OrientacionPlan,
+  OrientacionStudentSummary,
+} from "../orientacion/orientacionTypes";
+import { supabase } from "../../supabase/client";
+
+type StudentSuggestion = OrientacionStudentSummary & { rawId: string };
 
 export const DashboardOrientacion = () => {
-  const { students, setCurrentModule, addIncident } = useApp();
+  const { students } = useApp();
   const { user } = useAuth();
-  const [supportProtocol, setSupportProtocol] = useState<Protocol | null>(null);
-  const [showProtocol, setShowProtocol] = useState(false);
+  const [cases, setCases] = useState<OrientacionCaseSummary[]>([]);
+  const [docentes, setDocentes] = useState<OrientacionDocenteOption[]>([]);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [history, setHistory] = useState<{
+    summary: any | null;
+    incidents: OrientacionHistoryItem[];
+    citations: OrientacionHistoryItem[];
+    contacts: OrientacionHistoryItem[];
+    interventions: OrientacionHistoryItem[];
+    teacherReports: OrientacionHistoryItem[];
+    plans: OrientacionPlan[];
+    requests: OrientacionDiagnosisRequest[];
+    followUps: OrientacionFollowUp[];
+  }>({
+    summary: null,
+    incidents: [],
+    citations: [],
+    contacts: [],
+    interventions: [],
+    teacherReports: [],
+    plans: [],
+    requests: [],
+    followUps: [],
+  });
+  const [loading, setLoading] = useState(true);
 
-  const [modalOpen, setModalOpen] = useState<
-    "APPOINTMENT" | "INTERVIEW" | "CONTACT" | null
-  >(null);
-  const [selectedStudent, setSelectedStudent] = useState<any>(null);
-  const [showAdvancedPanel, setShowAdvancedPanel] = useState(false);
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
-  const [previewContent, setPreviewContent] = useState("");
+  const suggestions: StudentSuggestion[] = students
+    .filter((student) => student.caseState !== "CERRADO")
+    .slice(0, 6)
+    .map((student) => ({
+      rawId: student.id,
+      id: student.id,
+      nombre: student.name,
+      grupo: student.group ?? null,
+      matricula: student.matricula ?? null,
+      puntajeRiesgo: student.puntajeRiesgo ?? null,
+      estadoSemaforo: student.estadoSemaforo ?? null,
+    }));
 
-  const highRiskStudents = students.filter(
-    (s) => s.caseState === CaseState.PATRON_DETECTADO || s.caseState === CaseState.INTERVENCION,
-  );
-  
-  const attentionRequired = students.filter(
-    (s) => s.caseState === CaseState.INTERVENCION,
-  ).length;
-  
-  const onObservation = students.filter(
-    (s) => s.caseState === CaseState.OBSERVADO,
-  ).length;
-
-  const handlePrepareBitacora = () => {
-    const html = `
-      <h2>Bitácora Semanal de Orientación</h2>
-      <p><strong>Corte de Caja:</strong> ${new Date().toLocaleDateString()}</p>
-      
-      <h3>Estadísticas de Riesgo</h3>
-      <table>
-        <tr><th>Categoría</th><th>Cantidad</th></tr>
-        <tr><td>Casos en Intervención</td><td>${attentionRequired}</td></tr>
-        <tr><td>Alumnos Observados</td><td>${onObservation}</td></tr>
-        <tr><td>Patrones de Riesgo IA</td><td>${highRiskStudents.length}</td></tr>
-      </table>
-
-      <h3>Resumen de Casos Críticos</h3>
-      <ul>
-        ${highRiskStudents
-          .map(
-            (s) => `
-          <li>
-            <strong>${s.name} (${s.group}):</strong> 
-            Patrón de comportamiento detectado. Requiere seguimiento psicopedagógico inmediato.
-          </li>
-        `,
-          )
-          .join("")}
-      </ul>
-
-      <div style="margin-top: 30px; padding: 15px; border: 1px dashed #ccc; background: #f9f9f9;">
-        <h4>Observaciones de Campo</h4>
-        <p>[Escriba aquí sus observaciones adicionales para el reporte del día...]</p>
-      </div>
-
-      <div class="signature-line">
-        <div class="signature-box">
-          <div class="line"></div>
-          <div class="label">FIRMA DE ORIENTACIÓN / TRABAJO SOCIAL</div>
-        </div>
-      </div>
-    `;
-    setPreviewContent(html);
-    setShowPrintPreview(true);
-  };
-
-  const handleSaveAppointment = async (data: any) => {
-    if (!user) return;
-    const { error } = await supabase.from("citas_padres" as any).insert({
-      creado_por: user.id,
-      alumno_id: data.student,
-      fecha_cita: data.date,
-      motivo: data.reason,
-      estado: "PENDIENTE",
-      observaciones: "Agendado por Orientación",
-    });
-    if (error) {
-      toast.error("Error al agendar cita");
-      throw error;
-    }
-    toast.success("Cita sincronizada con el calendario");
-  };
-
-  const handleSaveInterview = async (data: any) => {
-    if (!user) return;
-    const { error } = await supabase.from("interventions_log" as any).insert({
-      user_id: user.id,
-      student_id: data.student,
-      reason: data.reason,
-      notes: data.notes,
-      result: data.result || "Pendiente",
-    });
-    if (error) {
-      toast.error("Error al registrar entrevista");
-      throw error;
-    }
-    toast.success("Bitácora de entrevista guardada");
-  };
-
-  const handleNotifyAcademicRisk = async (studentId: string, info: string) => {
-    try {
-      await addIncident(
-        studentId,
-        "ACADEMICO" as any,
-        `⚠️ REPORTE ORIENTACIÓN: Se requiere seguimiento especial por ${info}.`,
-      );
-      toast.success("Notificación enviada a la academia", { icon: "📝" });
-    } catch (err) {
-      toast.error("Fallo de comunicación interna");
-    }
-  };
+  const selectedCase = cases.find((item) => item.id === selectedCaseId) ?? cases[0] ?? null;
+  const activeCases = cases.filter((item) => item.estado !== "cerrado").length;
+  const pendingRequests = history.requests.filter((item) => item.estado === "pendiente").length;
+  const criticalCases = cases.filter((item) => item.prioridad === "critica" || item.estado === "escalado_direccion").length;
 
   useEffect(() => {
-    const fetchProtocol = async () => {
-      const { data } = await supabase
-        .from("protocolos" as any)
-        .select("*")
-        .ilike("titulo", "%Violencia Escolar%")
-        .single();
-      if (data) setSupportProtocol(data as any);
+    const load = async () => {
+      try {
+        setLoading(true);
+        const [loadedCases, loadedDocentes] = await Promise.all([loadOrientacionCasos(), loadDocentes()]);
+        setCases(loadedCases);
+        setDocentes(loadedDocentes);
+        setSelectedCaseId((current) => current ?? loadedCases[0]?.id ?? null);
+      } catch (error) {
+        console.error(error);
+        toast.error("No se pudieron cargar los casos de Orientación");
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchProtocol();
+
+    load();
   }, []);
 
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (!selectedCase?.alumnoId) return;
+
+      try {
+        const data = await loadStudentHistory(selectedCase.alumnoId, selectedCase.id);
+        setHistory(data);
+      } catch (error) {
+        console.error(error);
+        toast.error("No se pudo cargar el historial del alumno");
+      }
+    };
+
+    loadHistory();
+  }, [selectedCase?.alumnoId, selectedCase?.id]);
+
+  const refreshCases = async (caseIdToSelect?: string) => {
+    const loadedCases = await loadOrientacionCasos();
+    setCases(loadedCases);
+    setSelectedCaseId(caseIdToSelect ?? loadedCases[0]?.id ?? null);
+    return loadedCases;
+  };
+
+  const handleOpenStudentCase = async (studentId: string) => {
+    const student = suggestions.find((item) => item.rawId === studentId);
+    if (!student) return;
+
+    try {
+      const caseId = await abrirCasoOrientacion({
+        alumnoId: student.rawId,
+        motivo: `Seguimiento preventivo solicitado por Orientación para ${student.nombre}.`,
+        resumen: `Semáforo: ${student.estadoSemaforo ?? "sin dato"}. Puntaje: ${student.puntajeRiesgo ?? 0}.`,
+        prioridad: student.puntajeRiesgo && student.puntajeRiesgo >= 70 ? "alta" : "media",
+      });
+      await refreshCases(caseId);
+      toast.success("Caso de Orientación abierto");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo abrir el caso");
+    }
+  };
+
+  const handleRequestDiagnosis = async (docenteId: string, observaciones: string) => {
+    if (!selectedCase) return;
+
+    try {
+      await solicitarDiagnostico({ docenteId, casoId: selectedCase.id, observaciones });
+      await refreshCases(selectedCase.id);
+      toast.success("Solicitud de diagnóstico enviada");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo enviar la solicitud");
+    }
+  };
+
+  const handleCreatePlan = async (payload: { objetivo: string; acciones: string; responsable: string; fechaRevision: string }) => {
+    if (!selectedCase) return;
+
+    try {
+      await crearPlanIntervencion({
+        casoId: selectedCase.id,
+        objetivo: payload.objetivo,
+        acciones: payload.acciones,
+        responsable: payload.responsable,
+        fechaRevision: payload.fechaRevision || null,
+      });
+      await refreshCases(selectedCase.id);
+      toast.success("Plan de intervención guardado");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo guardar el plan");
+    }
+  };
+
+  const handleAddFollowUp = async (payload: { tipo: string; descripcion: string; evidenciaUrl: string }) => {
+    if (!selectedCase) return;
+
+    try {
+      const { error } = await supabase.from("seguimiento_orientacion" as any).insert({
+        caso_id: selectedCase.id,
+        tipo: payload.tipo,
+        descripcion: payload.descripcion,
+        evidencia_url: payload.evidenciaUrl || null,
+        created_by: user?.id ?? null,
+      });
+      if (error) throw error;
+      await refreshCases(selectedCase.id);
+      toast.success("Seguimiento registrado");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo registrar el seguimiento");
+    }
+  };
+
+  const handleQuickOpenCase = async () => {
+    const student = suggestions[0];
+    if (!student) {
+      toast.error("No hay alumnos sugeridos");
+      return;
+    }
+    await handleOpenStudentCase(student.rawId);
+  };
+
+  const handleDeriveSocialWork = async () => {
+    if (!selectedCase) return;
+    try {
+      await derivarTrabajoSocial(selectedCase.id);
+      await refreshCases(selectedCase.id);
+      toast.success("Caso derivado a Trabajo Social");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo derivar el caso");
+    }
+  };
+
+  const handleEscalateDirection = async () => {
+    if (!selectedCase) return;
+    try {
+      await escalarDireccion(selectedCase.id);
+      await refreshCases(selectedCase.id);
+      toast.success("Caso escalado a Dirección");
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudo escalar el caso");
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const studentLabel = selectedCase
+    ? `${selectedCase.alumnoNombre} · ${selectedCase.grupo ?? "Sin grupo"}`
+    : "Selecciona un caso para ver el historial";
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex-1 p-6 lg:p-8 relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col"
-    >
-      <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-bold text-slate-700 uppercase tracking-widest">
-            Modulo padre
-          </p>
-          <p className="text-slate-200 text-sm font-semibold">
-            Atencion Integral del Estudiante
-          </p>
-          <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
-            Orientacion Educativa
-          </h1>
-          <p className="text-slate-600 text-sm">
-            Acompañamiento socioemocional, contencion y seguimiento del estudiante.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <NeoButton
-            icon="print"
-            onClick={handlePrepareBitacora}
-            className="px-4 py-3"
-          >
-            Generar bitácora institucional
-          </NeoButton>
-          <NeoButton
-            icon="add_chart"
-            onClick={() => setCurrentModule(AppModule.REPORTES_DOCENTES)}
-            className="px-4 py-3 text-sase-warning"
-          >
-            Solicitar actualización de seguimiento
-          </NeoButton>
-        </div>
-      </div>
+    <main className="min-h-screen overflow-y-auto bg-slate-950 px-4 py-4 text-white md:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
+        <OrientacionRoleHeader
+          activeCases={activeCases}
+          pendingRequests={pendingRequests}
+          criticalCases={criticalCases}
+          onNewCase={handleQuickOpenCase}
+          onPrint={handlePrint}
+        />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 min-h-0">
-        <GlassCard icon="psychology" title="Casos en intervencion activa" className="flex flex-col h-full">
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mt-4 space-y-3">
-            <AnimatePresence>
-              {highRiskStudents.length === 0 ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="p-10 text-center text-slate-700"
-                >
-                  Sin alertas de riesgo registradas en el sistema.
-                </motion.div>
-              ) : (
-                highRiskStudents.map((s, idx) => (
-                  <motion.div
-                    key={s.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="p-4 rounded-xl border border-slate-100 bg-white/[0.02] hover:bg-white/[0.05] transition-colors group"
-                  >
-                    <div className="flex justify-between items-start gap-4">
-                      <div>
-                        <h3 className="text-white font-medium text-sm">{s.name}</h3>
-                        <p className="text-slate-600 text-xs mt-1">
-                          {s.caseState === CaseState.INTERVENCION ? "Acompañamiento Intensivo" : "Patron de riesgo socioemocional detectado"}
-                        </p>
-                        <p className="text-slate-700 text-xs mt-1">
-                          {s.group} · {s.matricula}
-                        </p>
-                      </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColors(s.caseState)} shadow-lg`}>
-                        {CaseLabels[s.caseState]}
-                      </span>
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <NeoButton
-                        onClick={() => {
-                          setSelectedStudent(s);
-                          setShowAdvancedPanel(true);
-                        }}
-                        className="px-4 py-2"
-                      >
-                        Iniciar intervención
-                      </NeoButton>
-                      <NeoButton
-                        onClick={() => handleNotifyAcademicRisk(s.id, "patron detectado")}
-                        className="px-4 py-2"
-                      >
-                        Notificar al equipo académico
-                      </NeoButton>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
-          </div>
-        </GlassCard>
+        <OrientacionInsights
+          urgent={criticalCases}
+          openRequests={pendingRequests}
+          plans={history.plans.length}
+          followUps={history.followUps.length}
+        />
 
-        <GlassCard icon="family_restroom" title="Agenda de atencion" className="flex flex-col h-full">
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mt-4">
-            <div className="p-8 rounded-xl border border-slate-100 bg-white/[0.02] text-center text-slate-700">
-              Sin citas programadas para el dia de hoy.
+        {loading ? (
+          <GlassCard className="border border-white/5 bg-slate-950/55">
+            <div className="p-6 text-center text-slate-400">Cargando casos de Orientación...</div>
+          </GlassCard>
+        ) : (
+          <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+            <div className="space-y-4">
+              <OrientacionCaseInbox
+                cases={cases}
+                students={suggestions}
+                selectedCaseId={selectedCase?.id ?? null}
+                onSelectCase={(caseId) => setSelectedCaseId(caseId)}
+                onOpenStudentCase={handleOpenStudentCase}
+              />
+              <OrientacionCaseDetail
+                selectedCase={selectedCase}
+                requests={history.requests}
+                plans={history.plans}
+                followUps={history.followUps}
+                onRequestDiagnosis={() => {
+                  const nextDocente = docentes[0]?.id;
+                  if (!nextDocente || !selectedCase) return toast.error("No hay docente disponible");
+                  void handleRequestDiagnosis(nextDocente, `Solicitud institucional para ${selectedCase.alumnoNombre}.`);
+                }}
+                onDeriveSocialWork={handleDeriveSocialWork}
+                onEscalateDirection={handleEscalateDirection}
+              />
+              <StudentInstitutionalHistory
+                studentLabel={studentLabel}
+                summary={history.summary}
+                incidents={history.incidents}
+                citations={history.citations}
+                contacts={history.contacts}
+                interventions={history.interventions}
+                teacherReports={history.teacherReports}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <TeacherDiagnosisRequests
+                requests={history.requests}
+                docentes={docentes}
+                onRequest={handleRequestDiagnosis}
+              />
+              <InterventionPlanEditor plans={history.plans} onCreatePlan={handleCreatePlan} />
+              <OrientacionFollowUpPanel followUps={history.followUps} onAddFollowUp={handleAddFollowUp} />
+              <OrientacionReportPreview selectedCase={selectedCase} history={history} plans={history.plans} followUps={history.followUps} />
             </div>
           </div>
-
-          <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 gap-3">
-            <NeoButton
-              icon="add_alert"
-              onClick={() => setModalOpen("APPOINTMENT")}
-              className="w-full justify-center py-3"
-            >
-              Generar citatorio
-            </NeoButton>
-            <NeoButton
-              icon="history_edu"
-              onClick={() => setModalOpen("INTERVIEW")}
-              className="w-full justify-center py-3"
-            >
-              Registrar entrevista
-            </NeoButton>
-            {supportProtocol && (
-              <NeoButton
-                icon="menu_book"
-                onClick={() => setShowProtocol(true)}
-                className="w-full justify-center py-3 text-sase-danger"
-              >
-                Activar protocolo crítico
-              </NeoButton>
-            )}
-          </div>
-        </GlassCard>
+        )}
       </div>
-
-      {/* MODALS */}
-      {showProtocol && supportProtocol && (
-        <ProtocolDetailModal
-          protocol={supportProtocol}
-          onClose={() => setShowProtocol(false)}
-        />
-      )}
-
-      {selectedStudent && showAdvancedPanel && (
-        <StudentAdvancedPanel
-          student={selectedStudent}
-          onClose={() => setShowAdvancedPanel(false)}
-        />
-      )}
-
-      <GenericActionModal
-        isOpen={modalOpen === "APPOINTMENT"}
-        onClose={() => setModalOpen(null)}
-        title="Gestion de citatorios institucionales"
-        description="Gestion de reuniones con tutores legales"
-        fields={[
-          {
-            name: "student",
-            label: "Matricula del alumno",
-            type: "text",
-            required: true,
-          },
-          {
-            name: "reason",
-            label: "Motivo del citatorio (descripcion breve)",
-            type: "select",
-            options: [
-              "ALERTA_CONDUCTA",
-              "BAJO_DESEMPEÑO",
-              "FALLA_SISTEMÁTICA",
-              "SEGUIMIENTO_PSIC",
-            ],
-            required: true,
-          },
-          {
-            name: "date",
-            label: "Fecha y hora",
-            type: "date",
-            required: true,
-          },
-        ]}
-        onSubmit={handleSaveAppointment}
-      />
-
-      <GenericActionModal
-        isOpen={modalOpen === "INTERVIEW"}
-        onClose={() => setModalOpen(null)}
-        title="Registro de entrevistas institucionales"
-        description="Registro de intervencion directa"
-        fields={[
-          {
-            name: "student",
-            label: "Matricula del alumno",
-            type: "text",
-            required: true,
-          },
-          {
-            name: "reason",
-            label: "Motivo de atencion",
-            type: "text",
-            required: true,
-          },
-          {
-            name: "notes",
-            label: "Notas de intervencion",
-            type: "textarea",
-            required: true,
-          },
-          {
-            name: "result",
-            label: "Resultado de la intervencion",
-            type: "select",
-            options: [
-              "PROTOCOLO_ACTIVADO",
-              "EN_OBSERVACIÓN",
-              "CASO_CERRADO",
-              "CANALIZACIÓN_EXTERNA",
-            ],
-            required: true,
-          },
-        ]}
-        onSubmit={handleSaveInterview}
-      />
-
-      <PrintPreviewModal
-        isOpen={showPrintPreview}
-        onClose={() => setShowPrintPreview(false)}
-        title="BITÁCORA DE INTERVENCIÓN PSICOPEDAGÓGICA"
-        initialHtml={previewContent}
-      />
-    </motion.div>
+    </main>
   );
 };
