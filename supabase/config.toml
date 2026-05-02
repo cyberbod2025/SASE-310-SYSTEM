@@ -368,6 +368,20 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# Feria usa autenticación propia: SASE handoff token para login y
+# x-student-session-token para operaciones del alumno.
+[functions.student-login]
+verify_jwt = false
+
+[functions.student-progress]
+verify_jwt = false
+
+[functions.student-finish-trivia]
+verify_jwt = false
+
+[functions.student-progress-get]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327
