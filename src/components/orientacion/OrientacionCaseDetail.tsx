@@ -1,5 +1,6 @@
 import { GlassCard } from "../ui/GlassCard";
 import { NeoButton } from "../ui/NeoButton";
+import { TeacherDiagnosisOverview } from "./TeacherDiagnosisOverview";
 import { ORIENTACION_CASE_LABELS, ORIENTACION_PRIORITY_LABELS, ORIENTACION_PRIORITY_STYLES, ORIENTACION_STATE_STYLES, type OrientacionCaseSummary, type OrientacionDiagnosisRequest, type OrientacionPlan, type OrientacionFollowUp } from "./orientacionTypes";
 
 interface Props {
@@ -52,6 +53,13 @@ export function OrientacionCaseDetail({ selectedCase, requests, plans, followUps
           <MetaCard title="Planes" value={plans.length} />
           <MetaCard title="Seguimientos" value={followUps.length} />
         </div>
+
+        {selectedCase && (
+          <TeacherDiagnosisOverview
+            alumnoId={selectedCase.alumnoId}
+            canViewSensitive={true}
+          />
+        )}
       </div>
     </GlassCard>
   );
