@@ -84,7 +84,7 @@ ALTER POLICY "Enable read access for authenticated users" ON public.comunicados
   USING (((select auth.role()) = 'authenticated'::text));
 
 -- [diagnosticos_docentes] Docentes gestionan sus diagnósticos
-ALTER POLICY "Docentes gestionan sus diagnósticos" ON public.diagnosticos_docentes
+ALTER POLICY "Docentes gestionan sus diagnósticos" ON public.diagnosticos_colectivos_docentes
   USING (((docente_id = ( SELECT profiles.id
    FROM profiles
   WHERE (profiles.id = (select auth.uid())))) AND (( SELECT (profiles.role)::text AS role
@@ -97,7 +97,7 @@ ALTER POLICY "Docentes gestionan sus diagnósticos" ON public.diagnosticos_docen
   WHERE (profiles.id = (select auth.uid()))) = ANY (ARRAY['docente'::text, 'docente_tutor'::text]))));
 
 -- [diagnosticos_docentes] Roles institucionales leen diagnósticos
-ALTER POLICY "Roles institucionales leen diagnósticos" ON public.diagnosticos_docentes
+ALTER POLICY "Roles institucionales leen diagnósticos" ON public.diagnosticos_colectivos_docentes
   USING ((( SELECT (profiles.role)::text AS role
    FROM profiles
   WHERE (profiles.id = (select auth.uid()))) = ANY (ARRAY['orientacion'::text, 'trabajo_social'::text, 'directivo'::text, 'subdireccion'::text, 'developer'::text, 'system_admin'::text])));
@@ -281,12 +281,8 @@ ALTER POLICY "Ver solicitudes propias o asignadas" ON public.solicitudes_documen
   USING (((solicitante_id = (select auth.uid())) OR (asignado_a = (select auth.uid()))));
 
 -- [sos_alerts] sos_alerts_insert_authenticated
-ALTER POLICY "sos_alerts_insert_authenticated" ON public.sos_alerts
-  WITH CHECK (((select auth.uid()) IS NOT NULL));
 
 -- [sos_alerts] sos_alerts_update_institutional
-ALTER POLICY "sos_alerts_update_institutional" ON public.sos_alerts
-  USING (((select auth.uid()) IS NOT NULL));
 
 -- [suministros] Enfermeros y Directivos ven suministros
 ALTER POLICY "Enfermeros y Directivos ven suministros" ON public.suministros
@@ -322,3 +318,142 @@ ALTER POLICY "salud_read_safe" ON storage.objects
   USING ((bucket_id = 'documentos_salud'::text) AND (EXISTS ( SELECT 1
    FROM perfiles_usuario p
   WHERE ((p.id = (select auth.uid())) AND (p.rol = ANY (ARRAY['medico_escolar'::text, 'directivo'::text, 'subdireccion'::text, 'admin'::text, 'system_admin'::text]))))));
+
+-- ============================================================
+-- OPTIMIZACION POST-MERGE: Orientacion v2 (InitPlan)
+-- ============================================================
+
+-- [orientacion_casos] Orientacion ve sus casos
+ALTER POLICY "Orientacion ve sus casos" ON public.orientacion_casos
+  USING (
+    (public.get_my_role_text() = 'orientacion')
+    AND (creado_por = (SELECT auth.uid())) OR (responsable_id = (SELECT auth.uid()))
+  );
+
+-- [orientacion_casos] Orientacion crea sus casos
+ALTER POLICY "Orientacion crea sus casos" ON public.orientacion_casos
+  WITH CHECK (
+    (public.get_my_role_text() = 'orientacion')
+    AND creado_por = (SELECT auth.uid())
+    AND (responsable_id IS NULL OR responsable_id = (SELECT auth.uid()))
+    AND estado <> 'cerrado'
+  );
+
+-- [orientacion_casos] Orientacion edita sus casos sin cierre
+ALTER POLICY "Orientacion edita sus casos sin cierre" ON public.orientacion_casos
+  USING (
+    (public.get_my_role_text() = 'orientacion')
+    AND (creado_por = (SELECT auth.uid()) OR responsable_id = (SELECT auth.uid()))
+  )
+  WITH CHECK (
+    (public.get_my_role_text() = 'orientacion')
+    AND (creado_por = (SELECT auth.uid()) OR responsable_id = (SELECT auth.uid()))
+    AND estado <> 'cerrado'
+  );
+
+-- [solicitudes_diagnostico] Orientacion gestiona solicitudes diagnostico
+ALTER POLICY "Orientacion gestiona solicitudes diagnostico" ON public.solicitudes_diagnostico
+  USING (
+    (public.get_my_role_text() = 'orientacion')
+    AND EXISTS (
+      SELECT 1 FROM public.orientacion_casos c
+      WHERE c.id = caso_id
+        AND (c.creado_por = (SELECT auth.uid()) OR c.responsable_id = (SELECT auth.uid()))
+    )
+  )
+  WITH CHECK (
+    (public.get_my_role_text() = 'orientacion')
+    AND EXISTS (
+      SELECT 1 FROM public.orientacion_casos c
+      WHERE c.id = caso_id
+        AND (c.creado_por = (SELECT auth.uid()) OR c.responsable_id = (SELECT auth.uid()))
+    )
+  );
+
+-- [solicitudes_diagnostico] Docente responde/actualiza solicitudes
+ALTER POLICY "Docente responde solicitudes asignadas" ON public.solicitudes_diagnostico
+  USING (
+    (public.get_my_role_text() IN ('docente', 'docente_tutor'))
+    AND docente_id = (SELECT auth.uid())
+  );
+
+ALTER POLICY "Docente actualiza solicitudes asignadas" ON public.solicitudes_diagnostico
+  USING (
+    (public.get_my_role_text() IN ('docente', 'docente_tutor'))
+    AND docente_id = (SELECT auth.uid())
+  )
+  WITH CHECK (
+    (public.get_my_role_text() IN ('docente', 'docente_tutor'))
+    AND docente_id = (SELECT auth.uid())
+  );
+
+-- [diagnosticos_docentes] Orientacion y Docente (InitPlan)
+ALTER POLICY "Orientacion ve diagnosticos de sus casos" ON public.diagnosticos_docentes
+  USING (
+    (public.get_my_role_text() = 'orientacion')
+    AND EXISTS (
+      SELECT 1 FROM public.orientacion_casos c
+      WHERE c.id = caso_id
+        AND (c.creado_por = (SELECT auth.uid()) OR c.responsable_id = (SELECT auth.uid()))
+    )
+  );
+
+ALTER POLICY "Docente inserta diagnostico asignado" ON public.diagnosticos_docentes
+  WITH CHECK (
+    (public.get_my_role_text() IN ('docente', 'docente_tutor'))
+    AND docente_id = (SELECT auth.uid())
+    AND EXISTS (
+      SELECT 1 FROM public.solicitudes_diagnostico s
+      WHERE s.id = solicitud_id
+        AND s.caso_id = caso_id
+        AND s.docente_id = (SELECT auth.uid())
+        AND s.estado = 'pendiente'
+    )
+  );
+
+ALTER POLICY "Docente ve diagnostico propio" ON public.diagnosticos_docentes
+  USING (
+    (public.get_my_role_text() IN ('docente', 'docente_tutor'))
+    AND docente_id = (SELECT auth.uid())
+  );
+
+-- [planes_intervencion / seguimiento] Orientacion (InitPlan)
+ALTER POLICY "Orientacion gestiona planes propios" ON public.planes_intervencion
+  USING (
+    (public.get_my_role_text() = 'orientacion')
+    AND EXISTS (
+      SELECT 1 FROM public.orientacion_casos c
+      WHERE c.id = caso_id
+        AND (c.creado_por = (SELECT auth.uid()) OR c.responsable_id = (SELECT auth.uid()))
+        AND c.estado <> 'cerrado'
+    )
+  )
+  WITH CHECK (
+    (public.get_my_role_text() = 'orientacion')
+    AND EXISTS (
+      SELECT 1 FROM public.orientacion_casos c
+      WHERE c.id = caso_id
+        AND (c.creado_por = (SELECT auth.uid()) OR c.responsable_id = (SELECT auth.uid()))
+        AND c.estado <> 'cerrado'
+    )
+  );
+
+ALTER POLICY "Orientacion gestiona seguimiento propio" ON public.seguimiento_orientacion
+  USING (
+    (public.get_my_role_text() = 'orientacion')
+    AND EXISTS (
+      SELECT 1 FROM public.orientacion_casos c
+      WHERE c.id = caso_id
+        AND (c.creado_por = (SELECT auth.uid()) OR c.responsable_id = (SELECT auth.uid()))
+        AND c.estado <> 'cerrado'
+    )
+  )
+  WITH CHECK (
+    (public.get_my_role_text() = 'orientacion')
+    AND EXISTS (
+      SELECT 1 FROM public.orientacion_casos c
+      WHERE c.id = caso_id
+        AND (c.creado_por = (SELECT auth.uid()) OR c.responsable_id = (SELECT auth.uid()))
+        AND c.estado <> 'cerrado'
+    )
+  );

@@ -1,8 +1,8 @@
 import { supabase } from "../lib/supabaseClient";
 import type { Database } from "../supabase/types";
 
-type DiagnosticoRow = Database["public"]["Tables"]["diagnosticos_docentes"]["Row"];
-type DiagnosticoInsert = Database["public"]["Tables"]["diagnosticos_docentes"]["Insert"];
+type DiagnosticoRow = Database["public"]["Tables"]["diagnosticos_colectivos_docentes"]["Row"];
+type DiagnosticoInsert = Database["public"]["Tables"]["diagnosticos_colectivos_docentes"]["Insert"];
 
 export type DiagnosticoDocente = DiagnosticoRow;
 
@@ -37,7 +37,7 @@ export async function getDiagnosticos({
   periodo,
 }: FiltroDiagnosticos): Promise<DiagnosticoDocente[]> {
   let query = supabase
-    .from("diagnosticos_docentes")
+    .from("diagnosticos_colectivos_docentes")
     .select("*")
     .order("fecha_diagnostico", { ascending: false });
 
@@ -58,7 +58,7 @@ export async function getDiagnosticosByAlumno(
   alumnoId: string
 ): Promise<DiagnosticoDocente[]> {
   const { data, error } = await supabase
-    .from("diagnosticos_docentes")
+    .from("diagnosticos_colectivos_docentes")
     .select("*")
     .contains("alumnos_reportados", JSON.stringify([{ alumno_id: alumnoId }]))
     .order("fecha_diagnostico", { ascending: false });
@@ -74,7 +74,7 @@ export async function getResumenGrupo(
   grupoId: string
 ): Promise<ResumenGrupo> {
   const { data, error } = await supabase
-    .from("diagnosticos_docentes")
+    .from("diagnosticos_colectivos_docentes")
     .select("*")
     .eq("grupo", grupoId);
 
@@ -157,7 +157,7 @@ export async function getUltimosDiagnosticos(
   limite = 10
 ): Promise<DiagnosticoDocente[]> {
   const { data, error } = await supabase
-    .from("diagnosticos_docentes")
+    .from("diagnosticos_colectivos_docentes")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(limite);
@@ -173,7 +173,7 @@ export async function saveDiagnostico(
   diagnostico: DiagnosticoInsert
 ): Promise<DiagnosticoDocente> {
   const { data, error } = await supabase
-    .from("diagnosticos_docentes")
+    .from("diagnosticos_colectivos_docentes")
     .insert(diagnostico)
     .select()
     .single();

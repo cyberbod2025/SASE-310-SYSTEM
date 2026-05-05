@@ -1,10 +1,10 @@
--- Tabla diagnosticos_docentes: reemplaza a colectivo_respuestas_docentes
+-- Tabla diagnosticos_colectivos_docentes: reemplaza a colectivo_respuestas_docentes
 -- con esquema normalizado y escala unificada (bajo/medio/alto)
 
 -- Enum para escala unificada
 CREATE TYPE nivel_riesgo AS ENUM ('bajo', 'medio', 'alto');
 
-CREATE TABLE IF NOT EXISTS public.diagnosticos_docentes (
+CREATE TABLE IF NOT EXISTS public.diagnosticos_colectivos_docentes (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     docente_id UUID REFERENCES public.profiles(id),
     docente_nombre TEXT,
@@ -47,20 +47,20 @@ CREATE TABLE IF NOT EXISTS public.diagnosticos_docentes (
 );
 
 -- Índices para consultas del dashboard
-CREATE INDEX IF NOT EXISTS idx_diagnosticos_grupo ON public.diagnosticos_docentes(grupo);
-CREATE INDEX IF NOT EXISTS idx_diagnosticos_docente ON public.diagnosticos_docentes(docente_id);
-CREATE INDEX IF NOT EXISTS idx_diagnosticos_fecha ON public.diagnosticos_docentes(fecha_diagnostico DESC);
-CREATE INDEX IF NOT EXISTS idx_diagnosticos_periodo ON public.diagnosticos_docentes(periodo);
-CREATE INDEX IF NOT EXISTS idx_diagnosticos_conducta ON public.diagnosticos_docentes(conducta_general);
-CREATE INDEX IF NOT EXISTS idx_diagnosticos_aprovechamiento ON public.diagnosticos_docentes(aprovechamiento);
-CREATE INDEX IF NOT EXISTS idx_diagnosticos_asistencia ON public.diagnosticos_docentes(asistencia);
+CREATE INDEX IF NOT EXISTS idx_diagnosticos_grupo ON public.diagnosticos_colectivos_docentes(grupo);
+CREATE INDEX IF NOT EXISTS idx_diagnosticos_docente ON public.diagnosticos_colectivos_docentes(docente_id);
+CREATE INDEX IF NOT EXISTS idx_diagnosticos_fecha ON public.diagnosticos_colectivos_docentes(fecha_diagnostico DESC);
+CREATE INDEX IF NOT EXISTS idx_diagnosticos_periodo ON public.diagnosticos_colectivos_docentes(periodo);
+CREATE INDEX IF NOT EXISTS idx_diagnosticos_conducta ON public.diagnosticos_colectivos_docentes(conducta_general);
+CREATE INDEX IF NOT EXISTS idx_diagnosticos_aprovechamiento ON public.diagnosticos_colectivos_docentes(aprovechamiento);
+CREATE INDEX IF NOT EXISTS idx_diagnosticos_asistencia ON public.diagnosticos_colectivos_docentes(asistencia);
 
 -- RLS: Solo roles institucionales
-ALTER TABLE public.diagnosticos_docentes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.diagnosticos_colectivos_docentes ENABLE ROW LEVEL SECURITY;
 
 -- El docente solo ve/edita sus propios diagnósticos
 CREATE POLICY "Docentes gestionan sus diagnósticos"
-ON public.diagnosticos_docentes
+ON public.diagnosticos_colectivos_docentes
 FOR ALL
 TO authenticated
 USING (
@@ -74,7 +74,7 @@ WITH CHECK (
 
 -- Orientación y Dirección pueden leer todo
 CREATE POLICY "Roles institucionales leen diagnósticos"
-ON public.diagnosticos_docentes
+ON public.diagnosticos_colectivos_docentes
 FOR SELECT
 TO authenticated
 USING (
@@ -94,6 +94,6 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE TRIGGER trigger_diagnosticos_updated_at
-BEFORE UPDATE ON public.diagnosticos_docentes
+BEFORE UPDATE ON public.diagnosticos_colectivos_docentes
 FOR EACH ROW
 EXECUTE FUNCTION public.update_diagnosticos_updated_at();

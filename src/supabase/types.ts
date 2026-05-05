@@ -1027,7 +1027,7 @@ export type Database = {
           },
         ]
       }
-      diagnosticos_docentes: {
+      diagnosticos_colectivos_docentes: {
         Row: {
           alumnos_reportados: Json | null
           ambiente_atencion: Database["public"]["Enums"]["nivel_riesgo"] | null
@@ -1117,10 +1117,71 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "diagnosticos_docentes_docente_id_fkey"
+            foreignKeyName: "diagnosticos_colectivos_docentes_docente_id_fkey"
             columns: ["docente_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diagnosticos_docentes: {
+        Row: {
+          aprovechamiento: string | null
+          asistencia: string | null
+          caso_id: string
+          conducta: string | null
+          created_at: string
+          docente_id: string
+          id: string
+          observaciones: string | null
+          recomendaciones: string | null
+          solicitud_id: string
+        }
+        Insert: {
+          aprovechamiento?: string | null
+          asistencia?: string | null
+          caso_id: string
+          conducta?: string | null
+          created_at?: string
+          docente_id: string
+          id?: string
+          observaciones?: string | null
+          recomendaciones?: string | null
+          solicitud_id: string
+        }
+        Update: {
+          aprovechamiento?: string | null
+          asistencia?: string | null
+          caso_id?: string
+          conducta?: string | null
+          created_at?: string
+          docente_id?: string
+          id?: string
+          observaciones?: string | null
+          recomendaciones?: string | null
+          solicitud_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnosticos_docentes_caso_id_fkey"
+            columns: ["caso_id"]
+            isOneToOne: false
+            referencedRelation: "orientacion_casos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnosticos_docentes_docente_id_fkey"
+            columns: ["docente_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "diagnosticos_docentes_solicitud_id_fkey"
+            columns: ["solicitud_id"]
+            isOneToOne: true
+            referencedRelation: "solicitudes_diagnostico"
             referencedColumns: ["id"]
           },
         ]
@@ -1429,6 +1490,83 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      feria_student_sessions: {
+        Row: {
+          alumno_id: string | null
+          created_at: string
+          estudiante_id: string
+          expires_at: string
+          group_id: string | null
+          id: string
+          issued_by_email: string | null
+          issued_by_role: string | null
+          issued_by_user_id: string | null
+          last_seen_at: string | null
+          metadata: Json
+          revoked_at: string | null
+          token_hash: string
+        }
+        Insert: {
+          alumno_id?: string | null
+          created_at?: string
+          estudiante_id: string
+          expires_at: string
+          group_id?: string | null
+          id?: string
+          issued_by_email?: string | null
+          issued_by_role?: string | null
+          issued_by_user_id?: string | null
+          last_seen_at?: string | null
+          metadata?: Json
+          revoked_at?: string | null
+          token_hash: string
+        }
+        Update: {
+          alumno_id?: string | null
+          created_at?: string
+          estudiante_id?: string
+          expires_at?: string
+          group_id?: string | null
+          id?: string
+          issued_by_email?: string | null
+          issued_by_role?: string | null
+          issued_by_user_id?: string | null
+          last_seen_at?: string | null
+          metadata?: Json
+          revoked_at?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feria_student_sessions_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feria_student_sessions_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "feria_student_sessions_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "feria_student_sessions_estudiante_id_fkey"
+            columns: ["estudiante_id"]
+            isOneToOne: false
+            referencedRelation: "estudiantes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       grupos: {
         Row: {
@@ -1888,6 +2026,81 @@ export type Database = {
           },
         ]
       }
+      orientacion_casos: {
+        Row: {
+          alumno_id: string
+          creado_por: string | null
+          estado: string
+          fecha_actualizacion: string
+          fecha_apertura: string
+          id: string
+          motivo: string
+          prioridad: string
+          responsable_id: string | null
+          resumen: string | null
+        }
+        Insert: {
+          alumno_id: string
+          creado_por?: string | null
+          estado?: string
+          fecha_actualizacion?: string
+          fecha_apertura?: string
+          id?: string
+          motivo: string
+          prioridad?: string
+          responsable_id?: string | null
+          resumen?: string | null
+        }
+        Update: {
+          alumno_id?: string
+          creado_por?: string | null
+          estado?: string
+          fecha_actualizacion?: string
+          fecha_apertura?: string
+          id?: string
+          motivo?: string
+          prioridad?: string
+          responsable_id?: string | null
+          resumen?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orientacion_casos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orientacion_casos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "orientacion_casos_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "orientacion_casos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orientacion_casos_responsable_id_fkey"
+            columns: ["responsable_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       perfiles_usuario: {
         Row: {
           alcances: Json | null
@@ -2046,6 +2259,47 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      planes_intervencion: {
+        Row: {
+          acciones: string
+          caso_id: string
+          estado: string
+          fecha_inicio: string
+          fecha_revision: string | null
+          id: string
+          objetivo: string
+          responsable: string
+        }
+        Insert: {
+          acciones: string
+          caso_id: string
+          estado?: string
+          fecha_inicio?: string
+          fecha_revision?: string | null
+          id?: string
+          objetivo: string
+          responsable: string
+        }
+        Update: {
+          acciones?: string
+          caso_id?: string
+          estado?: string
+          fecha_inicio?: string
+          fecha_revision?: string | null
+          id?: string
+          objetivo?: string
+          responsable?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planes_intervencion_caso_id_fkey"
+            columns: ["caso_id"]
+            isOneToOne: false
+            referencedRelation: "orientacion_casos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -2461,6 +2715,51 @@ export type Database = {
           },
         ]
       }
+      seguimiento_orientacion: {
+        Row: {
+          caso_id: string
+          created_at: string
+          created_by: string | null
+          descripcion: string
+          evidencia_url: string | null
+          id: string
+          tipo: string
+        }
+        Insert: {
+          caso_id: string
+          created_at?: string
+          created_by?: string | null
+          descripcion: string
+          evidencia_url?: string | null
+          id?: string
+          tipo: string
+        }
+        Update: {
+          caso_id?: string
+          created_at?: string
+          created_by?: string | null
+          descripcion?: string
+          evidencia_url?: string | null
+          id?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seguimiento_orientacion_caso_id_fkey"
+            columns: ["caso_id"]
+            isOneToOne: false
+            referencedRelation: "orientacion_casos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seguimiento_orientacion_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seguimiento_social: {
         Row: {
           acuerdos: string | null
@@ -2793,6 +3092,75 @@ export type Database = {
         }
         Relationships: []
       }
+      solicitudes_diagnostico: {
+        Row: {
+          alumno_id: string
+          caso_id: string
+          docente_id: string
+          estado: string
+          fecha_respuesta: string | null
+          fecha_solicitud: string
+          id: string
+          observaciones: string | null
+        }
+        Insert: {
+          alumno_id: string
+          caso_id: string
+          docente_id: string
+          estado?: string
+          fecha_respuesta?: string | null
+          fecha_solicitud?: string
+          id?: string
+          observaciones?: string | null
+        }
+        Update: {
+          alumno_id?: string
+          caso_id?: string
+          docente_id?: string
+          estado?: string
+          fecha_respuesta?: string | null
+          fecha_solicitud?: string
+          id?: string
+          observaciones?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solicitudes_diagnostico_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitudes_diagnostico_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_diagnostico_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_diagnostico_caso_id_fkey"
+            columns: ["caso_id"]
+            isOneToOne: false
+            referencedRelation: "orientacion_casos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "solicitudes_diagnostico_docente_id_fkey"
+            columns: ["docente_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solicitudes_documentos: {
         Row: {
           alumno_id: string | null
@@ -2869,88 +3237,6 @@ export type Database = {
           {
             foreignKeyName: "solicitudes_documentos_alumno_id_fkey"
             columns: ["alumno_id"]
-            isOneToOne: false
-            referencedRelation: "expediente_integral_alumno"
-            referencedColumns: ["alumno_id"]
-          },
-        ]
-      }
-      sos_alerts: {
-        Row: {
-          acknowledged_at: string | null
-          acknowledged_by: string | null
-          broadcast_at: string | null
-          context: string | null
-          created_at: string
-          created_by: string | null
-          escalated_to_direccion_at: string | null
-          escalated_to_orientacion_at: string | null
-          escalation_level: number
-          id: string
-          reporter_name: string
-          reporter_role: string
-          resolution_notes: string | null
-          resolved_at: string | null
-          resolved_by: string | null
-          student_id: string | null
-          student_name: string | null
-        }
-        Insert: {
-          acknowledged_at?: string | null
-          acknowledged_by?: string | null
-          broadcast_at?: string | null
-          context?: string | null
-          created_at?: string
-          created_by?: string | null
-          escalated_to_direccion_at?: string | null
-          escalated_to_orientacion_at?: string | null
-          escalation_level?: number
-          id?: string
-          reporter_name?: string
-          reporter_role?: string
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          student_id?: string | null
-          student_name?: string | null
-        }
-        Update: {
-          acknowledged_at?: string | null
-          acknowledged_by?: string | null
-          broadcast_at?: string | null
-          context?: string | null
-          created_at?: string
-          created_by?: string | null
-          escalated_to_direccion_at?: string | null
-          escalated_to_orientacion_at?: string | null
-          escalation_level?: number
-          id?: string
-          reporter_name?: string
-          reporter_role?: string
-          resolution_notes?: string | null
-          resolved_at?: string | null
-          resolved_by?: string | null
-          student_id?: string | null
-          student_name?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "sos_alerts_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "sos_alerts_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "alumnos_en_riesgo"
-            referencedColumns: ["alumno_id"]
-          },
-          {
-            foreignKeyName: "sos_alerts_student_id_fkey"
-            columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
@@ -3139,15 +3425,54 @@ export type Database = {
       }
     }
     Functions: {
-      auto_escalate_sos: { Args: never; Returns: undefined }
+      abrir_caso_orientacion: {
+        Args: {
+          p_alumno_id: string
+          p_motivo: string
+          p_prioridad?: string
+          p_responsable_id?: string
+          p_resumen?: string
+        }
+        Returns: string
+      }
+      audit_orientacion_action: {
+        Args: {
+          p_descripcion: string
+          p_id_registro: string
+          p_new_values?: Json
+          p_tabla: string
+          p_tipo_accion: string
+        }
+        Returns: string
+      }
       calcular_deriva: { Args: { alumno: string }; Returns: undefined }
       calculate_student_risk: {
         Args: { p_student_id: string }
         Returns: undefined
       }
+      crear_plan_intervencion: {
+        Args: {
+          p_acciones: string
+          p_caso_id: string
+          p_estado?: string
+          p_fecha_inicio?: string
+          p_fecha_revision?: string
+          p_objetivo: string
+          p_responsable: string
+        }
+        Returns: string
+      }
+      derivar_trabajo_social: {
+        Args: { p_caso_id: string; p_descripcion?: string }
+        Returns: undefined
+      }
       ejecutar_promocion: {
         Args: { p_ciclo_actual: string; p_ciclo_nuevo: string }
         Returns: Json
+      }
+      escalar_direccion: {
+        Args: { p_caso_id: string; p_descripcion?: string }
+        Returns: undefined
       }
       generar_matricula_sase: { Args: never; Returns: string }
       get_modulos_ecosistema_visibles: {
@@ -3171,6 +3496,55 @@ export type Database = {
       handle_anomaly_response: {
         Args: { p_actor_id: string; p_details?: Json; p_type: string }
         Returns: undefined
+      }
+      internal_feria_assert_session: {
+        Args: { p_estudiante_id: string; p_session_id: string }
+        Returns: {
+          alumno_id: string | null
+          created_at: string
+          estudiante_id: string
+          expires_at: string
+          group_id: string | null
+          id: string
+          issued_by_email: string | null
+          issued_by_role: string | null
+          issued_by_user_id: string | null
+          last_seen_at: string | null
+          metadata: Json
+          revoked_at: string | null
+          token_hash: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feria_student_sessions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      internal_feria_finalizar_trivia: {
+        Args: {
+          p_answer_hash?: string
+          p_estacion_id: string
+          p_estudiante_id: string
+          p_puntos_adicionales: number
+          p_request_id?: string
+          p_session_id: string
+        }
+        Returns: Json
+      }
+      internal_feria_get_progress: {
+        Args: { p_estudiante_id: string; p_session_id: string }
+        Returns: Json
+      }
+      internal_feria_registrar_progreso: {
+        Args: {
+          p_estacion_id: string
+          p_estudiante_id: string
+          p_puntos_ganados: number
+          p_request_id?: string
+          p_session_id: string
+        }
+        Returns: Json
       }
       is_current_user_smoke_test: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
@@ -3211,6 +3585,17 @@ export type Database = {
         Args: { p_alumno_id: string }
         Returns: undefined
       }
+      registrar_diagnostico: {
+        Args: {
+          p_aprovechamiento: string
+          p_asistencia: string
+          p_conducta: string
+          p_observaciones: string
+          p_recomendaciones: string
+          p_solicitud_id: string
+        }
+        Returns: string
+      }
       simular_promocion: {
         Args: { p_ciclo_id: string }
         Returns: {
@@ -3225,6 +3610,14 @@ export type Database = {
           nombre: string
           promedio: number
         }[]
+      }
+      solicitar_diagnostico: {
+        Args: {
+          p_caso_id: string
+          p_docente_id: string
+          p_observaciones?: string
+        }
+        Returns: string
       }
     }
     Enums: {
