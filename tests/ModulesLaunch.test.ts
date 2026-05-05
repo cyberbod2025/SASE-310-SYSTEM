@@ -260,4 +260,76 @@ describe("Launcher de modulos externos", () => {
     expect(payload.module).toBe("feria");
     expect(url.hash).toBe("#/docente");
   });
+
+  it("resuelve diagnostico desde base_url relativo del catalogo", async () => {
+    const { default: handler } = await import("../api/modules/launch");
+    delete process.env.DIAGNOSTICO_APP_URL;
+    mockState.moduleRecord = {
+      id: "module-diagnostico",
+      key: "diagnostico",
+      name: "Diagnostico Colectivo",
+      base_url: "/modulos/colectivo/index.html",
+      is_active: true,
+    };
+
+    const req: MockReq = {
+      method: "POST",
+      body: { module: "diagnostico" },
+      headers: {
+        authorization: "Bearer test-token",
+        host: "localhost:3100",
+        "x-forwarded-proto": "http",
+      },
+    };
+    const res = createResponse();
+
+    await handler(req, res);
+
+    expect(res.statusCode).toBe(200);
+    const { payload, url } = decodePayloadFromUrl(res.body.url);
+    expect(url.origin + url.pathname).toBe("http://localhost:3100/modulos/colectivo/index.html");
+    expect(payload.module).toBe("diagnostico");
+  });
+
+  it("valida token SASE para sesion SIRDE y rechaza firmas alteradas", async () => {
+    const { default: handler } = await import("../api/modules/launch");
+    const { default: sessionHandler } = await import("../api/modules/session");
+    mockState.moduleRecord = {
+      id: "module-diagnostico",
+      key: "diagnostico",
+      name: "Diagnostico Colectivo",
+      base_url: "https://diagnostico.example.com/",
+      is_active: true,
+    };
+
+    const launchReq: MockReq = {
+      method: "POST",
+      body: { module: "diagnostico" },
+      headers: { authorization: "Bearer test-token" },
+    };
+    const launchRes = createResponse();
+    await handler(launchReq, launchRes);
+
+    const { token } = decodePayloadFromUrl(launchRes.body.url);
+    const sessionReq: MockReq = {
+      method: "POST",
+      body: { token },
+      headers: {},
+    };
+    const sessionRes = createResponse();
+
+    await sessionHandler(sessionReq, sessionRes);
+
+    expect(sessionRes.statusCode).toBe(200);
+    expect(sessionRes.body).toMatchObject({
+      provider: "sase",
+      role: "teacher",
+      userId: "teacher-1",
+      displayName: "Docente Piloto",
+    });
+
+    const deniedRes = createResponse();
+    await sessionHandler({ ...sessionReq, body: { token: `${token}x` } }, deniedRes);
+    expect(deniedRes.statusCode).toBe(401);
+  });
 });
