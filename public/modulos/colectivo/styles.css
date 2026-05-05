@@ -143,6 +143,16 @@ input, select, textarea {
     font-size: 0.95rem;
 }
 
+select {
+    color-scheme: dark;
+}
+
+select option,
+select optgroup {
+    background: #111827 !important;
+    color: #f8fafc !important;
+}
+
 input:focus, select:focus, textarea:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.06) !important;
@@ -358,4 +368,12 @@ button:not(.btn-link):not(.btn-outline):disabled, .btn-primary:disabled, .btn-gl
     body { background: white !important; }
     .no-print { display: none !important; }
     .card { border: 1px solid #ddd !important; box-shadow: none !important; page-break-inside: avoid; }
+}
+
+.logo-glow-large {
+    filter: drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.3));
+}
+
+.logo-glow-small {
+    filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.2));
 }

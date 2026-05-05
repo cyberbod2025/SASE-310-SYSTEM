@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import puppeteer from "puppeteer";
 
-const BASE_URL = process.env.SASE_BASE_URL || "http://localhost:3101";
+const BASE_URL = process.env.SASE_BASE_URL || "http://localhost:4173";
 const outputDir = path.resolve("qa_artifacts", "visual-audit");
 
 const routes = [

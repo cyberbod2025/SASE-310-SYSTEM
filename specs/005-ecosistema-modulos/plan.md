@@ -17,9 +17,9 @@ Convertir SASE en portal central de modulos externos mediante un catalogo persis
 - `./scripts/audit-migrations.sh`
 - `supabase db start`
 - `supabase db lint --local`
-- `npm ci`
-- `npm run lint`
-- `npm run type-check`
-- `npm run test`
-- `npm run build`
+- `pnpm install --frozen-lockfile`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm test`
+- `pnpm build`
 - Smoke manual del lanzamiento de Feria y del rechazo de usuarios no autorizados.

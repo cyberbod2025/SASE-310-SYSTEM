@@ -1,26 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import { DashboardDocente } from "../src/components/dashboards/DashboardDocente";
-import { CaseState, UserRole } from "../src/types";
+import { CaseState, IncidentType, UserRole } from "../src/types";
 
-// -- HOISTED MOCKS --
 const mocks = vi.hoisted(() => ({
-  setCurrentModule: vi.fn(),
   addIncident: vi.fn(),
-  registerAttendance: vi.fn(),
+  setIsAssistantOpen: vi.fn(),
+  profile: { alcances: {} as Record<string, boolean> },
 }));
 
-// -- MOCK STORE --
 vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
       {
         id: "1",
         name: "Test Student",
-        incidents: [], // IMPORTANT: Must be empty array, not undefined
-        medicalAlerts: [], // IMPORTANT: Must be empty array
-        // Optional props that might be accessed
+        incidents: [],
         group: "3º B",
         matricula: "2023-001",
         avatar: "https://i.pravatar.cc/150",
@@ -28,52 +24,85 @@ vi.mock("../src/store", () => ({
       },
     ],
     currentUserRole: UserRole.DOCENTE,
-    setCurrentModule: mocks.setCurrentModule,
+    currentUserProfile: mocks.profile,
     addIncident: mocks.addIncident,
-    registerAttendance: mocks.registerAttendance,
+    setIsAssistantOpen: mocks.setIsAssistantOpen,
   }),
 }));
 
-vi.mock("../src/components/AuthProvider", () => ({
-  useAuth: () => ({
-    signOut: vi.fn(),
-  }),
-}));
-
-// -- MOCK TOAST --
 vi.mock("react-hot-toast", () => ({
   default: { error: vi.fn(), success: vi.fn() },
 }));
 
+// -- MOCK AUTH PROVIDER --
+vi.mock("../src/components/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "test-user-id", email: "test@sase.mx" },
+    isAuthenticated: true,
+    role: "docente",
+  }),
+}));
+
+// -- MOCK INSTITUTIONAL ACTIONS --
+vi.mock("../src/hooks/useInstitutionalActions", () => ({
+  useInstitutionalActions: () => ({
+    escalateCase: vi.fn(),
+    sosAlert: vi.fn(),
+  }),
+}));
+
+
 describe("Dashboard Docente Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.profile.alcances = {};
+    mocks.addIncident.mockResolvedValue(undefined);
   });
 
-  it("renders Header correctly", () => {
+  it("renders DOCENTE header correctly", () => {
     render(<DashboardDocente />);
-    expect(
-      screen.getByText(/CENTRO DE MANDO DOCENTE/i),
-    ).toBeInTheDocument();
+    expect(screen.getAllByText("DOCENTE")[0]).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Aula en 10 segundos/i })).toBeInTheDocument();
   });
 
-  it("displays list of students", () => {
+  it("displays quick student list", () => {
     render(<DashboardDocente />);
     expect(screen.getAllByText("Test Student").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/3º B/i).length).toBeGreaterThan(0);
   });
 
-  it("Quick Action: Reportar Incidencia", () => {
+  it("opens quick form and saves an incident", async () => {
     render(<DashboardDocente />);
-    const selectToggle = screen.getByTitle(
-      /Seleccionar alumno para reporte masivo/i,
-    );
-    fireEvent.click(selectToggle);
 
-    expect(screen.getByText(/REPORTAR \(1\)/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Reportar incidencia/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Conducta/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^Guardar$/i }));
+
+    await waitFor(() => {
+      expect(mocks.addIncident).toHaveBeenCalledWith(
+        "1",
+        IncidentType.CONDUCTA,
+        "Observación de conducta en clase",
+        undefined,
+      );
+    });
   });
 
-  it("shows Pase de Lista tab", () => {
+  it("Guardar y continuar keeps quick form open", async () => {
     render(<DashboardDocente />);
-    expect(screen.getByText(/Pase de Lista/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Reportar incidencia/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Falta de material/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Guardar y continuar/i }));
+
+    await waitFor(() => expect(mocks.addIncident).toHaveBeenCalled());
+    expect(screen.getByRole("heading", { name: /Guardar incidencia/i })).toBeInTheDocument();
+  });
+
+  it("blocks reporting when can_register is false", () => {
+    mocks.profile.alcances = { can_register: false };
+    render(<DashboardDocente />);
+
+    expect(screen.getByRole("button", { name: /Reportar incidencia/i })).toBeDisabled();
   });
 });

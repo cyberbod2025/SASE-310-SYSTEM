@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tablero de Análisis | SIRDE-310</title>
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('sase_token') || params.has('pin') || params.has('token') || sessionStorage.getItem('sirde_session_pin') || sessionStorage.getItem('sirde_sase_session')) {
+                const style = document.createElement('style');
+                style.id = 'sso-hide-wall';
+                style.innerHTML = '#auth-wall { display: none !important; visibility: hidden !important; opacity: 0 !important; }';
+                document.head.appendChild(style);
+            }
+        })();
+    </script>
     <link rel="icon" href="logo_secundaria_310.svg" type="image/svg+xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=2026.2">
+    <link rel="stylesheet" href="styles.css?v=2026.3">
     <link rel="stylesheet" href="../sase-theme.css?v=2026.4">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -121,7 +132,7 @@
 
     </main>
 
-    <script src="app.js?v=2026.2"></script>
+    <script src="app.js?v=2026.3"></script>
     <script>
         // Custom Dashboard Logic
         async function runAnalysis() {

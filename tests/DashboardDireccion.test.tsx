@@ -62,6 +62,15 @@ vi.mock("../src/supabase/client", () => {
   };
 });
 
+// -- MOCK AUTH PROVIDER --
+vi.mock("../src/components/AuthProvider", () => ({
+  useAuth: () => ({
+    user: { id: "test-user-id", email: "test@sase.mx" },
+    isAuthenticated: true,
+    role: "directivo",
+  }),
+}));
+
 describe("Dashboard Direccion Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
