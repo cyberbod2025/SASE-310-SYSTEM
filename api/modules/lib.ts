@@ -117,17 +117,33 @@ function isDevelopmentFallbackAllowed() {
   return process.env.NODE_ENV !== "production" && process.env.VERCEL_ENV !== "production";
 }
 
-function resolveModuleBaseUrl(moduleKey: ModuleKey, dbBaseUrl: string): string {
+function getRequestOrigin(req: VercelRequest): string | null {
+  const host = req.headers["x-forwarded-host"] || req.headers.host;
+  if (typeof host !== "string" || !host.trim()) return null;
+
+  const protoHeader = req.headers["x-forwarded-proto"];
+  const proto = typeof protoHeader === "string" && protoHeader.trim() ? protoHeader.split(",")[0].trim() : "https";
+  return `${proto}://${host.trim()}`;
+}
+
+function resolveModuleBaseUrl(moduleKey: ModuleKey, dbBaseUrl: string, req: VercelRequest): string {
   const envBaseUrl = getEnvBaseUrl(moduleKey);
   if (envBaseUrl) {
     return envBaseUrl;
   }
 
-  if (isDevelopmentFallbackAllowed() && dbBaseUrl.trim()) {
+  const trimmedDbBaseUrl = dbBaseUrl.trim();
+  if (trimmedDbBaseUrl.startsWith("/")) {
+    const requestOrigin = getRequestOrigin(req);
+    if (!requestOrigin) throw new Error(`Missing request origin for module ${moduleKey}`);
+    return new URL(trimmedDbBaseUrl, requestOrigin).toString();
+  }
+
+  if (isDevelopmentFallbackAllowed() && trimmedDbBaseUrl) {
     console.warn(
       `[modules] ${moduleKey} is using database base_url as local fallback. Configure the explicit environment variable before production.`,
     );
-    return dbBaseUrl.trim();
+    return trimmedDbBaseUrl;
   }
 
   throw new Error(`Missing base URL for module ${moduleKey}`);
@@ -458,7 +474,7 @@ export async function handleModuleLaunch(
 
     const { token } = buildToken(profile, moduleKey);
     const launchUrl = buildLaunchUrl(
-      resolveModuleBaseUrl(moduleKey, moduleRecord.base_url),
+      resolveModuleBaseUrl(moduleKey, moduleRecord.base_url, req),
       token,
     );
 

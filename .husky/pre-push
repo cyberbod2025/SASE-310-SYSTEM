@@ -1,9 +1,15 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+set -e
 
-echo "🔍 Validando proyecto antes de push..."
+# Skip pre-push hooks in CI or when explicitly disabled
+if [ "$CI" = "true" ] || [ "$SKIP_PREPUSH" = "true" ]; then
+  echo "CI detected or SKIP_PREPUSH=true, skipping pre-push checks."
+  exit 0
+fi
 
-npx -y pnpm@9 install --frozen-lockfile || exit 1
-npx -y tsc --noEmit || exit 1
+echo "Validando proyecto antes de push..."
 
-echo "✅ Todo correcto. Push permitido."
+pnpm type-check
+pnpm build
+
+echo "Todo correcto. Push permitido."

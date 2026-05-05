@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "packageManager": "pnpm@9",
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -18,7 +18,7 @@
     "smoke:prepare": "tsx scripts/create-smoke-users.ts",
     "smoke:cleanup": "tsx scripts/cleanup-smoke-users.ts",
     "sync:types": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/supabase/types.ts",
-    "prepare": "command -v husky >/dev/null 2>&1 && husky install || true"
+    "prepare": "husky"
   },
   "dependencies": {
     "@_davideast/stitch-mcp": "^0.3.2",
