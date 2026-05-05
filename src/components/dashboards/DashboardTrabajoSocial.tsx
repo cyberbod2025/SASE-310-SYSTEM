@@ -1,695 +1,197 @@
-import React, { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
 import { useApp } from "../../store";
-import { VoiceInput } from "../VoiceInput";
-import { GenericActionModal } from "../GenericActionModal";
-import toast from "react-hot-toast";
-import { getDocumentTemplate } from "../../utils/documentTemplates";
-
-// -- ATOMIC COMPONENTS --
-
-const SocialMetric = ({ label, value, icon, color, pct }: any) => {
-  const colors: any = {
-    orange: "text-sase-warning border-sase-warning/20 bg-sase-warning/5",
-    blue: "text-sase-info border-sase-info/20 bg-sase-info/5",
-    rose: "text-sase-danger border-sase-danger/20 bg-sase-danger/5",
-    indigo: "text-sase-info border-sase-info/20 bg-sase-info/5",
-  };
-
-  return (
-    <div
-      className={`card-sase p-6 border ${colors[color]} relative overflow-hidden group`}
-    >
-      <div className="flex justify-between items-center mb-4">
-        <div
-          className={`size-10 rounded-xl border ${colors[color]} flex items-center justify-center`}
-        >
-          <span className="material-icons text-xl">{icon}</span>
-        </div>
-        {pct && (
-          <span className="text-[10px] font-black px-2 py-0.5 rounded border border-slate-200 bg-white/5 text-slate-700 italic">
-            {pct}% DEL_TOTAL
-          </span>
-        )}
-      </div>
-      <h4 className="text-3xl font-black text-white italic tracking-tighter mb-1 leading-none">
-        {value}
-      </h4>
-      <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.2em] italic">
-        {label}
-      </p>
-
-      {pct && (
-        <div className="w-full bg-white/5 h-[2px] mt-4 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            className={`h-full bg-current ${colors[color].split(" ")[0]}`}
-          />
-        </div>
-      )}
-    </div>
-  );
-};
+import { PERMISOS_POR_ROL } from "../../utils/permisos";
+import { CaseExecutionQueue } from "../trabajoSocial/CaseExecutionQueue";
+import { CitatoriosTracker } from "../trabajoSocial/CitatoriosTracker";
+import { ComplianceTracker } from "../trabajoSocial/ComplianceTracker";
+import { FamilyContactLog } from "../trabajoSocial/FamilyContactLog";
+import { HomeVisitLog } from "../trabajoSocial/HomeVisitLog";
+import { TrabajoSocialCaseDetail } from "../trabajoSocial/TrabajoSocialCaseDetail";
+import { TrabajoSocialInsights } from "../trabajoSocial/TrabajoSocialInsights";
+import { TrabajoSocialRoleHeader } from "../trabajoSocial/TrabajoSocialRoleHeader";
+import {
+  buildInitialAgreements,
+  buildInitialCitatorios,
+  buildInitialContacts,
+  buildInitialVisits,
+  buildTrabajoSocialCases,
+  CitatorioRecord,
+  ComplianceAgreement,
+  ComplianceStatus,
+  ContactType,
+  createCitatorio,
+  createContact,
+  createVisit,
+  FamilyContactRecord,
+  hasThreeUnansweredCitatorios,
+  HomeVisitRecord,
+  TrabajoSocialInterventionStatus,
+} from "../trabajoSocial/trabajoSocialTypes";
 
 export const DashboardTrabajoSocial = () => {
-  const {
-    students,
-    addJustificante,
-    addIncident,
-    printDocument,
-    setPrintModal,
-  } = useApp();
-  const [activeTab, setActiveTab] = useState<
-    "justificantes" | "riesgos" | "comunidad"
-  >("justificantes");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState("");
+  const { students } = useApp();
+  const rolePermissions = PERMISOS_POR_ROL.trabajo_social;
+  const baseCases = buildTrabajoSocialCases(students);
 
-  // Logic for Justificantes
-  const [justForm, setJustForm] = useState({
-    student: "",
-    start: "",
-    end: "",
-    reason: "Médico" as any,
-    desc: "",
-    distal: false,
-  });
+  const [search, setSearch] = useState("");
+  const [sasitoOpen, setSasitoOpen] = useState(false);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(baseCases[0]?.id || null);
+  const [statusOverrides, setStatusOverrides] = useState<Record<string, TrabajoSocialInterventionStatus>>({});
+  const [lastAction, setLastAction] = useState<string | null>(null);
+  const [citatorios, setCitatorios] = useState<CitatorioRecord[]>(() => buildInitialCitatorios(baseCases));
+  const [contacts, setContacts] = useState<FamilyContactRecord[]>(() => buildInitialContacts(baseCases));
+  const [visits, setVisits] = useState<HomeVisitRecord[]>(() => buildInitialVisits(baseCases));
+  const [agreements, setAgreements] = useState<ComplianceAgreement[]>(() => buildInitialAgreements(baseCases));
 
-  const handleGenerateJustificante = () => {
-    if (!justForm.student || !justForm.start) return;
+  const cases = baseCases.map((caseItem) => ({
+    ...caseItem,
+    estadoIntervencion: statusOverrides[caseItem.id] || caseItem.estadoIntervencion,
+  }));
 
-    if (justForm.distal) {
-      addIncident(
-        justForm.student,
-        "ACADEMICO" as any,
-        `⚠️ AVISO TS: Alumno a DISTANCIA del ${justForm.start} al ${justForm.end || justForm.start}.`,
-      );
-      toast.success("Notificación enviada a Docencia", { icon: "📧" });
-    }
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredCases = normalizedSearch
+    ? cases.filter((caseItem) => [
+      caseItem.alumno,
+      caseItem.grupo,
+      caseItem.responsablePrevio,
+      caseItem.motivo,
+    ].join(" ").toLowerCase().includes(normalizedSearch))
+    : cases;
 
-    addJustificante(justForm.student, {
-      startDate: justForm.start,
-      endDate: justForm.end || justForm.start,
-      reason: justForm.reason,
-      description: justForm.desc,
-      issuedBy: "Trabajo Social",
-    });
+  const selectedCase = cases.find((caseItem) => caseItem.id === selectedCaseId) || filteredCases[0] || cases[0] || null;
+  const criticalAlerts = cases.filter((caseItem) => hasThreeUnansweredCitatorios(caseItem.id, citatorios)).length;
 
-    toast.success("Justificante Timbrado con Éxito");
-    setJustForm({ ...justForm, student: "", desc: "" });
+  const setCaseStatus = (caseId: string, status: TrabajoSocialInterventionStatus) => {
+    setStatusOverrides((current) => ({ ...current, [caseId]: status }));
   };
 
-  const recentJustificantes = useMemo(
-    () =>
-      students
-        .flatMap((s) =>
-          s.justificantes.map((j) => ({
-            ...j,
-            studentName: s.name,
-            group: s.group,
-            studentId: s.id,
-          })),
-        )
-        .sort((a, b) => b.issuedAt.localeCompare(a.issuedAt)),
-    [students],
-  );
+  const handleStartFollowUp = (caseId: string) => {
+    setSelectedCaseId(caseId);
+    setCaseStatus(caseId, "seguimiento");
+    setLastAction("Seguimiento activo registrado localmente.");
+  };
 
-  const dropoutRisk = students.filter(
-    (s) =>
-      s.incidents.filter((i) => i.type === "Asistencia / Falta").length >= 3,
-  );
+  const handleRegisterCitatorio = (caseId: string) => {
+    const currentCount = citatorios.filter((citatorio) => citatorio.caseId === caseId).length;
+    setCitatorios((current) => [...current, createCitatorio(caseId, currentCount)]);
+    setCaseStatus(caseId, "alerta_sin_respuesta");
+    setLastAction("Nuevo citatorio registrado.");
+  };
 
-  const communityAnalysis = useMemo(() => {
-    const total = students.length || 1;
-    return {
-      nuclear: students.filter(
-        (s) => s.socioeconomicData?.familyType === "Nuclear",
-      ).length,
-      mono: students.filter(
-        (s) => s.socioeconomicData?.familyType === "Monoparental",
-      ).length,
-      internet: Math.round(
-        (students.filter((s) => s.socioeconomicData?.internetAccess).length /
-          total) *
-          100,
-      ),
-      vulnerability: Math.round(
-        ((students.filter((s) => s.socioeconomicData?.incomeLevel === "Bajo")
-          .length +
-          students.filter(
-            (s) => s.socioeconomicData?.familyType === "Monoparental",
-          ).length) /
-          (total * 2)) *
-          100,
-      ),
-    };
-  }, [students]);
+  const handleMarkAttendance = (citatorioId: string) => {
+    setCitatorios((current) => current.map((citatorio) => citatorio.id === citatorioId ? { ...citatorio, respuesta: "asistio" } : citatorio));
+    setLastAction("Asistencia familiar marcada en citatorio.");
+  };
+
+  const handleRegisterContact = (caseId: string, tipo: ContactType = "llamada", resultado = "Contacto familiar rapido registrado.") => {
+    setSelectedCaseId(caseId);
+    setContacts((current) => [createContact(caseId, tipo, resultado), ...current]);
+    setCaseStatus(caseId, "contacto_familiar");
+    setLastAction("Contacto familiar registrado.");
+  };
+
+  const handleRegisterVisit = (caseId: string, observaciones: string) => {
+    setSelectedCaseId(caseId);
+    setVisits((current) => [createVisit(caseId, observaciones), ...current]);
+    setCaseStatus(caseId, "visita_programada");
+    setLastAction("Visita domiciliaria agregada a la bitacora local.");
+  };
+
+  const handleUpdateCompliance = (agreementId: string, status: ComplianceStatus) => {
+    setAgreements((current) => current.map((agreement) => agreement.id === agreementId ? { ...agreement, estado: status } : agreement));
+    setLastAction("Cumplimiento actualizado.");
+  };
+
+  const handleEscalate = (caseId: string) => {
+    setSelectedCaseId(caseId);
+    setLastAction("Caso escalado a Direccion para decision institucional.");
+  };
+
+  const handleReturnToOrientacion = (caseId: string) => {
+    setSelectedCaseId(caseId);
+    setLastAction("Caso devuelto a Orientacion para ajuste del plan de intervencion.");
+  };
 
   return (
-    <div className="flex-1 min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-sase-warning/30">
-      {/* HEADER SECTION */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-slate-100 pb-10">
-        <div className="flex items-center gap-6">
-          <div className="size-16 bg-[#0a0f18] border border-sase-warning/30 rounded-2xl flex items-center justify-center text-sase-warning shadow-2xl relative overflow-hidden backdrop-blur-xl">
-            <span className="material-icons text-4xl">
-              diversity_3
-            </span>
-            <motion.div
-              animate={{ top: ["0%", "100%", "0%"] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              className="absolute left-0 w-full h-[1px] bg-sase-warning/50"
-            />
-          </div>
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <span className="px-2 py-0.5 bg-sase-warning/10 border border-sase-warning/20 rounded text-[9px] font-black text-sase-warning uppercase tracking-widest">
-                UNIDAD 03 // TRABAJO SOCIAL
-              </span>
-              <div className="size-1.5 bg-sase-warning rounded-full animate-ping"></div>
-            </div>
-            <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase leading-none">
-              TRABAJO <span className="text-sase-warning italic">SOCIAL</span>
-            </h2>
-            <p className="text-slate-600 text-sm mt-2">
-              Vinculacion familiar, analisis de contexto y seguimiento institucional.
-            </p>
-          </div>
+    <main className="min-h-screen flex-1 overflow-y-auto bg-slate-950 px-4 pb-10 text-white md:px-6 lg:px-8">
+      <TrabajoSocialRoleHeader
+        searchValue={search}
+        activeCasesCount={cases.length}
+        criticalAlertsCount={criticalAlerts}
+        onSearchChange={setSearch}
+        onOpenSasito={() => setSasitoOpen((current) => !current)}
+        onSOS={() => setLastAction("SOS activado desde Trabajo Social.")}
+      />
+
+      <div className="mx-auto mt-6 grid w-full max-w-7xl grid-cols-1 gap-5 xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.15fr)]">
+        <div className="space-y-5">
+          <CaseExecutionQueue
+            cases={filteredCases}
+            citatorios={citatorios}
+            selectedCaseId={selectedCase?.id}
+            canEdit={rolePermissions.can_edit}
+            onSelectCase={setSelectedCaseId}
+            onStartFollowUp={handleStartFollowUp}
+            onRegisterContact={(caseId) => handleRegisterContact(caseId)}
+          />
+          <TrabajoSocialInsights
+            cases={cases}
+            citatorios={citatorios}
+            contacts={contacts}
+            agreements={agreements}
+            sasitoOpen={sasitoOpen}
+          />
         </div>
 
-        <div className="flex bg-white/5 p-1.5 rounded-2xl border border-slate-200 shadow-inner">
-          <button
-            onClick={() => setActiveTab("justificantes")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "justificantes" ? "bg-sase-warning text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
-          >
-            Justificantes
-          </button>
-          <button
-            onClick={() => setActiveTab("riesgos")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "riesgos" ? "bg-sase-warning text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
-          >
-            Riesgos ({dropoutRisk.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("comunidad")}
-            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeTab === "comunidad" ? "bg-sase-warning text-white shadow-xl shadow-black/5" : "text-slate-700 hover:text-white"}`}
-          >
-            Análisis Comunidad
-          </button>
+        <div className="space-y-5">
+          <TrabajoSocialCaseDetail
+            selectedCase={selectedCase}
+            citatorios={citatorios}
+            contacts={contacts}
+            visits={visits}
+            agreements={agreements}
+            canEdit={rolePermissions.can_edit}
+            canEscalate={rolePermissions.can_escalate}
+            canViewSensitive={rolePermissions.can_view_sensitive}
+            lastAction={lastAction}
+            onRegisterContact={handleRegisterContact}
+            onRegisterVisit={handleRegisterVisit}
+            onEscalate={handleEscalate}
+            onReturnToOrientacion={handleReturnToOrientacion}
+          />
+
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <CitatoriosTracker
+              selectedCase={selectedCase}
+              citatorios={citatorios}
+              canEdit={rolePermissions.can_edit}
+              onRegisterCitatorio={handleRegisterCitatorio}
+              onMarkAttendance={handleMarkAttendance}
+            />
+            <ComplianceTracker
+              selectedCase={selectedCase}
+              agreements={agreements}
+              canEdit={rolePermissions.can_edit}
+              onUpdateCompliance={handleUpdateCompliance}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <FamilyContactLog
+              selectedCase={selectedCase}
+              contacts={contacts}
+              canEdit={rolePermissions.can_edit}
+              onRegisterContact={handleRegisterContact}
+            />
+            <HomeVisitLog
+              selectedCase={selectedCase}
+              visits={visits}
+              canEdit={rolePermissions.can_edit}
+              onRegisterVisit={handleRegisterVisit}
+            />
+          </div>
         </div>
       </div>
-
-      {activeTab === "justificantes" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* TERMINAL GENERATOR */}
-          <div className="card-sase border-slate-100 p-8 bg-[#0a0f18]/40 backdrop-blur-xl">
-            <h3 className="text-xs font-black text-sase-warning uppercase tracking-[0.3em] mb-8 italic flex items-center gap-3">
-              <span className="material-icons text-xl">
-                history_edu
-              </span>
-              EMISOR_JUSTIFICANTES
-            </h3>
-
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
-                  OBJETIVO_ESTUDIANTE
-                </label>
-                <select
-                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none transition-all uppercase font-bold"
-                  value={justForm.student}
-                  title="Seleccionar alumno para justificante"
-                  onChange={(e) =>
-                    setJustForm({ ...justForm, student: e.target.value })
-                  }
-                >
-                  <option value="">SELECCIONAR_TARGET...</option>
-                  {students.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} - {s.group}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
-                    INICIO
-                  </label>
-                  <input
-                    type="date"
-                    title="Fecha de inicio"
-                    value={justForm.start}
-                    onChange={(e) =>
-                      setJustForm({ ...justForm, start: e.target.value })
-                    }
-                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
-                    FIN
-                  </label>
-                  <input
-                    type="date"
-                    title="Fecha de fin"
-                    value={justForm.end}
-                    onChange={(e) =>
-                      setJustForm({ ...justForm, end: e.target.value })
-                    }
-                    className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest ml-1 italic">
-                  NATURALEZA_DEL_MOTIVO
-                </label>
-                <select
-                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs text-white focus:border-sase-warning/50 outline-none transition-all uppercase font-bold"
-                  value={justForm.reason}
-                  title="Motivo del justificante"
-                  onChange={(e) =>
-                    setJustForm({ ...justForm, reason: e.target.value as any })
-                  }
-                >
-                  <option value="Médico">MOTIVO_MÉDICO</option>
-                  <option value="Social">MOTIVO_FAMILIAR</option>
-                  <option value="Legal">TRÁMITE_LEGAL</option>
-                </select>
-              </div>
-
-              <div
-                className={`p-4 rounded-2xl border flex items-center gap-4 cursor-pointer transition-all ${justForm.distal ? "bg-sase-warning/10 border-sase-warning/30" : "bg-white/5 border-slate-200 opacity-50"}`}
-                onClick={() =>
-                  setJustForm({ ...justForm, distal: !justForm.distal })
-                }
-              >
-                <div
-                  className={`size-6 rounded-2xl border-2 flex items-center justify-center transition-all ${justForm.distal ? "bg-sase-warning border-sase-warning" : "border-slate-600"}`}
-                >
-                  {justForm.distal && (
-                    <span className="material-icons text-white text-sm">
-                      check
-                    </span>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="text-[10px] font-black text-white uppercase tracking-widest leading-none mb-1">
-                    TRABAJO_A_DISTANCIA
-                  </p>
-                  <p className="text-[8px] font-black text-slate-700 uppercase tracking-tighter italic">
-                    NOTIFICAR_CUERPO_DOCENTE
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-center ml-1">
-                  <label className="text-[9px] font-black text-slate-700 uppercase tracking-widest italic">
-                    OBSERVACIONES_CAMPO
-                  </label>
-                  <VoiceInput
-                    onTranscript={(t) =>
-                      setJustForm({
-                        ...justForm,
-                        desc: justForm.desc + " " + t,
-                      })
-                    }
-                  />
-                </div>
-                <textarea
-                  value={justForm.desc}
-                  onChange={(e) =>
-                    setJustForm({ ...justForm, desc: e.target.value })
-                  }
-                  placeholder="DATOS_ADICIONALES..."
-                  className="w-full bg-[#05070a] border border-slate-200 rounded-xl p-4 text-xs h-24 text-white resize-none outline-none focus:border-sase-warning/50"
-                />
-              </div>
-
-              <button
-                onClick={handleGenerateJustificante}
-                disabled={!justForm.student || !justForm.start}
-                className="w-full py-5 bg-sase-warning hover:bg-sase-warning text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-sase-warning/20 active:scale-95 transition-all disabled:grayscale disabled:opacity-40"
-              >
-                TIMBRAR_REGISTRO_OFICIAL
-              </button>
-            </div>
-          </div>
-
-          {/* HISTORY TABLE */}
-          <div className="lg:col-span-2 card-sase border-slate-100 bg-[#0a0f18]/20 flex flex-col h-full">
-            <div className="p-6 border-b border-slate-100 bg-white/[0.01] flex items-center justify-between">
-              <h3 className="text-[10px] font-black text-slate-700 uppercase tracking-[0.3em] flex items-center gap-3 italic">
-                <span className="material-icons text-sase-warning">
-                  inventory
-                </span>
-                HISTORIAL_DE_EMISIÓN_SINCRO
-              </h3>
-            </div>
-
-            <div className="overflow-x-auto custom-scrollbar flex-1">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-white/5 text-slate-700 text-[9px] uppercase font-black border-b border-slate-100 italic italic tracking-widest font-mono">
-                    <th className="px-8 py-5">FOLIO</th>
-                    <th className="px-8 py-5">EXPEDIENTE</th>
-                    <th className="px-8 py-5">VIGENCIA</th>
-                    <th className="px-8 py-5">TIPO</th>
-                    <th className="px-8 py-5 text-right">ACCIONES</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.03]">
-                  {recentJustificantes.map((j) => (
-                    <tr
-                      key={j.id}
-                      className="hover:bg-white/[0.02] transition-colors group"
-                    >
-                      <td className="px-8 py-6 font-mono text-[10px] text-slate-700 font-bold">
-                        {j.folio}
-                      </td>
-                      <td className="px-8 py-6">
-                        <p className="font-black text-white text-sm uppercase italic tracking-tighter group-hover:text-sase-warning transition-colors">
-                          {j.studentName}
-                        </p>
-                        <p className="text-[9px] font-bold text-slate-600 uppercase mt-1">
-                          {j.group}
-                        </p>
-                      </td>
-                      <td className="px-8 py-6 text-[10px] font-black text-slate-600 uppercase italic">
-                        {j.startDate}{" "}
-                        <span className="text-white/20 px-1">/</span>{" "}
-                        {j.endDate}
-                      </td>
-                      <td className="px-8 py-6">
-                        <span className="px-2.5 py-1 rounded bg-white/5 border border-slate-200 text-[9px] font-black text-slate-600 uppercase tracking-widest italic group-hover:border-sase-warning/40">
-                          {j.reason}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <button
-                          onClick={() => {
-                            const student = students.find(
-                              (s) => s.id === j.studentId,
-                            );
-                            const html = getDocumentTemplate(
-                              "JUSTIFICANTE",
-                              student,
-                              j,
-                            );
-                            setPrintModal({
-                              isOpen: true,
-                              title: `JUSTIFICANTE - ${j.folio}`,
-                              html: html,
-                            });
-                          }}
-                          className="size-10 bg-white/5 hover:bg-sase-warning hover:text-white rounded-xl flex items-center justify-center transition-all"
-                        >
-                          <span className="material-icons text-lg">
-                            print
-                          </span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {recentJustificantes.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="py-20 text-center text-slate-700 font-black uppercase text-[10px] tracking-widest opacity-30 italic"
-                      >
-                        SIN REGISTROS DISPONIBLES
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === "riesgos" && (
-        <div className="space-y-6 animate-slide-up">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1 flex items-center gap-3">
-                <span className="material-icons text-sase-danger animate-pulse">
-                  warning
-                </span>
-                Casos en vinculacion activa
-              </h3>
-              <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest italic">
-                Seguimiento familiar en proceso // {dropoutRisk.length} casos activos
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                const items = dropoutRisk.flatMap((s) =>
-                  s.incidents.map((i) => ({
-                    date: i.date,
-                    studentName: s.name,
-                    type: i.type,
-                    description: i.description,
-                  })),
-                );
-                const html = getDocumentTemplate("BITACORA", undefined, {
-                  items,
-                  summary: `SE DETECTAN ${dropoutRisk.length} ESTUDIANTES CON PATRÓN DE INASISTENCIA CRÍTICO. SE ACTIVAN PROTOCOLOS DE VISITA DOMICILIARIA Y ENLACE CON TUTORES.`,
-                });
-                setPrintModal({
-                  isOpen: true,
-                  title: "BITÁCORA DE RIESGO - ALERTA TEMPRANA",
-                  html,
-                });
-              }}
-              className="px-6 py-3 bg-white/5 border border-slate-200 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-sase-danger transition-all flex items-center gap-2 active:scale-95"
-            >
-              <span className="material-icons text-sm text-sase-danger">
-                print
-              </span>
-              Generar bitacora institucional
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dropoutRisk.map((s) => (
-              <div
-                key={s.id}
-                className="card-sase p-8 border-sase-danger/20 bg-sase-danger/[0.02] group relative overflow-hidden border-l-4 border-l-sase-danger"
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <div className="size-14 bg-[#0a0f18] border border-slate-200 rounded-2xl flex items-center justify-center text-sase-danger text-2xl font-black italic">
-                    {s.name.charAt(0)}
-                  </div>
-                  <span className="px-3 py-1 bg-sase-danger text-white text-[9px] font-black uppercase tracking-widest rounded-2xl animate-pulse">
-                    Seguimiento familiar en proceso
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1">
-                  {s.name}
-                </h3>
-                <p className="text-[9px] font-black text-slate-700 uppercase tracking-[0.3em] mb-6">
-                  FALTAS_DETECTADAS:{" "}
-                  {
-                    s.incidents.filter((i) => i.type === "Asistencia / Falta")
-                      .length
-                  }
-                </p>
-
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-3">
-                    <span className="material-icons text-sase-danger text-lg">
-                      error
-                    </span>
-                    <p className="text-[10px] font-black text-slate-600 uppercase italic">
-                      Motivo de vinculacion
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="material-icons text-slate-600 text-lg">
-                      home_pin
-                    </span>
-                    <p className="text-[10px] font-black text-slate-600 uppercase italic">
-                      Seguimiento familiar en proceso
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => {
-                      setSelectedStudentId(s.id);
-                      setIsModalOpen(true);
-                    }}
-                    className="flex-1 py-3.5 bg-white/5 border border-slate-200 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-sase-danger transition-all active:scale-95"
-                  >
-                    Registrar contacto o visita
-                  </button>
-                  <button
-                    onClick={() =>
-                      toast.success(
-                        `Iniciando enlace telefónico con tutor de ${s.name}...`,
-                        { icon: "📞" },
-                      )
-                    }
-                    className="size-12 bg-white/5 border border-slate-200 text-slate-700 rounded-2xl flex items-center justify-center hover:bg-sase-clinical hover:text-white transition-all active:scale-95"
-                  >
-                    <span className="material-icons">call</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-            {dropoutRisk.length === 0 && (
-              <div className="col-span-full py-40 text-center opacity-30 flex flex-col items-center gap-6">
-                <span className="material-icons text-6xl text-sase-clinical">
-                  verified_user
-                </span>
-                <p className="text-[11px] font-black uppercase tracking-[0.5em] italic">
-                  NULL_RISK_DETECTED_IN_CORE
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {activeTab === "comunidad" && (
-        <div className="space-y-8 animate-fade-in">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <SocialMetric
-              label="Familias Nucleares"
-              value={communityAnalysis.nuclear}
-              icon="family_restroom"
-              color="indigo"
-            />
-            <SocialMetric
-              label="Vulnerabilidad Social"
-              value={`${communityAnalysis.vulnerability}%`}
-              icon="priority_high"
-              color="rose"
-              pct={communityAnalysis.vulnerability}
-            />
-            <SocialMetric
-              label="Acceso Conectividad"
-              value={`${communityAnalysis.internet}%`}
-              icon="wifi"
-              color="blue"
-              pct={communityAnalysis.internet}
-            />
-            <SocialMetric
-              label="Crecimiento Social"
-              value="+12"
-              icon="trending_up"
-              color="emerald"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="card-sase p-10 bg-slate-900 border-slate-100 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:scale-110 transition-transform">
-                <span className="material-icons text-8xl text-sase-warning">
-                  online_prediction
-                </span>
-              </div>
-              <h3 className="text-xl font-black text-white italic tracking-tighter uppercase mb-6 flex items-center gap-4">
-                <span className="material-icons text-sase-warning">
-                  auto_awesome
-                </span>
-                ANALISIS SOCIAL IA
-              </h3>
-              <p className="text-slate-600 text-xs font-medium leading-relaxed uppercase italic max-w-lg mb-8">
-                EL ANÁLISIS DE INTERACCIÓN SOCIOECONÓMICA DETECTA UN PERFIL DE
-                COMUNIDAD CON FUERTE COHESIÓN FAMILIAR PERO BAJA CAPACIDAD
-                TÉCNICA. SE RECOMIENDA PRIORIZAR EL PROGRAMA DE BECAS DE
-                TRANSPORTE.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-sase-warning text-[10px] font-black uppercase tracking-widest">
-                  <span className="size-1.5 bg-sase-warning rounded-full"></span>
-                  ALTO IMPACTO EN MOVILIDAD GEOGRÁFICA
-                </div>
-                <div className="flex items-center gap-3 text-sase-warning text-[10px] font-black uppercase tracking-widest">
-                  <span className="size-1.5 bg-sase-warning rounded-full"></span>
-                  DEMANDA CRECIENTE DE APOYO PSICOPEDAGÓGICO
-                </div>
-              </div>
-            </div>
-
-            <div className="card-sase p-10 border-2 border-dashed border-slate-100 flex flex-col flex-col items-center justify-center text-center group">
-              <div className="size-20 bg-white/5 rounded-3xl flex items-center justify-center text-slate-600 mb-6 group-hover:bg-sase-warning group-hover:text-white transition-all duration-500">
-                <span className="material-icons text-4xl">
-                  analytics
-                </span>
-              </div>
-               <h3 className="text-sm font-black text-white uppercase tracking-[0.3em] mb-2 italic italic">
-                 Solicitar actualizacion de seguimiento
-               </h3>
-               <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-8 max-w-xs">
-                 Genera el reporte de seguimiento institucional
-               </p>
-               <button
-                 onClick={() =>
-                   toast.success("Compilando Atlas Social del Plantel...")
-                 }
-                 className="px-10 py-4 bg-sase-warning text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-sase-warning/20 hover:bg-sase-warning transition-all active:scale-95"
-               >
-                 Generar bitacora institucional
-               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL PARA VISITAS */}
-      <GenericActionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Registro de intervencion social"
-        description="Vinculacion familiar, analisis de contexto y seguimiento institucional"
-        fields={[
-          {
-            name: "student",
-            label: "Matricula del alumno",
-            type: "text",
-            required: true,
-          },
-          {
-            name: "motivo",
-            label: "Motivo de vinculacion",
-            type: "text",
-            required: true,
-          },
-          {
-            name: "contexto",
-            label: "Descripcion del contexto familiar",
-            type: "textarea",
-            required: true,
-          },
-          {
-            name: "acciones",
-            label: "Acciones realizadas",
-            type: "textarea",
-            required: true,
-          },
-          {
-            name: "resultado",
-            label: "Resultado y seguimiento",
-            type: "textarea",
-            required: true,
-          },
-        ]}
-        onSubmit={async () => {
-          toast.success("Visita programada en Agenda TS");
-          setIsModalOpen(false);
-        }}
-      />
-    </div>
+    </main>
   );
 };
-
-export default DashboardTrabajoSocial;

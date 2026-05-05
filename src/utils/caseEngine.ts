@@ -91,10 +91,10 @@ const dueDateFor = (student: Student) => {
 };
 
 const caseReason = (student: Student) => {
-  if (student.caseState === CaseState.INTERVENCION) return "Intervención activa requiere seguimiento operativo";
+  if (student.caseState === CaseState.INTERVENCION) return "Intervencion activa requiere seguimiento operativo";
   if (student.caseState === CaseState.SEGUIMIENTO) return "Seguimiento institucional pendiente";
-  if (student.caseState === CaseState.PATRON_DETECTADO) return "Patrón detectado por acumulación de incidencias";
-  if (student.caseState === CaseState.EN_ANALISIS) return "Análisis de trayectoria en curso";
+  if (student.caseState === CaseState.PATRON_DETECTADO) return "Patron detectado por acumulacion de incidencias";
+  if (student.caseState === CaseState.EN_ANALISIS) return "Analisis de trayectoria en curso";
   return CaseLabels[student.caseState] || "Caso abierto";
 };
 
@@ -131,7 +131,7 @@ export const getOverdueFollowUps = (students: Student[]): OverdueFollowUp[] => g
       grupo: caseItem.grupo,
       dueDate: caseItem.dueDate,
       diasVencido: Math.max(0, daysBetween(dueTime)),
-      accion: caseItem.estado === CaseState.INTERVENCION ? "Validar intervención y responsable" : "Programar seguimiento",
+      accion: caseItem.estado === CaseState.INTERVENCION ? "Validar intervencion y responsable" : "Programar seguimiento",
       prioridad: caseItem.prioridad,
       student: caseItem.student,
     };
@@ -187,7 +187,7 @@ export const getTeacherRequests = (students: Student[]): TeacherRequest[] => stu
       tipo: incident.type,
       fecha: (incident.fecha || incident.date || "").slice(0, 10),
       prioridad,
-      accion: incident.type === IncidentType.ACADEMICO ? "Revisar apoyo académico" : "Responder solicitud docente",
+      accion: incident.type === IncidentType.ACADEMICO ? "Revisar apoyo academico" : "Responder solicitud docente",
     };
   })
   .sort((a, b) => b.fecha.localeCompare(a.fecha))

@@ -42,7 +42,7 @@ export const SOSButton: React.FC<SOSButtonProps> = ({ compact = false, onActivat
               </div>
             </div>
             <p className="mt-5 text-sm leading-6 text-slate-200">
-              Ya notifiqué a Prefectura y Orientación. Tiempo estimado: 2-5 minutos.
+              Ya notifique a Prefectura y Orientacion. Tiempo estimado: 2-5 minutos.
             </p>
             <button
               type="button"
