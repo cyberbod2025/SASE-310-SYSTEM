@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+# Skip pre-push hooks in CI or when explicitly disabled
+if [ "$CI" = "true" ] || [ "$SKIP_PREPUSH" = "true" ]; then
+  echo "CI detected or SKIP_PREPUSH=true, skipping pre-push checks."
+  exit 0
+fi
+
 echo "Validando proyecto antes de push..."
 
 pnpm type-check
