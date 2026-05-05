@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useInstitutionalActions } from "../../hooks/useInstitutionalActions";
 import { useApp } from "../../store";
 import { AppModule, Student, UserRole } from "../../types";
 import { PERMISOS_POR_ROL, PermisosSASE } from "../../utils/permisos";
@@ -59,6 +60,7 @@ export const DashboardSecretaria = () => {
     logAccess,
     logAudit,
   } = useApp();
+  const { sosAlert } = useInstitutionalActions();
 
   const [search, setSearch] = useState("");
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
@@ -203,7 +205,7 @@ export const DashboardSecretaria = () => {
         onSearchChange={setSearch}
         onOpenSasito={() => setIsAssistantOpen?.(true)}
         onOpenFeedback={() => setIsFeedbackOpen?.(true)}
-        onSOS={() => { toast.success("Prefectura y Orientación fueron notificadas"); }}
+        onSOS={() => { sosAlert(undefined, undefined, "SOS activado desde Control Escolar"); }}
       />
 
       <main className="mt-6 space-y-6">

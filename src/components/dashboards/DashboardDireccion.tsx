@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { useInstitutionalActions } from "../../hooks/useInstitutionalActions";
 import { motion } from "framer-motion";
 import { useApp } from "../../store";
 import { AppModule, CaseLabels, CaseState, IncidentType, Student, UserRole } from "../../types";
@@ -126,6 +127,15 @@ export const DashboardDireccion = () => {
     setIsFeedbackOpen,
     openQuickRegister,
   } = useApp();
+  const {
+    escalateCase,
+    closeCase,
+    reopenCase,
+    scheduleFollowUp,
+    registerEvidence,
+    sosAlert,
+    confirmAttention,
+  } = useInstitutionalActions();
   const [search, setSearch] = useState("");
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [showPrintPreview, setShowPrintPreview] = useState(false);
@@ -198,7 +208,11 @@ export const DashboardDireccion = () => {
 
   const unreadNotifications = (notifications || []).filter((notification: any) => !notification.read).length;
 
-  const notifyAction = (message: string) => toast.success(`${message} (mock operativo)`);
+  // Helper para resolver caso actualmente seleccionado a datos del alumno
+  const getStudentFromCase = (caseId?: string | null) => {
+    const c = directionCases.find((item) => item.id === (caseId || selectedCaseId));
+    return c ? { id: c.id, name: c.alumno } : null;
+  };
 
   const handleViewCase = (caseId: string) => {
     setSelectedCaseId(caseId);
@@ -251,7 +265,7 @@ export const DashboardDireccion = () => {
         onOpenSasito={() => setIsAssistantOpen(true)}
         onOpenFeedback={() => setIsFeedbackOpen(true)}
         onSOS={() => {
-          notifyAction("Prefectura y Orientación fueron notificadas");
+          sosAlert(undefined, undefined, "SOS activado desde Dashboard Dirección");
         }}
       />
       <p className="sr-only">Vision sistemica institucional</p>
@@ -262,11 +276,11 @@ export const DashboardDireccion = () => {
           canCloseCase={canCloseCase}
           canViewSensitive={canViewSensitive}
           onBack={handleBack}
-          onCloseCase={() => notifyAction("Cierre institucional solicitado")}
-          onReopenCase={() => notifyAction("Caso reabierto para seguimiento")}
-          onEscalateCase={() => notifyAction("Caso escalado a intervención prioritaria")}
-          onScheduleFollowUp={() => notifyAction("Seguimiento programado")}
-          onRegisterEvidence={() => notifyAction("Evidencia registrada")}
+          onCloseCase={() => { const s = getStudentFromCase(); if (s) closeCase(s.id, s.name); }}
+          onReopenCase={() => { const s = getStudentFromCase(); if (s) reopenCase(s.id, s.name); }}
+          onEscalateCase={() => { const s = getStudentFromCase(); if (s) escalateCase(s.id, s.name, "Intervención prioritaria desde detalle de caso"); }}
+          onScheduleFollowUp={() => { const s = getStudentFromCase(); if (s) scheduleFollowUp(s.id, s.name, "Seguimiento directivo"); }}
+          onRegisterEvidence={() => { const s = getStudentFromCase(); if (s) registerEvidence(s.id, s.name, "Evidencia directiva registrada"); }}
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
@@ -281,9 +295,9 @@ export const DashboardDireccion = () => {
             <CriticalCasesCard
               cases={criticalCases}
               onViewCase={handleViewCase}
-              onReopen={(caseId) => notifyAction(`Caso ${caseId} reabierto`)}
-              onEscalate={(caseId) => notifyAction(`Caso ${caseId} escalado`)}
-              onReschedule={(caseId) => notifyAction(`Caso ${caseId} reagendado`)}
+              onReopen={(caseId) => { const s = getStudentFromCase(caseId); if (s) reopenCase(s.id, s.name); }}
+              onEscalate={(caseId) => { const s = getStudentFromCase(caseId); if (s) escalateCase(s.id, s.name, "Escalamiento desde panel de casos críticos"); }}
+              onReschedule={(caseId) => { const s = getStudentFromCase(caseId); if (s) scheduleFollowUp(s.id, s.name, "Reagendamiento directivo"); }}
             />
 
             {criticalCases[0] && (
@@ -328,10 +342,10 @@ export const DashboardDireccion = () => {
                 <FollowUpCard
                   key={followUp.id}
                   followUp={followUp}
-                  onRegisterEvidence={() => notifyAction("Evidencia registrada")}
-                  onReschedule={() => notifyAction("Seguimiento reagendado")}
-                  onMarkAttendance={() => notifyAction("Asistencia marcada")}
-                  onReopenCase={() => notifyAction("Caso reabierto")}
+                  onRegisterEvidence={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) registerEvidence(s.id, s.name, "Evidencia desde seguimiento"); }}
+                  onReschedule={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) scheduleFollowUp(s.id, s.name, "Reagendado desde panel de seguimientos"); }}
+                  onMarkAttendance={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) confirmAttention(s.id, s.name, "Asistencia al seguimiento"); }}
+                  onReopenCase={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) reopenCase(s.id, s.name); }}
                 />
               ))}
             </section>
@@ -340,7 +354,7 @@ export const DashboardDireccion = () => {
               <ClosureGuard
                 checks={criticalCases[0].closureChecks}
                 canCloseCase={canCloseCase}
-                onCloseCase={() => notifyAction("Cierre institucional solicitado")}
+                onCloseCase={() => { const s = getStudentFromCase(criticalCases[0]?.id); if (s) closeCase(s.id, s.name); }}
               />
             )}
           </aside>

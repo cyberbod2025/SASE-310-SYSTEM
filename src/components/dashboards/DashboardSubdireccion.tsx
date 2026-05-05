@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useInstitutionalActions } from "../../hooks/useInstitutionalActions";
 import { useApp } from "../../store";
 import { AppModule, CaseLabels, CaseState, IncidentType, Student, UserRole } from "../../types";
 import { PERMISOS_POR_ROL, PermisosSASE } from "../../utils/permisos";
@@ -220,6 +221,7 @@ export const DashboardSubdireccion = () => {
     openQuickRegister,
     setIsAssistantOpen,
   } = useApp();
+  const { sosAlert, escalateCase, scheduleFollowUp } = useInstitutionalActions();
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [groupFilter, setGroupFilter] = useState<string | null>(null);
 
@@ -270,10 +272,14 @@ export const DashboardSubdireccion = () => {
 
   const handleCaseAction = (action: string, caseItem: PendingCase) => {
     if (action === "follow") {
-      requirePermission("can_edit", `Seguimiento registrado para ${caseItem.alumno}`, () => undefined);
+      requirePermission("can_edit", `Seguimiento registrado para ${caseItem.alumno}`, () => {
+        scheduleFollowUp(caseItem.id, caseItem.alumno, "Seguimiento operativo desde Subdirección");
+      });
       return;
     }
-    requirePermission("can_escalate", `${caseItem.alumno} escalado para validación institucional`, () => undefined);
+    requirePermission("can_escalate", `${caseItem.alumno} escalado para validación institucional`, () => {
+      escalateCase(caseItem.id, caseItem.alumno, "Escalamiento desde Subdirección");
+    });
   };
 
   const insights = [
@@ -316,7 +322,7 @@ export const DashboardSubdireccion = () => {
             <button type="button" onClick={() => setIsAssistantOpen(true)} className="min-h-[44px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 text-xs font-black uppercase tracking-widest text-white">
               Sasito operativo
             </button>
-            <SOSButton compact onActivate={() => { toast.success("Prefectura y Orientación fueron notificadas"); }} />
+            <SOSButton compact onActivate={() => { sosAlert(undefined, undefined, "SOS activado desde Subdirección"); }} />
           </div>
         </div>
       </header>
