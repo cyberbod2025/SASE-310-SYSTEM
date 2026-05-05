@@ -1,6 +1,6 @@
 import React from "react";
 
-interface TeacherDiagnosisOverviewProps {
+interface TeacherGroupDiagnosisOverviewProps {
   grupo?: string;
 }
 
@@ -8,7 +8,7 @@ interface TeacherDiagnosisOverviewProps {
  * Componente temporal para restaurar el flujo de construcción.
  * Proporciona un estado visual seguro para el resumen de diagnósticos.
  */
-export const TeacherDiagnosisOverview: React.FC<TeacherDiagnosisOverviewProps> = ({ grupo }) => {
+export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOverviewProps> = ({ grupo }) => {
   return (
     <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-xl shadow-slate-950/20">
       <div className="flex items-center justify-between gap-3 mb-4">
