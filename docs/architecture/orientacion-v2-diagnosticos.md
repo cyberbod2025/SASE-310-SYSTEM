@@ -28,7 +28,7 @@ Es imperativo no mezclar estos flujos debido a su naturaleza distinta:
 *   **Colectivo (Docente)**: Es una herramienta de gestión de aula. No está vinculado a un caso de orientación ni a un alumno único, sino al desempeño de una cohorte o grupo.
 
 ## 5. Riesgo de Confusión Actual
-Actualmente, el componente frontend `TeacherDiagnosisOverview` representa el **Diagnóstico Colectivo** (Dashboard Docente v2), a pesar de que su nombre es genérico. 
+Actualmente, el componente frontend `TeacherGroupDiagnosisOverview` representa el **Diagnóstico Colectivo** (Dashboard Docente v2), a pesar de que su nombre original era genérico. 
 *   **Riesgo**: Un desarrollador podría intentar integrar solicitudes de Orientación en este componente, lo cual corrompería la separación de preocupaciones (*Separation of Concerns*).
 *   **Nota**: Las solicitudes individuales de Orientación deben gestionarse exclusivamente a través de los componentes del módulo `src/components/orientacion/`.
 
@@ -38,6 +38,6 @@ Actualmente, el componente frontend `TeacherDiagnosisOverview` representa el **D
 *   **Encapsulamiento**: Todo flujo que dependa de un `caso_id` o `solicitud_id` pertenece al módulo de **Orientación**. Todo flujo que dependa de un `grupo_id` o `docente_id` (sin caso) pertenece al **Dashboard Docente**.
 
 ## 7. Pendientes Recomendados
-*   **Naming**: Evaluar el renombre de `TeacherDiagnosisOverview` a `TeacherColectiveDiagnosisOverview`.
+*   **Naming**: Evaluar el renombre de `TeacherGroupDiagnosisOverview` a `TeacherColectiveDiagnosisOverview` (Nota: Se optó por `TeacherGroupDiagnosisOverview` por claridad semántica).
 *   **Hardening RLS**: Ajustar `seguimiento_orientacion` para forzar `created_by = auth.uid()` en la cláusula `WITH CHECK`.
 *   **Calidad**: Implementar tests de integración que validen que un docente solo puede responder diagnósticos individuales si tiene una solicitud pendiente.

@@ -13,7 +13,7 @@ import { MyRecentIncidents } from "../docente/MyRecentIncidents";
 import { QuickReportButton } from "../docente/QuickReportButton";
 import { StudentQuickList } from "../docente/StudentQuickList";
 import { TeacherAlertsCard } from "../docente/TeacherAlertsCard";
-import { TeacherDiagnosisOverview } from "../TeacherDiagnosisOverview";
+import { TeacherGroupDiagnosisOverview } from "../TeacherGroupDiagnosisOverview";
 import {
   buildRecentTeacherIncidents,
   buildTeacherGroups,
@@ -196,7 +196,7 @@ export const DashboardDocente = () => {
             <MyRecentIncidents incidents={recentIncidents} />
           </div>
           <div className="space-y-6">
-            <TeacherDiagnosisOverview grupo={selectedGroup || undefined} />
+            <TeacherGroupDiagnosisOverview grupo={selectedGroup || undefined} />
             <TeacherAlertsCard alerts={alerts} />
             <DocenteSasitoHelper
               insights={insights}
