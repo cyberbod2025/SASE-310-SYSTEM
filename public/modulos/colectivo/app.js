@@ -10,7 +10,11 @@ let lastGroupSelected = "";
 let studentSelections = {}; // Almacena selecciones por ID: { checked, behaviors: { tipo: nivel } }
 
 const DASHBOARD_ALLOWED_ROLES = new Set(['directivo', 'subdireccion']);
-const SASE_ALLOWED_ROLES = new Set(['teacher', 'docente', 'docente_tutor', 'orientacion', 'trabajo_social', 'directivo', 'subdireccion', 'developer', 'system_admin']);
+const SASE_TOKEN_PARAM = 'sase_token';
+const SASE_SESSION_KEY = 'sirde_sase_session';
+const SASE_PROVIDER = 'sase';
+const SASE_ALLOWED_ROLES = new Set(['teacher', 'docente', 'docente_tutor', 'maestro', 'orientacion', 'trabajo_social', 'directivo', 'subdireccion', 'admin', 'developer', 'system_admin']);
+const SASE_DASHBOARD_ROLES = new Set(['directivo', 'subdireccion', 'admin', 'developer', 'system_admin']);
 
 function isDashboardPage() {
     return window.location.pathname.toLowerCase().endsWith('/dashboard.html') || window.location.pathname.toLowerCase().endsWith('dashboard.html');
@@ -47,60 +51,113 @@ function clearDashboardSession() {
     sessionStorage.removeItem('auth_sirde');
     sessionStorage.removeItem('sirde_user_name');
     sessionStorage.removeItem('sirde_session_pin');
-    sessionStorage.removeItem('sirde_sase_role');
-    sessionStorage.removeItem('sirde_sase_email');
-    sessionStorage.removeItem('sirde_sase_session');
+    sessionStorage.removeItem(SASE_SESSION_KEY);
 }
 
-function decodeBase64UrlJson(value) {
+function normalizeRole(value) {
+    return String(value || '').trim().toLowerCase();
+}
+
+function sanitizeSaseSession(candidate) {
+    if (!candidate || typeof candidate !== 'object') return null;
+
+    const role = normalizeRole(candidate.role);
+    if (!SASE_ALLOWED_ROLES.has(role)) return null;
+
+    const expiresAt = Number(candidate.expiresAt || 0);
+    if (expiresAt && Date.now() >= expiresAt) return null;
+
+    return {
+        provider: SASE_PROVIDER,
+        role,
+        userId: String(candidate.userId || candidate.sub || candidate.uid || candidate.email || ''),
+        displayName: String(candidate.displayName || candidate.name || 'Personal SASE'),
+        email: String(candidate.email || ''),
+        institutionId: String(candidate.institutionId || ''),
+        groupId: String(candidate.groupId || ''),
+        issuedAt: Number(candidate.issuedAt || Date.now()),
+        expiresAt,
+    };
+}
+
+function loadSaseSession() {
     try {
-        const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
-        const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
-        return JSON.parse(atob(padded));
+        return sanitizeSaseSession(JSON.parse(sessionStorage.getItem(SASE_SESSION_KEY) || 'null'));
     } catch (error) {
-        console.warn('Token SASE no legible.', error);
         return null;
     }
 }
 
-function parseSaseToken(token) {
-    if (!token || typeof token !== 'string') return null;
-    const [payload] = token.split('.');
-    const parsed = decodeBase64UrlJson(payload || '');
-    if (!parsed || parsed.module !== 'diagnostico') return null;
-    if (parsed.exp && Date.now() >= Number(parsed.exp) * 1000) return null;
+function saveSaseSession(nextSession) {
+    const session = sanitizeSaseSession(nextSession);
+    if (!session) {
+        sessionStorage.removeItem(SASE_SESSION_KEY);
+        return null;
+    }
 
-    const role = String(parsed.role || '').trim().toLowerCase();
-    if (!SASE_ALLOWED_ROLES.has(role)) return null;
-
-    return {
-        name: String(parsed.name || parsed.email || 'Personal SASE').trim(),
-        email: String(parsed.email || '').trim().toLowerCase(),
-        role,
-    };
-}
-
-function startSaseSession(payload) {
-    sessionStorage.setItem('auth_sirde', 'true');
-    sessionStorage.setItem('sirde_user_name', payload.name);
-    sessionStorage.setItem('sirde_sase_role', payload.role);
-    sessionStorage.setItem('sirde_sase_email', payload.email);
-    sessionStorage.setItem('sirde_sase_session', 'true');
+    sessionStorage.setItem(SASE_SESSION_KEY, JSON.stringify(session));
     sessionStorage.removeItem('sirde_session_pin');
+    return session;
 }
 
-function getSaseSession() {
-    if (sessionStorage.getItem('sirde_sase_session') !== 'true') return null;
-    const role = String(sessionStorage.getItem('sirde_sase_role') || '').toLowerCase();
-    const name = sessionStorage.getItem('sirde_user_name') || 'Personal SASE';
-    if (!SASE_ALLOWED_ROLES.has(role)) return null;
-    return { role, name };
+function canUseDiagnosticoWithSase(session) {
+    return Boolean(session && session.provider === SASE_PROVIDER && SASE_ALLOWED_ROLES.has(session.role));
+}
+
+function canUseDashboardWithSase(session) {
+    return Boolean(session && session.provider === SASE_PROVIDER && SASE_DASHBOARD_ROLES.has(session.role));
 }
 
 function isDashboardAdmin(user) {
     if (!user?.nombre || !user?.rol) return false;
     const normalizedName = user.nombre.toUpperCase();
     return DASHBOARD_ALLOWED_ROLES.has(user.rol) && normalizedName.includes('SANCHEZ') && normalizedName.includes('HUGO');
+}
+
+async function createSaseSessionFromToken(token) {
+    const response = await fetch('/api/modules/session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify({ token }),
+    });
+
+    if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.message || 'No se pudo validar el acceso desde SASE.');
+    }
+
+    return response.json();
+}
+
+async function bootstrapIndexFromSaseSession(session) {
+    await initData();
+    hideAuthWall();
+
+    const docenteSelect = document.getElementById('docente');
+    if (docenteSelect) {
+        const normalizedName = session.displayName.trim().toUpperCase();
+        const matched = globalPersonal.find((person) => String(person.nombre || '').trim().toUpperCase() === normalizedName);
+
+        if (matched) {
+            docenteSelect.value = matched.nombre;
+            onTeacherChange();
+        } else if (!Array.from(docenteSelect.options).some((option) => option.value === session.displayName)) {
+            docenteSelect.add(new Option(session.displayName, session.displayName));
+            docenteSelect.value = session.displayName;
+            const asignatura = document.getElementById('asignatura');
+            if (asignatura) {
+                asignatura.readOnly = false;
+                asignatura.placeholder = 'Confirma tu asignatura';
+            }
+        }
+
+        docenteSelect.disabled = true;
+    }
+
+    if (typeof updateProgress === 'function') updateProgress(1);
 }
 
 async function fetchUserByPin(pin) {
@@ -114,12 +171,6 @@ async function fetchUserByPin(pin) {
 }
 
 async function validateAdminSession() {
-    const saseSession = getSaseSession();
-    if (saseSession && ['directivo', 'subdireccion', 'developer', 'system_admin'].includes(saseSession.role)) {
-        hideAuthWall();
-        return true;
-    }
-
     const pin = sessionStorage.getItem('sirde_session_pin');
     if (!pin) {
         clearDashboardSession();
@@ -202,28 +253,16 @@ async function checkAccess(pin) {
 }
 
 async function applySaseAccess() {
-    const saseSession = getSaseSession();
-    if (!saseSession) return false;
+    const saseSession = loadSaseSession();
+    if (!canUseDiagnosticoWithSase(saseSession)) return false;
 
     if (isAdminPage()) {
-        return validateAdminSession();
+        if (!canUseDashboardWithSase(saseSession)) return false;
+        hideAuthWall();
+        return true;
     }
 
-    await initData();
-
-    const docInput = document.getElementById('docente');
-    if (docInput) {
-        const existingOption = Array.from(docInput.options || []).find(option => option.value === saseSession.name);
-        if (!existingOption) {
-            docInput.add(new Option(saseSession.name, saseSession.name));
-        }
-        docInput.value = saseSession.name;
-        docInput.disabled = true;
-        onTeacherChange();
-    }
-
-    hideAuthWall();
-    if (typeof updateProgress === 'function') updateProgress(1);
+    await bootstrapIndexFromSaseSession(saseSession);
     return true;
 }
 
@@ -693,38 +732,81 @@ function togglePinVisibility(id = 'entry-pin') {
 function logoutSIRDE() { sessionStorage.clear(); location.reload(); }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    // SOPORTE PARA INTEGRACIÓN (IFRAME/URL PARAMS)
     const urlParams = new URLSearchParams(window.location.search);
-    const saseToken = urlParams.get('sase_token');
-    const pinFromUrl = urlParams.get('pin');
-    const sasePayload = parseSaseToken(saseToken);
-    
-    if (sasePayload) {
-        console.log('LOG: Sesión SASE recibida. Omitiendo pantalla de PIN del módulo.');
-        startSaseSession(sasePayload);
-        urlParams.delete('sase_token');
-        const cleanSearch = urlParams.toString();
-        const newUrl = window.location.pathname + (cleanSearch ? '?' + cleanSearch : '') + window.location.hash;
-        window.history.replaceState({}, document.title, newUrl);
+    const saseToken = urlParams.get(SASE_TOKEN_PARAM);
+
+    if (saseToken) {
+        try {
+            hideAuthWall();
+            const newUrl = window.location.pathname + window.location.hash;
+            window.history.replaceState({}, document.title, newUrl);
+
+            const saseSession = saveSaseSession(await createSaseSessionFromToken(saseToken));
+            if (!saseSession) {
+                throw new Error('La sesión SASE recibida no es válida para Diagnóstico Colectivo.');
+            }
+
+            if (isAdminPage()) {
+                if (!canUseDashboardWithSase(saseSession)) {
+                    throw new Error('Tu sesión SASE no tiene acceso al panel de análisis institucional.');
+                }
+
+                hideAuthWall();
+                if (isDashboardPage() && typeof runAnalysis === 'function') await runAnalysis();
+                if (isInvitationPage() && typeof initInvitationPage === 'function') await initInvitationPage();
+                return;
+            }
+
+            if (isIndexPage()) {
+                if (!canUseDiagnosticoWithSase(saseSession)) {
+                    throw new Error('Tu sesión SASE no está autorizada para este módulo.');
+                }
+
+                await bootstrapIndexFromSaseSession(saseSession);
+                if (document.querySelector('.impact-factor')) calculateImpact();
+                return;
+            }
+        } catch (error) {
+            console.error(error);
+            sessionStorage.removeItem(SASE_SESSION_KEY);
+            alert(error.message || 'No se pudo validar el acceso desde SASE.');
+            showAuthWall();
+            return;
+        }
     }
-    
+
+    const pinFromUrl = urlParams.get('pin') || urlParams.get('token');
     if (pinFromUrl) {
-        console.log("LOG: PIN recibido vía URL. Configurando sesión de módulo...");
-        sessionStorage.setItem('sirde_session_pin', pinFromUrl.trim());
-        // Limpiamos la URL por seguridad para no dejar el PIN expuesto en el historial
+        console.log("LOG: Credencial recibida vía URL. Iniciando auto-login...");
+        const sanitizedPin = pinFromUrl.trim();
+        sessionStorage.setItem('sirde_session_pin', sanitizedPin);
+        hideAuthWall();
+
         const newUrl = window.location.pathname + window.location.hash;
         window.history.replaceState({}, document.title, newUrl);
+
+        if (isAdminPage()) {
+            const hasAccess = await validateAdminSession();
+            if (!hasAccess) showAuthWall();
+        } else if (isIndexPage()) {
+            await checkAccess(sanitizedPin);
+        }
+        return;
     }
 
     if (isAdminPage()) {
+        const saseSession = loadSaseSession();
+        if (canUseDashboardWithSase(saseSession)) {
+            hideAuthWall();
+            if (isDashboardPage() && typeof runAnalysis === 'function') await runAnalysis();
+            if (isInvitationPage() && typeof initInvitationPage === 'function') await initInvitationPage();
+            return;
+        }
+
         const hasAccess = await validateAdminSession();
         if (hasAccess) {
-            if (isDashboardPage() && typeof runAnalysis === 'function') {
-                await runAnalysis();
-            }
-            if (isInvitationPage() && typeof initInvitationPage === 'function') {
-                await initInvitationPage();
-            }
+            if (isDashboardPage() && typeof runAnalysis === 'function') await runAnalysis();
+            if (isInvitationPage() && typeof initInvitationPage === 'function') await initInvitationPage();
         } else {
             showAuthWall();
         }
@@ -732,13 +814,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (isIndexPage()) {
-        if (await applySaseAccess()) {
+        const saseSession = loadSaseSession();
+        if (canUseDiagnosticoWithSase(saseSession)) {
+            await bootstrapIndexFromSaseSession(saseSession);
             if (document.querySelector('.impact-factor')) calculateImpact();
             return;
         }
 
         const pin = sessionStorage.getItem('sirde_session_pin');
-        if (pin) checkAccess(pin);
+        if (pin) {
+            await checkAccess(pin);
+        } else {
+            showAuthWall();
+        }
         if (document.querySelector('.impact-factor')) calculateImpact();
     }
 });

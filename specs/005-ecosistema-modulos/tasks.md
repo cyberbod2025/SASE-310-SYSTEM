@@ -7,4 +7,5 @@
 - [x] Conectar Home, Sidebar y Router al catalogo real.
 - [x] Documentar rollout provisional de `mate` y variables de entorno.
 - [x] Ejecutar validaciones tecnicas locales.
+- [x] Integrar `diagnostico` como modulo local en `/modulos/colectivo/index.html` con `sase_token` validado server-side.
 - [ ] Ejecutar smoke manual end-to-end con sesion real y modulos externos levantados.
