@@ -49,17 +49,20 @@ jobs:
       - name: Install dependencies
         run: HUSKY=0 pnpm install --frozen-lockfile
 
-      - name: Start Vite
-        run: nohup pnpm dev -- --host 127.0.0.1 > visual-qa-vite.log 2>&1 &
+      - name: Build for QA
+        run: pnpm build
+
+      - name: Start Preview
+        run: nohup pnpm preview -- --host 127.0.0.1 --port 4173 --strictPort > visual-qa-preview.log 2>&1 &
 
       - name: Wait for app
         run: |
           for i in {1..30}; do
-            curl -fsS http://127.0.0.1:3100/ >/dev/null && exit 0
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
             sleep 2
           done
-          echo "Vite no respondió en 3100"
-          cat visual-qa-vite.log
+          echo "La app no respondió en 4173"
+          cat visual-qa-preview.log
           exit 1
 
       - name: Run visual smoke
