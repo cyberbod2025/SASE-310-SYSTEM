@@ -327,7 +327,7 @@ ALTER POLICY "salud_read_safe" ON storage.objects
 ALTER POLICY "Orientacion ve sus casos" ON public.orientacion_casos
   USING (
     (public.get_my_role_text() = 'orientacion')
-    AND (creado_por = (SELECT auth.uid())) OR (responsable_id = (SELECT auth.uid()))
+    AND (creado_por = (SELECT auth.uid()) OR responsable_id = (SELECT auth.uid()))
   );
 
 -- [orientacion_casos] Orientacion crea sus casos
