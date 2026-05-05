@@ -29,7 +29,7 @@ export const TacticalSpotlight: React.FC<TacticalSpotlightProps> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-  const requestRef = useRef<number>();
+  const requestRef = useRef<number>(undefined);
 
   const step = steps[currentStep];
 

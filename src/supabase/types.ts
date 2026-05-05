@@ -67,6 +67,69 @@ export type Database = {
         }
         Relationships: []
       }
+      alertas_emergencia: {
+        Row: {
+          atendida_at: string | null
+          atendida_por: string | null
+          aula: string | null
+          cerrada_at: string | null
+          created_at: string
+          descripcion_opcional: string | null
+          docente_id: string
+          docente_nombre: string
+          escalado_nivel: number
+          estado: string
+          grupo: string | null
+          id: string
+          metadata: Json
+          prioridad: string
+          protocolo_activado: string | null
+          tiempo_respuesta_seg: number | null
+          tipo_alerta: string
+          ultima_notificacion_at: string
+        }
+        Insert: {
+          atendida_at?: string | null
+          atendida_por?: string | null
+          aula?: string | null
+          cerrada_at?: string | null
+          created_at?: string
+          descripcion_opcional?: string | null
+          docente_id: string
+          docente_nombre: string
+          escalado_nivel?: number
+          estado?: string
+          grupo?: string | null
+          id?: string
+          metadata?: Json
+          prioridad?: string
+          protocolo_activado?: string | null
+          tiempo_respuesta_seg?: number | null
+          tipo_alerta: string
+          ultima_notificacion_at?: string
+        }
+        Update: {
+          atendida_at?: string | null
+          atendida_por?: string | null
+          aula?: string | null
+          cerrada_at?: string | null
+          created_at?: string
+          descripcion_opcional?: string | null
+          docente_id?: string
+          docente_nombre?: string
+          escalado_nivel?: number
+          estado?: string
+          grupo?: string | null
+          id?: string
+          metadata?: Json
+          prioridad?: string
+          protocolo_activado?: string | null
+          tiempo_respuesta_seg?: number | null
+          tipo_alerta?: string
+          ultima_notificacion_at?: string
+        }
+        Relationships: []
+      }
       alumno_ciclo: {
         Row: {
           alumno_id: string
@@ -294,9 +357,11 @@ export type Database = {
       }
       atenciones_medicas: {
         Row: {
+          acudieron_por_el: string | null
           alumno_id: string
-          atendido_por: string
           atencion_brindada: string | null
+          atendido_por: string
+          condiciones_entrega: string | null
           diagnostico: string | null
           generado_por: string | null
           grupo: string | null
@@ -306,17 +371,17 @@ export type Database = {
           motivo: string | null
           nombre_alumno: string | null
           notificacion_padres: string | null
-          acudieron_por_el: string | null
-          condiciones_entrega: string | null
           observaciones: string | null
           signos_vitales: string | null
           sintomas: string
           tratamiento: string
         }
         Insert: {
+          acudieron_por_el?: string | null
           alumno_id: string
-          atendido_por: string
           atencion_brindada?: string | null
+          atendido_por: string
+          condiciones_entrega?: string | null
           diagnostico?: string | null
           generado_por?: string | null
           grupo?: string | null
@@ -326,17 +391,17 @@ export type Database = {
           motivo?: string | null
           nombre_alumno?: string | null
           notificacion_padres?: string | null
-          acudieron_por_el?: string | null
-          condiciones_entrega?: string | null
           observaciones?: string | null
           signos_vitales?: string | null
           sintomas: string
           tratamiento: string
         }
         Update: {
+          acudieron_por_el?: string | null
           alumno_id?: string
-          atendido_por?: string
           atencion_brindada?: string | null
+          atendido_por?: string
+          condiciones_entrega?: string | null
           diagnostico?: string | null
           generado_por?: string | null
           grupo?: string | null
@@ -346,8 +411,6 @@ export type Database = {
           motivo?: string | null
           nombre_alumno?: string | null
           notificacion_padres?: string | null
-          acudieron_por_el?: string | null
-          condiciones_entrega?: string | null
           observaciones?: string | null
           signos_vitales?: string | null
           sintomas?: string
@@ -435,6 +498,42 @@ export type Database = {
             referencedColumns: ["alumno_id"]
           },
         ]
+      }
+      audit_logs: {
+        Row: {
+          action: string | null
+          actor_id: string | null
+          actor_role: string | null
+          created_at: string | null
+          details: Json | null
+          environment: string | null
+          id: string
+          module: string | null
+          result: string | null
+        }
+        Insert: {
+          action?: string | null
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string | null
+          details?: Json | null
+          environment?: string | null
+          id?: string
+          module?: string | null
+          result?: string | null
+        }
+        Update: {
+          action?: string | null
+          actor_id?: string | null
+          actor_role?: string | null
+          created_at?: string | null
+          details?: Json | null
+          environment?: string | null
+          id?: string
+          module?: string | null
+          result?: string | null
+        }
+        Relationships: []
       }
       auditoria: {
         Row: {
@@ -925,6 +1024,104 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
+          },
+        ]
+      }
+      diagnosticos_docentes: {
+        Row: {
+          alumnos_reportados: Json | null
+          ambiente_atencion: Database["public"]["Enums"]["nivel_riesgo"] | null
+          ambiente_participacion:
+            | Database["public"]["Enums"]["nivel_riesgo"]
+            | null
+          ambiente_respeto: Database["public"]["Enums"]["nivel_riesgo"] | null
+          aprovechamiento: Database["public"]["Enums"]["nivel_riesgo"] | null
+          asignatura: string | null
+          asistencia: Database["public"]["Enums"]["nivel_riesgo"] | null
+          campo_formativo: string | null
+          comentarios: string | null
+          conducta_general: Database["public"]["Enums"]["nivel_riesgo"] | null
+          created_at: string | null
+          docente_id: string | null
+          docente_nombre: string | null
+          eficacia_intervencion:
+            | Database["public"]["Enums"]["nivel_riesgo"]
+            | null
+          estrategias_aplicadas: string[] | null
+          factores_externos: string[] | null
+          fecha_diagnostico: string | null
+          grupo: string
+          id: string
+          impacto_global: Database["public"]["Enums"]["nivel_riesgo"] | null
+          periodo: string | null
+          tiempo_conducta: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          alumnos_reportados?: Json | null
+          ambiente_atencion?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          ambiente_participacion?:
+            | Database["public"]["Enums"]["nivel_riesgo"]
+            | null
+          ambiente_respeto?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          aprovechamiento?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          asignatura?: string | null
+          asistencia?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          campo_formativo?: string | null
+          comentarios?: string | null
+          conducta_general?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          created_at?: string | null
+          docente_id?: string | null
+          docente_nombre?: string | null
+          eficacia_intervencion?:
+            | Database["public"]["Enums"]["nivel_riesgo"]
+            | null
+          estrategias_aplicadas?: string[] | null
+          factores_externos?: string[] | null
+          fecha_diagnostico?: string | null
+          grupo: string
+          id?: string
+          impacto_global?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          periodo?: string | null
+          tiempo_conducta?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          alumnos_reportados?: Json | null
+          ambiente_atencion?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          ambiente_participacion?:
+            | Database["public"]["Enums"]["nivel_riesgo"]
+            | null
+          ambiente_respeto?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          aprovechamiento?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          asignatura?: string | null
+          asistencia?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          campo_formativo?: string | null
+          comentarios?: string | null
+          conducta_general?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          created_at?: string | null
+          docente_id?: string | null
+          docente_nombre?: string | null
+          eficacia_intervencion?:
+            | Database["public"]["Enums"]["nivel_riesgo"]
+            | null
+          estrategias_aplicadas?: string[] | null
+          factores_externos?: string[] | null
+          fecha_diagnostico?: string | null
+          grupo?: string
+          id?: string
+          impacto_global?: Database["public"]["Enums"]["nivel_riesgo"] | null
+          periodo?: string | null
+          tiempo_conducta?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnosticos_docentes_docente_id_fkey"
+            columns: ["docente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1694,9 +1891,11 @@ export type Database = {
       perfiles_usuario: {
         Row: {
           alcances: Json | null
+          blocked_until: string | null
           created_at: string
           curp: string | null
           email: string | null
+          es_test: boolean | null
           es_tutor: boolean | null
           estado_cuenta: string | null
           estatus: string | null
@@ -1710,9 +1909,11 @@ export type Database = {
           observaciones: string | null
           permisos: Json | null
           preferencias_dashboard: Json | null
+          risk_score: number | null
           rol: string | null
           rol_solicitado: string | null
           role: string | null
+          seguridad_status: string | null
           telefono: string | null
           turno: string | null
           updated_at: string | null
@@ -1720,9 +1921,11 @@ export type Database = {
         }
         Insert: {
           alcances?: Json | null
+          blocked_until?: string | null
           created_at?: string
           curp?: string | null
           email?: string | null
+          es_test?: boolean | null
           es_tutor?: boolean | null
           estado_cuenta?: string | null
           estatus?: string | null
@@ -1736,9 +1939,11 @@ export type Database = {
           observaciones?: string | null
           permisos?: Json | null
           preferencias_dashboard?: Json | null
+          risk_score?: number | null
           rol?: string | null
           rol_solicitado?: string | null
           role?: string | null
+          seguridad_status?: string | null
           telefono?: string | null
           turno?: string | null
           updated_at?: string | null
@@ -1746,9 +1951,11 @@ export type Database = {
         }
         Update: {
           alcances?: Json | null
+          blocked_until?: string | null
           created_at?: string
           curp?: string | null
           email?: string | null
+          es_test?: boolean | null
           es_tutor?: boolean | null
           estado_cuenta?: string | null
           estatus?: string | null
@@ -1762,9 +1969,11 @@ export type Database = {
           observaciones?: string | null
           permisos?: Json | null
           preferencias_dashboard?: Json | null
+          risk_score?: number | null
           rol?: string | null
           rol_solicitado?: string | null
           role?: string | null
+          seguridad_status?: string | null
           telefono?: string | null
           turno?: string | null
           updated_at?: string | null
@@ -1999,6 +2208,44 @@ export type Database = {
           },
         ]
       }
+      respuestas_alerta_emergencia: {
+        Row: {
+          alerta_id: string
+          created_at: string
+          id: string
+          respuesta: string
+          rol: string
+          usuario_id: string
+          usuario_nombre: string
+        }
+        Insert: {
+          alerta_id: string
+          created_at?: string
+          id?: string
+          respuesta: string
+          rol: string
+          usuario_id: string
+          usuario_nombre: string
+        }
+        Update: {
+          alerta_id?: string
+          created_at?: string
+          id?: string
+          respuesta?: string
+          rol?: string
+          usuario_id?: string
+          usuario_nombre?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "respuestas_alerta_emergencia_alerta_id_fkey"
+            columns: ["alerta_id"]
+            isOneToOne: false
+            referencedRelation: "alertas_emergencia"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       respuestas_docentes: {
         Row: {
           creado_por: string | null
@@ -2119,6 +2366,39 @@ export type Database = {
           id?: string
           persona_id?: string | null
           tipo_patron?: string | null
+        }
+        Relationships: []
+      }
+      sase_alerts: {
+        Row: {
+          actor_id: string | null
+          created_at: string | null
+          details: Json | null
+          id: string
+          message: string | null
+          resolved: boolean | null
+          severity: string | null
+          type: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          message?: string | null
+          resolved?: boolean | null
+          severity?: string | null
+          type?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          message?: string | null
+          resolved?: boolean | null
+          severity?: string | null
+          type?: string | null
         }
         Relationships: []
       }
@@ -2245,6 +2525,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      smoke_test_logs: {
+        Row: {
+          action: string | null
+          actor_email: string | null
+          created_at: string | null
+          details: Json | null
+          id: string
+          module: string | null
+          result: string | null
+        }
+        Insert: {
+          action?: string | null
+          actor_email?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          module?: string | null
+          result?: string | null
+        }
+        Update: {
+          action?: string | null
+          actor_email?: string | null
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          module?: string | null
+          result?: string | null
+        }
+        Relationships: []
       }
       socioeconomico_general: {
         Row: {
@@ -2565,6 +2875,88 @@ export type Database = {
           },
         ]
       }
+      sos_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          broadcast_at: string | null
+          context: string | null
+          created_at: string
+          created_by: string | null
+          escalated_to_direccion_at: string | null
+          escalated_to_orientacion_at: string | null
+          escalation_level: number
+          id: string
+          reporter_name: string
+          reporter_role: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          student_id: string | null
+          student_name: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          broadcast_at?: string | null
+          context?: string | null
+          created_at?: string
+          created_by?: string | null
+          escalated_to_direccion_at?: string | null
+          escalated_to_orientacion_at?: string | null
+          escalation_level?: number
+          id?: string
+          reporter_name?: string
+          reporter_role?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          student_id?: string | null
+          student_name?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          broadcast_at?: string | null
+          context?: string | null
+          created_at?: string
+          created_by?: string | null
+          escalated_to_direccion_at?: string | null
+          escalated_to_orientacion_at?: string | null
+          escalation_level?: number
+          id?: string
+          reporter_name?: string
+          reporter_role?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          student_id?: string | null
+          student_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sos_alerts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sos_alerts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos_en_riesgo"
+            referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "sos_alerts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "expediente_integral_alumno"
+            referencedColumns: ["alumno_id"]
+          },
+        ]
+      }
       suministros: {
         Row: {
           actualizado_por: string | null
@@ -2747,6 +3139,7 @@ export type Database = {
       }
     }
     Functions: {
+      auto_escalate_sos: { Args: never; Returns: undefined }
       calcular_deriva: { Args: { alumno: string }; Returns: undefined }
       calculate_student_risk: {
         Args: { p_student_id: string }
@@ -2773,6 +3166,14 @@ export type Database = {
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_my_role_text: { Args: never; Returns: string }
+      get_security_dashboard_snapshot: { Args: never; Returns: Json }
+      get_user_role: { Args: never; Returns: string }
+      handle_anomaly_response: {
+        Args: { p_actor_id: string; p_details?: Json; p_type: string }
+        Returns: undefined
+      }
+      is_current_user_smoke_test: { Args: never; Returns: boolean }
+      is_staff: { Args: never; Returns: boolean }
       log_audit: {
         Args: {
           p_action_description: string
@@ -2782,6 +3183,15 @@ export type Database = {
           p_target_record_id: string
           p_target_student_name?: string
           p_target_table: string
+        }
+        Returns: string
+      }
+      log_event: {
+        Args: {
+          p_action: string
+          p_details?: Json
+          p_module: string
+          p_result: string
         }
         Returns: string
       }
@@ -2838,6 +3248,7 @@ export type Database = {
         | "observado"
         | "intervencion"
         | "seguimiento"
+      nivel_riesgo: "bajo" | "medio" | "alto"
       tipo_incidencia:
         | "retardo"
         | "conducta"
@@ -2999,6 +3410,7 @@ export const Constants = {
         "intervencion",
         "seguimiento",
       ],
+      nivel_riesgo: ["bajo", "medio", "alto"],
       tipo_incidencia: [
         "retardo",
         "conducta",
