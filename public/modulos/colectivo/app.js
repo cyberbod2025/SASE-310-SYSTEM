@@ -675,8 +675,32 @@ async function handleFormSubmit(e) {
     };
 
     try {
-        const { error } = await supabaseClient.from('colectivo_respuestas_docentes').insert([payload]);
-        if (error) throw error;
+        const urlParams = new URLSearchParams(window.location.search);
+        const saseToken = urlParams.get('sase_token') || urlParams.get('token') || sessionStorage.getItem('sirde_raw_token');
+
+        if (!saseToken) {
+            throw new Error("No se detectó una sesión institucional válida (sase_token missing). Reintente desde el Dashboard de SASE.");
+        }
+
+        const response = await fetch('/api/modules/colectivo/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                token: saseToken,
+                payload: payload
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Error del servidor (${response.status})`);
+        }
+
+        const result = await response.json();
+
         
         document.body.innerHTML = `
             <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 text-center">
