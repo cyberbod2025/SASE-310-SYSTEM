@@ -592,27 +592,27 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Header */}
-        <header className="h-20 bg-[rgba(17,24,39,0.72)] backdrop-blur-[44px] border-b border-[rgba(255,255,255,0.14)] flex items-center justify-between px-6 shrink-0 z-40 shadow-[0_14px_40px_rgba(2,6,23,0.25)]">
-          <div className="flex items-center gap-6">
+        <header className="h-16 sm:h-20 bg-[rgba(11,15,25,0.85)] backdrop-blur-[32px] border-b border-white/10 flex items-center justify-between px-3 sm:px-6 shrink-0 z-40 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+          <div className="flex items-center gap-3 sm:gap-6">
             <button
-              className="md:hidden size-10 flex items-center justify-center bg-white/60 border border-white/60 rounded-xl text-slate-600"
+              className="md:hidden size-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10"
               onClick={() => setIsSidebarOpen(true)}
             >
-              <span className="material-icons">menu</span>
+              <span className="material-icons text-xl">menu</span>
             </button>
 
-              <div className="flex flex-col">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-[rgba(121,118,124,0.14)] border border-[rgba(255,255,255,0.14)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_8px_24px_rgba(2,6,23,0.18)]">
-                    <img src="/assets/branding/favicon.png" alt="SASE Logo" className="w-6 h-6 object-contain drop-shadow-[0_0_8px_rgba(255,255,255,0.22)]" />
-                  </div>
-                  <h2 className="text-lg font-black text-white uppercase tracking-[0.2em] flex items-center">
-                    SASE <span className="text-blue-400/50 mx-2 text-sm">/</span>{" "}
-                    <span className="text-blue-300 text-xs tracking-[0.3em] uppercase">SISTEMA DE ACOMPAÑAMIENTO Y SEGUIMIENTO ESCOLAR</span>
-                  </h2>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 shadow-inner">
+                  <img src="/assets/branding/favicon.png" alt="SASE Logo" className="w-5 h-5 sm:w-6 sm:h-6 object-contain" />
                 </div>
-              <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-1 ml-10">
-                Estatus: Operativo • v{VERSION.numero} • GESTIÓN INSTITUCIONAL DE NUEVA GENERACIÓN
+                <h2 className="text-sm sm:text-lg font-black text-white uppercase tracking-[0.15em] sm:tracking-[0.2em] flex items-center">
+                  SASE <span className="hidden xs:inline text-blue-400/50 mx-2 text-sm">/</span>{" "}
+                  <span className="hidden sm:inline text-blue-300 text-xs tracking-[0.3em] uppercase">SISTEMA DE ACOMPAÑAMIENTO Y SEGUIMIENTO ESCOLAR</span>
+                </h2>
+              </div>
+              <p className="hidden md:block text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 ml-10">
+                Estatus: Operativo • v{VERSION.numero} • GESTIÓN INSTITUCIONAL
               </p>
             </div>
           </div>

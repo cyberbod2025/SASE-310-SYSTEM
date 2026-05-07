@@ -500,23 +500,23 @@ export const Reportes: React.FC = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex-1 p-6 lg:p-8 relative z-10 w-full max-w-7xl mx-auto h-full flex flex-col"
+      className="flex-1 p-4 sm:p-6 lg:p-8 pb-32 sm:pb-8 relative z-10 w-full max-w-7xl mx-auto flex flex-col min-h-full"
     >
       {/* ENCABEZADO */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2 tracking-wide">
+        <h1 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight uppercase italic">
           Reportes Institucionales
         </h1>
-        <p className="text-slate-400 text-sm">
-          Filtra, consulta e imprime la bitacora e incidencias.
+        <p className="text-slate-400 text-xs font-medium uppercase tracking-widest">
+          Filtra, consulta e imprime la bitácora e incidencias por periodo.
         </p>
       </div>
-
+ 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-0">
         {/* PANEL LATERAL DE FILTROS */}
-        <GlassCard className="lg:col-span-1 flex flex-col h-fit">
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="material-icons text-blue-400 text-sm">filter_alt</span>
+        <GlassCard className="lg:col-span-1 flex flex-col h-fit md:sticky md:top-0">
+          <h2 className="text-sm font-black text-white mb-4 flex items-center gap-2 uppercase tracking-widest italic">
+            <span className="material-icons text-blue-400 text-lg">filter_alt</span>
             Filtros
           </h2>
 
