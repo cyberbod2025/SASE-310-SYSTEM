@@ -334,7 +334,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     <>
       <motion.div 
         ref={constraintsRef}
-        className="fixed inset-0 pointer-events-none z-[9999]"
+        className={`fixed inset-0 pointer-events-none ${isChatOpen ? 'z-[110]' : 'z-[85]'}`}
       >
         <motion.div 
           id="sasito-assistant-anchor"
@@ -346,7 +346,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
           className={`absolute pointer-events-auto flex flex-col items-center gap-4 ${
             isWidgetMode 
               ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' 
-              : 'bottom-12 right-12 items-end'
+              : 'bottom-24 right-6 sm:bottom-12 sm:right-12 items-end'
           }`}
         >
         <AnimatePresence>
@@ -482,7 +482,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                 localState === 'alert' ? 'alert' : 
                 localState === 'attention' ? 'warning' : 'normal'
               } 
-              className={minimal ? "w-20 h-20" : isTourActive ? "w-20 h-20" : "w-24 h-24"}
+              className={minimal ? "w-16 h-16 sm:w-20 sm:h-20" : isTourActive ? "w-16 h-16 sm:w-20 sm:h-20" : "w-20 h-20 sm:w-24 sm:h-24"}
               showAura={true}
               showGlow={true}
             />

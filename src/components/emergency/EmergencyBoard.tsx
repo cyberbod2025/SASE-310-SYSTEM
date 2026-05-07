@@ -29,11 +29,11 @@ const EmergencyCard: React.FC<{ alert: EmergencyAlert }> = ({ alert }) => (
 );
 
 const Column: React.FC<ColumnConfig> = ({ title, items, accent }) => (
-  <div className="min-h-48 rounded-2xl border border-white/8 bg-[#0f1117]/92 p-3">
-    <div className={`mb-3 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest ${accent}`}>
+  <div className="flex flex-col h-full min-h-[12rem] rounded-2xl border border-white/8 bg-[#0f1117]/92 p-3">
+    <div className={`mb-3 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest ${accent} sticky top-0 z-10 backdrop-blur-md`}>
       {title} ({items.length})
     </div>
-    <div className="space-y-2">
+    <div className="flex-1 space-y-2 overflow-y-auto custom-scrollbar pr-1 max-h-[30vh] md:max-h-none">
       {items.length === 0 ? (
         <p className="rounded-xl border border-dashed border-white/10 p-4 text-center text-[10px] font-bold uppercase tracking-widest text-slate-600">
           Sin registros
@@ -48,13 +48,14 @@ const Column: React.FC<ColumnConfig> = ({ title, items, accent }) => (
 export const EmergencyBoard: React.FC<{ alerts: EmergencyAlert[] }> = ({ alerts }) => {
   const columns: ColumnConfig[] = [
     { title: "Activas", items: alerts.filter((alert) => alert.estado === "activa"), accent: "bg-red-500/15 text-red-200" },
-    { title: "En atencion", items: alerts.filter((alert) => alert.estado === "atendida"), accent: "bg-amber-500/15 text-amber-200" },
+    { title: "En atención", items: alerts.filter((alert) => alert.estado === "atendida"), accent: "bg-amber-500/15 text-amber-200" },
     { title: "Cerradas", items: alerts.filter((alert) => alert.estado === "cancelada"), accent: "bg-emerald-500/15 text-emerald-200" },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-3 pb-safe">
       {columns.map((column) => <Column key={column.title} {...column} />)}
     </div>
   );
 };
+
