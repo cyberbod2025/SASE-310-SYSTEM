@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, MicOff, X, MessageSquare, Info, AlertTriangle, Zap } from "lucide-react";
 import { useApp } from "../../store";
@@ -65,6 +65,28 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   
   const constraintsRef = useRef(null);
 
+  const resolveIdleState = useCallback((): SasitoState => {
+    if (aiSystemState === 'alert') return 'alert';
+    if (aiSystemState === 'warning') return 'attention';
+
+    if (isTourActive) {
+      if (tourStep === 4) return 'alert';
+      if (tourStep === 3 || tourStep === 5) return 'attention';
+      return 'calm';
+    }
+
+    if (!onboarding.completed && onboarding.step === 0) return 'attention';
+    if (notifications.some(n => !n.read)) return 'attention';
+
+    return 'calm';
+  }, [aiSystemState, isTourActive, tourStep, onboarding.completed, onboarding.step, notifications]);
+
+  const clearSuggestion = useCallback((nextState?: SasitoState) => {
+    setCurrentSuggestion(null);
+    setAssistantSuggestion(null);
+    setLocalState(nextState ?? resolveIdleState());
+  }, [resolveIdleState, setAssistantSuggestion]);
+
   useEffect(() => {
     if (minimal || isWidgetMode) return;
     const timer = setTimeout(() => setShowDragHint(false), 7000);
@@ -109,13 +131,10 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
     if (assistantSuggestion) {
       setCurrentSuggestion(assistantSuggestion as Suggestion);
       if (assistantSuggestion.state) setLocalState(assistantSuggestion.state as SasitoState);
-      const timer = setTimeout(() => {
-        setCurrentSuggestion(null);
-        setAssistantSuggestion(null);
-      }, 12000);
+      const timer = setTimeout(clearSuggestion, 12000);
       return () => clearTimeout(timer);
     }
-  }, [assistantSuggestion, setAssistantSuggestion]);
+  }, [assistantSuggestion, clearSuggestion]);
 
   // Sync with global system state
   useEffect(() => {
@@ -154,11 +173,11 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         const suggestion = saseSuggestions[Math.floor(Math.random() * saseSuggestions.length)];
         setCurrentSuggestion(suggestion);
         if (suggestion.state) setLocalState(suggestion.state);
-        setTimeout(() => setCurrentSuggestion(null), 6000);
+        setTimeout(clearSuggestion, 6000);
       }
     }, 90000);
     return () => clearInterval(interval);
-  }, [minimal, isBubbleExpanded, isChatOpen, saseSuggestions]);
+  }, [minimal, isBubbleExpanded, isChatOpen, saseSuggestions, clearSuggestion]);
 
   const INTENT_RULES = [
     {
@@ -439,24 +458,24 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                                processInput("onboarding-step-2");
                             } else if (currentSuggestion.actionType === "onboarding-finish") {
                                setCurrentSuggestion(null);
-                            } else if (currentSuggestion.actionType?.startsWith("module-")) {
-                               const moduleKey = currentSuggestion.actionType.replace("module-", "");
-                               const moduleTarget = ACTION_MODULES[moduleKey];
-                               if (moduleTarget) setCurrentModule(moduleTarget);
-                            }
-                            setCurrentSuggestion(null);
-                          }}
+                             } else if (currentSuggestion.actionType?.startsWith("module-")) {
+                                const moduleKey = currentSuggestion.actionType.replace("module-", "");
+                                const moduleTarget = ACTION_MODULES[moduleKey];
+                                if (moduleTarget) setCurrentModule(moduleTarget);
+                             }
+                             clearSuggestion();
+                           }}
                           className="px-4 py-2 bg-violet-600 rounded-xl text-[10px] font-black text-white uppercase tracking-widest hover:bg-violet-500 transition-all shadow-lg shadow-violet-500/20"
                         >
                           {currentSuggestion.actionLabel || "ENTENDIDO"}
                         </button>
                         <button 
                           onClick={() => {
-                            if (currentSuggestion.actionType === "onboarding-start") {
-                              updateOnboarding({ completed: true });
-                            }
-                            setCurrentSuggestion(null);
-                          }}
+                             if (currentSuggestion.actionType === "onboarding-start") {
+                               updateOnboarding({ completed: true });
+                             }
+                             clearSuggestion(currentSuggestion.actionType === "onboarding-start" ? 'calm' : undefined);
+                           }}
                           className="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-white/10 transition-all"
                         >
                           {currentSuggestion.actionType === "onboarding-start" ? "SALTAR" : "Luego"}

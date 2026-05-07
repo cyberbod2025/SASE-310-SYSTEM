@@ -95,24 +95,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 2. Mapear Payload Legacy a Tabla Canónica
     const canonicalData = {
       docente_id: docenteId,
-      grupo: legacyPayload.grupo,
-      asignatura: legacyPayload.asignatura,
-      campo_formativo: legacyPayload.campo_formativo,
-      periodo: legacyPayload.periodo || "T2-2026",
-      conducta_general: mapNivelRiesgo(legacyPayload.ambiente?.atencion), // Simplificación para el primer piloto
-      aprovechamiento: mapNivelRiesgo(legacyPayload.impacto), 
-      asistencia: mapNivelRiesgo(legacyPayload.impacto), // Mapeo temporal si no hay campo específico
-      ambiente_atencion: mapNivelRiesgo(legacyPayload.ambiente?.atencion),
-      ambiente_respeto: mapNivelRiesgo(legacyPayload.ambiente?.respeto),
-      ambiente_participacion: mapNivelRiesgo(legacyPayload.ambiente?.participacion),
-      impacto_global: mapNivelRiesgo(legacyPayload.impacto),
-      tiempo_conducta: legacyPayload.tiempo_conducta,
-      factores_externos: legacyPayload.factores_externos?.lista || [],
-      alumnos_reportados: legacyPayload.alumnos_reportados || [],
-      estrategias_aplicadas: legacyPayload.intervenciones?.estrategias || [],
-      eficacia_intervencion: mapNivelRiesgo(legacyPayload.intervenciones?.eficacia),
-      comentarios: legacyPayload.comentarios,
-      fecha_diagnostico: legacyPayload.fecha ? legacyPayload.fecha.split("T")[0] : new Date().toISOString().split("T")[0],
+      grupo: legacyPayload.grupoId || legacyPayload.grupo || "Sin grupo",
+      nivel_riesgo: mapNivelRiesgo(legacyPayload.nivelRiesgo || legacyPayload.impacto),
+      observaciones: legacyPayload.observaciones || legacyPayload.comentarios || "",
+      fecha_diagnostico: legacyPayload.fecha || new Date().toISOString(),
+      metodologia: legacyPayload.metodologia || "observacion_directa",
+      clima_grupal: mapNivelRiesgo(legacyPayload.climaGrupal || (legacyPayload.ambiente && legacyPayload.ambiente.atencion)),
+      participacion_padres: mapNivelRiesgo(legacyPayload.participacionPadres || (legacyPayload.ambiente && legacyPayload.ambiente.participacion)),
+      incidencias_conducta: legacyPayload.incidenciasCount || 0,
+      necesidades_apoyo: Array.isArray(legacyPayload.necesidades) ? legacyPayload.necesidades : [],
+      fortalezas_detectadas: Array.isArray(legacyPayload.fortalezas) ? legacyPayload.fortalezas : [],
+      plan_accion_breve: legacyPayload.planAccion || "",
+      estado: "completado"
     };
 
     // 3. Insertar en Supabase (Service Role para bypass RLS y usar docente_id derivado)
