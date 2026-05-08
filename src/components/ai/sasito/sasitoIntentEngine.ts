@@ -56,7 +56,7 @@ export function detectSasitoIntent({ text, context }: SasitoIntentInput): Sasito
     return result("unknown", 0, "No hay texto para clasificar.");
   }
 
-  if (hasAny(normalized, ["reporte rapido", "registro rapido", "registrar incidencia", "crear incidencia", "levantar reporte", "reportar alumno"])) {
+  if (hasAny(normalized, ["reporte rapido", "registro rapido", "incidencia", "registrar incidencia", "crear incidencia", "levantar reporte", "reportar alumno"])) {
     return result("open_quick_register", 0.92, "El usuario solicita registrar una incidencia o reporte rapido.");
   }
 
