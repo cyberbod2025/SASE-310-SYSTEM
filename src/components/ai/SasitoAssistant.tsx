@@ -5,6 +5,7 @@ import { useApp } from "../../store";
 import { UserRole, AppModule } from "../../types";
 import { SaseSplineOrb } from "../SaseSplineOrb";
 import toast from "react-hot-toast";
+import { trySasitoL3Bridge } from "./sasito/sasitoBridge";
 
 export type SasitoState = 'calm' | 'attention' | 'alert' | 'processing' | 'rebooting';
 
@@ -37,6 +38,7 @@ const ACTION_MODULES: Record<string, AppModule> = {
 export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidgetMode = false }) => {
   const {
     currentUserRole,
+    currentModule,
     setCurrentModule,
     setQuickRegisterOpen,
     setIsAssistantOpen,
@@ -265,6 +267,26 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         setCurrentSuggestion({ 
           text: "El estado de INTERVENCIÓN es calculado exclusivamente por el Motor de Riesgo en PostgreSQL. No puedo alterarlo manualmente.", 
           state: 'attention' 
+        });
+        return;
+      }
+
+      const sasitoL3Response = trySasitoL3Bridge({
+        text,
+        currentUserRole: currentUserRole as UserRole,
+        currentUserProfile,
+        currentModule,
+        students,
+        notifications,
+        aiSystemState,
+      });
+
+      if (sasitoL3Response) {
+        setLocalState(sasitoL3Response.state);
+        setCurrentSuggestion({
+          text: sasitoL3Response.text,
+          state: sasitoL3Response.state,
+          actionLabel: sasitoL3Response.actionLabel,
         });
         return;
       }
