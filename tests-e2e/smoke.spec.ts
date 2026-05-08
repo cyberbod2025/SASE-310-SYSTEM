@@ -1,5 +1,11 @@
 import { test, expect, type Page } from '@playwright/test';
 
+function decodeBase64Url(str: string): string {
+  const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+  return Buffer.from(padded, 'base64').toString('utf-8');
+}
+
 async function enterSystemIfNeeded(page: Page) {
   const entrarSistema = page.getByRole('button', { name: /ENTRAR AL SISTEMA/i });
 
@@ -9,9 +15,6 @@ async function enterSystemIfNeeded(page: Page) {
 }
 
 async function expectAppShellLoaded(page: Page) {
-  // Primero aseguramos que salimos de la pantalla de login (o que algo cambió)
-  // Pero ojo: RADAR ESCOLAR también tiene un h1. 
-  // Mejor esperamos a que aparezca cualquiera de las señales de éxito.
   await expect(
     page.getByRole('heading', { name: /RADAR ESCOLAR|HOY/i })
       .or(page.getByText(/Incidencias Activas|Registro Rápido|Alumnos|NÚCLEO OPERATIVO|Iniciando Protocolos/i))
@@ -23,10 +26,8 @@ test.describe('SASE-310 Smoke Tests (Modo Cierre)', () => {
   test('Página de login carga y funciona con docente', async ({ page }) => {
     await page.goto('/?skipIntro=1');
 
-    // 1. Página de login carga
     await expect(page.getByRole('heading', { name: 'SASE 310' })).toBeVisible({ timeout: 15000 });
 
-    // 2. Login con cuenta smoke docente
     const email = process.env.SMOKE_DOCENTE_EMAIL;
     const password = process.env.SMOKE_DOCENTE_PASSWORD;
 
@@ -39,42 +40,33 @@ test.describe('SASE-310 Smoke Tests (Modo Cierre)', () => {
     await page.fill('input[type="password"]', password);
     await page.click('button[type="submit"]');
 
-    // Esperar señal real de app cargada
     await expectAppShellLoaded(page);
-
-    // Si aparece "Entrar al sistema", hacer clic
     await enterSystemIfNeeded(page);
 
-    // 3. Registro Rápido abre
     const btnRegistro = page.locator('#quick-register-btn');
     if (await btnRegistro.isVisible()) {
       await btnRegistro.click();
       await expect(page.locator('text=Incidencia').first()).toBeVisible();
-      // Cerrar modal
       await page.keyboard.press('Escape');
     }
 
-    // 4. Dashboard / Tablero carga sin error
     const linkTablero = page.locator('#nav-dashboard');
     if (await linkTablero.isVisible()) {
       await linkTablero.click();
       await expect(page.getByText(/Mis alumnos|Reportes hoy/i).first()).toBeVisible({ timeout: 10000 });
     }
 
-    // 5. Expedientes carga sin error
     const linkExpedientes = page.locator('#nav-expedientes');
     if (await linkExpedientes.isVisible()) {
       await linkExpedientes.click();
       await expect(page.locator('text=Directorio').first()).toBeVisible({ timeout: 10000 });
     }
 
-    // 6. Sasito visual aparece sin romper layout
     const sasitoElement = page.locator('[id*="sasito"], [class*="sasito"]');
     if (await sasitoElement.count() > 0) {
       await expect(sasitoElement.first()).toBeVisible();
     }
 
-    // Logout
     const btnLogout = page.locator('button:has-text("Salir")');
     if (await btnLogout.isVisible()) {
       await btnLogout.click();
@@ -82,7 +74,6 @@ test.describe('SASE-310 Smoke Tests (Modo Cierre)', () => {
   });
 
   test('Feria handoff no entrega role="teacher" a alumno', async ({ page }) => {
-    // Si no hay alumno smoke config, saltamos para que no falle en entornos donde no existe
     const email = process.env.SMOKE_ALUMNO_EMAIL;
     const password = process.env.SMOKE_ALUMNO_PASSWORD;
 
@@ -92,16 +83,34 @@ test.describe('SASE-310 Smoke Tests (Modo Cierre)', () => {
     }
 
     await page.goto('/?skipIntro=1');
-    await page.fill('input[type="email"]', email as string);
-    await page.fill('input[type="password"]', password as string);
-    
-    // Interceptar la navegación a /api/modules/launch ANTES de dar clic al submit
-    const [request] = await Promise.all([
-      page.waitForRequest(req => req.url().includes('launch') || req.url().includes('feria'), { timeout: 15000 }),
+    await page.fill('input[type="email"]', email);
+    await page.fill('input[type="password"]', password);
+
+    const [response] = await Promise.all([
+      page.waitForResponse(resp => resp.url().includes('/api/modules/launch'), { timeout: 15000 }),
       page.click('button[type="submit"]'),
     ]);
 
-    expect(request.url()).toBeTruthy();
+    expect(response.status()).toBe(200);
+    const body = await response.json();
+    expect(body).toHaveProperty('url');
+    expect(body).toHaveProperty('module', 'feria');
+
+    const redirectUrl = new URL(body.url);
+    const saseToken = redirectUrl.searchParams.get('sase_token');
+    expect(saseToken).toBeTruthy();
+
+    const parts = saseToken!.split('.');
+    expect(parts.length).toBe(2);
+
+    const payloadRaw = decodeBase64Url(parts[0]);
+    const payload = JSON.parse(payloadRaw);
+
+    expect(payload.module).toBe('feria');
+    expect(payload.role).toBe('student');
+    expect(payload.role).not.toBe('teacher');
+    expect(payload.sub).toBeTruthy();
+    expect(payload.uid).toBe(payload.sub);
   });
 
 });
