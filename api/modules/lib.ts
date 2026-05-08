@@ -159,12 +159,30 @@ function buildLaunchUrl(baseUrl: string, token: string): string {
   return `${url.toString()}${hash}`;
 }
 
-function mapTokenRole(institutionalRole: string): string {
-  if (["docente", "docente_tutor", "teacher", "maestro"].includes(institutionalRole)) {
+function mapTokenRole(institutionalRole: string, moduleKey: ModuleKey): string {
+  const role = institutionalRole.toLowerCase();
+
+  // Mapeo para Alumnos (Solo Feria por ahora, pero escalable)
+  if (role === "alumno") {
+    return "student";
+  }
+
+  // Mapeo para Docentes
+  if (["docente", "docente_tutor", "teacher", "maestro"].includes(role)) {
     return "teacher";
   }
 
-  return institutionalRole;
+  // Mapeo para Roles Administrativos y de Gestión
+  if (["admin", "directivo", "subdireccion", "developer", "system_admin"].includes(role)) {
+    // Estos roles escalan a admin en el ecosistema externo
+    if (["admin", "directivo", "developer", "system_admin"].includes(role)) {
+      return "admin";
+    }
+    return "staff";
+  }
+
+  // Otros roles institucionales (prefectura, orientacion, etc) caen en staff por defecto
+  return "staff";
 }
 
 function extractGroupId(profile: Record<string, unknown>): string | null {
@@ -370,7 +388,7 @@ function parseRequestedModule(req: VercelRequest, forcedModuleKey?: ModuleKey): 
 function buildToken(profile: InstitutionalProfile, moduleKey: ModuleKey) {
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + TOKEN_TTL_SECONDS;
-  const handoffRole = moduleKey === "feria" ? "teacher" : mapTokenRole(profile.role);
+  const handoffRole = mapTokenRole(profile.role, moduleKey);
   const payload = {
     sub: profile.id,
     uid: profile.id,
