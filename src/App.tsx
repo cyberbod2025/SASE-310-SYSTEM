@@ -12,6 +12,7 @@ import { useSasitoPilotProbe } from "./hooks/useSasitoPilotProbe";
 import LaboratorioUI from "./pages/LaboratorioUI";
 
 const Login = React.lazy(() => import("./components/Login").then(m => ({ default: m.Login })));
+const LoginView = React.lazy(() => import("./pages/LoginView"));
 const IntroPlayer = React.lazy(() => import("./components/IntroPlayer").then(m => ({ default: m.IntroPlayer })));
 const FirstLogonSetup = React.lazy(() => import("./components/FirstLogonSetup").then(m => ({ default: m.FirstLogonSetup })));
 const RegistroPersonal = React.lazy(() => import("./components/RegistroPersonal").then(m => ({ default: m.RegistroPersonal })));
@@ -19,6 +20,7 @@ const RegistroPersonal = React.lazy(() => import("./components/RegistroPersonal"
 const App: React.FC = () => {
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [showFeria, setShowFeria] = useState(false);
   
   // Estado para controlar la animación de introducción
   const [showIntro, setShowIntro] = useState(() => {
@@ -59,6 +61,10 @@ const App: React.FC = () => {
     }
     if (params.get("skipIntro") === "1") {
       localStorage.setItem("sase_intro_v4_shown", "true");
+      setShowIntro(false);
+    }
+    if (params.get("feria") === "1") {
+      setShowFeria(true);
       setShowIntro(false);
     }
   }, []);
@@ -158,6 +164,15 @@ const App: React.FC = () => {
           <Toaster position="top-center" reverseOrder={false} />
           <React.Suspense fallback={<LoadingSpinner />}>
             <RegistroPersonal onBack={() => setIsRegistering(false)} />
+          </React.Suspense>
+        </ErrorBoundary>
+      );
+    }
+    if (showFeria) {
+      return (
+        <ErrorBoundary>
+          <React.Suspense fallback={<LoadingSpinner />}>
+            <LoginView />
           </React.Suspense>
         </ErrorBoundary>
       );
