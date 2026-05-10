@@ -6,13 +6,24 @@ import { SaseSplineOrb } from "../SaseSplineOrb";
 import { TacticalSpotlight } from "../ui/TacticalSpotlight";
 
 export const TutorialController: React.FC = () => {
-  const { currentUserRole, currentUserProfile } = useApp();
+  const { currentUserRole, currentUserProfile, setIsTourActive } = useApp();
   const [isActive, setIsActive] = useState(false);
 
-  useEffect(() => {
-    const autoTutorialEnabled = localStorage.getItem("sase_autotutorial_enabled") !== "false"; 
+  const markTutorialSeen = () => {
     const tutorialKey = `sase_tutorial_seen_${currentUserRole}`;
-    const hasSeenTutorial = localStorage.getItem(tutorialKey);
+    localStorage.setItem(tutorialKey, "true");
+    localStorage.setItem("sase_tutorial_seen", "true");
+  };
+
+  useEffect(() => {
+    setIsTourActive(isActive);
+    return () => setIsTourActive(false);
+  }, [isActive, setIsTourActive]);
+
+  useEffect(() => {
+    const autoTutorialEnabled = localStorage.getItem("sase_autotutorial_enabled") !== "false";
+    const tutorialKey = `sase_tutorial_seen_${currentUserRole}`;
+    const hasSeenTutorial = localStorage.getItem(tutorialKey) === "true" || localStorage.getItem("sase_tutorial_seen") === "true";
 
     if (autoTutorialEnabled && !hasSeenTutorial) {
       const timer = setTimeout(() => setIsActive(true), 1500);
@@ -22,9 +33,9 @@ export const TutorialController: React.FC = () => {
 
   const commonSteps: any[] = [
     {
-      element: "#sidebar-logo",
+      element: '[data-sasito-target="perfil"]',
       title: "Identidad Institucional",
-      description: "Tu rol y nivel de acceso actual están visibles aquí. Mantén tu perfil actualizado para recibir las herramientas correctas.",
+      description: "Usa Mi perfil para revisar tus datos visibles, rol y contexto de acceso antes de operar el sistema.",
       side: "right",
     },
     {
@@ -39,13 +50,19 @@ export const TutorialController: React.FC = () => {
       description: "Mantente al tanto de alertas urgentes y actualizaciones críticas del sistema en tiempo real.",
       side: "bottom",
     },
+    {
+      element: '[data-sasito-target="pedir-ayuda"]',
+      title: "Pedir ayuda",
+      description: "Este botón queda disponible para activar apoyo inmediato cuando la situación lo requiera.",
+      side: "left",
+    },
   ];
 
   const stepsByRole: Record<string, any[]> = {
     [UserRole.DIRECTIVO]: [
       ...commonSteps,
       {
-        element: "#dashboard-header",
+        element: '[data-sasito-target="tablero"]',
         title: "Centro de Mando",
         description: "Visualice el estado general de la institución y el semáforo de riesgo consolidado.",
         side: "bottom",
@@ -66,13 +83,13 @@ export const TutorialController: React.FC = () => {
     [UserRole.DOCENTE]: [
       ...commonSteps,
       {
-        element: "#dashboard-header",
+        element: '[data-sasito-target="tablero"]',
         title: "Control de Aula",
         description: "Gestiona tus grupos y materias desde un solo lugar. SASE te ayuda a detectar patrones tempranos.",
         side: "bottom",
       },
       {
-        element: "#export-btn",
+        element: '[data-sasito-target="reporte-rapido"], #quick-register-btn, #export-btn',
         title: "Reporte Rápido",
         description: "Registra incidencias o derivas académicas al instante para activar los protocolos de apoyo.",
         side: "left",
@@ -93,14 +110,37 @@ export const TutorialController: React.FC = () => {
         side: "top",
       },
     ],
+    [UserRole.UDEII]: [
+      ...commonSteps,
+      {
+        element: '[data-sasito-target="tablero"]',
+        title: "Tablero UDEII",
+        description: "Esta zona concentra el trabajo de inclusión y seguimiento institucional de barreras.",
+        side: "bottom",
+      },
+      {
+        element: '[data-sasito-target="bap-monitor"]',
+        title: "Monitor de Barreras / BAP",
+        description: "Aquí se revisan los casos con BAP y sus ajustes razonables para seguimiento de UDEII.",
+        side: "top",
+      },
+    ],
+    [UserRole.SECRETARIA]: [
+      ...commonSteps,
+      {
+        element: '[data-sasito-target="tablero"]',
+        title: "Tablero de Secretaría",
+        description: "Esta zona agrupa expedientes, trámites y acciones administrativas para control escolar.",
+        side: "bottom",
+      },
+    ],
   };
 
   const steps = stepsByRole[currentUserRole] || commonSteps;
 
   const handleComplete = () => {
     setIsActive(false);
-    const tutorialKey = `sase_tutorial_seen_${currentUserRole}`;
-    localStorage.setItem(tutorialKey, "true");
+    markTutorialSeen();
 
     toast.custom(
       (t) => (
@@ -149,7 +189,10 @@ export const TutorialController: React.FC = () => {
       isActive={isActive}
       steps={steps}
       onComplete={handleComplete}
-      onClose={() => setIsActive(false)}
+      onClose={() => {
+        markTutorialSeen();
+        setIsActive(false);
+      }}
       userName={currentUserProfile?.nombre || "Usuario"}
     />
   );

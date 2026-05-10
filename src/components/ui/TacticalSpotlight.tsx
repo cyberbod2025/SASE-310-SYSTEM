@@ -32,10 +32,16 @@ export const TacticalSpotlight: React.FC<TacticalSpotlightProps> = ({
   const requestRef = useRef<number>(undefined);
 
   const step = steps[currentStep];
+  const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, Math.max(min, max)));
+
+  const resolveTarget = () => {
+    if (!step?.element) return null;
+    return document.querySelector(step.element) as HTMLElement | null;
+  };
 
   const updateRect = () => {
     if (!isActive || !step?.element) return;
-    const el = document.querySelector(step.element);
+    const el = resolveTarget();
     if (el) {
       const rect = el.getBoundingClientRect();
       setTargetRect(rect);
@@ -47,46 +53,73 @@ export const TacticalSpotlight: React.FC<TacticalSpotlightProps> = ({
 
   useEffect(() => {
     if (isActive) {
+      const el = resolveTarget();
+
+      if (el) {
+        el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+        el.classList.add('sasito-spotlight-target');
+        window.setTimeout(updateRect, 350);
+      } else if (import.meta.env.DEV && step?.element) {
+        console.warn(`Sasito spotlight target not found: ${step.element}`);
+      }
+
       updateRect();
       const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
       window.addEventListener('resize', handleResize);
+      window.addEventListener('scroll', updateRect, true);
       return () => {
+        el?.classList.remove('sasito-spotlight-target');
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
         window.removeEventListener('resize', handleResize);
+        window.removeEventListener('scroll', updateRect, true);
       };
     }
   }, [isActive, currentStep]);
 
   const popoverPosition = useMemo(() => {
-    if (!targetRect) return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
+    const margin = 16;
+    const popoverWidth = Math.min(320, windowSize.width - margin * 2);
+    const popoverHeight = Math.min(windowSize.width < 640 ? 300 : 260, windowSize.height - margin * 2);
+
+    if (!targetRect) {
+      return {
+        top: clamp(windowSize.height / 2 - popoverHeight / 2, margin, windowSize.height - popoverHeight - margin),
+        left: clamp(windowSize.width / 2 - popoverWidth / 2, margin, windowSize.width - popoverWidth - margin),
+        width: popoverWidth,
+      };
+    }
 
     const padding = 20;
     const side = step.side || 'bottom';
+    const centerX = targetRect.left + targetRect.width / 2;
+    const centerY = targetRect.top + targetRect.height / 2;
+    const safeLeft = (left: number) => clamp(left, margin, windowSize.width - popoverWidth - margin);
+    const safeTop = (top: number) => clamp(top, margin, windowSize.height - popoverHeight - margin);
     
     switch (side) {
       case 'top':
         return { 
-          bottom: windowSize.height - targetRect.top + padding, 
-          left: targetRect.left + targetRect.width / 2,
-          transform: 'translateX(-50%)'
+          top: safeTop(targetRect.top - popoverHeight - padding),
+          left: safeLeft(centerX - popoverWidth / 2),
+          width: popoverWidth,
         };
       case 'bottom':
         return { 
-          top: targetRect.bottom + padding, 
-          left: targetRect.left + targetRect.width / 2,
-          transform: 'translateX(-50%)'
+          top: safeTop(targetRect.bottom + padding),
+          left: safeLeft(centerX - popoverWidth / 2),
+          width: popoverWidth,
         };
       case 'left':
         return { 
-          top: targetRect.top + targetRect.height / 2, 
-          right: windowSize.width - targetRect.left + padding,
-          transform: 'translateY(-50%)'
+          top: safeTop(centerY - popoverHeight / 2),
+          left: safeLeft(targetRect.left - popoverWidth - padding),
+          width: popoverWidth,
         };
       case 'right':
         return { 
-          top: targetRect.top + targetRect.height / 2, 
-          left: targetRect.right + padding,
-          transform: 'translateY(-50%)'
+          top: safeTop(centerY - popoverHeight / 2),
+          left: safeLeft(targetRect.right + padding),
+          width: popoverWidth,
         };
     }
   }, [targetRect, step, windowSize]);
@@ -105,7 +138,7 @@ export const TacticalSpotlight: React.FC<TacticalSpotlightProps> = ({
   if (!isActive) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[1000000] pointer-events-none font-['Inter']">
+    <div className="fixed inset-0 z-50 pointer-events-none font-['Inter']">
       {/* Overlay con Máscara SVG */}
       <svg className="absolute inset-0 w-full h-full pointer-events-auto">
         <defs>
@@ -137,6 +170,21 @@ export const TacticalSpotlight: React.FC<TacticalSpotlightProps> = ({
         />
       </svg>
 
+      {targetRect && (
+        <motion.div
+          aria-hidden="true"
+          initial={false}
+          animate={{
+            x: targetRect.left - 10,
+            y: targetRect.top - 10,
+            width: targetRect.width + 20,
+            height: targetRect.height + 20,
+          }}
+          transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+          className="absolute pointer-events-none rounded-[1.5rem] border-2 border-emerald-300/90 shadow-[0_0_0_1px_rgba(34,211,238,0.35),0_0_35px_rgba(52,211,153,0.55),0_0_80px_rgba(129,106,184,0.28)] ring-2 ring-cyan-300/40 animate-pulse"
+        />
+      )}
+
       <AnimatePresence mode="wait">
         <motion.div
           key={currentStep}
@@ -144,7 +192,7 @@ export const TacticalSpotlight: React.FC<TacticalSpotlightProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 10 }}
           style={popoverPosition as any}
-          className="absolute pointer-events-auto w-[320px] bg-[#121018]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_40px_100px_rgba(0,0,0,0.6),0_0_40px_rgba(129,106,184,0.15)] p-6"
+          className="absolute pointer-events-auto max-w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] overflow-y-auto bg-[#121018]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_40px_100px_rgba(0,0,0,0.6),0_0_40px_rgba(129,106,184,0.15)] p-6"
         >
           {/* Sasito Orb Mini */}
           <div className="flex items-center gap-3 mb-4">

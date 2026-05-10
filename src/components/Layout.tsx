@@ -102,6 +102,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     markNotificationRead,
     setAssistantSuggestion,
     updateOnboarding,
+    activeAlerts,
+    isTourActive,
+    setIsTourActive,
   } = useApp();
   const { user, profile } = useAuth();
   const { ecosystemModules } = useEcosystemModules();
@@ -124,6 +127,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProtocolDismissed, setIsProtocolDismissed] = useState(false);
+  const [isDemoCleanMode, setIsDemoCleanMode] = useState(false);
   const previousUnreadRef = useRef(0);
   const unreadWatcherReadyRef = useRef(false);
   // Roles con acceso global a todas las notificaciones institucionales
@@ -150,6 +154,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   }, [setAssistantSuggestion, unreadCount]);
 
   const sidebarWidth = isSidebarCollapsed ? "w-20" : "w-72";
+  const hasActiveEmergency = activeAlerts.some((alert) => alert.estado === "activa");
+  const suppressNonCriticalOverlays = isDemoCleanMode || isTourActive || hasActiveEmergency;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const cleanMode = params.get("demo") === "1" || localStorage.getItem("sase_demo_clean_view") === "true";
+
+    if (!cleanMode) return;
+
+    setIsDemoCleanMode(true);
+    localStorage.setItem("sase_autotutorial_enabled", "false");
+    localStorage.setItem(`sase_tutorial_seen_${currentUserRole}`, "true");
+    updateOnboarding({ completed: true, step: 3 });
+    setAssistantSuggestion(null);
+  }, [currentUserRole, setAssistantSuggestion, updateOnboarding]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -168,8 +187,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showNotifications]);
-
-  const { setIsTourActive } = useApp();
 
   // Monitorizar activación del tour (driver.js no es reactivo por sí solo)
   useEffect(() => {
@@ -218,14 +235,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/80 z-[60] md:hidden backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 bg-black/80 z-10 md:hidden backdrop-blur-md animate-fade-in"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar - Premium Crystal Glass (Light Edition) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[70] ${sidebarWidth} glass-card-quantum !bg-[rgba(121,118,124,0.12)] !backdrop-blur-[40px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-[rgba(227,221,236,0.12)] md:relative md:translate-x-0 shadow-[10px_0_60px_-20px_rgba(18,16,23,0.42)] ${
+        className={`fixed inset-y-0 left-0 z-20 ${sidebarWidth} glass-card-quantum !bg-[rgba(121,118,124,0.12)] !backdrop-blur-[40px] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border-r border-[rgba(227,221,236,0.12)] md:relative md:translate-x-0 shadow-[10px_0_60px_-20px_rgba(18,16,23,0.42)] ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -275,6 +292,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               )}
               {!isSidebarCollapsed && (
                 <button
+                  data-sasito-target="perfil"
                   onClick={() => {
                     setCurrentModule(AppModule.PERFIL);
                     setIsSidebarOpen(false);
@@ -560,6 +578,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
             <button
               id="sidebar-feedback"
+              data-sasito-target="sugerencias"
               onClick={() => setIsFeedbackOpen(true)}
               className="flex items-center justify-center w-full py-3 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 rounded-xl transition-all"
             >
@@ -592,7 +611,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Header */}
-        <header className="h-16 sm:h-20 bg-[rgba(11,15,25,0.85)] backdrop-blur-[32px] border-b border-white/10 flex items-center justify-between px-3 sm:px-6 shrink-0 z-40 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+        <header className="h-16 sm:h-20 bg-[rgba(11,15,25,0.85)] backdrop-blur-[32px] border-b border-white/10 flex items-center justify-between px-3 sm:px-6 shrink-0 z-20 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
           <div className="flex items-center gap-3 sm:gap-6">
             <button
               className="md:hidden size-10 flex items-center justify-center bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10"
@@ -620,6 +639,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <div className="flex items-center gap-3">
             <button
               id="quick-register-btn"
+              data-sasito-target="reporte-rapido"
               onClick={() => openQuickRegister(IncidentType.CONDUCTA)}
               className="hidden md:flex h-10 px-5 bg-red-600 text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-red-500 transition-all shadow-lg shadow-red-500/20 items-center gap-2"
             >
@@ -708,14 +728,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
         {/* Main Content Scroll Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
-          <div className="p-4 md:p-8 animate-fade-in relative z-10">
+          <div data-sasito-target="tablero" className={`p-4 md:p-8 animate-fade-in relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`}>
             {children}
           </div>
         </main>
 
         {/* Sasito IA: siempre presente en todas las pantallas */}
-        <SasitoAssistant />
-        <EncuestaPulso />
+        <SasitoAssistant suppressAssistant={isDemoCleanMode || isTourActive || hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
+        {!isDemoCleanMode && <EncuestaPulso />}
       </div>
 
       <FeedbackWidget />

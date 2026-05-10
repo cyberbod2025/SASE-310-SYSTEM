@@ -26,6 +26,7 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
   const [step, setStep] = useState<'selection' | 'success'>(myActiveAlert ? 'success' : 'selection');
   const [ubicacion, setUbicacion] = useState<EmergencyLocation>('Aula');
   const [silent, setSilent] = useState(false);
+  const [sendingType, setSendingType] = useState<EmergencyType | null>(null);
 
   const locations: EmergencyLocation[] = ['Aula', 'Patio', 'Bano', 'Pasillo', 'Otro'];
 
@@ -61,17 +62,26 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
   ];
 
   const handleSendAlert = async (type: EmergencyType) => {
-    await createEmergencyAlert(type, {
-      ubicacion,
-      aula: ubicacion,
-      grupo: currentUserProfile?.grupo_tutor || undefined,
-      silent,
-    });
-    setStep('success');
+    if (sendingType) return;
+
+    setSendingType(type);
+    try {
+      await createEmergencyAlert(type, {
+        ubicacion,
+        aula: ubicacion,
+        grupo: currentUserProfile?.grupo_tutor || undefined,
+        silent,
+      });
+      setStep('success');
+    } catch (error) {
+      console.error("No se pudo activar la alerta", error);
+    } finally {
+      setSendingType(null);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -137,13 +147,14 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
                   <button
                     key={opt.id}
                     onClick={() => handleSendAlert(opt.id)}
-                    className="group relative flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.03] p-5 text-left transition-all hover:border-white/20 hover:bg-white/[0.07]"
+                    disabled={Boolean(sendingType)}
+                    className="group relative flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.03] p-5 text-left transition-all hover:border-white/20 hover:bg-white/[0.07] disabled:cursor-wait disabled:opacity-60"
                   >
                     <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${opt.color} shadow-lg transition-transform group-hover:scale-110`}>
                       <opt.icon className="h-8 w-8 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-black text-white text-lg leading-tight uppercase tracking-wide">{opt.label}</h3>
+                      <h3 className="font-black text-white text-lg leading-tight uppercase tracking-wide">{sendingType === opt.id ? "Enviando..." : opt.label}</h3>
                       <p className="text-xs text-slate-400 font-medium leading-relaxed mt-1">{opt.desc}</p>
                     </div>
                     <ArrowRight className="absolute right-5 h-5 w-5 text-slate-600 group-hover:text-white transition-colors" />
