@@ -41,7 +41,7 @@ export const EmergencyResponsePanel: React.FC = () => {
   const showBoard = currentUserProfile?.rol === 'directivo' || currentUserProfile?.rol === 'subdireccion';
 
   return (
-    <div className="fixed top-20 right-0 md:right-6 z-[95] w-full md:max-w-5xl space-y-3 px-4 md:px-0 pointer-events-none">
+    <div className="fixed top-20 right-0 z-40 w-full px-4 pointer-events-none md:right-6 md:top-24 md:w-96 md:px-0">
       {/* Indicador Compacto para Móvil */}
       <div className="flex justify-end md:hidden">
         <motion.button
@@ -59,12 +59,12 @@ export const EmergencyResponsePanel: React.FC = () => {
       {/* Panel Contenido (Board + Alertas) */}
       <div className={`space-y-3 pointer-events-auto transition-all duration-300 ${!isExpanded ? 'hidden md:block' : 'block'}`}>
         {showBoard && (
-          <div className="max-h-[40vh] md:max-h-none overflow-y-auto md:overflow-visible rounded-2xl">
+          <div className="max-h-[32vh] overflow-y-auto rounded-2xl">
             <EmergencyBoard alerts={activeAlerts} />
           </div>
         )}
         
-        <div className="space-y-3 max-h-[50vh] md:max-h-none overflow-y-auto md:overflow-visible pb-4">
+        <div className="space-y-3 max-h-[calc(100vh-12rem)] overflow-y-auto pb-4">
           <AnimatePresence>
             {activeOnly.map((alert) => (
               <motion.div
@@ -130,4 +130,3 @@ export const EmergencyResponsePanel: React.FC = () => {
     </div>
   );
 };
-

@@ -7,6 +7,7 @@ import { anonymizeName } from "../utils/saseUtils";
 import { GlassCard } from "./ui/GlassCard";
 
 type ReportType = "incidencias" | "asistencia" | "estudiantes" | "bitacora";
+const REPORT_PAGE_SIZE = 50;
 
 // --- MICRO-COMPONENT: IntelligenceKPI ---
 const IntelligenceKPI = ({
@@ -78,6 +79,11 @@ export const Reportes: React.FC = () => {
   });
 
   const [isPrinting, setIsPrinting] = useState(false);
+  const [visibleRows, setVisibleRows] = useState(REPORT_PAGE_SIZE);
+
+  React.useEffect(() => {
+    setVisibleRows(REPORT_PAGE_SIZE);
+  }, [selectedReport, dateRange.start, dateRange.end]);
 
   // Aggregate data for reports - Memoized ⚡
   const allIncidents = React.useMemo(() => {
@@ -110,6 +116,32 @@ export const Reportes: React.FC = () => {
       ),
     [filteredIncidents],
   );
+
+  const attendanceRows = React.useMemo(() => {
+    return students
+      .map((s) => {
+        const counts = s.incidents.reduce(
+          (acc, i) => {
+            if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
+            if (i.type === IncidentType.RETARDO) acc.retardos++;
+            return acc;
+          },
+          { faltas: 0, retardos: 0 },
+        );
+        return { ...s, ...counts };
+      })
+      .filter((s) => s.faltas > 0 || s.retardos > 0)
+      .sort((a, b) => b.faltas + b.retardos - (a.faltas + a.retardos));
+  }, [students]);
+
+  const visibleIncidents = filteredIncidents.slice(0, visibleRows);
+  const visibleStudents = students.slice(0, visibleRows);
+  const visibleAttendanceRows = attendanceRows.slice(0, visibleRows);
+  const totalRows = selectedReport === "incidencias"
+    ? filteredIncidents.length
+    : selectedReport === "estudiantes"
+      ? students.length
+      : attendanceRows.length;
 
   const studentsByState = React.useMemo(
     () =>
@@ -711,7 +743,7 @@ export const Reportes: React.FC = () => {
                       </td>
                     </tr>
                   )}
-                  {filteredIncidents.map((i, idx) => (
+                  {visibleIncidents.map((i, idx) => (
                     <tr key={`${i.id || "inc"}-${idx}`} className="border-t border-white/5">
                       <td className="py-3 px-3">
                         {new Date(i.date).toLocaleDateString("es-MX")}
@@ -750,7 +782,7 @@ export const Reportes: React.FC = () => {
                       </td>
                     </tr>
                   )}
-                  {students.map((s, idx) => (
+                  {visibleStudents.map((s, idx) => (
                     <tr key={s.id || idx} className="border-t border-white/5">
                       <td className="py-3 px-3">{idx + 1}</td>
                       <td className="py-3 px-3 font-semibold">
@@ -777,21 +809,7 @@ export const Reportes: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="text-slate-300">
-                  {students
-                    .map((s) => {
-                      const counts = s.incidents.reduce(
-                        (acc, i) => {
-                          if (i.type === IncidentType.ASISTENCIA) acc.faltas++;
-                          if (i.type === IncidentType.RETARDO) acc.retardos++;
-                          return acc;
-                        },
-                        { faltas: 0, retardos: 0 },
-                      );
-                      return { ...s, ...counts };
-                    })
-                    .filter((s) => s.faltas > 0 || s.retardos > 0)
-                    .sort((a, b) => b.faltas + b.retardos - (a.faltas + a.retardos))
-                    .map((s) => (
+                  {visibleAttendanceRows.map((s) => (
                       <tr key={s.id} className="border-t border-white/5">
                         <td className="py-3 px-3 font-semibold">
                           {anonymizeName(s.name)}
@@ -803,6 +821,21 @@ export const Reportes: React.FC = () => {
                     ))}
                 </tbody>
               </table>
+            )}
+
+            {totalRows > visibleRows && (
+              <div className="sticky bottom-0 mt-4 flex items-center justify-between gap-3 border-t border-white/10 bg-[#0B1120]/95 p-4 backdrop-blur-xl">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Mostrando {visibleRows} de {totalRows} registros
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setVisibleRows((current) => current + REPORT_PAGE_SIZE)}
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-slate-200 transition hover:bg-white/10"
+                >
+                  Cargar más
+                </button>
+              </div>
             )}
           </div>
         </GlassCard>

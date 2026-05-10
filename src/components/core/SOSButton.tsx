@@ -10,12 +10,18 @@ export const SOSButton: React.FC<SOSButtonProps> = ({ compact = false, onActivat
   const [loading, setLoading] = useState(false);
 
   const handleActivate = async () => {
+    if (loading) return;
     setLoading(true);
     try {
-      await onActivate?.();
+      await Promise.race([
+        Promise.resolve(onActivate?.()),
+        new Promise((_, reject) => window.setTimeout(() => reject(new Error("timeout")), 10000)),
+      ]);
+      setOpen(true);
+    } catch (error) {
+      console.error("No se pudo activar SOS", error);
     } finally {
       setLoading(false);
-      setOpen(true);
     }
   };
 
@@ -24,7 +30,9 @@ export const SOSButton: React.FC<SOSButtonProps> = ({ compact = false, onActivat
       <button
         type="button"
         onClick={handleActivate}
-        className={`min-h-[44px] rounded-2xl bg-rose-600 font-black uppercase tracking-widest text-white shadow-lg shadow-rose-600/25 transition hover:bg-rose-500 ${compact ? "px-3 text-[10px]" : "px-5 text-xs"}`}
+        disabled={loading}
+        data-sasito-target="pedir-ayuda"
+        className={`min-h-[44px] rounded-2xl bg-rose-600 font-black uppercase tracking-widest text-white shadow-lg shadow-rose-600/25 transition hover:bg-rose-500 disabled:cursor-wait disabled:opacity-70 ${compact ? "px-3 text-[10px]" : "px-5 text-xs"}`}
       >
         {loading ? "Activando" : "SOS"}
       </button>

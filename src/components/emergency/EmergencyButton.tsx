@@ -60,7 +60,8 @@ export const EmergencyButton: React.FC = () => {
           event.preventDefault();
           if (myActiveAlert) setIsOpen(true);
         }}
-        className={`fixed right-6 z-[100] flex h-16 w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300 ${
+        data-sasito-target="pedir-ayuda"
+        className={`fixed left-4 sm:left-6 z-40 flex h-16 w-16 items-center justify-center rounded-full shadow-2xl transition-all duration-300 ${
           myActiveAlert
             ? "bg-rose-600 animate-pulse ring-4 ring-rose-400/50"
             : "bg-red-600 hover:bg-red-500 ring-4 ring-white/10"
@@ -79,7 +80,7 @@ export const EmergencyButton: React.FC = () => {
             <span className="absolute inset-0 rounded-full border-4 border-white/80 animate-ping" />
           )}
  
-          <span className="absolute -top-12 right-0 whitespace-nowrap rounded-lg bg-red-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg pointer-events-none">
+          <span className="absolute -top-12 left-0 whitespace-nowrap rounded-lg bg-red-600 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg pointer-events-none">
             {myActiveAlert ? "ALERTA ACTIVA" : holding ? "MANTEN PRESIONADO" : "PEDIR AYUDA"}
           </span>
         </div>
