@@ -20,12 +20,17 @@ const RegistroPersonal = React.lazy(() => import("./components/RegistroPersonal"
 const App: React.FC = () => {
   const [initialRole, setInitialRole] = useState<UserRole>(UserRole.GUEST);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [showFeria, setShowFeria] = useState(false);
-  
+  const [showFeria, setShowFeria] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("feria") === "1";
+  });
   // Estado para controlar la animación de introducción
   const [showIntro, setShowIntro] = useState(() => {
     if (typeof window === "undefined") return true;
     const params = new URLSearchParams(window.location.search);
+    if (params.get("feria") === "1") {
+      return false;
+    }
     if (params.get("skipIntro") === "1") {
       return false;
     }
@@ -122,6 +127,17 @@ const App: React.FC = () => {
 
   if (labParam === "ui") {
     return <LaboratorioUI />;
+  }
+
+  if (showFeria) {
+    return (
+      <ErrorBoundary>
+        <Toaster position="top-center" reverseOrder={false} />
+        <React.Suspense fallback={<LoadingSpinner />}>
+          <LoginView />
+        </React.Suspense>
+      </ErrorBoundary>
+    );
   }
 
   if (showIntro) {

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 
 const metrics = [
   { label: "Visitantes", value: "500" },
@@ -30,12 +29,7 @@ export const LoginView: React.FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,rgba(15,12,41,0.4)_100%)] pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10 flex flex-col md:flex-row items-stretch gap-6 md:gap-10">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex-1 flex flex-col gap-5"
-        >
+        <div className="flex-1 flex flex-col gap-5">
           <div>
             <span className="inline-block px-3 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-bold text-cyan-300 uppercase tracking-[0.25em] mb-4">
               FERIA DE CIENCIAS 2026 &middot; ESD-310
@@ -124,14 +118,9 @@ export const LoginView: React.FC = () => {
               <span className="text-[9px] text-amber-200/60 font-semibold tracking-wide">Oeste</span>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
-          className="w-full md:w-[380px] lg:w-[420px] flex flex-col gap-5 shrink-0"
-        >
+        <div className="w-full md:w-[380px] lg:w-[420px] flex flex-col gap-5 shrink-0">
           <div className="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8 shadow-2xl">
             <h2 className="text-2xl font-black text-white tracking-tight">Entrar a la feria</h2>
             <p className="text-xs text-blue-200/60 font-medium mt-2 leading-relaxed">
@@ -207,7 +196,7 @@ export const LoginView: React.FC = () => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
