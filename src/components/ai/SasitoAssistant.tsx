@@ -20,6 +20,8 @@ interface Suggestion {
 interface SasitoProps {
   minimal?: boolean; // If true, no chat, no mic, no suggestions (for Login)
   isWidgetMode?: boolean;
+  suppressAssistant?: boolean;
+  suppressSuggestions?: boolean;
 }
 
 const ACTION_MODULES: Record<string, AppModule> = {
@@ -35,7 +37,7 @@ const ACTION_MODULES: Record<string, AppModule> = {
  * SasitoAssistant: Copiloto Institucional Único
  * Actúa como Wrapper de Lógica y UI de Chat, delegando el render visual a SaseSplineOrb.
  */
-export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidgetMode = false }) => {
+export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidgetMode = false, suppressAssistant = false, suppressSuggestions = false }) => {
   const {
     currentUserRole,
     currentModule,
@@ -68,7 +70,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   const constraintsRef = useRef(null);
 
   useEffect(() => {
-    if (minimal || isWidgetMode) return;
+    if (minimal || isWidgetMode || suppressSuggestions) return;
     const timer = setTimeout(() => setShowDragHint(false), 7000);
     return () => clearTimeout(timer);
   }, [minimal, isWidgetMode]);
@@ -89,7 +91,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [onboarding.completed, onboarding.step, minimal, isWidgetMode, currentUserName, currentSuggestion]);
+  }, [onboarding.completed, onboarding.step, minimal, isWidgetMode, suppressSuggestions, currentUserName, currentSuggestion]);
 
   // Sync visuals with Tour Steps
   useEffect(() => {
@@ -108,7 +110,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
 
   // Sync with global suggestions (Proactive Help)
   useEffect(() => {
-    if (assistantSuggestion) {
+    if (assistantSuggestion && !suppressSuggestions) {
       setCurrentSuggestion(assistantSuggestion as Suggestion);
       if (assistantSuggestion.state) setLocalState(assistantSuggestion.state as SasitoState);
       const timer = setTimeout(() => {
@@ -117,7 +119,13 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       }, 12000);
       return () => clearTimeout(timer);
     }
-  }, [assistantSuggestion, setAssistantSuggestion]);
+  }, [assistantSuggestion, setAssistantSuggestion, suppressSuggestions]);
+
+  useEffect(() => {
+    if (!suppressSuggestions) return;
+    setIsChatOpen(false);
+    setCurrentSuggestion(null);
+  }, [suppressSuggestions]);
 
   // Sync with global system state
   useEffect(() => {
@@ -150,7 +158,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   // Sugerencias proactivas — solo cuando hay algo relevante que decir
   // Intervalo largo (90s) y baja probabilidad (15%) para no ser molesto
   useEffect(() => {
-    if (minimal) return;
+    if (minimal || suppressSuggestions) return;
     const interval = setInterval(() => {
       if (saseSuggestions.length > 0 && Math.random() > 0.85 && !isBubbleExpanded && !isChatOpen) {
         const suggestion = saseSuggestions[Math.floor(Math.random() * saseSuggestions.length)];
@@ -160,7 +168,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
       }
     }, 90000);
     return () => clearInterval(interval);
-  }, [minimal, isBubbleExpanded, isChatOpen, saseSuggestions]);
+  }, [minimal, suppressSuggestions, isBubbleExpanded, isChatOpen, saseSuggestions]);
 
   const INTENT_RULES = [
     {
@@ -354,9 +362,10 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
 
   return (
     <>
+      {!suppressAssistant && (
       <motion.div 
         ref={constraintsRef}
-        className={`fixed inset-0 pointer-events-none ${isChatOpen ? 'z-[110]' : 'z-[85]'}`}
+        className="fixed inset-0 pointer-events-none z-30"
       >
         <motion.div 
           id="sasito-assistant-anchor"
@@ -368,16 +377,16 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
           className={`absolute pointer-events-auto flex flex-col items-center gap-4 ${
             isWidgetMode 
               ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' 
-              : 'bottom-24 right-6 sm:bottom-12 sm:right-12 items-end'
+              : 'bottom-28 left-4 right-4 items-end sm:left-auto sm:bottom-12 sm:right-8'
           }`}
         >
         <AnimatePresence>
-          {isChatOpen && !minimal && !isTourActive && (
+          {isChatOpen && !minimal && !isTourActive && !suppressSuggestions && (
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.9, transformOrigin: 'bottom right' }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
-              className="w-[320px] bg-black/95 border border-white/20 backdrop-blur-3xl rounded-[2.5rem] p-6 shadow-2xl overflow-hidden ring-1 ring-white/10"
+              className="w-[min(380px,calc(100vw-32px))] max-w-[calc(100vw-32px)] bg-black/95 border border-white/20 backdrop-blur-3xl rounded-[2.5rem] p-6 shadow-2xl overflow-hidden ring-1 ring-white/10"
             >
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
@@ -428,12 +437,12 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         </AnimatePresence>
 
         <AnimatePresence>
-          {currentSuggestion && !isChatOpen && !minimal && !isTourActive && (
+          {currentSuggestion && !isChatOpen && !minimal && !isTourActive && !suppressSuggestions && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8, x: 20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 20 }}
-              className="absolute bottom-full right-0 mb-8 w-72"
+              className="absolute bottom-full right-0 mb-8 w-[min(360px,calc(100vw-32px))] max-w-[calc(100vw-32px)]"
             >
               <div className="glass-card-quantum p-6 border-violet-500/30 bg-slate-950/90 backdrop-blur-3xl shadow-2xl relative overflow-hidden group rounded-3xl ring-1 ring-white/10">
                 <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-50" />
@@ -510,14 +519,15 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
             />
           </motion.div>
 
-          {showDragHint && !minimal && !isChatOpen && !currentSuggestion && !isWidgetMode && (
+          {showDragHint && !minimal && !isChatOpen && !currentSuggestion && !isWidgetMode && !suppressSuggestions && (
             <div className="px-3 py-2 rounded-full border border-[var(--sase-border-ghost)] bg-[rgba(121,118,124,0.14)] text-[9px] font-black uppercase tracking-[0.2em] text-[var(--sase-text-muted)]">
               Arrastra para mover
             </div>
           )}
         </div>
       </motion.div>
-    </motion.div>
-  </>
-);
+      </motion.div>
+      )}
+    </>
+  );
 };

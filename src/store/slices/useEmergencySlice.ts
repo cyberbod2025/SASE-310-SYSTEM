@@ -29,6 +29,21 @@ const STAFF_ROLES = new Set([
   "admin",
 ]);
 
+const EMERGENCY_SEND_TIMEOUT_MS = 10000;
+
+async function withTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
+  let timeoutId: number | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = window.setTimeout(() => reject(new Error(message)), EMERGENCY_SEND_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId) window.clearTimeout(timeoutId);
+  }
+}
+
 function createId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return crypto.randomUUID();
@@ -62,6 +77,7 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
 
   const alertsRef = useRef<EmergencyAlert[]>([]);
   const responsesRef = useRef<Record<string, EmergencyResponse[]>>({});
+  const createAlertLockRef = useRef(false);
 
   const isStaff = STAFF_ROLES.has(normalizeRole(userProfile?.rol));
 
@@ -172,47 +188,60 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
   }, [hydrateAlert]);
 
   const createEmergencyAlert = useCallback(async (tipo: EmergencyAlert["tipo_alerta"], options: EmergencyCreateOptions = {}) => {
-    if (!user || !userProfile) return;
+    if (!user || !userProfile) throw new Error("No hay sesión institucional activa.");
+    if (createAlertLockRef.current) throw new Error("Ya hay una alerta en proceso.");
 
-    const alerta: EmergencyAlert = {
-      id: createId(),
-      tipo_alerta: tipo,
-      descripcion_opcional: options.descripcion,
-      grupo: options.grupo || userProfile.grupo_tutor || "N/A",
-      aula: options.aula || options.ubicacion || "N/A",
-      docente_id: user.id,
-      docente_nombre: userProfile.nombre_completo || user.email || "Usuario SASE",
-      estado: "activa",
-      prioridad: "alta",
-      protocolo_activado: tipo,
-      metadata: {
-        ubicacion: options.ubicacion || "Aula",
-        silent: Boolean(options.silent),
-        offline_first: true,
-      },
-      escalado_nivel: 0,
-      ultima_notificacion_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      sync_status: "pendiente_envio",
-    };
+    createAlertLockRef.current = true;
+    setEmergencyLoading(true);
 
-    await saveOfflineAlert(alerta);
-    await requestBackgroundSync();
-    hydrateAlert(alerta);
+    try {
 
-    if (!options.silent) {
-      void playEmergencySound();
-    }
+      const alerta: EmergencyAlert = {
+        id: createId(),
+        tipo_alerta: tipo,
+        descripcion_opcional: options.descripcion,
+        grupo: options.grupo || userProfile.grupo_tutor || "N/A",
+        aula: options.aula || options.ubicacion || "N/A",
+        docente_id: user.id,
+        docente_nombre: userProfile.nombre_completo || user.email || "Usuario SASE",
+        estado: "activa",
+        prioridad: "alta",
+        protocolo_activado: tipo,
+        metadata: {
+          ubicacion: options.ubicacion || "Aula",
+          silent: Boolean(options.silent),
+          offline_first: true,
+        },
+        escalado_nivel: 0,
+        ultima_notificacion_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        sync_status: "pendiente_envio",
+      };
 
-    if (typeof navigator !== "undefined" && navigator.onLine) {
-      const ok = await sendAlertToServer(alerta);
-      if (ok) {
-        toast.success("Alerta enviada. Personal responsable notificado.");
-        return;
+      await saveOfflineAlert(alerta);
+      await requestBackgroundSync();
+      hydrateAlert(alerta);
+
+      if (!options.silent) {
+        void playEmergencySound();
       }
-    }
 
-    toast("Alerta guardada. Se enviara automaticamente cuando haya conexion.", { icon: "OFF" });
+      if (typeof navigator !== "undefined" && navigator.onLine) {
+        const ok = await withTimeout(sendAlertToServer(alerta), "No se pudo enviar la alerta a tiempo.");
+        if (ok) {
+          toast.success("Alerta enviada. Personal responsable notificado.");
+          return;
+        }
+      }
+
+      toast("Alerta guardada. Se enviara automaticamente cuando haya conexion.", { icon: "OFF" });
+    } catch (error) {
+      toast.error("No se pudo enviar, intenta de nuevo.");
+      throw error;
+    } finally {
+      createAlertLockRef.current = false;
+      setEmergencyLoading(false);
+    }
   }, [hydrateAlert, sendAlertToServer, user, userProfile]);
 
   const respondToEmergency = useCallback(async (alertaId: string, respuesta: EmergencyResponse["respuesta"]) => {

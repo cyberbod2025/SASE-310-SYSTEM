@@ -25,7 +25,7 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-stretch relative overflow-hidden bg-gradient-to-br from-[#0f0c29] via-[#1a1040] to-[#24243e]">
+    <div className="min-h-screen w-full flex items-stretch relative overflow-x-hidden overflow-y-auto bg-gradient-to-br from-[#0f0c29] via-[#1a1040] to-[#24243e]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.15),transparent_50%),radial-gradient(circle_at_80%_10%,rgba(139,92,246,0.12),transparent_40%),radial-gradient(circle_at_50%_90%,rgba(6,182,212,0.08),transparent_50%)] pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,rgba(15,12,41,0.4)_100%)] pointer-events-none" />
 
