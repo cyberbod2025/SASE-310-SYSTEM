@@ -9,6 +9,8 @@ import { ProtocolDetailModal } from "./Protocols/ProtocolDetailModal";
 import { toast } from "react-hot-toast";
 import { NeoButton } from "./ui/NeoButton";
 
+const STUDENT_DROPDOWN_LIMIT = 50;
+
 export const QuickRegisterModal: React.FC = () => {
   const {
     quickRegisterOpen,
@@ -138,6 +140,7 @@ export const QuickRegisterModal: React.FC = () => {
     }
     return selectedGrupo ? true : false;
   });
+  const visibleFilteredStudents = filteredStudents.slice(0, STUDENT_DROPDOWN_LIMIT);
 
   const handleRegister = async () => {
     if (!selectedStudentId && !studentNotFound) {
@@ -221,7 +224,7 @@ export const QuickRegisterModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fade-in">
       <div className="bg-[#0B1120]/90 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden animate-scale-up">
         {/* Header */}
         <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 sticky top-0 z-10">
@@ -303,7 +306,7 @@ export const QuickRegisterModal: React.FC = () => {
                       />
                       {showDropdown && filteredStudents.length > 0 && (
                         <div className="absolute top-full left-0 right-0 mt-2 bg-[#0B1120] border border-white/10 rounded-2xl shadow-xl z-20 max-h-48 overflow-y-auto">
-                          {filteredStudents.map(s => (
+                          {visibleFilteredStudents.map(s => (
                             <button
                               key={s.id}
                               onClick={() => {
@@ -321,6 +324,11 @@ export const QuickRegisterModal: React.FC = () => {
                               </div>
                             </button>
                           ))}
+                          {filteredStudents.length > STUDENT_DROPDOWN_LIMIT && (
+                            <div className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                              Mostrando primeros {STUDENT_DROPDOWN_LIMIT}; escribe más para filtrar.
+                            </div>
+                          )}
                         </div>
                       )}
                     </>

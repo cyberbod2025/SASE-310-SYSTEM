@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../supabase/client";
 import { UserRole } from "../types";
@@ -24,10 +24,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [role, setRole] = useState<UserRole | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const sessionUserIdRef = useRef<string | null>(null);
 
   // 1. Initial Session Check
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      sessionUserIdRef.current = session?.user?.id ?? null;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -41,11 +43,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      const nextUserId = session?.user?.id ?? null;
+      const userChanged = sessionUserIdRef.current !== nextUserId;
+      sessionUserIdRef.current = nextUserId;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        setLoading(true);
-        fetchProfile(session.user.id);
+        if (userChanged) setLoading(true);
+        void fetchProfile(session.user.id);
       } else {
         setRole(null);
         setProfile(null);
