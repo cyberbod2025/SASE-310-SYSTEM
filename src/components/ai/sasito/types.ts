@@ -20,13 +20,28 @@ export type SasitoExecutionType =
   | "suggest_only"
   | "deny";
 
+export type SasitoDecision =
+  | "allow"
+  | "deny"
+  | "suggest_only"
+  | "needs_context";
+
+export type SasitoContextRequirement =
+  | "student"
+  | "case"
+  | "group"
+  | "notifications";
+
 export interface SasitoEntities {
   studentId?: string;
   studentName?: string;
   group?: string;
   caseId?: string;
+  caseStatus?: string;
   moduleKeyword?: string;
+  moduleTarget?: AppModule;
   rawMatches?: string[];
+  source?: "selected_context" | "explicit_text";
 }
 
 export interface SasitoIntentResult {
@@ -74,4 +89,21 @@ export interface SasitoActionDefinition {
   executionType: SasitoExecutionType;
   safetyMessage: string;
   requiresConfirmation?: boolean;
+  requiresContext?: SasitoContextRequirement[];
+  missingContextMessage?: string;
+}
+
+export interface SasitoActionResolution extends SasitoActionDefinition {
+  decision: SasitoDecision;
+  denialReason?: "role" | "permission" | "unknown";
+  missingContext?: SasitoContextRequirement[];
+  effectiveMessage: string;
+}
+
+export interface SasitoPlan {
+  intent: SasitoIntentResult;
+  action: SasitoActionResolution;
+  decision: SasitoDecision;
+  safeMode: true;
+  didExecuteAction: false;
 }
