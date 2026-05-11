@@ -4,10 +4,11 @@ import { PERMISOS_POR_ROL, type PermisosSASE } from "../../../utils/permisos";
 import type { SystemState } from "../../../types/systemState";
 import type { SasitoRuntimeContext, SasitoSelectedCase, SasitoSelectedStudent } from "./types";
 
-interface SasitoContextSource {
+export interface SasitoContextSource {
   currentUserRole?: UserRole;
   currentUserProfile?: unknown | null;
   currentModule?: AppModule;
+  currentRoute?: string;
   currentRouteHash?: string;
   selectedStudent?: SasitoSelectedStudent | null;
   selectedGroup?: string | null;
@@ -23,8 +24,9 @@ const resolvePermissions = (role: UserRole, permissions?: PermisosSASE): Permiso
   return PERMISOS_POR_ROL[role] || PERMISOS_POR_ROL.guest;
 };
 
-const getCurrentRouteHash = (provided?: string) => {
-  if (provided) return provided;
+const getCurrentRouteHash = (providedHash?: string, providedRoute?: string) => {
+  if (providedHash) return providedHash;
+  if (providedRoute) return providedRoute;
   if (typeof window === "undefined") return "";
   return window.location.hash || "";
 };
@@ -36,7 +38,7 @@ export function buildSasitoContext(source: SasitoContextSource): SasitoRuntimeCo
     currentUserRole: role,
     currentUserProfile: source.currentUserProfile ?? null,
     currentModule: source.currentModule || AppModule.HOME,
-    currentRouteHash: getCurrentRouteHash(source.currentRouteHash),
+    currentRouteHash: getCurrentRouteHash(source.currentRouteHash, source.currentRoute),
     selectedStudent: source.selectedStudent ?? null,
     selectedGroup: source.selectedGroup ?? null,
     selectedCase: source.selectedCase ?? null,
