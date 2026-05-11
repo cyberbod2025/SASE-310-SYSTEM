@@ -1,6 +1,13 @@
 import { AppModule, UserRole } from "../../../types";
 import { tienePermiso } from "../../../utils/permisos";
-import type { SasitoActionDefinition, SasitoIntent, SasitoIntentResult, SasitoRuntimeContext } from "./types";
+import type {
+  SasitoActionDefinition,
+  SasitoActionResolution,
+  SasitoContextRequirement,
+  SasitoIntent,
+  SasitoIntentResult,
+  SasitoRuntimeContext,
+} from "./types";
 
 const STAFF_ROLES = [
   UserRole.DIRECTIVO,
@@ -37,6 +44,8 @@ const ACTION_CATALOG: Record<SasitoIntent, SasitoActionDefinition> = {
     allowedRoles: STAFF_ROLES,
     executionType: "show_card",
     safetyMessage: "Tu rol no tiene autorizado buscar alumnos desde Sasito.",
+    requiresContext: ["student"],
+    missingContextMessage: "Indica el nombre o matricula del alumno para buscarlo sin inventar coincidencias.",
   },
   open_student_record: {
     id: "open_student_record",
@@ -47,16 +56,20 @@ const ACTION_CATALOG: Record<SasitoIntent, SasitoActionDefinition> = {
     moduleTarget: AppModule.EXPEDIENTES,
     executionType: "navigate",
     safetyMessage: "Tu rol no tiene autorizado abrir expedientes desde Sasito.",
+    requiresContext: ["student"],
+    missingContextMessage: "Selecciona o menciona un alumno antes de abrir su expediente.",
   },
   open_health_module: {
     id: "open_health_module",
     intent: "open_health_module",
     label: "Abrir modulo de salud",
     requiredPermission: "can_view_sensitive",
-    allowedRoles: [UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.ORIENTACION, UserRole.TRABAJO_SOCIAL, UserRole.MEDICO_ESCOLAR, UserRole.UDEII, UserRole.DEVELOPER, UserRole.SYSTEM_ADMIN],
+    allowedRoles: STAFF_ROLES,
     moduleTarget: AppModule.SALUD,
     executionType: "navigate",
     safetyMessage: "Tu rol no tiene autorizado consultar Salud desde Sasito.",
+    requiresContext: ["student"],
+    missingContextMessage: "Selecciona o menciona un alumno antes de consultar datos de salud.",
   },
   open_orientation_cases: {
     id: "open_orientation_cases",
@@ -95,7 +108,9 @@ const ACTION_CATALOG: Record<SasitoIntent, SasitoActionDefinition> = {
     requiredPermission: null,
     allowedRoles: STAFF_ROLES,
     executionType: "suggest_only",
-    safetyMessage: "Selecciona primero un caso o alumno para recibir una recomendacion institucional segura.",
+    safetyMessage: "Puedo explicar el siguiente paso del caso seleccionado sin ejecutar cambios automaticos.",
+    requiresContext: ["case"],
+    missingContextMessage: "Selecciona un caso institucional antes de pedir el siguiente paso.",
   },
   unknown: {
     id: "unknown",
@@ -108,11 +123,42 @@ const ACTION_CATALOG: Record<SasitoIntent, SasitoActionDefinition> = {
   },
 };
 
-const denyAction = (action: SasitoActionDefinition): SasitoActionDefinition => ({
+const hasRequiredContext = (
+  requirement: SasitoContextRequirement,
+  intentResult: SasitoIntentResult,
+  context: SasitoRuntimeContext,
+) => {
+  switch (requirement) {
+    case "student":
+      return Boolean(intentResult.entities.studentId || context.selectedStudent?.id);
+    case "case":
+      return Boolean(intentResult.entities.caseId || context.selectedCase?.id);
+    case "group":
+      return Boolean(intentResult.entities.group || context.selectedGroup);
+    case "notifications":
+      return Array.isArray(context.notifications);
+    default:
+      return false;
+  }
+};
+
+const resolveMissingContext = (
+  action: SasitoActionDefinition,
+  intentResult: SasitoIntentResult,
+  context: SasitoRuntimeContext,
+): SasitoContextRequirement[] => {
+  if (!action.requiresContext) return [];
+  return action.requiresContext.filter((requirement) => !hasRequiredContext(requirement, intentResult, context));
+};
+
+const toResolution = (
+  action: SasitoActionDefinition,
+  overrides: Partial<SasitoActionResolution>,
+): SasitoActionResolution => ({
   ...action,
-  moduleTarget: undefined,
-  executionType: "deny",
-  requiresConfirmation: false,
+  decision: "allow",
+  effectiveMessage: action.safetyMessage,
+  ...overrides,
 });
 
 export function getSasitoActionDefinition(intent: SasitoIntent): SasitoActionDefinition {
@@ -122,26 +168,63 @@ export function getSasitoActionDefinition(intent: SasitoIntent): SasitoActionDef
 export function resolveSasitoAction(
   intentResult: SasitoIntentResult,
   context: SasitoRuntimeContext,
-): SasitoActionDefinition {
+): SasitoActionResolution {
   const action = getSasitoActionDefinition(intentResult.intent);
 
-  if (action.executionType === "deny") return action;
+  if (action.executionType === "deny" || intentResult.intent === "unknown") {
+    return toResolution(action, {
+      decision: "deny",
+      executionType: "deny",
+      moduleTarget: undefined,
+      denialReason: "unknown",
+      requiresConfirmation: false,
+      effectiveMessage: action.safetyMessage,
+    });
+  }
 
   if (!action.allowedRoles.includes(context.currentUserRole)) {
-    return denyAction(action);
+    return toResolution(action, {
+      decision: "deny",
+      moduleTarget: undefined,
+      executionType: "deny",
+      denialReason: "role",
+      requiresConfirmation: false,
+      effectiveMessage: action.safetyMessage,
+    });
   }
 
   if (action.requiredPermission && !tienePermiso(context.permissions, action.requiredPermission)) {
-    return denyAction(action);
+    return toResolution(action, {
+      decision: "deny",
+      moduleTarget: undefined,
+      executionType: "deny",
+      denialReason: "permission",
+      requiresConfirmation: false,
+      effectiveMessage: action.safetyMessage,
+    });
   }
 
-  if (action.intent === "explain_next_step" && !context.selectedCase) {
-    return {
-      ...action,
+  const missingContext = resolveMissingContext(action, intentResult, context);
+  if (missingContext.length > 0) {
+    return toResolution(action, {
+      decision: "needs_context",
       executionType: "suggest_only",
-      safetyMessage: "Selecciona un caso institucional antes de pedir el siguiente paso.",
-    };
+      moduleTarget: undefined,
+      missingContext,
+      requiresConfirmation: false,
+      effectiveMessage: action.missingContextMessage || action.safetyMessage,
+    });
   }
 
-  return action;
+  if (action.executionType === "suggest_only") {
+    return toResolution(action, {
+      decision: "suggest_only",
+      effectiveMessage: action.safetyMessage,
+    });
+  }
+
+  return toResolution(action, {
+    decision: "allow",
+    effectiveMessage: `Accion permitida: ${action.label}.`,
+  });
 }
