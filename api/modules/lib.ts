@@ -151,12 +151,15 @@ function resolveModuleBaseUrl(moduleKey: ModuleKey, dbBaseUrl: string, req: Verc
 
 function buildLaunchUrl(baseUrl: string, token: string): string {
   const hashIndex = baseUrl.indexOf("#");
-  const prefix = hashIndex >= 0 ? baseUrl.slice(0, hashIndex) : baseUrl;
-  const hash = hashIndex >= 0 ? baseUrl.slice(hashIndex) : "";
-  const url = new URL(prefix);
-
+  if (hashIndex >= 0) {
+    const prefix = baseUrl.slice(0, hashIndex);
+    const hash = baseUrl.slice(hashIndex);
+    const separator = hash.includes("?") ? "&" : "?";
+    return `${prefix}${hash}${separator}sase_token=${encodeURIComponent(token)}`;
+  }
+  const url = new URL(baseUrl);
   url.searchParams.set("sase_token", token);
-  return `${url.toString()}${hash}`;
+  return url.toString();
 }
 
 function mapTokenRole(institutionalRole: string, moduleKey: ModuleKey): string {

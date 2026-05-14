@@ -165,7 +165,17 @@ vi.mock("@supabase/supabase-js", () => ({
 
 function decodePayloadFromUrl(urlString: string) {
   const url = new URL(urlString);
-  const token = url.searchParams.get("sase_token");
+
+  // Token may be in hash fragment (HashRouter) or before hash
+  let token = url.searchParams.get("sase_token");
+  if (!token) {
+    const hashIndex = urlString.indexOf("#");
+    if (hashIndex >= 0) {
+      const hash = urlString.slice(hashIndex);
+      const hashParams = new URLSearchParams(hash.includes("?") ? hash.split("?")[1] : "");
+      token = hashParams.get("sase_token");
+    }
+  }
   expect(token).toBeTruthy();
 
   const [payloadBase64Url, signature] = token!.split(".");
@@ -211,7 +221,7 @@ describe("Launcher de modulos externos", () => {
 
     const { url, payload, signature } = decodePayloadFromUrl(res.body.url);
     expect(url.origin + url.pathname).toBe("https://feria.example.com/");
-    expect(url.hash).toBe("#/docente");
+    expect(url.hash).toMatch(/^#\/docente\?sase_token=/);
     expect(payload.sub).toBe("teacher-1");
     expect(payload.uid).toBe("teacher-1");
     expect(payload.email).toBe(process.env.TEST_DOCENTE_EMAIL || "pilot.docente@sase.mx");
@@ -258,7 +268,7 @@ describe("Launcher de modulos externos", () => {
     expect(res.statusCode).toBe(200);
     const { payload, url } = decodePayloadFromUrl(res.body.url);
     expect(payload.module).toBe("feria");
-    expect(url.hash).toBe("#/docente");
+    expect(url.hash).toMatch(/^#\/docente\?sase_token=/);
   });
 
   it("resuelve diagnostico desde base_url relativo del catalogo", async () => {
