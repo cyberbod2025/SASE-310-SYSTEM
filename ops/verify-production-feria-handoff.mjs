@@ -12,8 +12,8 @@ const anonKey = env.VITE_SUPABASE_ANON_KEY;
 const serviceUrl = env.SUPABASE_URL;
 const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
 const saseBaseUrl = process.env.SASE_BASE_URL || "https://sase-310-system-ten.vercel.app";
-const feriaApiUrl = process.env.FERIA_API_URL || "https://nueva-feria-de-ciencias-2026.vercel.app/api/session/teacher/sase";
-const feriaLaunchBase = env.FERIA_APP_URL || "";
+const feriaApiUrl = process.env.FERIA_API_URL || "https://feria-alternativa.vercel.app/api/auth/sase-handoff";
+const feriaLaunchBase = env.FERIA_APP_URL || "https://feria-alternativa.vercel.app/#/auth/handoff";
 const email = process.env.SASE_PILOT_EMAIL;
 const password = process.env.SASE_PILOT_PASSWORD;
 
@@ -73,8 +73,20 @@ let handoffTarget = null;
 
 if (launchResponse.ok && launchBody?.url) {
   handoffTarget = launchBody.url;
-  const url = new URL(launchBody.url);
-  const token = url.searchParams.get("sase_token");
+
+  // Extract sase_token from hash-based URL (/auth/handoff?sase_token=<TOKEN>)
+  let token = null;
+  const hashIndex = launchBody.url.indexOf("#");
+  if (hashIndex >= 0) {
+    const hash = launchBody.url.slice(hashIndex);
+    const hashParams = new URLSearchParams(hash.includes("?") ? hash.split("?")[1] : "");
+    token = hashParams.get("sase_token");
+  }
+  if (!token) {
+    const url = new URL(launchBody.url);
+    token = url.searchParams.get("sase_token");
+  }
+
   const feriaResponse = await fetch(feriaApiUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
