@@ -6,3 +6,8 @@ export * from "./GlassTextarea";
 export * from "./GlassEffectContainer";
 export * from "./LiquidGlassFilters";
 export * from "./FormField";
+export * from "./LuminousPanel";
+export * from "./LuminousTable";
+export * from "./StatusChip";
+export * from "./LuminousSearchBar";
+export * from "./LuminousActionButton";
