@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { supabase } from "../../supabase/client";
 import { printContent } from "../../components/PrintButtons";
-import DOMPurify from "dompurify";
+import { sanitizeHtml } from "../../utils/security";
+import { SaseSplineOrb } from "../../components/SaseSplineOrb";
 
 import type {
   DatosAlumnoExpediente,
@@ -43,24 +44,11 @@ export function ExpedienteInstitucional({
   const [documentoSeleccionado, setDocumentoSeleccionado] = useState<DocumentoExpediente | null>(null);
   const [editandoDocumento, setEditandoDocumento] = useState(false);
   const [contenidoTemp, setContenidoTemp] = useState("");
-  const [historialMedicoVisible, setHistorialMedicoVisible] = useState(false);
-  const [historialAcademicoVisible, setHistorialAcademicoVisible] = useState(false);
-  const [modalAcceso, setModalAcceso] = useState<"medico" | "academico" | null>(null);
-  const [claveAcceso, setClaveAcceso] = useState("");
-  const [validandoAcceso, setValidandoAcceso] = useState(false);
-  const [correoUsuario, setCorreoUsuario] = useState<string | null>(null);
 
   useEffect(() => {
     cargarDatosExpediente();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [alumno.id]);
-
-  useEffect(() => {
-    const cargarUsuario = async () => {
-      const { data } = await supabase.auth.getUser();
-      setCorreoUsuario(data.user?.email || null);
-    };
-    cargarUsuario();
-  }, []);
 
   const cargarDatosExpediente = async () => {
     try {
@@ -124,12 +112,11 @@ export function ExpedienteInstitucional({
         };
 
       const htmlContent = generarHTMLExpediente(expedienteData);
-      const sanitizedHtml = DOMPurify.sanitize(htmlContent);
 
       // Usar printContent que ya existe en la plataforma (usa iframe y window.print)
-      printContent("Expediente_Institucional", sanitizedHtml);
+      printContent("Expediente_Institucional", htmlContent);
 
-      // Registrar en auditoría
+      // Registrar seguimiento institucional
       await (supabase as any).from("auditoria_accesos").insert({
         usuario: "SASE-310 User",
         rol: "docente",
@@ -171,270 +158,35 @@ export function ExpedienteInstitucional({
 
       toast.success("Documento actualizado correctamente");
       setEditandoDocumento(false);
-      
+
       // Actualizar estado local
-      setDocumentos(prev => 
+      setDocumentos(prev =>
         prev.map(d => d.id === documentoSeleccionado.id ? { ...d, contenido: contenidoTemp } : d)
       );
       setDocumentoSeleccionado(prev => prev ? { ...prev, contenido: contenidoTemp } : null);
-      
+
     } catch (err) {
       console.error(err);
       toast.error("Error al actualizar el documento");
     }
   };
 
-  const calcularEdad = (fecha?: string) => {
-    if (!fecha) return undefined;
-    const nacimiento = new Date(fecha);
-    if (Number.isNaN(nacimiento.getTime())) return undefined;
-    const hoy = new Date();
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    const mes = hoy.getMonth() - nacimiento.getMonth();
-    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
-      edad -= 1;
-    }
-    return edad;
-  };
-
-  const edadAlumno = alumno.edad ?? calcularEdad(alumno.fecha_nacimiento);
-
-  const resumenAsistencia = React.useMemo(() => {
-    return incidencias.reduce(
-      (acc, inc) => {
-        const tipo = (inc.tipo || "").toLowerCase();
-        if (tipo.includes("asistencia") || tipo.includes("falta")) acc.faltas += 1;
-        if (tipo.includes("retardo")) acc.retardos += 1;
-        return acc;
-      },
-      { faltas: 0, retardos: 0 },
-    );
-  }, [incidencias]);
-
-  const incidenciasConducta = React.useMemo(() => {
-    return incidencias.filter((inc) => {
-      const tipo = (inc.tipo || "").toLowerCase();
-      return tipo.includes("conducta") || tipo.includes("disciplina");
-    });
-  }, [incidencias]);
-
-  const promedioGeneral = React.useMemo(() => {
-    if (!alumno.calificaciones || alumno.calificaciones.length === 0) return "N/D";
-    const suma = alumno.calificaciones.reduce((acc: number, cal: any) => {
-      const promedio =
-        cal.promedioFinal ??
-        (Number(cal.trimestre1 || 0) + Number(cal.trimestre2 || 0) + Number(cal.trimestre3 || 0)) / 3;
-      return acc + (Number.isFinite(promedio) ? promedio : 0);
-    }, 0);
-    return (suma / alumno.calificaciones.length).toFixed(1);
-  }, [alumno.calificaciones]);
-
-  const plan90 = React.useMemo(() => {
-    const candidateDates = [
-      ...incidencias.map((inc) => inc.fecha),
-      ...documentos.map((doc) => doc.fecha),
-    ]
-      .map((value) => new Date(value))
-      .filter((date) => !Number.isNaN(date.getTime()))
-      .sort((a, b) => a.getTime() - b.getTime());
-
-    if (candidateDates.length === 0) {
-      return {
-        currentPhase: "Sin fase activa",
-        description: "Aún no hay suficiente historial para ubicar el acompañamiento dentro del esquema 30/60/90 días.",
-        daysElapsed: 0,
-      };
-    }
-
-    const firstDate = candidateDates[0];
-    const now = new Date();
-    const daysElapsed = Math.max(1, Math.floor((now.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1);
-
-    if (daysElapsed <= 30) {
-      return {
-        currentPhase: "Fase 1 · 30 días",
-        description: "Contención inicial: identificación del caso, primeros acuerdos y activación de responsables.",
-        daysElapsed,
-      };
-    }
-
-    if (daysElapsed <= 60) {
-      return {
-        currentPhase: "Fase 2 · 60 días",
-        description: "Seguimiento institucional: monitoreo, ajustes y revisión de evidencias de avance.",
-        daysElapsed,
-      };
-    }
-
-    if (daysElapsed <= 90) {
-      return {
-        currentPhase: "Fase 3 · 90 días",
-        description: "Cierre o redefinición: evaluación de resultados, cierre formal o rediseño del plan de apoyo.",
-        daysElapsed,
-      };
-    }
-
-    return {
-      currentPhase: "Seguimiento extendido",
-      description: "El caso superó los 90 días. Requiere revisión directiva para redefinir continuidad, cierre o nueva ruta de intervención.",
-      daysElapsed,
-    };
-  }, [documentos, incidencias]);
-
-  const obtenerCorreoUsuario = async () => {
-    if (correoUsuario) return correoUsuario;
-    const { data } = await supabase.auth.getUser();
-    const correo = data.user?.email || null;
-    setCorreoUsuario(correo);
-    return correo;
-  };
-
-  const registrarAccesoSensibles = async (accion: string) => {
-    const correo = await obtenerCorreoUsuario();
-    await (supabase as any).from("auditoria_accesos").insert({
-      usuario: correo || "usuario_desconocido",
-      rol: "operador",
-      accion,
-      alumno_id: alumno.id,
-      pantalla: "ExpedienteInstitucional",
-      fecha: new Date().toISOString().split("T")[0],
-      hora: new Date().toLocaleTimeString("es-MX", { hour12: false }),
-    });
-  };
-
-  const confirmarAcceso = async () => {
-    if (!modalAcceso) return;
-    if (!claveAcceso.trim()) {
-      toast.error("Ingrese su contraseña");
-      return;
-    }
-    setValidandoAcceso(true);
-    const correo = await obtenerCorreoUsuario();
-    if (!correo) {
-      toast.error("No se pudo validar la sesión actual");
-      setValidandoAcceso(false);
-      return;
-    }
-    const { error } = await supabase.auth.signInWithPassword({
-      email: correo,
-      password: claveAcceso,
-    });
-    if (error) {
-      toast.error("Contraseña incorrecta");
-      setValidandoAcceso(false);
-      return;
-    }
-    if (modalAcceso === "medico") {
-      setHistorialMedicoVisible(true);
-      await registrarAccesoSensibles("consultar_historial_medico");
-    } else {
-      setHistorialAcademicoVisible(true);
-      await registrarAccesoSensibles("consultar_historial_academico");
-    }
-    toast.success("Acceso autorizado");
-    setClaveAcceso("");
-    setModalAcceso(null);
-    setValidandoAcceso(false);
-  };
-
-  const imprimirHistorialAcademico = () => {
-    const calificaciones = alumno.calificaciones || [];
-    const filasCalificaciones = calificaciones
-      .map(
-        (cal: any) => `
-          <tr>
-            <td style="padding: 8px; border: 1px solid #e2e8f0;">${cal.materia || "Materia"}</td>
-            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.trimestre1 ?? "-"}</td>
-            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.trimestre2 ?? "-"}</td>
-            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.trimestre3 ?? "-"}</td>
-            <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${cal.promedioFinal ?? "-"}</td>
-          </tr>
-        `,
-      )
-      .join("");
-
-    const html = DOMPurify.sanitize(`
-      <div style="font-family: Arial, sans-serif; color: #1e293b;">
-        <h2 style="margin-bottom: 8px;">Historial Académico</h2>
-        <p style="margin-top: 0; color: #475569;">Alumno: ${alumno.nombre} — Grupo ${alumno.grupo}</p>
-        <h3 style="margin-top: 20px;">Asistencia</h3>
-        <p>Faltas registradas: ${resumenAsistencia.faltas}</p>
-        <p>Retardos registrados: ${resumenAsistencia.retardos}</p>
-        <h3 style="margin-top: 20px;">Calificaciones</h3>
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr style="background: #f1f5f9;">
-              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Materia</th>
-              <th style="padding: 8px; border: 1px solid #e2e8f0;">T1</th>
-              <th style="padding: 8px; border: 1px solid #e2e8f0;">T2</th>
-              <th style="padding: 8px; border: 1px solid #e2e8f0;">T3</th>
-              <th style="padding: 8px; border: 1px solid #e2e8f0;">Final</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filasCalificaciones || "<tr><td colspan='5' style='padding: 8px; text-align: center; color: #64748b;'>Sin calificaciones registradas</td></tr>"}
-          </tbody>
-        </table>
-        <p style="margin-top: 16px;">Promedio general: ${promedioGeneral}</p>
-      </div>
-    `);
-
-    printContent("Historial_Academico", html);
-  };
-
-  const imprimirHistorialConducta = () => {
-    const filas = incidencias
-      .map(
-        (inc) => `
-          <tr>
-            <td style="padding: 8px; border: 1px solid #e2e8f0;">${new Date(inc.fecha).toLocaleDateString("es-MX")}</td>
-            <td style="padding: 8px; border: 1px solid #e2e8f0;">${inc.tipo}</td>
-            <td style="padding: 8px; border: 1px solid #e2e8f0;">${inc.estado}</td>
-            <td style="padding: 8px; border: 1px solid #e2e8f0; color: #475569;">${inc.descripcion}</td>
-          </tr>
-        `,
-      )
-      .join("");
-
-    const html = DOMPurify.sanitize(`
-      <div style="font-family: Arial, sans-serif; color: #1e293b;">
-        <h2 style="margin-bottom: 8px;">Historial de Conducta</h2>
-        <p style="margin-top: 0; color: #475569;">Alumno: ${alumno.nombre} — Grupo ${alumno.grupo}</p>
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr style="background: #f1f5f9;">
-              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Fecha</th>
-              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Tipo</th>
-              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Estado</th>
-              <th style="padding: 8px; border: 1px solid #e2e8f0; text-align: left;">Descripcion</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${filas || "<tr><td colspan='4' style='padding: 8px; text-align: center; color: #64748b;'>Sin incidencias registradas</td></tr>"}
-          </tbody>
-        </table>
-      </div>
-    `);
-
-    printContent("Historial_Conducta", html);
-  };
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center px-4 pt-28 pb-10 bg-slate-900/80 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="bg-[#0B1120]/90 rounded-2xl w-full max-w-5xl flex flex-col shadow-2xl overflow-hidden border border-white/10 backdrop-blur-3xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white rounded-2xl w-full max-w-5xl h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-200">
         {/* ENCABEZADO */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5 shrink-0">
+        <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="size-12 bg-indigo-500/10 border border-indigo-400/20 rounded-xl flex items-center justify-center">
-              <span className="material-icons text-indigo-300 text-2xl">
+            <div className="size-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+              <span className="material-symbols-outlined text-indigo-600 text-2xl">
                 folder_shared
               </span>
             </div>
             <div>
-              <h2 className="text-lg font-black text-white uppercase tracking-tight">
+              <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight">
                 Expediente Institucional
               </h2>
-              <p className="text-xs text-slate-300 font-medium">
+              <p className="text-xs text-slate-500 font-medium">
                 {alumno.nombre} — Grupo {alumno.grupo}
               </p>
             </div>
@@ -445,7 +197,7 @@ export function ExpedienteInstitucional({
               disabled={cargando || generandoPDF}
               className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-blue-600/20"
             >
-              <span className="material-icons text-sm">
+              <span className="material-symbols-outlined text-sm">
                 picture_as_pdf
               </span>
               {generandoPDF
@@ -454,9 +206,9 @@ export function ExpedienteInstitucional({
             </button>
             <button
               onClick={onClose}
-              className="p-2.5 hover:bg-slate-200 rounded-xl transition-colors text-slate-600 hover:text-slate-600"
+              className="p-2.5 hover:bg-slate-200 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
             >
-              <span className="material-icons">close</span>
+              <span className="material-symbols-outlined">close</span>
             </button>
           </div>
         </div>
@@ -465,19 +217,17 @@ export function ExpedienteInstitucional({
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
           {cargando ? (
             <div className="flex-1 flex flex-col items-center justify-center p-12">
-              <span className="material-icons text-indigo-500 animate-spin text-4xl mb-4">
-                progress_activity
-              </span>
-              <p className="text-sm font-black text-slate-600 uppercase tracking-widest">
-                Recopilando historial institucional...
+              <SaseSplineOrb state="thinking" className="size-32 md:size-48 mb-6" />
+              <p className="text-xs font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">
+                RECOPILANDO_HISTORIAL_INSTITUCIONAL
               </p>
             </div>
           ) : (
             <>
               {/* LÍNEA DE TIEMPO (Izquierda) */}
-               <div className="w-full md:w-[40%] lg:w-1/3 border-r border-white/10 bg-white/5 p-6 overflow-y-auto custom-scrollbar">
-                 <h3 className="text-xs font-black text-slate-300 uppercase tracking-widest mb-6 flex items-center gap-2">
-                  <span className="material-icons text-sm">
+              <div className="w-full md:w-[40%] lg:w-1/3 border-r border-slate-100 bg-slate-50/50 p-6 overflow-y-auto custom-scrollbar">
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm">
                     history
                   </span>
                   Línea de Tiempo del Caso
@@ -485,10 +235,10 @@ export function ExpedienteInstitucional({
 
                 {lineaTiempo.length === 0 ? (
                   <div className="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl">
-                    <span className="material-icons text-slate-300 text-3xl mb-2">
+                    <span className="material-symbols-outlined text-slate-300 text-3xl mb-2">
                       history_toggle_off
                     </span>
-                    <p className="text-xs text-slate-600 font-medium tracking-wide">
+                    <p className="text-xs text-slate-400 font-medium tracking-wide">
                       No hay historial registrado.
                     </p>
                   </div>
@@ -502,21 +252,21 @@ export function ExpedienteInstitucional({
                         <div
                           className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-${evento.color}-50 text-${evento.color}-600 shadow-sm shrink-0 z-10`}
                         >
-                          <span className="material-icons text-[16px]">
+                          <span className="material-symbols-outlined text-[16px]">
                             {evento.icon}
                           </span>
                         </div>
-                        <div 
+                        <div
                           onClick={() => evento.tipo === "documento" && handleVerDocumento(evento)}
-                         className={`w-[calc(100%-3.5rem)] bg-white/5 p-4 rounded-xl border border-white/10 shadow-sm transition-all ${evento.tipo === "documento" ? "cursor-pointer hover:border-indigo-400/30 hover:shadow-xl hover:bg-indigo-500/10" : "hover:shadow-xl"}`}
+                          className={`w-[calc(100%-3.5rem)] bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-all ${evento.tipo === "documento" ? "cursor-pointer hover:border-indigo-300 hover:shadow-md hover:bg-indigo-50/10" : "hover:shadow-md"}`}
                         >
                           <div className="flex items-center justify-between mb-1">
-                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                               {evento.fecha}
                             </span>
                             <div className="flex items-center gap-2">
                               {evento.tipo === "documento" && (
-                                <span className="material-icons text-[12px] text-indigo-400">
+                                <span className="material-symbols-outlined text-[12px] text-indigo-400">
                                   visibility
                                 </span>
                               )}
@@ -527,10 +277,10 @@ export function ExpedienteInstitucional({
                               </span>
                             </div>
                           </div>
-                          <h4 className={`text-xs font-bold mb-1 ${evento.tipo === "documento" ? "text-indigo-200" : "text-slate-100"}`}>
+                          <h4 className={`text-xs font-bold mb-1 ${evento.tipo === "documento" ? "text-indigo-700" : "text-slate-700"}`}>
                             {evento.titulo}
                           </h4>
-                          <p className="text-[10px] text-slate-300 leading-relaxed font-medium">
+                          <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
                             {evento.descripcion}
                           </p>
                         </div>
@@ -541,108 +291,63 @@ export function ExpedienteInstitucional({
               </div>
 
               {/* ANÁLISIS E INFORMACIÓN (Derecha) */}
-               <div className="flex-1 p-6 md:p-8 overflow-y-auto custom-scrollbar bg-transparent flex flex-col gap-6">
+              <div className="flex-1 p-6 md:p-8 overflow-y-auto custom-scrollbar bg-white flex flex-col gap-6">
                 {/* Resumen Estadístico */}
                 <div className="grid grid-cols-2 gap-4 shrink-0">
-                  <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex items-center gap-4">
+                  <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex items-center gap-4">
                     <div className="size-12 bg-rose-100 rounded-xl flex items-center justify-center shrink-0">
-                      <span className="material-icons text-rose-600 text-2xl">
+                      <span className="material-symbols-outlined text-rose-600 text-2xl">
                         report
                       </span>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         Incidencias
                       </p>
-                      <p className="text-2xl font-black text-white">
+                      <p className="text-2xl font-black text-slate-800">
                         {incidencias.length}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex items-center gap-4">
+                  <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl flex items-center gap-4">
                     <div className="size-12 bg-indigo-100 rounded-xl flex items-center justify-center shrink-0">
-                      <span className="material-icons text-indigo-600 text-2xl">
+                      <span className="material-symbols-outlined text-indigo-600 text-2xl">
                         description
                       </span>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         Documentos
                       </p>
-                      <p className="text-2xl font-black text-white">
+                      <p className="text-2xl font-black text-slate-800">
                         {documentos.length}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 shrink-0">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">
-                        Protocolo de Acompañamiento Institucional
-                      </p>
-                      <h3 className="text-xl font-black text-white uppercase tracking-tight">
-                        Plan de Seguimiento 30/60/90 Días
-                      </h3>
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="px-2 py-0.5 rounded bg-indigo-500/20 border border-indigo-400/30">
-                          <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-tight">Fase Actual:</span>
-                        </div>
-                        <p className="text-sm font-black text-white uppercase tracking-tight">
-                          {plan90.currentPhase}
-                        </p>
-                      </div>
-                      <p className="text-[11px] text-slate-300 leading-relaxed mt-2 max-w-2xl">
-                        {plan90.description}
-                      </p>
-                    </div>
-                    <div className="px-4 py-3 rounded-2xl bg-white/5 border border-white/10 min-w-[110px] text-center">
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Días transcurridos</p>
-                      <p className="text-2xl font-black text-white tabular-nums mt-1">{plan90.daysElapsed}</p>
-                    </div>
-                  </div>
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-                    <div className={`rounded-xl p-3 border transition-all duration-500 ${plan90.daysElapsed <= 30 ? 'bg-indigo-500/10 border-indigo-400/40 shadow-[0_0_15px_rgba(129,106,184,0.1)]' : 'bg-white/5 border-white/10 opacity-50'}`}>
-                      <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${plan90.daysElapsed <= 30 ? 'text-indigo-300' : 'text-slate-400'}`}>30 días</p>
-                      <p className="text-[10px] text-slate-300">Diagnóstico inicial, responsables asignados y acuerdos base.</p>
-                      {plan90.daysElapsed <= 30 && <div className="mt-2 text-[8px] font-bold text-indigo-400 uppercase tracking-tighter">Fase Activa</div>}
-                    </div>
-                    <div className={`rounded-xl p-3 border transition-all duration-500 ${plan90.daysElapsed > 30 && plan90.daysElapsed <= 60 ? 'bg-emerald-500/10 border-emerald-400/40 shadow-[0_0_15px_rgba(175,166,60,0.1)]' : 'bg-white/5 border-white/10 opacity-50'}`}>
-                      <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${plan90.daysElapsed > 30 && plan90.daysElapsed <= 60 ? 'text-emerald-300' : 'text-slate-400'}`}>60 días</p>
-                      <p className="text-[10px] text-slate-300">Seguimiento activo, medición de avances y ajustes institucionales.</p>
-                      {plan90.daysElapsed > 30 && plan90.daysElapsed <= 60 && <div className="mt-2 text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Fase Activa</div>}
-                    </div>
-                    <div className={`rounded-xl p-3 border transition-all duration-500 ${plan90.daysElapsed > 60 ? 'bg-rose-500/10 border-rose-400/40 shadow-[0_0_15px_rgba(183,104,122,0.1)]' : 'bg-white/5 border-white/10 opacity-50'}`}>
-                      <p className={`text-[9px] font-black uppercase tracking-widest mb-1 ${plan90.daysElapsed > 60 ? 'text-rose-300' : 'text-slate-400'}`}>90 días</p>
-                      <p className="text-[10px] text-slate-300">Evaluación de cierre o redefinición formal del plan.</p>
-                      {plan90.daysElapsed > 60 && <div className="mt-2 text-[8px] font-bold text-rose-400 uppercase tracking-tighter">Fase Activa</div>}
-                    </div>
-                  </div>
-                </div>
-
                 {/* Custodia de Objetos */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-sm shrink-0">
-                  <div className="bg-white/5 px-5 py-4 border-b border-white/10 flex items-center justify-between">
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm shrink-0">
+                  <div className="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="material-icons text-amber-500">
+                      <span className="material-symbols-outlined text-amber-500">
                         inventory_2
                       </span>
-                        <h3 className="text-xs font-black text-slate-100 uppercase tracking-widest">
+                      <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
                         Custodia de Objetos
                       </h3>
                     </div>
-                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                       {objetosRetenidos.length} registros
                     </span>
                   </div>
                   <div className="p-5">
                     {objetosRetenidos.length === 0 ? (
                       <div className="text-center p-6 border-2 border-dashed border-slate-200 rounded-xl">
-                        <span className="material-icons text-slate-300 text-3xl mb-2">
+                        <span className="material-symbols-outlined text-slate-300 text-3xl mb-2">
                           inventory
                         </span>
-                        <p className="text-xs text-slate-600 font-medium tracking-wide">
+                        <p className="text-xs text-slate-400 font-medium tracking-wide">
                           Sin objetos retenidos registrados.
                         </p>
                       </div>
@@ -652,19 +357,19 @@ export function ExpedienteInstitucional({
                           <div key={obj.id} className="border border-slate-200 rounded-xl p-4">
                             <div className="flex items-start justify-between gap-4">
                               <div>
-                                <p className="text-sm font-black text-white uppercase tracking-tight">
+                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">
                                   {obj.objeto}
                                 </p>
-                                <p className="text-[11px] text-slate-300 font-medium mt-1">
+                                <p className="text-[11px] text-slate-500 font-medium mt-1">
                                   {obj.motivo}
                                 </p>
-                                <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-400 font-semibold uppercase tracking-widest">
+                                <div className="flex items-center gap-3 mt-2 text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
                                   <span>{new Date(obj.fecha).toLocaleDateString("es-MX")}</span>
                                   <span>•</span>
                                   <span>{obj.responsableNombre || "Responsable no definido"}</span>
                                 </div>
                               </div>
-                              <span className={`px-2.5 py-1 rounded-2xl text-[9px] font-black uppercase tracking-widest border ${
+                              <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
                                 obj.estado === "retenido"
                                   ? "text-amber-600 border-amber-200 bg-amber-50"
                                   : "text-emerald-600 border-emerald-200 bg-emerald-50"
@@ -673,7 +378,7 @@ export function ExpedienteInstitucional({
                               </span>
                             </div>
                             {obj.fechaDevolucion && (
-                              <div className="mt-3 text-[10px] text-slate-700 font-semibold uppercase tracking-widest">
+                              <div className="mt-3 text-[10px] text-slate-500 font-semibold uppercase tracking-widest">
                                 Devuelto: {new Date(obj.fechaDevolucion).toLocaleDateString("es-MX")} {obj.entregadoA ? `— ${obj.entregadoA}` : ""}
                               </div>
                             )}
@@ -685,13 +390,13 @@ export function ExpedienteInstitucional({
                 </div>
 
                 {/* Análisis IA */}
-                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-sm shrink-0 flex flex-col">
-                  <div className="bg-white/5 px-5 py-4 border-b border-white/10 flex items-center justify-between shrink-0">
+                <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm shrink-0 flex flex-col">
+                  <div className="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-2">
-                      <span className="material-icons text-indigo-500">
+                      <span className="material-symbols-outlined text-indigo-500">
                         psychology
                       </span>
-                        <h3 className="text-xs font-black text-slate-100 uppercase tracking-widest">
+                      <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
                         Análisis Institucional IA-SASE
                       </h3>
                     </div>
@@ -702,18 +407,18 @@ export function ExpedienteInstitucional({
                           analizando ||
                           (incidencias.length === 0 && documentos.length === 0)
                         }
-                        className="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-200 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                        className="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-200 transition-colors flex items-center gap-1.5 disabled:opacity-50"
                       >
                         {analizando ? (
                           <>
-                            <span className="material-icons text-[14px] animate-spin">
+                            <span className="material-symbols-outlined text-[14px] animate-spin">
                               progress_activity
                             </span>
                             Analizando...
                           </>
                         ) : (
                           <>
-                            <span className="material-icons text-[14px]">
+                            <span className="material-symbols-outlined text-[14px]">
                               auto_awesome
                             </span>
                             Generar Análisis
@@ -722,9 +427,9 @@ export function ExpedienteInstitucional({
                       </button>
                     )}
                   </div>
-                   <div className="p-6 bg-transparent shrink-0 min-h-[160px]">
+                  <div className="p-6 bg-white shrink-0 min-h-[160px]">
                     {analisisIA ? (
-                       <div className="prose prose-sm max-w-none prose-p:text-[13px] prose-p:leading-relaxed prose-p:text-slate-200 text-justify text-slate-200">
+                      <div className="prose prose-sm prose-slate max-w-none prose-p:text-[13px] prose-p:leading-relaxed prose-p:text-slate-600 text-justify">
                         {analisisIA
                           .split("\n")
                           .filter((p) => p.trim() !== "")
@@ -733,8 +438,8 @@ export function ExpedienteInstitucional({
                           ))}
                       </div>
                     ) : (
-                       <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-3 py-6 text-center">
-                        <span className="material-icons text-4xl opacity-50">
+                      <div className="h-full flex flex-col items-center justify-center text-slate-400 gap-3 py-6 text-center">
+                        <span className="material-symbols-outlined text-4xl opacity-50">
                           analytics
                         </span>
                         <p className="text-xs font-medium max-w-[280px]">
@@ -748,11 +453,11 @@ export function ExpedienteInstitucional({
                 </div>
 
                 {/* Normativa */}
-                 <div className="mt-auto p-4 bg-amber-500/10 rounded-xl border border-amber-400/20 flex items-start gap-3 shrink-0">
-                   <span className="material-icons text-amber-300 shrink-0 mt-0.5">
+                <div className="mt-auto p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-3 shrink-0">
+                  <span className="material-symbols-outlined text-amber-500 shrink-0 mt-0.5">
                     gavel
                   </span>
-                   <p className="text-[11px] text-amber-100 leading-relaxed font-medium">
+                  <p className="text-[11px] text-amber-800 leading-relaxed font-medium">
                     <strong className="font-black uppercase tracking-wider block mb-1">
                       Confidencialidad
                     </strong>
@@ -770,17 +475,17 @@ export function ExpedienteInstitucional({
       {/* MODAL DE VISTA/EDICIÓN DE DOCUMENTO */}
       {documentoSeleccionado && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-8 bg-black/60 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#0B1120]/90 rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl border border-white/10 overflow-hidden backdrop-blur-3xl">
-            <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5 shadow-sm">
+          <div className="bg-white rounded-2xl w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="size-10 bg-indigo-100 rounded-2xl flex items-center justify-center">
-                  <span className="material-icons text-indigo-600">description</span>
+                <div className="size-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-indigo-600">description</span>
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-white uppercase tracking-tight">
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">
                     {documentoSeleccionado.titulo}
                   </h3>
-                  <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                     Expediente Institucional — {alumno.nombre}
                   </p>
                 </div>
@@ -789,33 +494,33 @@ export function ExpedienteInstitucional({
                 {!editandoDocumento ? (
                   <button
                     onClick={() => setEditandoDocumento(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-white/5 text-slate-200 border border-white/10 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
                   >
-                    <span className="material-icons text-sm">edit</span>
+                    <span className="material-symbols-outlined text-sm">edit</span>
                     Editar
                   </button>
                 ) : (
                   <button
                     onClick={handleGuardarDocumento}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-xl shadow-black/5 shadow-green-600/20"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-green-700 transition-all shadow-lg shadow-green-600/20"
                   >
-                    <span className="material-icons text-sm">save</span>
+                    <span className="material-symbols-outlined text-sm">save</span>
                     Guardar Cambios
                   </button>
                 )}
                 <button
                   onClick={() => printContent(documentoSeleccionado.titulo, documentoSeleccionado.contenido)}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-black/5 shadow-blue-600/20"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20"
                 >
-                  <span className="material-icons text-sm">print</span>
+                  <span className="material-symbols-outlined text-sm">print</span>
                   Imprimir
                 </button>
                 <div className="w-px h-6 bg-slate-200 mx-2" />
                 <button
                   onClick={() => setDocumentoSeleccionado(null)}
-                  className="p-2 hover:bg-slate-200 rounded-2xl transition-colors text-slate-600 hover:text-slate-600"
+                  className="p-2 hover:bg-slate-200 rounded-lg transition-colors text-slate-400 hover:text-slate-600"
                 >
-                  <span className="material-icons">close</span>
+                  <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
             </div>
@@ -830,17 +535,17 @@ export function ExpedienteInstitucional({
                     autoFocus
                   />
                 ) : (
-                  <div 
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(documentoSeleccionado.contenido) }}
+                  <div
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(documentoSeleccionado.contenido) }}
                     className="document-content-preview text-[14px] font-serif leading-relaxed text-slate-800"
                   />
                 )}
               </div>
             </div>
-            
+
             {editandoDocumento && (
               <div className="px-6 py-3 bg-amber-50 border-t border-amber-100 flex items-center gap-2 text-[10px] text-amber-700 font-bold uppercase tracking-widest">
-                <span className="material-icons text-[14px]">info</span>
+                <span className="material-symbols-outlined text-[14px]">info</span>
                 Estás en modo edición. Los cambios se guardarán directamente en el expediente institucional.
               </div>
             )}

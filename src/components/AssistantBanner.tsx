@@ -3,6 +3,7 @@ import { useApp } from "../store";
 import { AppModule, UserRole } from "../types";
 import { useAuth } from "./AuthProvider";
 import { getFechaHoy, INSTITUCION } from "../config/sase.config";
+import { SaseSplineOrb } from "./SaseSplineOrb";
 
 // Role-based avatars for visual integration
 const roleImages: Record<UserRole, string> = {
@@ -28,8 +29,6 @@ const roleImages: Record<UserRole, string> = {
     "https://ui-avatars.com/api/?name=UDEII&background=e0e7ff&color=312e81",
   [UserRole.PROMOTORA_LECTURA]:
     "https://ui-avatars.com/api/?name=Lectura&background=fce7f3&color=701a75",
-  [UserRole.ALUMNO]:
-    "https://ui-avatars.com/api/?name=Alumno&background=e0e7ff&color=312e81",
   [UserRole.GUEST]:
     "https://ui-avatars.com/api/?name=Invitado&background=f1f5f9&color=0f172a",
   [UserRole.DEVELOPER]:
@@ -99,12 +98,12 @@ export const AssistantBanner: React.FC<{
       });
     }
 
-    if (currentUserRole === UserRole.DIRECTIVO || 
-        currentUserRole === UserRole.SYSTEM_ADMIN || 
+    if (currentUserRole === UserRole.DIRECTIVO ||
+        currentUserRole === UserRole.SYSTEM_ADMIN ||
         currentUserRole === UserRole.DEVELOPER) {
       actions.push({
         id: "bitacora",
-        title: "Bitácora de auditoría disponible",
+        title: "Registro institucional de actividad",
         description: "Consulta las acciones del personal",
         module: AppModule.BITACORA,
         priority: "info",
@@ -165,11 +164,13 @@ export const AssistantBanner: React.FC<{
                 className="w-full h-full object-cover"
               />
             </div>
+0.5,
             {/* Animated SASE Face integration */}
-            <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-slate-900 shadow-xl border border-white/20 flex items-center justify-center">
-              <div
-                className={`size-8 sase-assistant-face ${assistantMessage ? "thinking" : ""}`}
-              ></div>
+            <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-slate-900 shadow-xl border border-white/20 flex items-center justify-center overflow-hidden">
+              <SaseSplineOrb
+                state={assistantMessage ? "thinking" : "normal"}
+                className="w-10 h-10 -m-1" // Compensar el margen para que llene el círculo
+              />
             </div>
           </div>
         </div>
@@ -198,12 +199,12 @@ export const AssistantBanner: React.FC<{
             {/* Botón Dashboard siempre visible */}
             <button
               onClick={() => setCurrentModule(AppModule.DASHBOARD)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all border bg-blue-600/20 border-blue-500/40 text-blue-400 hover:bg-blue-600/30 hover:border-blue-400 uppercase tracking-widest hover:translate-y-[-1px] active:translate-y-[0px] shadow-xl shadow-black/5 shadow-blue-500/10"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[11px] font-black transition-all border bg-blue-600/20 border-blue-500/40 text-blue-400 hover:bg-blue-600/30 hover:border-blue-400 uppercase tracking-widest hover:translate-y-[-1px] active:translate-y-[0px] shadow-lg shadow-blue-500/10"
             >
-              <span className="material-icons text-[16px]">
+              <span className="material-symbols-outlined text-[16px]">
                 dashboard
               </span>
-              IR AL TABLERO
+              IR AL DASHBOARD
             </button>
 
             {pendingActions.length > 0 && (
@@ -226,7 +227,7 @@ export const AssistantBanner: React.FC<{
                           : "bg-white/[0.04] border-white/10 text-slate-300 hover:border-blue-400/40 hover:text-blue-400"
                     }`}
                   >
-                    <span className="material-icons text-[16px]">
+                    <span className="material-symbols-outlined text-[16px]">
                       {action.priority === "urgent" ? "priority_high" : "bolt"}
                     </span>
                     {action.title}

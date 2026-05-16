@@ -23,6 +23,8 @@ import {
 import { PanelAdvertencias } from "./PanelAdvertencias";
 import { generarFolioInstitucional } from "./trazabilidad";
 import { getDocumentosPorCategoria, CATEGORIAS_LABEL } from "./types";
+import { SaseSplineOrb } from "../../components/SaseSplineOrb";
+import { sanitizeHtml } from "../../utils/security";
 
 interface GeneradorDocumentosProps {
   studentId: string;
@@ -49,7 +51,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
 }) => {
   const { currentUserRole } = useApp();
   const { user } = useAuth();
-  const { registrarAcceso } = useAuditoriaAccesos();
+  const { logAccess } = useAuditoriaAccesos();
 
   // State
   const [tipoDoc, setTipoDoc] =
@@ -105,7 +107,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     if (tipoDoc === "citatorio_padres") {
       checkCitatoriosPrevios();
     }
-  }, [tipoDoc]);
+  }, [tipoDoc]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Análisis en tiempo real del texto editado
   const advertencias: Advertencia[] = useMemo(() => {
@@ -117,10 +119,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     try {
       // Buscar documentos previos tipo citatorio para este alumno
       const { data, error } = await (supabase as any)
-        .from("auditoria")
+        .from("audit_log")
         .select("id")
-        .eq("id_registro_objetivo", studentId)
-        .ilike("descripcion_accion", "%citatorio%")
+        .eq("target_record_id", studentId)
+        .ilike("action_description", "%citatorio%")
         .limit(10);
 
       if (!error && data) {
@@ -179,8 +181,8 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     setHtmlFinal(html);
     setFase("listo");
 
-    // Registrar en auditoría
-    registrarAcceso({
+    // Registrar seguimiento institucional
+    logAccess({
       accion: "consultar_expediente",
       alumno_id: studentId,
       pantalla: `GeneradorDocumentos:${tipoDoc}:${folio}`,
@@ -201,7 +203,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         },
       ])
       .then(() => {
-        console.log(`[TRAZABILIDAD] Folio ${folio} registrado`);
+        console.log(`[SEGUIMIENTO] Folio ${folio} registrado`);
       });
 
     toast.success("Documento listo para revisión e impresión");
@@ -214,7 +216,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
       htmlFinal,
     );
 
-    // Registrar generación en auditoría persistente
+    // Registrar generación en seguimiento institucional persistente
     (supabase as any)
       .from("auditoria_accesos")
       .insert([
@@ -229,7 +231,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         },
       ])
       .then(() => {
-        toast.success("Documento enviado a impresión y registrado en bitácora");
+        toast.success("Documento enviado a impresión y registrado institucionalmente");
       });
   };
 
@@ -240,12 +242,12 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
 
   return (
     <div className="fixed inset-0 z-[70] bg-slate-900/50 backdrop-blur-md flex items-center justify-center p-2 md:p-4 animate-fade-in font-['Inter']">
-      <div className="bg-[#0B1120]/90 border border-white/10 w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] backdrop-blur-3xl">
+      <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
         {/* === HEADER === */}
         <div className="px-8 py-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="size-12 bg-blue-500/20 rounded-2xl flex items-center justify-center border border-blue-400/30">
-              <span className="material-icons text-blue-400 text-2xl">
+              <span className="material-symbols-outlined text-blue-400 text-2xl">
                 auto_awesome
               </span>
             </div>
@@ -267,7 +269,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   <div
                     className={`size-2.5 rounded-full transition-all ${
                       fase === f
-                        ? "bg-blue-400 shadow-xl shadow-black/5 shadow-blue-400/50 scale-125"
+                        ? "bg-blue-400 shadow-lg shadow-blue-400/50 scale-125"
                         : i <
                             ["datos", "generando", "revision", "listo"].indexOf(
                               fase,
@@ -287,7 +289,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
             className="p-2 hover:bg-white/10 rounded-full transition-colors text-white/50 hover:text-white"
             title="Cerrar generador"
           >
-            <span className="material-icons">close</span>
+            <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
@@ -295,15 +297,15 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
           {/* ADVERTENCIA CITATORIO PREVIO */}
           {tipoDoc === "citatorio_padres" && citatoriosPrevios > 0 && (
-            <div className="p-4 bg-amber-500/10 border border-amber-400/20 rounded-xl flex items-center gap-3 animate-fade-in">
-              <span className="material-icons text-amber-500 text-2xl">
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3 animate-fade-in">
+              <span className="material-symbols-outlined text-amber-500 text-2xl">
                 warning
               </span>
               <div>
                 <p className="text-xs font-black text-amber-800 uppercase">
                   ⚠️ Citatorio previo detectado
                 </p>
-                  <p className="text-[11px] text-amber-200 font-medium">
+                <p className="text-[11px] text-amber-700 font-medium">
                   Se encontraron <strong>{citatoriosPrevios}</strong> citatorios
                   anteriores para este alumno en el sistema. Considere el
                   historial antes de generar uno nuevo.
@@ -328,7 +330,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                 ).map(([cat, tipos]) => (
                   <div key={cat} className="mb-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="material-icons text-sm text-slate-400">
+                      <span className="material-symbols-outlined text-sm text-slate-400">
                         {
                           CATEGORIAS_LABEL[cat as keyof typeof CATEGORIAS_LABEL]
                             .icon
@@ -350,15 +352,15 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                             onClick={() => setTipoDoc(key)}
                             className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${
                               tipoDoc === key
-                                ? "border-blue-400/40 bg-blue-500/10 shadow-sm"
-                                : "border-white/10 hover:border-white/20 bg-white/5"
+                                ? "border-blue-400 bg-blue-50 shadow-sm"
+                                : "border-slate-200 hover:border-slate-300 bg-white"
                             }`}
                           >
                             <span
-                              className={`material-icons text-xl ${
+                              className={`material-symbols-outlined text-xl ${
                                 tipoDoc === key
-                                  ? "text-blue-300"
-                                  : "text-slate-500"
+                                  ? "text-blue-500"
+                                  : "text-slate-400"
                               }`}
                             >
                               {val.icon}
@@ -366,8 +368,8 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                             <span
                               className={`text-[9px] font-black uppercase tracking-wide text-center leading-tight ${
                                 tipoDoc === key
-                                  ? "text-blue-200"
-                                  : "text-slate-300"
+                                  ? "text-blue-700"
+                                  : "text-slate-500"
                               }`}
                             >
                               {val.label}
@@ -390,7 +392,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     type="text"
                     value={datos.alumno_nombre}
                     disabled
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm font-black text-slate-300"
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl p-3 text-sm font-black text-slate-600"
                     title="Nombre del alumno"
                   />
                 </div>
@@ -402,7 +404,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     type="text"
                     value={datos.grupo}
                     disabled
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm font-black text-slate-300"
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl p-3 text-sm font-black text-slate-600"
                     title="Grupo del alumno"
                   />
                 </div>
@@ -420,7 +422,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     onChange={(e) =>
                       updateDato("lugar_incidente", e.target.value)
                     }
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm font-medium text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none"
                     placeholder="Ej: Patio central, Aula 3B..."
                     title="Lugar donde ocurrió el incidente"
                   />
@@ -432,7 +434,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   <select
                     value={datos.tipo_falta}
                     onChange={(e) => updateDato("tipo_falta", e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm font-bold text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none"
                     title="Clasificación de la falta"
                   >
                     <option value="">Sin clasificar</option>
@@ -451,7 +453,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
 
               {/* Citatorio: fecha y hora de cita */}
               {tipoDoc === "citatorio_padres" && (
-                <div className="grid grid-cols-2 gap-4 p-4 bg-amber-500/10 border border-amber-400/20 rounded-xl">
+                <div className="grid grid-cols-2 gap-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
                   <div>
                     <label className="block text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1.5">
                       Fecha del Citatorio
@@ -462,7 +464,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                       onChange={(e) =>
                         updateDato("fecha_citatorio", e.target.value)
                       }
-                      className="w-full bg-white/5 border border-amber-400/20 rounded-xl p-3 text-sm font-bold text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none"
+                      className="w-full bg-white border border-amber-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-amber-500 outline-none"
                       title="Fecha en que se cita al tutor"
                     />
                   </div>
@@ -476,7 +478,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                       onChange={(e) =>
                         updateDato("hora_citatorio", e.target.value)
                       }
-                      className="w-full bg-white/5 border border-amber-400/20 rounded-xl p-3 text-sm font-bold text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none"
+                      className="w-full bg-white border border-amber-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-amber-500 outline-none"
                       title="Hora en que se cita al tutor"
                     />
                   </div>
@@ -493,7 +495,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   value={datos.descripcion}
                   onChange={(e) => updateDato("descripcion", e.target.value)}
                   placeholder="Describa de forma objetiva lo sucedido. La IA estructurará el documento con lenguaje institucional formal..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm font-medium text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                   title="Narración objetiva de los hechos"
                 />
               </div>
@@ -507,7 +509,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   type="text"
                   value={datos.testigos}
                   onChange={(e) => updateDato("testigos", e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm font-medium text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none"
                   placeholder="Nombres de testigos presenciales..."
                   title="Testigos presentes durante el incidente"
                 />
@@ -518,12 +520,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
           {/* FASE 2: GENERANDO */}
           {fase === "generando" && (
             <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
-              <div className="size-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-xl shadow-blue-500/30 animate-pulse">
-                <span className="material-icons text-white text-4xl animate-spin">
-                  auto_awesome
-                </span>
+              <div className="relative mb-6">
+                <SaseSplineOrb state="thinking" className="size-32 md:size-48" />
               </div>
-              <h3 className="text-lg font-black text-white italic uppercase tracking-tight">
+              <h3 className="text-lg font-black text-slate-700 italic uppercase tracking-tight">
                 IA-SASE Analizando...
               </h3>
               <p className="text-xs text-slate-400 font-medium mt-2">
@@ -538,8 +538,8 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
             <div className="space-y-5 animate-fade-in">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="size-8 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                    <span className="material-icons text-emerald-600 text-lg">
+                  <div className="size-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <span className="material-symbols-outlined text-emerald-600 text-lg">
                       edit_note
                     </span>
                   </div>
@@ -571,11 +571,11 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                         setMejorando(false);
                       }
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-blue-200 bg-blue-500/10 border border-blue-400/20 uppercase tracking-widest hover:bg-blue-500/15 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-3 py-2 text-[9px] font-black text-blue-600 bg-blue-50 border border-blue-200 uppercase tracking-widest hover:bg-blue-100 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="IA mejora la redacción manteniendo objetividad institucional"
                   >
                     <span
-                      className={`material-icons text-sm ${mejorando ? "animate-spin" : ""}`}
+                      className={`material-symbols-outlined text-sm ${mejorando ? "animate-spin" : ""}`}
                     >
                       {mejorando ? "progress_activity" : "auto_fix_high"}
                     </span>
@@ -600,10 +600,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                         setMejorando(false);
                       }
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-indigo-200 bg-indigo-500/10 border border-indigo-400/20 uppercase tracking-widest hover:bg-indigo-500/15 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-3 py-2 text-[9px] font-black text-indigo-600 bg-indigo-50 border border-indigo-200 uppercase tracking-widest hover:bg-indigo-100 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="Hace el texto más formal e institucional"
                   >
-                    <span className="material-icons text-sm">
+                    <span className="material-symbols-outlined text-sm">
                       school
                     </span>
                     Hacer Formal
@@ -624,10 +624,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                         setMejorando(false);
                       }
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-emerald-200 bg-emerald-500/10 border border-emerald-400/20 uppercase tracking-widest hover:bg-emerald-500/15 rounded-2xl transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    className="px-3 py-2 text-[9px] font-black text-emerald-600 bg-emerald-50 border border-emerald-200 uppercase tracking-widest hover:bg-emerald-100 rounded-lg transition-colors flex items-center gap-1.5 disabled:opacity-50"
                     title="Resume el texto manteniendo datos clave"
                   >
-                    <span className="material-icons text-sm">
+                    <span className="material-symbols-outlined text-sm">
                       compress
                     </span>
                     Resumir
@@ -639,7 +639,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                       setContenidoEditado("");
                       setCambiosIA([]);
                     }}
-                    className="px-3 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-white/5 rounded-2xl transition-colors"
+                    className="px-3 py-2 text-[9px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-100 rounded-lg transition-colors"
                     title="Volver a los datos"
                   >
                     ← Volver
@@ -649,15 +649,15 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
 
               {/* Cambios realizados por IA */}
               {cambiosIA.length > 0 && (
-                <div className="p-3 bg-blue-500/10 border border-blue-400/20 rounded-xl">
-                    <p className="text-[10px] font-black text-blue-200 uppercase tracking-wide mb-2">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                  <p className="text-[10px] font-black text-blue-600 uppercase tracking-wide mb-2">
                     Cambios realizados por IA:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {cambiosIA.map((c, i) => (
                       <span
                         key={i}
-                         className="text-[10px] text-blue-200 bg-white/5 px-2 py-1 rounded-2xl border border-blue-400/20 font-medium"
+                        className="text-[10px] text-blue-700 bg-white px-2 py-1 rounded-lg border border-blue-100 font-medium"
                       >
                         ✓ {c}
                       </span>
@@ -674,11 +674,11 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                     rows={14}
                     value={contenidoEditado}
                     onChange={(e) => setContenidoEditado(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-6 text-sm font-serif text-slate-100 leading-relaxed focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-6 text-sm font-serif text-slate-700 leading-relaxed focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                     title="Edite el borrador generado por la IA antes de generar el documento final"
                   />
                   <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold mt-2">
-                    <span className="material-icons text-sm">
+                    <span className="material-symbols-outlined text-sm">
                       info
                     </span>
                     Edite el texto libremente. Use "Mejorar Redacción" para que
@@ -704,8 +704,8 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
           {fase === "listo" && (
             <div className="space-y-5 animate-fade-in">
               <div className="flex items-center gap-3 mb-4">
-                <div className="size-8 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                  <span className="material-icons text-emerald-600 text-lg">
+                <div className="size-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-emerald-600 text-lg">
                     check_circle
                   </span>
                 </div>
@@ -719,11 +719,11 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-inner max-h-[50vh] overflow-y-auto">
+              <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-inner max-h-[50vh] overflow-y-auto">
                 <div
-                  className="p-8"
+                  className="prose prose-slate max-w-none text-slate-700 leading-relaxed font-serif"
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(htmlFinal),
+                    __html: sanitizeHtml(htmlFinal),
                   }}
                 />
               </div>
@@ -732,10 +732,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         </div>
 
         {/* === FOOTER / ACCIONES === */}
-        <div className="px-8 py-5 border-t border-white/10 bg-white/5 flex justify-between items-center">
+        <div className="px-8 py-5 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 text-xs font-black text-slate-300 uppercase tracking-widest hover:bg-white/5 rounded-xl transition-colors"
+            className="px-6 py-2.5 text-xs font-black text-slate-500 uppercase tracking-widest hover:bg-slate-200 rounded-xl transition-colors"
             title="Cancelar y cerrar"
           >
             Cancelar
@@ -746,10 +746,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
               <button
                 disabled={!datos.descripcion.trim()}
                 onClick={handleGenerarBorrador}
-                className="px-8 py-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 disabled:opacity-40 transition-all flex items-center gap-2"
+                className="px-8 py-3 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg disabled:opacity-40 transition-all flex items-center gap-2"
                 title="Generar borrador con inteligencia artificial"
               >
-                <span className="material-icons text-lg">
+                <span className="material-symbols-outlined text-lg">
                   auto_awesome
                 </span>
                 Generar con IA
@@ -759,10 +759,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
             {fase === "revision" && (
               <button
                 onClick={handleGenerarFinal}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-xl shadow-black/5 transition-all flex items-center gap-2"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:shadow-lg transition-all flex items-center gap-2"
                 title="Generar documento final con formato institucional"
               >
-                <span className="material-icons text-lg">
+                <span className="material-symbols-outlined text-lg">
                   description
                 </span>
                 Generar Documento Final
@@ -773,7 +773,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
               <>
                 <button
                   onClick={() => setFase("revision")}
-                  className="px-6 py-3 bg-white/5 border border-white/10 text-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                  className="px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
                   title="Volver a editar el texto"
                 >
                   ← Editar
@@ -783,7 +783,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   className="px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:shadow-xl hover:shadow-amber-500/20 transition-all flex items-center gap-2 active:scale-95"
                   title="Imprimir documento oficial"
                 >
-                  <span className="material-icons text-lg">
+                  <span className="material-symbols-outlined text-lg">
                     print
                   </span>
                   Imprimir Documento
