@@ -53,11 +53,11 @@ export const DashboardUDEII = () => {
         </div>
 
         <button
-          onClick={() => toast.success("Generando Reporte de Inclusión...")}
-          className="px-8 py-3.5 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/20 hover:bg-indigo-500 transition-all active:scale-95 flex items-center gap-3"
+          onClick={() => toast("Función en preparación: Exportación de log BAP")}
+          className="px-8 py-3.5 bg-indigo-600/50 text-white/50 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/5 hover:bg-indigo-500/60 transition-all active:scale-95 flex items-center gap-3"
         >
           <span className="material-symbols-outlined text-xl">file_save</span>
-          EXPORTAR_LOG_BAP
+          EXPORTAR_LOG_BAP (Próximamente)
         </button>
       </div>
 
@@ -164,25 +164,25 @@ export const DashboardUDEII = () => {
 
             <div className="space-y-4">
               <button
-                onClick={() => toast("Abriendo Guía de Ajustes Reasonables...")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
+                onClick={() => toast("Función en preparación: Manual de Estrategias")}
+                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left opacity-60"
               >
                 <span className="material-symbols-outlined text-indigo-400">
                   menu_book
                 </span>
                 <span className="text-[11px] font-black text-white uppercase tracking-widest italic">
-                  Manual de Estrategias
+                  Manual de Estrategias (Próximamente)
                 </span>
               </button>
               <button
-                onClick={() => toast("Enviando comunicación a padres...")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left"
+                onClick={() => toast("Función en preparación: Notificación automática")}
+                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left opacity-60"
               >
                 <span className="material-symbols-outlined text-emerald-400">
                   mark_as_unread
                 </span>
                 <span className="text-[11px] font-black text-white uppercase tracking-widest italic">
-                  Notificar a Tutores
+                  Notificar a Tutores (Próximamente)
                 </span>
               </button>
             </div>

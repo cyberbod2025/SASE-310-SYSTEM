@@ -58,7 +58,7 @@ const AVISO_PRIVACIDAD_TEXTO = `
   Los datos que se recaben (Nombre, CURP, Correo Institucional, Función Escolar) serán utilizados exclusivamente para:
   1. Identificación y autenticación en la plataforma institucional.
   2. Control de acceso y asignación de privilegios según su función.
-  3. Auditoría de acciones en el sistema para garantizar la seguridad de la información institucional y la protección del alumnado.
+  3. Registro institucional de actividad en el sistema para garantizar la seguridad de la información institucional y la protección del alumnado.
   
   Usted podrá ejercer sus derechos ARCO directamente ante la dirección del plantel.
   Al marcar la casilla, usted manifiesta su consentimiento expreso para el tratamiento de sus datos bajo los lineamientos de la NEM.
@@ -1095,7 +1095,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 />
                 <CheckboxSase
                   id="check3"
-                  label="Consiento la auditoría sistemática de mis accesos"
+                  label="Consiento el registro institucional de mis accesos"
                   checked={formData.checkAuditoria}
                   onChange={(v: boolean) =>
                     setFormData({ ...formData, checkAuditoria: v })

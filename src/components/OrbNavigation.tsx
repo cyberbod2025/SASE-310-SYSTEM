@@ -54,7 +54,7 @@ export const OrbNavigation = () => {
           },
           {
             id: AppModule.BITACORA,
-            label: "Auditoría",
+            label: "Seguimiento",
             icon: "policy",
             color: "from-slate-700 to-slate-900",
           },
@@ -287,7 +287,7 @@ export const OrbNavigation = () => {
           },
           {
             id: AppModule.BITACORA,
-            label: "Auditoría",
+            label: "Seguimiento",
             icon: "policy",
             color: "from-slate-700 to-slate-900",
           },

@@ -57,7 +57,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
         return [
           {
             icon: "verified_user",
-            label: "Auditoría de integridad RLS activa",
+            label: "Registro institucional de actividad",
           },
           {
             icon: "query_stats",
@@ -256,7 +256,7 @@ const AIOrbAssistant: React.FC<AIOrbAssistantProps> = ({
           },
           {
             icon: "history_edu",
-            label: "Auditoría",
+            label: "Seguimiento",
             action: () => setCurrentModule(AppModule.BITACORA),
           },
           {

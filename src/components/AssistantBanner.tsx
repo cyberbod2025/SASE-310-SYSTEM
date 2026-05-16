@@ -103,7 +103,7 @@ export const AssistantBanner: React.FC<{
         currentUserRole === UserRole.DEVELOPER) {
       actions.push({
         id: "bitacora",
-        title: "Bitácora de auditoría disponible",
+        title: "Registro institucional de actividad",
         description: "Consulta las acciones del personal",
         module: AppModule.BITACORA,
         priority: "info",

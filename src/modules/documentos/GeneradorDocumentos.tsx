@@ -51,7 +51,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
 }) => {
   const { currentUserRole } = useApp();
   const { user } = useAuth();
-  const { registrarAcceso } = useAuditoriaAccesos();
+  const { logAccess } = useAuditoriaAccesos();
 
   // State
   const [tipoDoc, setTipoDoc] =
@@ -181,8 +181,8 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     setHtmlFinal(html);
     setFase("listo");
 
-    // Registrar en auditoría
-    registrarAcceso({
+    // Registrar seguimiento institucional
+    logAccess({
       accion: "consultar_expediente",
       alumno_id: studentId,
       pantalla: `GeneradorDocumentos:${tipoDoc}:${folio}`,
@@ -203,7 +203,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         },
       ])
       .then(() => {
-        console.log(`[TRAZABILIDAD] Folio ${folio} registrado`);
+        console.log(`[SEGUIMIENTO] Folio ${folio} registrado`);
       });
 
     toast.success("Documento listo para revisión e impresión");
@@ -216,7 +216,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
       htmlFinal,
     );
 
-    // Registrar generación en auditoría persistente
+    // Registrar generación en seguimiento institucional persistente
     (supabase as any)
       .from("auditoria_accesos")
       .insert([
@@ -231,7 +231,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         },
       ])
       .then(() => {
-        toast.success("Documento enviado a impresión y registrado en bitácora");
+        toast.success("Documento enviado a impresión y registrado institucionalmente");
       });
   };
 

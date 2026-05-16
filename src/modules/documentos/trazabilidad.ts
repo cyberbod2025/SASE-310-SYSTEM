@@ -2,7 +2,7 @@ import { TipoDocumentoInstitucional } from "./types";
 import { generateSecureNumCode } from "../../utils/security";
 
 /**
- * Sistema de Trazabilidad Documental SASE-310
+ * Sistema de Seguimiento Documental SASE-310
  *
  * Formato de folio: SASE-310-[TIPO]-[GRUPO]-[FECHA]-[ID]
  * Ejemplo: SASE-310-ACTA-2B-2026-03-06-001

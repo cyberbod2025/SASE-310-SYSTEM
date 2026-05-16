@@ -84,9 +84,12 @@ export const StudentCard: React.FC<StudentCardProps> = ({
                     <div className="flex items-center gap-2 mb-3 pb-2 border-b border-purple-500/20">
                       <span className="material-symbols-outlined text-purple-400 text-sm">info</span>
                       <span className="font-black text-purple-400 uppercase tracking-widest text-[10px]">
-                        Protocolo UDEII Activo
+                        Apoyo UDEII Sugerido (En preparación)
                       </span>
                     </div>
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">
+                      Recomendaciones Institucionales:
+                    </p>
                     <ul className="space-y-2">
                       <li className="flex gap-2">
                         <span className="text-purple-500">•</span>

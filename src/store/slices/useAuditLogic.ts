@@ -12,8 +12,8 @@ export const useAuditLogic = (user: any, currentUserRole: UserRole) => {
     newValues?: any,
   ) => {
     console.log(
-      `%c[AUDIT] ${actionType}: ${description}`,
-      "color: #ef4444; font-weight: bold;",
+      `%c[REGISTRO] ${actionType}: ${description}`,
+      "color: #3b82f6; font-weight: bold;",
     );
 
     let auditUserId = user?.id;

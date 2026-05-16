@@ -60,9 +60,9 @@ SASE centraliza esta información en un sistema digital que permite:
 
 ---
 
-## 2. Principio de la "Caja Negra Institucional"
+## 2. Principio del "Registro Institucional de Actividad"
 
-SASE funciona como una caja negra institucional.
+SASE funciona como un registro institucional de actividad escolar.
 
 Cada evento relevante que ocurre en la vida escolar queda registrado dentro del sistema:
 

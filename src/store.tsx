@@ -88,7 +88,7 @@ interface AppContextType {
   fetchDailyStats: any;
   registerAttendance: any;
 
-  // Audit
+  // Registro Institucional
   logAudit: any;
   logAccess: any;
 

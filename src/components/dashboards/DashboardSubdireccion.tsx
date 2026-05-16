@@ -334,7 +334,7 @@ export const DashboardSubdireccion = () => {
                     Validar NEEM
                   </p>
                   <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter group-hover:text-white/60">
-                    AUDITORÍA_ACADÉMICA
+                    SEGUIMIENTO ACADÉMICO
                   </p>
                 </div>
               </button>

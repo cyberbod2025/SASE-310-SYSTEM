@@ -530,7 +530,7 @@ export const AprobacionesPersonal: React.FC = () => {
                         </span>
                       </div>
                       <p className="mt-2 text-[8px] font-bold text-white/20 uppercase tracking-widest ml-2">
-                        Identificador inamovible para expediente auditado
+                        Identificador inamovible para registro institucional
                       </p>
                     </div>
 

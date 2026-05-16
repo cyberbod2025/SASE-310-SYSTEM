@@ -52,22 +52,38 @@ export const IASaseAgent: React.FC = () => {
     "¿Qué necesitas hoy?",
     "¿Te ayudo a hacer un reporte?",
     "¿Necesitas consultar algo?",
-    "¿Quieres agendar algo?",
+    "¿Consultamos la agenda institucional?",
     "¡Hola! Soy IA SASE, ¿en qué te ayudo?",
     "Análisis de grupo completado",
     "Sugerencia: Revisar citatorios de hoy",
     "¿Buscamos a algún alumno?"
   ];
 
+  const [phraseCount, setPhraseCount] = React.useState(0);
+  const [lastInteraction, setLastInteraction] = React.useState(Date.now());
+
   React.useEffect(() => {
     const interval = setInterval(() => {
-      const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-      setCurrentPhrase(randomPhrase);
-      setShowPhrase(true);
-      setTimeout(() => setShowPhrase(false), 5000);
-    }, 15000); // Cada 15 segundos
+      // Solo mostrar frase si:
+      // 1. El asistente está cerrado
+      // 2. Han pasado menos de 3 frases sin interacción
+      if (!isAssistantOpen && phraseCount < 3) {
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+        setCurrentPhrase(randomPhrase);
+        setShowPhrase(true);
+        setPhraseCount(prev => prev + 1);
+        setTimeout(() => setShowPhrase(false), 5000);
+      }
+    }, 60000); // Cada 60 segundos
     return () => clearInterval(interval);
-  }, []);
+  }, [isAssistantOpen, phraseCount]);
+
+  // Resetear contador al interactuar
+  React.useEffect(() => {
+    if (isAssistantOpen) {
+      setPhraseCount(0);
+    }
+  }, [isAssistantOpen]);
 
   // --- INTERACCIÓN IA (Q&A) ---
   const [userQuestion, setUserQuestion] = React.useState("");

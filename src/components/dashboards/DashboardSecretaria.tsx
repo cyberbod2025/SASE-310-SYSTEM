@@ -235,7 +235,7 @@ export const DashboardSecretaria = () => {
     );
 
     updateStudentAudit(studentId, activeUserName);
-    toast.success(`[AUDITORÍA] Cambios guardados por: ${activeUserName}`);
+    toast.success(`[REGISTRO] Cambios guardados por: ${activeUserName}`);
     setEditingId(null);
   };
 
@@ -385,7 +385,7 @@ export const DashboardSecretaria = () => {
               verified_user
             </span>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">
-              Nivel de Auditoría:{" "}
+              Nivel de Seguimiento: ACTIVADO{" "}
               <span className="text-cyan-400">TOTAL / MONITOREADO</span>
             </p>
           </div>
@@ -1282,11 +1282,14 @@ export const DashboardSecretaria = () => {
                                 </button>
                                 <button
                                   onClick={() => handleSaveAudit(student.id)}
-                                  title="Confirmar revisión y auditar este expediente"
-                                  aria-label="Auditar registro de alumno"
-                                  className="btn-sase-primary px-4 py-2 text-[9px] font-black"
+                                  title="Confirmar revisión y registro de este expediente"
+                                  aria-label="Registrar actividad de alumno"
+                                  className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-400 hover:bg-blue-500/20 transition-all font-black text-[10px] uppercase tracking-widest active:scale-95"
                                 >
-                                  AUDITAR REGISTRO
+                                  <span className="material-symbols-outlined text-sm">
+                                    fact_check
+                                  </span>
+                                  REGISTRO INSTITUCIONAL
                                 </button>
                               </div>
                             </div>

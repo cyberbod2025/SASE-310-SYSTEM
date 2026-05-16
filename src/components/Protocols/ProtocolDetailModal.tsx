@@ -278,8 +278,8 @@ export const ProtocolDetailModal: React.FC<ProtocolDetailModalProps> = ({
         {/* Footer */}
         <div className="p-4 border-t border-white/10 bg-slate-900 flex justify-between items-center shrink-0">
           <div className="text-xs text-gray-500">
-            * El registro de esta consulta quedará grabado en bitácora para
-            fines de auditoría.
+            * El registro de esta consulta quedará grabado para el seguimiento
+            institucional de protocolos.
           </div>
           <button
             onClick={(e) => {

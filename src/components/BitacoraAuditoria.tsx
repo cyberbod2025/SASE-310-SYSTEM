@@ -61,7 +61,7 @@ export const BitacoraAuditoria: React.FC = () => {
           </div>
           <div>
             <h2 className="text-3xl font-black text-white tracking-tight uppercase italic">
-              Bitácora de Auditoría
+              Registro institucional de actividad
             </h2>
             <p className="text-blue-500/80 font-black text-xs uppercase tracking-[0.3em] mt-1.5 flex items-center gap-2">
               <span className="size-2.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
@@ -74,7 +74,7 @@ export const BitacoraAuditoria: React.FC = () => {
           <button
             onClick={fetchAuditLog}
             className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 hover:text-white transition-all font-bold text-xs uppercase tracking-widest shadow-lg active:scale-95"
-            title="Sincronizar y actualizar bitácora de auditoría"
+            title="Sincronizar y actualizar registro institucional"
           >
             <span className="material-symbols-outlined text-xl">refresh</span>
             Sincronizar
@@ -125,7 +125,7 @@ export const BitacoraAuditoria: React.FC = () => {
         />
       </div>
 
-      {/* Registro de Auditoría */}
+      {/* Registro Institucional de Actividad */}
       <div className="bg-[#0b121a]/60 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl backdrop-blur-3xl overflow-hidden">
         <div className="px-5 md:px-8 py-5 md:py-6 border-b border-white/5 bg-white/[0.02] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>

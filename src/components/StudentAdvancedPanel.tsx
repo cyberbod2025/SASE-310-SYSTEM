@@ -51,8 +51,8 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
   );
   const [showAIGenerator, setShowAIGenerator] = useState(false);
 
-  // --- AUDITORÍA DE ACCESOS SENSIBLES ---
-  const { registrarAcceso } = useAuditoriaAccesos();
+  // --- SEGUIMIENTO DE ACCESOS SENSIBLES ---
+  const { logAccess } = useAuditoriaAccesos();
   const [avisoAceptado, setAvisoAceptado] = useState(() => {
     return sessionStorage.getItem("sase_aviso_sensible_aceptado") === "true";
   });
@@ -68,13 +68,13 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
   // Registrar apertura del panel cuando el usuario acepta
   useEffect(() => {
     if (avisoAceptado) {
-      registrarAcceso({
+      logAccess({
         accion: "abrir_panel_avanzado",
         alumno_id: student.id,
         pantalla: "StudentAdvancedPanel",
       });
       // Registrar consulta de expediente automáticamente
-      registrarAcceso({
+      logAccess({
         accion: "consultar_expediente",
         alumno_id: student.id,
         pantalla: "StudentAdvancedPanel",
@@ -86,19 +86,19 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
   useEffect(() => {
     if (!avisoAceptado) return;
     if (activeTab === "CLINICAL") {
-      registrarAcceso({
+      logAccess({
         accion: "consultar_alerta_medica",
         alumno_id: student.id,
         pantalla: "StudentAdvancedPanel:CLINICAL",
       });
-      registrarAcceso({
+      logAccess({
         accion: "consultar_historial_disciplina",
         alumno_id: student.id,
         pantalla: "StudentAdvancedPanel:CLINICAL",
       });
     }
     if (activeTab === "LEGAL") {
-      registrarAcceso({
+      logAccess({
         accion: "consultar_trabajo_social",
         alumno_id: student.id,
         pantalla: "StudentAdvancedPanel:LEGAL",

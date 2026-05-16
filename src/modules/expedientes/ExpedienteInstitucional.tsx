@@ -116,7 +116,7 @@ export function ExpedienteInstitucional({
       // Usar printContent que ya existe en la plataforma (usa iframe y window.print)
       printContent("Expediente_Institucional", htmlContent);
 
-      // Registrar en auditoría
+      // Registrar seguimiento institucional
       await (supabase as any).from("auditoria_accesos").insert({
         usuario: "SASE-310 User",
         rol: "docente",
