@@ -6,6 +6,22 @@ function decodeBase64Url(str: string): string {
   return Buffer.from(padded, 'base64').toString('utf-8');
 }
 
+function extractSaseTokenFromLaunchUrl(urlString: string): string | null {
+  const url = new URL(urlString);
+  const tokenFromSearch = url.searchParams.get('sase_token');
+  if (tokenFromSearch) {
+    return tokenFromSearch;
+  }
+
+  const hash = url.hash.startsWith('#') ? url.hash.slice(1) : url.hash;
+  const hashQuery = hash.includes('?') ? hash.split('?')[1] : '';
+  if (!hashQuery) {
+    return null;
+  }
+
+  return new URLSearchParams(hashQuery).get('sase_token');
+}
+
 async function enterSystemIfNeeded(page: Page) {
   const entrarSistema = page.getByRole('button', { name: /ENTRAR AL SISTEMA/i });
 
@@ -97,8 +113,9 @@ test.describe('SASE-310 Smoke Tests (Modo Cierre)', () => {
     expect(body).toHaveProperty('module', 'feria');
 
     const redirectUrl = new URL(body.url);
-    const saseToken = redirectUrl.searchParams.get('sase_token');
+    const saseToken = extractSaseTokenFromLaunchUrl(body.url);
     expect(saseToken).toBeTruthy();
+    expect(redirectUrl.hash || redirectUrl.search).toContain('sase_token=');
 
     const parts = saseToken!.split('.');
     expect(parts.length).toBe(2);
