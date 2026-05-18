@@ -65,7 +65,7 @@ export const AprobacionesPersonal: React.FC = () => {
 
     // Using simple random suffix for now, can be replaced with
     // sequence from DB if exact incremental order is required
-    const randomSuffix = Math.floor(100 + Math.random() * 900);
+    const randomSuffix = Math.floor(100 + (window.crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff) * 900);
     return `SASE-${year}-${rolePrefix}-${randomSuffix}`;
   };
 
@@ -115,10 +115,13 @@ export const AprobacionesPersonal: React.FC = () => {
       // INTENTO 1: Crear usuario Real via Edge Function (Seguro)
       try {
         // Generate a cryptographically safer-ish random temp password
-        const tempPassword =
-          Math.random().toString(36).slice(-10) +
-          Math.random().toString(36).toUpperCase().slice(-4) +
-          "!@#";
+        // Generate a cryptographically secure random temp password
+        const secureRandomString = () => {
+          const array = new Uint8Array(12);
+          window.crypto.getRandomValues(array);
+          return Array.from(array, byte => byte.toString(36).padStart(2, '0')).join('');
+        };
+        const tempPassword = secureRandomString().slice(0, 14) + "!@#A1";
 
         const { data, error } = await supabase.functions.invoke("create-user", {
           body: {
@@ -214,13 +217,12 @@ export const AprobacionesPersonal: React.FC = () => {
       if (updateError) throw updateError;
 
       // 5. Registrar en auditoría
-      await supabase.from("audit_log").insert({
-        action_type: "APROBACION_PERSONAL",
-        action_description: `Aprobada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Matrícula SASE asignada: ${assignmentData.matricula_sase}`,
-        target_table: "solicitudes_alta_personal",
-        target_record_id: solicitud.id,
-        target_student_name: `${solicitud.nombres} ${solicitud.apellido_paterno}`,
-        new_values: { userIdAsignado: userId, asignacion: assignmentData },
+      await supabase.from("auditoria").insert({
+        tipo_accion: "APROBACION_PERSONAL",
+        descripcion_accion: `Aprobada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Matrícula SASE asignada: ${assignmentData.matricula_sase} [ALUMNO: ${solicitud.nombres} ${solicitud.apellido_paterno}]`,
+        tabla_objetivo: "solicitudes_alta_personal",
+        id_registro_objetivo: solicitud.id,
+        new_values: { userIdAsignado: userId, asignacion: assignmentData } as any,
       });
 
       toast.success(
@@ -259,11 +261,11 @@ export const AprobacionesPersonal: React.FC = () => {
 
       if (error) throw error;
 
-      await supabase.from("audit_log").insert({
-        action_type: "RECHAZO_PERSONAL",
-        action_description: `Rechazada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Motivo: ${motivoRechazo}`,
-        target_table: "solicitudes_alta_personal",
-        target_record_id: solicitud.id,
+      await supabase.from("auditoria").insert({
+        tipo_accion: "RECHAZO_PERSONAL",
+        descripcion_accion: `Rechazada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Motivo: ${motivoRechazo}`,
+        tabla_objetivo: "solicitudes_alta_personal",
+        id_registro_objetivo: solicitud.id,
       });
 
       toast.success("❌ Solicitud rechazada");

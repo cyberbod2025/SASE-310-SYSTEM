@@ -4,8 +4,7 @@ import { useApp } from "../store";
 import { SaseSplineOrb } from "./SaseSplineOrb";
 import type { SystemState } from "../types/systemState";
 import { UserRole, AppModule, CaseState } from "../types";
-import { calcularEstadoSistema, OrbState } from "../utils/estadoSistema";
-import { respuestaGeneralIA } from "../modules/documentos/serviciosIA";
+import { routeAI } from "./ai/aiRouter";
 import { VoiceInput } from "./VoiceInput";
 import toast from "react-hot-toast";
 
@@ -27,8 +26,8 @@ export const IASaseAgent: React.FC = () => {
   const orbState = React.useMemo((): SystemState => {
     switch (systemState) {
       case "thinking": return "thinking";
-      case "red": return "alert";
-      case "yellow": return "warning";
+      case "alert": return "alert";
+      case "warning": return "warning";
       default: return "normal";
     }
   }, [systemState]);
@@ -36,10 +35,10 @@ export const IASaseAgent: React.FC = () => {
   // Texto descriptivo del estado para accesibilidad/clima
   const stateLabel = React.useMemo(() => {
     switch (systemState) {
-      case "red": return "CRÍTICO";
-      case "yellow": return "ALERTA";
+      case "alert": return "CRÍTICO";
+      case "warning": return "ALERTA";
       case "thinking": return "PROCESANDO";
-      case "gold": return "NORMAL";
+      case "normal": return "NORMAL";
       default: return "ESTABLE";
     }
   }, [systemState]);
@@ -102,7 +101,8 @@ export const IASaseAgent: React.FC = () => {
     const originalSystemState = systemState;
     
     try {
-      const response = await respuestaGeneralIA(question);
+      const responseObj = await routeAI(question);
+      const response = responseObj.text;
       setIaResponse(response);
       setUserQuestion("");
     } catch (err) {
@@ -317,12 +317,12 @@ export const IASaseAgent: React.FC = () => {
         </AnimatePresence>
 
         {/* Alerta Visual para Estados Críticos */}
-        {(systemState === "red" || systemState === "yellow") && (
+        {(systemState === "alert" || systemState === "warning") && (
           <motion.div
             animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
             transition={{ duration: 1.5, repeat: Infinity }}
             className={`absolute inset-0 rounded-full border-2 ${
-              systemState === "red" ? "border-red-500" : "border-yellow-500"
+              systemState === "alert" ? "border-red-500" : "border-yellow-500"
             } pointer-events-none`}
           />
         )}

@@ -30,15 +30,27 @@ export const BitacoraAuditoria: React.FC = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from("audit_log")
+        .from("auditoria")
         .select("*")
-        .order("created_at", { ascending: false })
+        .order("fecha", { ascending: false })
         .limit(100);
 
       if (error) {
         console.error("Error fetching audit log:", error);
       } else {
-        setEntries((data as any) || []);
+        const mappedEntries = (data || []).map((item: any) => ({
+          id: item.id,
+          user_id: item.usuario_id,
+          user_email: item.email_usuario,
+          user_role: item.rol_usuario,
+          action_type: item.tipo_accion,
+          action_description: item.descripcion_accion,
+          target_table: item.tabla_objetivo,
+          target_record_id: item.id_registro_objetivo,
+          target_student_name: item.descripcion_accion?.match(/\[ALUMNO:\s*([^\]]+)\]/)?.[1] || null,
+          created_at: item.fecha || new Date().toISOString(),
+        }));
+        setEntries(mappedEntries);
       }
     } catch (err) {
       console.error("Unexpected error:", err);

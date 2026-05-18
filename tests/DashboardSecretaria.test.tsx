@@ -82,17 +82,16 @@ describe("Dashboard Secretaria Unit Tests", () => {
 
   it("renders Header correctly", () => {
     render(<DashboardSecretaria />);
-    expect(screen.getByText(/SECRETARÍA/i)).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /Gestión administrativa/i })).toBeInTheDocument();
-    expect(screen.getByText(/Expedientes, documentos, matrícula/i)).toBeInTheDocument();
+    expect(screen.getByText(/División de Servicios Escolares/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /CONTROL ADMINISTRATIVO/i })).toBeInTheDocument();
   }, 10000);
 
   it("Selecting a student triggers Log Access", () => {
     render(<DashboardSecretaria />);
-    fireEvent.click(screen.getByRole("button", { name: /Secretaria Student/i }));
+    fireEvent.click(screen.getByTitle(/Modificar Expediente/i));
 
     expect(mocks.logAccess).toHaveBeenCalledWith(
-      "Consultar expediente administrativo",
+      "Consultar Expediente (Usuario: Operador)",
       "1",
       "Secretaria Student"
     );
@@ -101,7 +100,8 @@ describe("Dashboard Secretaria Unit Tests", () => {
   it("Validating an expediente triggers Audit", async () => {
     render(<DashboardSecretaria />);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Validar$/i }));
+    fireEvent.click(screen.getByTitle(/Modificar Expediente/i));
+    fireEvent.click(screen.getByTitle(/Confirmar revisión y registro de este expediente/i));
 
     await waitFor(() => {
       expect(mocks.logAudit).toHaveBeenCalled();
