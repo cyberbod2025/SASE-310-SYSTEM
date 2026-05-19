@@ -3,7 +3,7 @@ import { supabase } from "../supabase/client";
 import { useAuth } from "../components/AuthProvider";
 import { useApp } from "../store";
 
-// Tipos de acciones auditables en información sensible
+// Tipos de acciones de seguimiento en información sensible
 export type AccionSensible =
   | "consultar_expediente"
   | "consultar_alerta_medica"
@@ -21,14 +21,14 @@ interface RegistroAcceso {
 }
 
 /**
- * Hook para registrar automáticamente los accesos a información sensible.
- * Cada consulta queda en la tabla `auditoria_accesos` con fecha, hora, usuario y rol.
+ * Hook para seguimiento de accesos a información sensible.
+ * Cada consulta queda en el registro institucional con fecha, hora, usuario y rol.
  */
 export const useAuditoriaAccesos = () => {
   const { user } = useAuth();
   const { currentUserRole } = useApp();
 
-  const registrarAcceso = useCallback(
+  const logAccess = useCallback(
     async ({
       accion,
       alumno_id,
@@ -36,7 +36,7 @@ export const useAuditoriaAccesos = () => {
     }: RegistroAcceso) => {
       if (!user) {
         if (import.meta.env.DEV) {
-          console.warn("[AUDIT_ACCESOS] Registro omitido: sin usuario.");
+          console.warn("[SEGUIMIENTO_ACCESOS] Registro omitido: sin usuario.");
         }
         return;
       }
@@ -61,16 +61,16 @@ export const useAuditoriaAccesos = () => {
           ]);
 
         if (error && import.meta.env.DEV) {
-          console.warn("[AUDIT_ACCESOS] Error al registrar.");
+          console.warn("[SEGUIMIENTO_ACCESOS] Error al registrar.");
         }
       } catch (err) {
         if (import.meta.env.DEV) {
-          console.warn("[AUDIT_ACCESOS] Fallo inesperado.");
+          console.warn("[SEGUIMIENTO_ACCESOS] Fallo inesperado.");
         }
       }
     },
     [user, currentUserRole],
   );
 
-  return { registrarAcceso };
+  return { logAccess };
 };
