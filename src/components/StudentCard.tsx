@@ -1,9 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useApp } from "../store";
-import { Student, CaseState, CaseLabels } from "../types";
+import { Student, UserRole, CaseState } from "../types";
 import { getPrivacySafeAttributes } from "../utils/saseUtils";
-import { getStatusColors, getStatusIcon } from "../utils/statusUtils";
 
 interface StudentCardProps {
   student: Student;
@@ -23,8 +22,12 @@ export const StudentCard: React.FC<StudentCardProps> = ({
     setQuickRegisterOpen(true);
   };
 
-  const statusStyle = getStatusColors(student.caseState);
-  const statusIcon = getStatusIcon(student.caseState);
+  const statusColor =
+    {
+      [CaseState.CERRADO]: "bg-emerald-500",
+      [CaseState.OBSERVADO]: "bg-blue-500",
+      [CaseState.PATRON_DETECTADO]: "bg-rose-500",
+    }[student.caseState] || "bg-slate-400";
 
   return (
     <motion.div
@@ -54,11 +57,12 @@ export const StudentCard: React.FC<StudentCardProps> = ({
             </div>
             <motion.div
               layoutId={`status-${student.id}`}
-              className={`absolute -bottom-1 -right-1 size-7 rounded-full border-4 border-slate-950 flex items-center justify-center ${statusStyle} shadow-xl shadow-black/50`}
-              title={`Estado: ${CaseLabels[student.caseState]}`}
+              className={`absolute -bottom-1 -right-1 size-7 rounded-full border-4 border-slate-950 flex items-center justify-center ${statusColor} shadow-xl shadow-black/50`}
+              title={`Estado: ${student.caseState}`}
             >
-              <span className="material-icons text-[12px] text-white font-black">
-                {statusIcon}
+              <span className="material-symbols-outlined text-[12px] text-white font-black">
+                {student.caseState === CaseState.PATRON_DETECTADO ? "warning" :
+                 student.caseState === CaseState.OBSERVADO ? "visibility" : "check"}
               </span>
             </motion.div>
           </div>
@@ -72,17 +76,20 @@ export const StudentCard: React.FC<StudentCardProps> = ({
               {isUdeii && privacySettings.showAccommodations && (
                 <div className="relative group/tooltip">
                   <span
-                    className="material-icons text-purple-400 cursor-help text-xl animate-pulse drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]"
+                    className="material-symbols-outlined text-purple-400 cursor-help text-xl animate-pulse drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]"
                   >
                     psychology_alt
                   </span>
                   <div className="absolute right-0 top-8 z-50 w-72 p-5 bg-slate-950/95 text-xs text-slate-300 rounded-[2rem] shadow-2xl border border-purple-500/40 backdrop-blur-2xl opacity-0 group-hover/tooltip:opacity-100 transition-all duration-300 scale-95 group-hover/tooltip:scale-100 origin-top-right pointer-events-none">
                     <div className="flex items-center gap-2 mb-3 pb-2 border-b border-purple-500/20">
-                      <span className="material-icons text-purple-400 text-sm">info</span>
+                      <span className="material-symbols-outlined text-purple-400 text-sm">info</span>
                       <span className="font-black text-purple-400 uppercase tracking-widest text-[10px]">
-                        Protocolo UDEII Activo
+                        Apoyo UDEII Sugerido (En preparación)
                       </span>
                     </div>
+                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 italic">
+                      Recomendaciones Institucionales:
+                    </p>
                     <ul className="space-y-2">
                       <li className="flex gap-2">
                         <span className="text-purple-500">•</span>
@@ -103,7 +110,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
             </div>
 
             <div className="flex items-center gap-3 mt-1.5 mb-3">
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-2xl border border-white/5">
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded-lg border border-white/5">
                 {student.matricula}
               </span>
               <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
@@ -120,7 +127,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
               )}
               {student.riesgoAsistencia && student.riesgoAsistencia > 15 && (
                 <span className="text-[9px] font-black px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-2 uppercase tracking-widest shadow-inner">
-                  <span className="material-icons text-[10px]">calendar_today</span>
+                  <span className="material-symbols-outlined text-[10px]">calendar_today</span>
                   Riesgo Asistencia
                 </span>
               )}
@@ -135,12 +142,12 @@ export const StudentCard: React.FC<StudentCardProps> = ({
           onClick={handleReport}
           className="text-[10px] font-black text-slate-400 hover:text-rose-400 flex items-center gap-2 transition-colors uppercase tracking-widest group/btn"
         >
-          <span className="material-icons text-sm group-hover/btn:scale-125 transition-transform">add_alert</span>
+          <span className="material-symbols-outlined text-sm group-hover/btn:scale-125 transition-transform">add_alert</span>
           Reportar
         </button>
 
         <button className="text-[10px] font-black text-slate-400 hover:text-white flex items-center gap-2 transition-colors uppercase tracking-widest group/btn">
-          <span className="material-icons text-sm group-hover/btn:scale-125 transition-transform">account_circle</span>
+          <span className="material-symbols-outlined text-sm group-hover/btn:scale-125 transition-transform">account_circle</span>
           Ver Perfil
         </button>
       </div>

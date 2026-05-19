@@ -1,7 +1,8 @@
 import { TipoDocumentoInstitucional } from "./types";
+import { generateSecureNumCode } from "../../utils/security";
 
 /**
- * Sistema de Trazabilidad Documental SASE-310
+ * Sistema de Seguimiento Documental SASE-310
  *
  * Formato de folio: SASE-310-[TIPO]-[GRUPO]-[FECHA]-[ID]
  * Ejemplo: SASE-310-ACTA-2B-2026-03-06-001
@@ -40,7 +41,7 @@ export function generarFolioInstitucional(
   // ID secuencial o generado
   const id = secuencial
     ? String(secuencial).padStart(3, "0")
-    : String(Math.floor(Math.random() * 999) + 1).padStart(3, "0");
+    : generateSecureNumCode(3);
 
   return `SASE-310-${prefijo}-${grupoClean}-${fechaStr}-${id}`;
 }
