@@ -69,3 +69,6 @@ scripts/*.txt
 
 # Codex config (secrets)
 .codex/
+
+# Local agent working context
+.agent-context/
