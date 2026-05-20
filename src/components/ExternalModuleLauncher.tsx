@@ -49,27 +49,30 @@ export const ExternalModuleLauncher: React.FC<{
         body: JSON.stringify({ module: module.key }),
       });
 
-      const data = await response.json();
+      const rawText = await response.text();
 
-      if (!response.ok) {
-        if (response.status === 403) {
-          setStatus("denied");
-          setErrorMsg(data.error || module.deniedMessage);
-          await logEvent(module.key.toUpperCase(), "LAUNCH_MODULE", "DENIED", { error: data.error });
-          return;
-        }
+      let data: any = null;
 
-        if (response.status === 404) {
-          setStatus("unavailable");
-          setErrorMsg(data.error || "El modulo no esta disponible en este momento.");
-          return;
-        }
-
-        throw new Error(data.error || `No se pudo lanzar ${module.name}.`);
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch {
+        throw new Error(
+          `El servidor no devolvió JSON válido para ${module.name}. Status: ${response.status}`
+        );
       }
 
-      if (!data.url) {
-        throw new Error("No se recibio una URL valida de lanzamiento.");
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+          data?.message ||
+          `No se pudo iniciar ${module.name}. Status: ${response.status}`
+        );
+      }
+
+      if (!data?.url) {
+        throw new Error(
+          `Respuesta incompleta del servidor para ${module.name}. Falta URL de lanzamiento.`
+        );
       }
 
       setStatus("launching");
