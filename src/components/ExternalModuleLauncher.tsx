@@ -83,7 +83,7 @@ export const ExternalModuleLauncher: React.FC<{
         setStatus("embedded");
       }, 350);
     } catch (error: any) {
-      console.error("External module launch error", error);
+      console.warn("External module launch error", error);
       setStatus("error");
       setErrorMsg(error?.message || `No se pudo lanzar ${module.name}.`);
     }
