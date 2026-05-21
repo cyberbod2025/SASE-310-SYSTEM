@@ -84,6 +84,15 @@ export const DashboardOrientacion = () => {
 
   useEffect(() => {
     const load = async () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("demo") === "1") {
+        setCases([]);
+        setDocentes([]);
+        setSelectedCaseId(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         const [loadedCases, loadedDocentes] = await Promise.all([loadOrientacionCasos(), loadDocentes()]);

@@ -130,6 +130,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   const [isDemoCleanMode, setIsDemoCleanMode] = useState(false);
   const previousUnreadRef = useRef(0);
   const unreadWatcherReadyRef = useRef(false);
+  const demoCleanAppliedForRoleRef = useRef<UserRole | null>(null);
   // Roles con acceso global a todas las notificaciones institucionales
   const ROLES_ACCESO_TOTAL = [UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
   const visibleNotifications = notifications.filter((n) => {
@@ -162,7 +163,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
     const cleanMode = params.get("demo") === "1" || localStorage.getItem("sase_demo_clean_view") === "true";
 
     if (!cleanMode) return;
+    if (demoCleanAppliedForRoleRef.current === currentUserRole) return;
 
+    demoCleanAppliedForRoleRef.current = currentUserRole as UserRole;
     setIsDemoCleanMode(true);
     localStorage.setItem("sase_autotutorial_enabled", "false");
     localStorage.setItem(`sase_tutorial_seen_${currentUserRole}`, "true");
@@ -734,7 +737,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </main>
 
         {/* Sasito IA: siempre presente en todas las pantallas */}
-        <SasitoAssistant suppressAssistant={isDemoCleanMode || isTourActive || hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
+        <SasitoAssistant suppressAssistant={isTourActive || hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
         {!isDemoCleanMode && <EncuestaPulso />}
       </div>
 

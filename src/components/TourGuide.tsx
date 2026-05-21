@@ -18,7 +18,7 @@ export const startProductTour = (
   setIsTourActive?: (active: boolean) => void,
   setTourStep?: (step: number) => void,
 ) => {
-  const LEGACY_TOUR_DISABLED = true;
+  const LEGACY_TOUR_DISABLED = false;
 
   if (LEGACY_TOUR_DISABLED) {
     console.warn("Legacy tour is disabled. Use the new onboarding system.");
