@@ -377,11 +377,11 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
           className={`absolute pointer-events-auto flex flex-col items-center gap-4 ${
             isWidgetMode 
               ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' 
-              : 'bottom-28 left-4 right-4 items-end sm:left-auto sm:bottom-12 sm:right-8'
+              : 'bottom-28 right-4 items-end sm:bottom-12 sm:right-8'
           }`}
         >
         <AnimatePresence>
-          {isChatOpen && !minimal && !isTourActive && !suppressSuggestions && (
+          {isChatOpen && !minimal && !isTourActive && (
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.9, transformOrigin: 'bottom right' }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
