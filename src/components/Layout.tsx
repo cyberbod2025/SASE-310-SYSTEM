@@ -286,22 +286,28 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   <div className="flex flex-col gap-0.5 mt-0.5">
                     <div className="flex items-center gap-1.5">
                        <span className="size-1.5 bg-[var(--sase-tertiary)] rounded-full"></span>
-                       <select
-                         aria-label="Rol Institucional"
-                         value={currentUserRole}
-                         onChange={(e) => {
-                           const newRole = e.target.value as UserRole;
-                           switchRole(newRole);
-                           toast.success(`Rol cambiado a: ${RoleLabels[newRole] || newRole}`);
-                         }}
-                         className="bg-black/30 border border-white/10 rounded px-1.5 py-0.5 text-[8.5px] font-black uppercase text-[var(--sase-text-muted)] focus:outline-none focus:border-violet-500/50 hover:bg-black/50 transition-all cursor-pointer tracking-wider"
-                       >
-                         {Object.values(UserRole).map((r) => (
-                           <option key={r} value={r} className="bg-slate-900 text-white">
-                             {RoleLabels[r] || r}
-                           </option>
-                         ))}
-                       </select>
+                       {(import.meta.env.DEV || currentUserRole === UserRole.DEVELOPER || currentUserRole === UserRole.SYSTEM_ADMIN) ? (
+                         <select
+                           aria-label="Rol Institucional (Dev)"
+                           value={currentUserRole}
+                           onChange={(e) => {
+                             const newRole = e.target.value as UserRole;
+                             switchRole(newRole);
+                             toast.success(`Rol cambiado a: ${RoleLabels[newRole] || newRole}`);
+                           }}
+                           className="bg-black/30 border border-white/10 rounded px-1.5 py-0.5 text-[8.5px] font-black uppercase text-[var(--sase-text-muted)] focus:outline-none focus:border-violet-500/50 hover:bg-black/50 transition-all cursor-pointer tracking-wider"
+                         >
+                           {Object.values(UserRole).map((r) => (
+                             <option key={r} value={r} className="bg-slate-900 text-white">
+                               {RoleLabels[r] || r}
+                             </option>
+                           ))}
+                         </select>
+                       ) : (
+                         <span className="text-[9px] font-semibold text-[var(--sase-text-muted)] uppercase tracking-[0.22em] truncate">
+                           {displayUserRole}
+                         </span>
+                       )}
                     </div>
                   </div>
                 </div>
