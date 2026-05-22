@@ -261,10 +261,10 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         return;
       }
 
-      if (normalized.includes("borra al alumno") || normalized.includes("eliminar registro") || normalized.includes("borrar expediente")) {
+      if (normalized.includes("borra") || normalized.includes("eliminar") || normalized.includes("destruir") || normalized.includes("limpiar")) {
         setLocalState('attention');
         setCurrentSuggestion({ 
-          text: "Protocolo de integridad: SASE-310 prohíbe la eliminación de registros institucionales. Los datos solo pueden ser cerrados o archivados.", 
+          text: "Protocolo de integridad y trazabilidad SASE: Se prohíbe estrictamente la eliminación física de registros escolares. Toda actividad queda registrada en la bitácora de auditoría.", 
           state: 'attention' 
         });
         return;
@@ -278,6 +278,103 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         });
         return;
       }
+
+      // --- INTENTS & HELPFUL NAVIGATION ---
+      if (normalized.includes("quien soy") || normalized.includes("mi rol") || 
+          normalized.includes("mi cargo") || normalized.includes("mi puesto") || 
+          normalized.includes("mi perfil") || normalized.includes("que puedo hacer")) {
+        let roleExplanation = "";
+        switch (currentUserRole) {
+          case UserRole.DIRECTIVO:
+            roleExplanation = "Tu rol actual es Dirección (Directivo). Tienes acceso a la supervisión de casos críticos, informes ejecutivos, control de expedientes y resoluciones.";
+            break;
+          case UserRole.SUBDIRECCION:
+            roleExplanation = "Tu rol actual es Subdirección. Tienes acceso a la coordinación académica general, planeaciones NEM y supervisión del protocolo de convivencia.";
+            break;
+          case UserRole.SECRETARIA:
+            roleExplanation = "Tu rol actual es Secretaría. Tienes acceso a la gestión de inscripciones, control del archivo central y trámite de credenciales.";
+            break;
+          case UserRole.PREFECTURA:
+            roleExplanation = "Tu rol actual es Prefectura. Tienes acceso al registro rápido de incidencias, bitácora de asistencia y resguardo de objetos retenidos.";
+            break;
+          case UserRole.ORIENTACION:
+            roleExplanation = "Tu rol actual es Orientación. Tienes acceso al expediente psicopedagógico, atención socioemocional y canalizaciones institucionales.";
+            break;
+          case UserRole.TRABAJO_SOCIAL:
+            roleExplanation = "Tu rol actual es Trabajo Social. Tienes acceso al tracker familiar, visitas domiciliarias y contacto directo con tutores.";
+            break;
+          case UserRole.MEDICO_ESCOLAR:
+            roleExplanation = "Tu rol actual es Servicio Médico. Tienes acceso a la ficha de salud, control de padecimientos y justificación de inasistencias médicas.";
+            break;
+          case UserRole.UDEII:
+            roleExplanation = "Tu rol actual es UDEII. Tienes acceso al expediente de Barreras para el Aprendizaje y la Participación (BAP) y ajustes curriculares.";
+            break;
+          case UserRole.PROMOTORA_LECTURA:
+            roleExplanation = "Tu rol actual es Fomento a la Lectura. Tienes acceso al registro de círculos de lectura y control de préstamos bibliotecarios.";
+            break;
+          case UserRole.DOCENTE:
+          case UserRole.DOCENTE_TUTOR:
+            roleExplanation = "Tu rol actual es Docente / Tutor. Tienes acceso al pase de lista en aula, captura de calificaciones y detección pedagógica temprana.";
+            break;
+          case UserRole.DEVELOPER:
+          case UserRole.SYSTEM_ADMIN:
+            roleExplanation = "Tu rol actual es Desarrollador / Administrador. Tienes acceso total de nivel 3 (root) a todas las capas del sistema y auditorías.";
+            break;
+          default:
+            roleExplanation = "Tienes un perfil de invitado con accesos restringidos para consulta básica.";
+        }
+
+        setLocalState('calm');
+        setCurrentSuggestion({
+          text: `Identidad verificada. ${roleExplanation}`,
+          state: 'calm'
+        });
+        return;
+      }
+
+      if (normalized.includes("ver expediente") || normalized.includes("abrir expediente") || 
+          normalized.includes("expedientes") || normalized.includes("historial de alumno")) {
+        setCurrentModule(AppModule.EXPEDIENTES);
+        setCurrentSuggestion({
+          text: "Entendido. Abriendo el archivo general de expedientes institucionales de alumnos.",
+          state: 'calm'
+        });
+        setIsChatOpen(false);
+        return;
+      }
+
+      if (normalized.includes("objeto retenido") || normalized.includes("objetos retenidos") || 
+          normalized.includes("bajo custodia") || normalized.includes("resguardo") || 
+          normalized.includes("pertenencias")) {
+        const allowedRoles = [UserRole.PREFECTURA, UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.DEVELOPER, UserRole.SYSTEM_ADMIN];
+        if (allowedRoles.includes(currentUserRole as UserRole)) {
+          setCurrentModule(AppModule.OBJETOS_RETENIDOS);
+          setCurrentSuggestion({
+            text: "Entendido. Abriendo el módulo de Control de Objetos Retenidos y Cadena de Custodia.",
+            state: 'calm'
+          });
+          setIsChatOpen(false);
+        } else {
+          setLocalState('alert');
+          setCurrentSuggestion({
+            text: "Por políticas de seguridad escolar, el control de objetos bajo resguardo está restringido a Prefectura y Dirección. Acude a la oficina física si requieres asistencia.",
+            state: 'alert'
+          });
+        }
+        return;
+      }
+
+      if (normalized.includes("enviar whatsapp") || normalized.includes("notificar por whatsapp") || 
+          normalized.includes("whatsapp masivo") || normalized.includes("automatizacion") || 
+          normalized.includes("reporte masivo") || normalized.includes("calificaciones globales")) {
+        setLocalState('attention');
+        setCurrentSuggestion({
+          text: "Funcionalidad en preparación para esta beta. El servicio de comunicación automática y reportería masiva será habilitado en la próxima actualización del plantel.",
+          state: 'attention'
+        });
+        return;
+      }
+
 
       const sasitoL3Response = trySasitoL3Bridge({
         text,

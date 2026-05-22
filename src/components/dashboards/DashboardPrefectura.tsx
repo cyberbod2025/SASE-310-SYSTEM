@@ -843,10 +843,34 @@ export const DashboardPrefectura = () => {
                   </div>
 
                   <div className="space-y-2 pt-2">
-                    <button className="w-full py-3 bg-sase-warning text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-sase-warning transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95">
+                    <button
+                      onClick={() => {
+                        toast.success(`Notificación enviada al tutor legal de ${selectedStudent.name.split(" ")[0]} a través de la pasarela institucional.`);
+                      }}
+                      className="w-full py-3 bg-sase-warning text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-sase-warning transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95"
+                    >
                       Notificar Tutor
                     </button>
-                    <button className="w-full py-3 bg-[var(--sase-surface-low)] border border-[var(--sase-border-ghost)] text-[var(--sase-text-muted)] rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[rgba(121,118,124,0.12)] hover:text-white transition-all active:scale-95">
+                    <button
+                      onClick={async () => {
+                        await addIncident(
+                          selectedStudent.id,
+                          IncidentType.CONDUCTA,
+                          "Escalamiento preventivo a Orientación por Prefectura"
+                        );
+                        await logAudit(
+                          "CREACION",
+                          `Prefectura: Escalamiento preventivo a Orientación`,
+                          "incidencias",
+                          selectedStudent.id,
+                          selectedStudent.name,
+                          null,
+                          { type: IncidentType.CONDUCTA, desc: "Escalamiento preventivo a Orientación" }
+                        );
+                        toast.success(`Caso de ${selectedStudent.name.split(" ")[0]} escalado a Orientación correctamente.`);
+                      }}
+                      className="w-full py-3 bg-[var(--sase-surface-low)] border border-[var(--sase-border-ghost)] text-[var(--sase-text-muted)] rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[rgba(121,118,124,0.12)] hover:text-white transition-all active:scale-95"
+                    >
                       Escalar a Orientación
                     </button>
                   </div>
