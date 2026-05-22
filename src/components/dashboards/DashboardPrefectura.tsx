@@ -178,6 +178,12 @@ export const DashboardPrefectura = () => {
     month: "long",
   });
 
+  const retainedObjectsCount = useMemo(() => {
+    return students
+      .flatMap((s) => s.objetosRetenidos || [])
+      .filter((obj) => obj.estado === "retenido").length;
+  }, [students]);
+
   // --- DATA PROCESSING ---
   const allIncidents = useMemo(
     () =>
@@ -388,7 +394,7 @@ export const DashboardPrefectura = () => {
         {/* KPI GRID */}
         <div
           id="pref-kpi-grid"
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 md:grid-cols-5 gap-4"
         >
           <HolographicKPI
             icon="group"
@@ -413,11 +419,19 @@ export const DashboardPrefectura = () => {
             delay={3}
           />
           <HolographicKPI
+            icon="inventory_2"
+            value={retainedObjectsCount.toString()}
+            label="EN CUSTODIA"
+            color="amber"
+            trend="Objetos"
+            delay={4}
+          />
+          <HolographicKPI
             icon="verified_user"
             value={students.length.toString()}
             label="MATRÍCULA TOTAL"
             color="indigo"
-            delay={4}
+            delay={5}
           />
         </div>
 
