@@ -332,6 +332,7 @@ export const DashboardDireccion = () => {
                   <ActionButton label="Crear incidencia" icon="add_alert" onClick={() => openQuickRegister(IncidentType.CONDUCTA)} />
                 )}
                 <ActionButton label="Consultar expediente institucional" icon="folder_open" onClick={() => setCurrentModule(AppModule.EXPEDIENTES)} />
+                <ActionButton label="Control de objetos retenidos" icon="inventory_2" onClick={() => setCurrentModule(AppModule.OBJETOS_RETENIDOS)} />
                 <ActionButton label="Generar informes" icon="print" onClick={handleCreateReport} />
                 <ActionButton label="Supervisar vencidos" icon="alarm" onClick={() => toast("Filtro aplicado a casos vencidos")} />
               </div>
