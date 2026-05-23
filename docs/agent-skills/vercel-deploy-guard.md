@@ -36,3 +36,8 @@ gh pr checks <PR>
 - Estado.
 - Riesgos.
 - Recomendación: usar preview / no usar / bloquear deploy.
+
+## Proyecto canónico SASE-310
+- Proyecto permitido: `sase-310-system`.
+- Proyecto a retirar/desconectar para este repo: `sase-310_-sistema-escolar`.
+- Validación en build/deploy: `pnpm vercel:guard:project` (requiere `VERCEL_PROJECT_NAME`).
