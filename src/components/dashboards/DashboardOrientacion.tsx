@@ -63,6 +63,9 @@ export const DashboardOrientacion = () => {
     followUps: [],
   });
   const [loading, setLoading] = useState(true);
+  const [showDeriveConfirm, setShowDeriveConfirm] = useState(false);
+  const [showEscalateConfirm, setShowEscalateConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const suggestions: StudentSuggestion[] = students
     .filter((student) => student.caseState !== "CERRADO")
@@ -215,25 +218,43 @@ export const DashboardOrientacion = () => {
 
   const handleDeriveSocialWork = async () => {
     if (!selectedCase) return;
+    setShowDeriveConfirm(true);
+  };
+
+  const confirmDeriveSocialWork = async () => {
+    if (!selectedCase) return;
+    setIsSubmitting(true);
     try {
       await derivarTrabajoSocial(selectedCase.id);
       await refreshCases(selectedCase.id);
       toast.success("Caso derivado a Trabajo Social");
+      setShowDeriveConfirm(false);
     } catch (error) {
       console.error(error);
       toast.error("No se pudo derivar el caso");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleEscalateDirection = async () => {
     if (!selectedCase) return;
+    setShowEscalateConfirm(true);
+  };
+
+  const confirmEscalateDirection = async () => {
+    if (!selectedCase) return;
+    setIsSubmitting(true);
     try {
       await escalarDireccion(selectedCase.id);
       await refreshCases(selectedCase.id);
       toast.success("Caso escalado a Dirección");
+      setShowEscalateConfirm(false);
     } catch (error) {
       console.error(error);
       toast.error("No se pudo escalar el caso");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -314,6 +335,100 @@ export const DashboardOrientacion = () => {
           </div>
         )}
       </div>
+    {showDeriveConfirm && selectedCase && (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="w-full max-w-md rounded-[2rem] border border-indigo-500/20 bg-slate-950 p-6 shadow-2xl animate-scale-in">
+          <div className="flex items-center gap-3">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-indigo-500 text-white">
+              <span className="material-symbols-outlined text-2xl font-black">family_restroom</span>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-indigo-300">Derivación Especializada</p>
+              <h3 className="text-lg font-black text-white">Derivar a Trabajo Social</h3>
+            </div>
+          </div>
+          <p className="mt-4 text-xs leading-6 text-slate-300 font-medium">
+            ¿Confirmas la derivación del caso de <strong className="text-white font-black">{selectedCase.alumnoNombre}</strong> al área de Trabajo Social?
+          </p>
+          <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-indigo-400 bg-indigo-950/20 border border-indigo-500/20 p-3 rounded-xl leading-relaxed">
+            ⚠️ Esta acción programará una visita domiciliaria y una investigación familiar para verificar el contexto sociofamiliar del alumno.
+          </p>
+          <div className="mt-6 flex gap-3">
+            <button
+              type="button"
+              onClick={() => setShowDeriveConfirm(false)}
+              disabled={isSubmitting}
+              className="flex-1 min-h-[44px] rounded-xl border border-white/10 bg-white/[0.05] text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/[0.1] transition active:scale-95 disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={confirmDeriveSocialWork}
+              disabled={isSubmitting}
+              className="flex-1 min-h-[44px] rounded-xl bg-indigo-500 text-[10px] font-black uppercase tracking-widest text-white hover:bg-indigo-400 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="material-icons animate-spin text-[14px]">progress_activity</span>
+                  <span>Procesando...</span>
+                </>
+              ) : (
+                "Confirmar"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {showEscalateConfirm && selectedCase && (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm animate-fade-in">
+        <div className="w-full max-w-md rounded-[2rem] border border-rose-500/20 bg-slate-950 p-6 shadow-2xl animate-scale-in">
+          <div className="flex items-center gap-3">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-rose-500 text-white">
+              <span className="material-symbols-outlined text-2xl font-black">gavel</span>
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-rose-300">Medida de Acompañamiento</p>
+              <h3 className="text-lg font-black text-white">Escalar a Dirección</h3>
+            </div>
+          </div>
+          <p className="mt-4 text-xs leading-6 text-slate-300 font-medium">
+            ¿Confirmas el escalamiento del caso del alumno <strong className="text-white font-black">{selectedCase.alumnoNombre}</strong> a la Dirección escolar?
+          </p>
+          <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-rose-400 bg-rose-950/20 border border-rose-500/20 p-3 rounded-xl leading-relaxed">
+            ⚠️ Esta acción transferirá la custodia formal del caso a la Dirección General para establecer sanciones o medidas institucionales permanentes.
+          </p>
+          <div className="mt-6 flex gap-3">
+            <button
+              type="button"
+              onClick={() => setShowEscalateConfirm(false)}
+              disabled={isSubmitting}
+              className="flex-1 min-h-[44px] rounded-xl border border-white/10 bg-white/[0.05] text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/[0.1] transition active:scale-95 disabled:opacity-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={confirmEscalateDirection}
+              disabled={isSubmitting}
+              className="flex-1 min-h-[44px] rounded-xl bg-rose-500 text-[10px] font-black uppercase tracking-widest text-white hover:bg-rose-400 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="material-icons animate-spin text-[14px]">progress_activity</span>
+                  <span>Procesando...</span>
+                </>
+              ) : (
+                "Confirmar"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </main>
   );
 };
+

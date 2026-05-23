@@ -169,6 +169,8 @@ export const DashboardPrefectura = () => {
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
     null,
   );
+  const [showEscalateConfirm, setShowEscalateConfirm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // --- HELPERS ---
   const todayStr = new Date().toISOString().split("T")[0];
@@ -852,22 +854,8 @@ export const DashboardPrefectura = () => {
                       Notificar Tutor
                     </button>
                     <button
-                      onClick={async () => {
-                        await addIncident(
-                          selectedStudent.id,
-                          IncidentType.CONDUCTA,
-                          "Escalamiento preventivo a Orientación por Prefectura"
-                        );
-                        await logAudit(
-                          "CREACION",
-                          `Prefectura: Escalamiento preventivo a Orientación`,
-                          "incidencias",
-                          selectedStudent.id,
-                          selectedStudent.name,
-                          null,
-                          { type: IncidentType.CONDUCTA, desc: "Escalamiento preventivo a Orientación" }
-                        );
-                        toast.success(`Caso de ${selectedStudent.name.split(" ")[0]} escalado a Orientación correctamente.`);
+                      onClick={() => {
+                        setShowEscalateConfirm(true);
                       }}
                       className="w-full py-3 bg-[var(--sase-surface-low)] border border-[var(--sase-border-ghost)] text-[var(--sase-text-muted)] rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[rgba(121,118,124,0.12)] hover:text-white transition-all active:scale-95"
                     >
@@ -886,7 +874,7 @@ export const DashboardPrefectura = () => {
                     SELECCIONE ALUMNO
                     <br />
                     <span className="text-sase-warning/50">
-                      O INGRESE MATRÍCULA
+                      PASE CREDENCIAL O BUSQUE
                     </span>
                   </p>
                 </div>
@@ -895,6 +883,77 @@ export const DashboardPrefectura = () => {
           </div>
         </div>
       </div>
+      {showEscalateConfirm && selectedStudent && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-md rounded-[2rem] border border-sase-warning/20 bg-slate-950 p-6 shadow-2xl animate-scale-in">
+            <div className="flex items-center gap-3">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-sase-warning text-white">
+                <span className="material-symbols-outlined text-2xl font-black">campaign</span>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-sase-warning">Protocolo Prefectura</p>
+                <h3 className="text-lg font-black text-white">Escalar a Orientación</h3>
+              </div>
+            </div>
+            <p className="mt-4 text-xs leading-6 text-slate-300 font-medium">
+              ¿Confirmas el escalamiento preventivo del alumno <strong className="text-white font-black">{selectedStudent.name}</strong> al departamento de Orientación Psicopedagógica?
+            </p>
+            <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-sase-warning/90 bg-amber-950/20 border border-sase-warning/20 p-3 rounded-xl leading-relaxed">
+              ⚠️ Esta acción registrará el reporte de prefectura en el expediente y alertará a los orientadores en su bandeja de prioridad.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowEscalateConfirm(false)}
+                disabled={isSubmitting}
+                className="flex-1 min-h-[44px] rounded-xl border border-white/10 bg-white/[0.05] text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/[0.1] transition active:scale-95 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsSubmitting(true);
+                  try {
+                    await addIncident(
+                      selectedStudent.id,
+                      IncidentType.CONDUCTA,
+                      "Escalamiento preventivo a Orientación por Prefectura"
+                    );
+                    await logAudit(
+                      "CREACION",
+                      `Prefectura: Escalamiento preventivo a Orientación`,
+                      "incidencias",
+                      selectedStudent.id,
+                      selectedStudent.name,
+                      null,
+                      { type: IncidentType.CONDUCTA, desc: "Escalamiento preventivo a Orientación" }
+                    );
+                    toast.success(`Caso de ${selectedStudent.name.split(" ")[0]} escalado a Orientación correctamente.`);
+                    setShowEscalateConfirm(false);
+                  } catch (err) {
+                    console.error("Error escalating in Prefectura:", err);
+                    toast.error("Error al registrar escalamiento.");
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+                disabled={isSubmitting}
+                className="flex-1 min-h-[44px] rounded-xl bg-sase-warning text-[10px] font-black uppercase tracking-widest text-white hover:bg-amber-500 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="material-icons animate-spin text-[14px]">progress_activity</span>
+                    <span>Procesando...</span>
+                  </>
+                ) : (
+                  "Confirmar"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </GlassCard>
   );
 };

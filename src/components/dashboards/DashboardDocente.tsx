@@ -66,6 +66,8 @@ export const DashboardDocente = () => {
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [quickFormOpen, setQuickFormOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showEscalateConfirm, setShowEscalateConfirm] = useState(false);
 
   const role = (currentUserRole || UserRole.DOCENTE) as UserRole;
   const permissions = useMemo(() => getPermissions(role, currentUserProfile), [currentUserProfile, role]);
@@ -123,21 +125,29 @@ export const DashboardDocente = () => {
       return;
     }
 
-    const description = draft.description.trim() || selectedOption.defaultDescription;
-    const evidence = [draft.evidenceNote.trim(), draft.evidenceFileName.trim()]
-      .filter(Boolean)
-      .map((item) => `Evidencia docente: ${item}`);
+    setIsSubmitting(true);
+    try {
+      const description = draft.description.trim() || selectedOption.defaultDescription;
+      const evidence = [draft.evidenceNote.trim(), draft.evidenceFileName.trim()]
+        .filter(Boolean)
+        .map((item) => `Evidencia docente: ${item}`);
 
-    await addIncident(
-      selectedStudent.id,
-      selectedOption.incidentType as IncidentType,
-      description,
-      evidence.length ? evidence : undefined,
-    );
+      await addIncident(
+        selectedStudent.id,
+        selectedOption.incidentType as IncidentType,
+        description,
+        evidence.length ? evidence : undefined,
+      );
 
-    toast.success(`Incidencia guardada: ${selectedStudent.name}`);
-    resetDraft(keepOpen ? selectedStudent.id : "");
-    setQuickFormOpen(keepOpen);
+      toast.success(`Incidencia guardada: ${selectedStudent.name}`);
+      resetDraft(keepOpen ? selectedStudent.id : "");
+      setQuickFormOpen(keepOpen);
+    } catch (err) {
+      console.error("Error saving incident:", err);
+      toast.error("Error al guardar incidencia.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEscalate = () => {
@@ -147,9 +157,25 @@ export const DashboardDocente = () => {
     }
     const selectedStudent = teacherStudents.find((s) => s.id === draft.studentId);
     if (selectedStudent) {
-      escalateCase(selectedStudent.id, selectedStudent.name, "Solicitud docente de revisión institucional");
+      setShowEscalateConfirm(true);
     } else {
       toast.error("Selecciona un alumno para escalar.");
+    }
+  };
+
+  const confirmEscalate = async () => {
+    const selectedStudent = teacherStudents.find((s) => s.id === draft.studentId);
+    if (!selectedStudent) return;
+
+    setIsSubmitting(true);
+    try {
+      await escalateCase(selectedStudent.id, selectedStudent.name, "Solicitud docente de revisión institucional");
+      setShowEscalateConfirm(false);
+    } catch (err) {
+      console.error("Error escalating case:", err);
+      toast.error("Error al escalar caso.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -224,7 +250,55 @@ export const DashboardDocente = () => {
         onChange={setDraft}
         onClose={() => setQuickFormOpen(false)}
         onSubmit={handleSaveIncident}
+        loading={isSubmitting}
       />
+
+      {showEscalateConfirm && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-md rounded-[2rem] border border-emerald-500/20 bg-slate-950 p-6 shadow-2xl animate-scale-in">
+            <div className="flex items-center gap-3">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500 text-slate-950">
+                <span className="material-symbols-outlined text-2xl font-black">gavel</span>
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-300">Garantía Institucional</p>
+                <h3 className="text-lg font-black text-white">Confirmar Escalamiento</h3>
+              </div>
+            </div>
+            <p className="mt-4 text-xs leading-6 text-slate-300 font-medium">
+              ¿Estás seguro de que deseas escalar a la Dirección General el caso del alumno <strong className="text-white font-black">{teacherStudents.find((s) => s.id === draft.studentId)?.name}</strong>?
+            </p>
+            <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-rose-400 bg-rose-950/20 border border-rose-500/20 p-3 rounded-xl leading-relaxed">
+              ⚠️ Esta acción registrará un antecedente de Indisciplina Crítica en el expediente integral del alumno y alertará de inmediato a las jefaturas departamentales.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowEscalateConfirm(false)}
+                disabled={isSubmitting}
+                className="flex-1 min-h-[44px] rounded-xl border border-white/10 bg-white/[0.05] text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/[0.1] transition active:scale-95 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmEscalate}
+                disabled={isSubmitting}
+                className="flex-1 min-h-[44px] rounded-xl bg-amber-400 text-[10px] font-black uppercase tracking-widest text-slate-950 hover:bg-amber-300 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="material-icons animate-spin text-[14px]">progress_activity</span>
+                    <span>Procesando...</span>
+                  </>
+                ) : (
+                  "Confirmar"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
