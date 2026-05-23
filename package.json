@@ -18,8 +18,7 @@
     "smoke:prepare": "tsx scripts/create-smoke-users.ts",
     "smoke:cleanup": "tsx scripts/cleanup-smoke-users.ts",
     "sync:types": "npx supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/supabase/types.ts",
-    "prepare": "husky",
-    "vercel:guard:project": "node scripts/vercel-guard-project.mjs"
+    "prepare": "husky"
   },
   "dependencies": {
     "@_davideast/stitch-mcp": "^0.3.2",
