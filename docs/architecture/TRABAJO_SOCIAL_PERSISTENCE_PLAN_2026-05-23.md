@@ -292,4 +292,14 @@ Trabajo Social debe replicar este patrón: RPCs → tipos → API client → han
 
 ---
 
+## Decisiones pendientes antes de implementar
+
+1. **Cierre de casos:** Confirmar si Trabajo Social puede cerrar casos o solo dar seguimiento. La matriz de permisos (`permisos.ts`) tiene `can_close: true` para TS, pero la UI (`TrabajoSocialCaseDetail.tsx:127`) afirma que solo Dirección puede cerrar. Resolver antes de definir RLS y RPCs.
+2. **Edición por Dirección:** Confirmar si Dirección/Subdirección pueden editar campos de casos de TS o solo consultar y escalar. Esto define si sus policies RLS son `FOR ALL` o `FOR SELECT`.
+3. **Estrategia de escritura:** Confirmar si toda escritura debe pasar por RPCs obligatorias (patrón Orientación) o si se permiten inserts directos desde el cliente con RLS. RPCs dan mayor control y auditoría server-side; inserts directos son más rápidos de implementar pero menos seguros.
+4. **Tabla `seguimiento_social` legacy:** Confirmar si se migran datos históricos, se deja como tabla inactiva, o se conecta como vista histórica de solo lectura. El trigger `tr_audit_social` existente podría colisionar si no se desactiva.
+5. **Nomenclatura de roles:** Confirmar consistencia de nombres usados en RLS: `directivo` vs `direccion`, `orientacion`, `trabajo_social`, `system_admin`. Las policies usan `get_my_role()` que retorna el valor exacto del enum `app_role`.
+
+---
+
 *Fin del plan de persistencia. Aprobado para implementación en fase 3.*
