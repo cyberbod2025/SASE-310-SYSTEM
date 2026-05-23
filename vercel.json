@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "if [ -n \"$VERCEL_PROJECT_ID\" ]; then [ \"$VERCEL_PROJECT_ID\" != \"prj_kYb61hyYcC3l51IcTyrEsjbMAisz\" ]; else case \"${VERCEL_URL:-}\" in \"\"|sase-310-system-*) exit 1 ;; *) exit 0 ;; esac; fi",
   "installCommand": "corepack enable && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm build",
   "routes": [
