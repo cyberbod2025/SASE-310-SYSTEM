@@ -64,6 +64,8 @@ export const DocumentacionInstitucional: React.FC = () => {
         studentId={selectedStudent.id}
         studentName={selectedStudent.name}
         studentGroup={selectedStudent.group}
+        studentTutorName={selectedStudent.guardianInfo?.name || ""}
+        studentTutorRelationship={selectedStudent.guardianInfo?.relationship || ""}
         incidentDescription={selectedStudent.incidents?.[0]?.description || ""}
         onClose={() => setCurrentModule(AppModule.DASHBOARD)}
       />
