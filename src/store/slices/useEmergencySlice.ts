@@ -286,20 +286,28 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
   }, [fetchActiveAlerts, fetchResponsesForAlert, user, userProfile]);
 
   const closeEmergencyAlert = useCallback(async (alertaId: string) => {
-    const { error } = await (supabase
-      .from("alertas_emergencia" as any)
-      .update({ estado: "cancelada", cerrada_at: new Date().toISOString() } as any)
-      .eq("id", alertaId) as any);
-
-    if (!error) {
-      stopEmergencyEscalation(alertaId);
-      setAlertsState(alertsRef.current.map((alert) => (
-        alert.id === alertaId ? { ...alert, estado: "cancelada", cerrada_at: new Date().toISOString() } : alert
-      )));
-      if (myActiveAlert?.id === alertaId) setMyActiveAlert(null);
-      toast.success("Alerta cerrada");
+    let error: any = null;
+    try {
+      const res = await supabase
+        .from("alertas_emergencia" as any)
+        .update({ estado: "cancelada", cerrada_at: new Date().toISOString() } as any)
+        .eq("id", alertaId) as any;
+      error = res.error;
+    } catch (err: any) {
+      error = err;
     }
-  }, [myActiveAlert?.id, setAlertsState]);
+
+    if (error) {
+      console.warn("Error al cancelar SOS en DB, aplicando fallback local:", error);
+    }
+
+    stopEmergencyEscalation(alertaId);
+    setAlertsState(alertsRef.current.map((alert) => (
+      alert.id === alertaId ? { ...alert, estado: "cancelada", cerrada_at: new Date().toISOString() } : alert
+    )));
+    setMyActiveAlert((current) => (current?.id === alertaId ? null : current));
+    toast.success("Alerta SOS cancelada por el usuario.");
+  }, [setAlertsState]);
 
   useEffect(() => {
     if (!user) return;
