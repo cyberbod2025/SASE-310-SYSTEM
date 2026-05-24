@@ -23,6 +23,9 @@ DATOS DEL CASO:
 - Descripción: ${datos.descripcion}
 ${datos.tipo_falta ? `- Tipo de falta: ${datos.tipo_falta}` : ""}
 ${datos.testigos ? `- Testigos: ${datos.testigos}` : ""}
+${datos.tutor_nombre ? `- Madre, padre o tutor: ${datos.tutor_nombre}` : "- Madre, padre o tutor: En preparación"}
+${datos.personal_prefectura ? `- Personal de Prefectura: ${datos.personal_prefectura}` : "- Personal de Prefectura: En preparación"}
+${datos.testigo_institucional ? `- Testigo institucional: ${datos.testigo_institucional}` : "- Testigo institucional: En preparación"}
 
 REGLAS INQUEBRANTABLES:
 1. Usa lenguaje técnico-pedagógico, neutro y objetivo. NUNCA uses juicios de valor.
@@ -62,6 +65,26 @@ Estructura:
 6. Nota final: "Se deja constancia de los hechos para los efectos administrativos y formativos correspondientes."
 
 Tono: Formal, objetivo, sin juicios personales. Lenguaje jurídico-administrativo escolar.`;
+
+    case "acta_corresponsabilidad":
+      return `${contextoComun}
+TIPO DE DOCUMENTO: ACTA DE HECHOS Y ACUERDOS DE CORRESPONSABILIDAD
+
+Genera SOLO la redacción para la sección "II. ACTA DE HECHOS" del formato institucional.
+El sistema agregará encabezados, fundamentos, acuerdos, compromisos, constancia, observaciones y firmas.
+
+Estructura requerida:
+1. Constancia objetiva de lo ocurrido, basada estrictamente en la descripción proporcionada.
+2. Seguimiento realizado por personal escolar, si consta en los datos.
+3. Carácter preventivo, formativo y de acompañamiento.
+4. Cierre breve que privilegie el interés superior del estudiante y la corresponsabilidad familia-escuela.
+
+Reglas adicionales:
+- Si un dato no fue proporcionado, escribe literalmente "En preparación".
+- No inventes nombres, cargos, horarios, autorizaciones ni sanciones.
+- No incluyas encabezados, firmas, casillas ni fundamento normativo.
+
+Tono: Institucional, claro, preventivo y formativo.`;
 
     case "hoja_acuerdos":
       return `${contextoComun}

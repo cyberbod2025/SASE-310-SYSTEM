@@ -30,8 +30,16 @@ interface GeneradorDocumentosProps {
   studentId: string;
   studentName: string;
   studentGroup: string;
+  studentTutorName?: string;
+  studentTutorRelationship?: string;
   incidentDescription?: string;
   onClose: () => void;
+}
+
+function obtenerCicloEscolar(fecha = new Date()): string {
+  const anio = fecha.getFullYear();
+  const iniciaNuevoCiclo = fecha.getMonth() >= 7;
+  return iniciaNuevoCiclo ? `${anio}-${anio + 1}` : `${anio - 1}-${anio}`;
 }
 
 /**
@@ -46,6 +54,8 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
   studentId,
   studentName,
   studentGroup,
+  studentTutorName = "",
+  studentTutorRelationship = "",
   incidentDescription = "",
   onClose,
 }) => {
@@ -64,6 +74,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
   const [htmlFinal, setHtmlFinal] = useState("");
   const [citatoriosPrevios, setCitatoriosPrevios] = useState(0);
   const [folio, setFolio] = useState("");
+  const [documentoRegistrado, setDocumentoRegistrado] = useState(false);
 
   // Editor inteligente: advertencias y mejora de redacción
   const [incidenciasPrevias, setIncidenciasPrevias] = useState<{
@@ -95,6 +106,15 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     acuerdos: [],
     fecha_citatorio: "",
     hora_citatorio: "",
+    ciclo_escolar: obtenerCicloEscolar(),
+    tutor_nombre: studentTutorName,
+    tutor_parentesco: studentTutorRelationship,
+    personal_prefectura: "",
+    testigo_institucional: "",
+    reflexion_alumno: "",
+    compromiso_alumno: "",
+    compromiso_familia: "",
+    observaciones: "",
   });
 
   // Detección automática de incidencias previas
@@ -144,6 +164,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     // Folio institucional: SASE-310-[TIPO]-[GRUPO]-[FECHA]-[ID]
     const nuevoFolio = generarFolioInstitucional(tipoDoc, datos.grupo);
     setFolio(nuevoFolio);
+    setDocumentoRegistrado(false);
 
     try {
       const prompt = generarPromptDocumento(tipoDoc, datos);
@@ -176,7 +197,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
   };
 
   // Generar documento final
-  const handleGenerarFinal = () => {
+  const handleGenerarFinal = async () => {
     const html = generarPlantillaHTML(tipoDoc, datos, contenidoEditado, folio);
     setHtmlFinal(html);
     setFase("listo");
@@ -206,7 +227,47 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
         console.log(`[SEGUIMIENTO] Folio ${folio} registrado`);
       });
 
+    if (tipoDoc === "acta_corresponsabilidad" && !documentoRegistrado) {
+      await registrarDocumentoInstitucional(html);
+    }
+
     toast.success("Documento listo para revisión e impresión");
+  };
+
+  const registrarDocumentoInstitucional = async (html: string) => {
+    try {
+      const firmas = [
+        datos.alumno_nombre,
+        datos.tutor_nombre || "En preparación",
+        datos.docente_reporta,
+        datos.personal_prefectura || "En preparación",
+        datos.testigo_institucional || "En preparación",
+      ];
+
+      const { error } = await (supabase as any)
+        .from("documentos_institucionales")
+        .insert({
+          alumno_id: studentId,
+          tipo: tipoDoc,
+          folio,
+          fecha: new Date().toISOString(),
+          titulo: TIPOS_DOCUMENTO[tipoDoc].label,
+          contenido: html,
+          narracion_ia: contenidoIA || null,
+          firmas,
+          creado_por: user?.id || null,
+        });
+
+      if (error) throw error;
+
+      setDocumentoRegistrado(true);
+      toast.success("Acta registrada en expediente institucional");
+    } catch (error) {
+      console.error("[DOC_GEN] Error registrando acta:", error);
+      toast.error(
+        "Documento generado; registro en expediente: En preparación",
+      );
+    }
   };
 
   // Imprimir y cerrar
@@ -349,7 +410,10 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                         return (
                           <button
                             key={key}
-                            onClick={() => setTipoDoc(key)}
+                            onClick={() => {
+                              setTipoDoc(key);
+                              setDocumentoRegistrado(false);
+                            }}
                             className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${
                               tipoDoc === key
                                 ? "border-blue-400 bg-blue-50 shadow-sm"
@@ -485,6 +549,113 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                 </div>
               )}
 
+              {tipoDoc === "acta_corresponsabilidad" && (
+                <div className="space-y-4 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-[10px] font-black text-indigo-700 uppercase tracking-widest">
+                      Datos para acta de corresponsabilidad
+                    </p>
+                    <span className="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 text-[9px] font-black uppercase tracking-widest">
+                      Autollenado de personal: En preparación
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1.5">
+                        Ciclo Escolar
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.ciclo_escolar}
+                        onChange={(e) =>
+                          updateDato("ciclo_escolar", e.target.value)
+                        }
+                        className="w-full bg-white border border-indigo-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        title="Ciclo escolar del acta"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1.5">
+                        Madre, Padre o Tutor
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.tutor_nombre}
+                        onChange={(e) =>
+                          updateDato("tutor_nombre", e.target.value)
+                        }
+                        className="w-full bg-white border border-indigo-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="En preparación"
+                        title="Nombre del tutor que comparece"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1.5">
+                        Parentesco
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.tutor_parentesco}
+                        onChange={(e) =>
+                          updateDato("tutor_parentesco", e.target.value)
+                        }
+                        className="w-full bg-white border border-indigo-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="En preparación"
+                        title="Relación del tutor con el alumno"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1.5">
+                        Personal que Atiende
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.docente_reporta}
+                        onChange={(e) =>
+                          updateDato("docente_reporta", e.target.value)
+                        }
+                        className="w-full bg-white border border-indigo-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        title="Docente tutor o personal que atiende la reunión"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1.5">
+                        Prefectura
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.personal_prefectura}
+                        onChange={(e) =>
+                          updateDato("personal_prefectura", e.target.value)
+                        }
+                        className="w-full bg-white border border-indigo-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="En preparación"
+                        title="Personal de prefectura que comparece"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1.5">
+                        Testigo Institucional
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.testigo_institucional}
+                        onChange={(e) =>
+                          updateDato("testigo_institucional", e.target.value)
+                        }
+                        className="w-full bg-white border border-indigo-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="En preparación"
+                        title="Testigo institucional si asiste"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Descripción */}
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
@@ -514,6 +685,71 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                   title="Testigos presentes durante el incidente"
                 />
               </div>
+
+              {tipoDoc === "acta_corresponsabilidad" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                      Reflexión del Alumno
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={datos.reflexion_alumno}
+                      onChange={(e) =>
+                        updateDato("reflexion_alumno", e.target.value)
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="En preparación"
+                      title="Reflexión del alumno"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                      Compromiso del Alumno
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={datos.compromiso_alumno}
+                      onChange={(e) =>
+                        updateDato("compromiso_alumno", e.target.value)
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="En preparación"
+                      title="Compromiso personal del alumno"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                      Compromiso de la Familia
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={datos.compromiso_familia}
+                      onChange={(e) =>
+                        updateDato("compromiso_familia", e.target.value)
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="En preparación"
+                      title="Compromiso de la familia"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
+                      Observaciones Adicionales
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={datos.observaciones}
+                      onChange={(e) =>
+                        updateDato("observaciones", e.target.value)
+                      }
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="En preparación"
+                      title="Observaciones adicionales"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -835,6 +1071,17 @@ ACCIONES FORMATIVAS SUGERIDAS:
 Se sugiere abordar la situación mediante el diálogo formativo con el alumno(a) y, de ser necesario, convocar al padre, madre de familia o tutor para establecer acuerdos de corresponsabilidad.
 
 Se deja constancia de los hechos para los efectos administrativos y formativos correspondientes.`;
+
+    case "acta_corresponsabilidad":
+      return `Se hace constar que, con fecha ${datos.fecha}, se atendió una situación relacionada con el alumno(a) ${datos.alumno_nombre}, inscrito(a) en el grupo ${datos.grupo}.
+
+Hechos reportados:
+${datos.descripcion}
+
+Lugar de los hechos: ${datos.lugar_incidente}
+${datos.testigos ? `Testigos: ${datos.testigos}` : "Testigos: En preparación"}
+
+La intervención se registra con carácter preventivo, formativo y de acompañamiento, privilegiando el interés superior del estudiante, la corresponsabilidad familia-escuela y la mejora de la convivencia escolar.`;
 
     case "hoja_acuerdos":
       return `Con fecha ${datos.fecha}, en las instalaciones de la Escuela Secundaria Diurna No. 310, se llevó a cabo reunión con motivo de dar seguimiento a la situación del alumno(a) ${datos.alumno_nombre} del grupo ${datos.grupo}.

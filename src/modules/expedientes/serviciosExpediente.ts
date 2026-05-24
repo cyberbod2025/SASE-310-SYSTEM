@@ -133,6 +133,7 @@ export function construirLineaTiempo(
     const tipoLabel: Record<string, string> = {
       citatorio_padres: "Citatorio",
       acta_hechos: "Acta de Hechos",
+      acta_corresponsabilidad: "Acta de Hechos y Corresponsabilidad",
       hoja_acuerdos: "Hoja de Acuerdos",
       informe_caso: "Informe de Caso",
       informe_supervision: "Informe de Supervisión",

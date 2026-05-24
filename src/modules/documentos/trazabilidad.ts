@@ -12,6 +12,7 @@ import { generateSecureNumCode } from "../../utils/security";
 const PREFIJO_TIPO: Record<TipoDocumentoInstitucional, string> = {
   citatorio_padres: "CIT",
   acta_hechos: "ACTA",
+  acta_corresponsabilidad: "COR",
   hoja_acuerdos: "ACU",
   informe_supervision: "SUP",
   informe_caso: "CASO",
