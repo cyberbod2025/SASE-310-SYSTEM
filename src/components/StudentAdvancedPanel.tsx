@@ -1338,6 +1338,8 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
             studentId={student.id}
             studentName={student.name}
             studentGroup={student.group}
+            studentTutorName={student.guardianInfo?.name || ""}
+            studentTutorRelationship={student.guardianInfo?.relationship || ""}
             onClose={() => setShowAIGenerator(false)}
           />
         </Suspense>
