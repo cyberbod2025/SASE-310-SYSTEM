@@ -66,6 +66,8 @@ export const DashboardDocente = () => {
   const [search, setSearch] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [quickFormOpen, setQuickFormOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const role = (currentUserRole || UserRole.DOCENTE) as UserRole;
   const permissions = useMemo(() => getPermissions(role, currentUserProfile), [currentUserProfile, role]);
@@ -123,35 +125,32 @@ export const DashboardDocente = () => {
       return;
     }
 
-    const description = draft.description.trim() || selectedOption.defaultDescription;
-    const evidence = [draft.evidenceNote.trim(), draft.evidenceFileName.trim()]
-      .filter(Boolean)
-      .map((item) => `Evidencia docente: ${item}`);
+    setIsSubmitting(true);
+    try {
+      const description = draft.description.trim() || selectedOption.defaultDescription;
+      const evidence = [draft.evidenceNote.trim(), draft.evidenceFileName.trim()]
+        .filter(Boolean)
+        .map((item) => `Evidencia docente: ${item}`);
 
-    await addIncident(
-      selectedStudent.id,
-      selectedOption.incidentType as IncidentType,
-      description,
-      evidence.length ? evidence : undefined,
-    );
+      await addIncident(
+        selectedStudent.id,
+        selectedOption.incidentType as IncidentType,
+        description,
+        evidence.length ? evidence : undefined,
+      );
 
-    toast.success(`Incidencia guardada: ${selectedStudent.name}`);
-    resetDraft(keepOpen ? selectedStudent.id : "");
-    setQuickFormOpen(keepOpen);
-  };
-
-  const handleEscalate = () => {
-    if (!permissions.can_escalate) {
-      toast.error("No autorizado para escalar.");
-      throw new Error("No autorizado");
-    }
-    const selectedStudent = teacherStudents.find((s) => s.id === draft.studentId);
-    if (selectedStudent) {
-      escalateCase(selectedStudent.id, selectedStudent.name, "Solicitud docente de revisión institucional");
-    } else {
-      toast.error("Selecciona un alumno para escalar.");
+      toast.success(`Incidencia guardada: ${selectedStudent.name}`);
+      resetDraft(keepOpen ? selectedStudent.id : "");
+      setQuickFormOpen(keepOpen);
+    } catch (err) {
+      console.error("Error saving incident:", err);
+      toast.error("Error al guardar incidencia.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+
 
   const insights = [
     `Has reportado ${todayReports} incidencias hoy.`,
@@ -160,61 +159,69 @@ export const DashboardDocente = () => {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col overflow-y-auto px-4 pb-8 pt-3 md:px-6 lg:px-8"
-    >
-      <DocenteRoleHeader
-        searchValue={search}
-        onSearchChange={setSearch}
-        onOpenSasito={() => setIsAssistantOpen?.(true)}
-        onSOS={() => { sosAlert(undefined, undefined, "SOS activado por docente desde Dashboard Docente"); }}
-      />
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mx-auto flex h-full w-full max-w-7xl flex-1 flex-col overflow-y-auto px-4 pb-8 pt-3 md:px-6 lg:px-8"
+      >
+        <DocenteRoleHeader
+          searchValue={search}
+          onSearchChange={setSearch}
+          onOpenSasito={() => setIsAssistantOpen?.(true)}
+          onSOS={() => { sosAlert(undefined, undefined, "SOS activado por docente desde Dashboard Docente"); }}
+        />
 
-      <main className="mt-6 space-y-6">
-        <QuickReportButton onClick={() => openReport()} disabled={!permissions.can_register} />
+        <main className="mt-6 space-y-6">
+          <QuickReportButton onClick={() => openReport()} disabled={!permissions.can_register} />
 
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <MetricCard label="Mis alumnos" value={teacherStudents.length} detail="Alumnos visibles para este docente." icon="groups" />
-          <MetricCard label="Reportes hoy" value={todayReports} detail="Incidencias propias registradas durante el día." icon="add_task" />
-          <MetricCard label="Sin evidencia" value={alerts[0]?.count || 0} detail="Reportes donde una nota o foto podría ayudar." icon="photo_camera" />
-        </section>
+          <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <MetricCard label="Mis alumnos" value={teacherStudents.length} detail="Alumnos visibles para este docente." icon="groups" />
+            <MetricCard label="Reportes hoy" value={todayReports} detail="Incidencias propias registradas durante el día." icon="add_task" />
+            <MetricCard label="Sin evidencia" value={alerts[0]?.count || 0} detail="Reportes donde una nota o foto podría ayudar." icon="photo_camera" />
+          </section>
 
-        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <GroupListCard groups={groups} selectedGroup={selectedGroup} onSelectGroup={setSelectedGroup} />
-          <StudentQuickList
-            students={visibleStudents}
-            selectedStudentId={draft.studentId}
-            onSelectStudent={(studentId) => setDraft((current) => ({ ...current, studentId }))}
-            onOpenReport={() => setQuickFormOpen(true)}
-          />
-        </section>
-
-        <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <div ref={incidentsRef as React.RefObject<HTMLDivElement>}>
-            <MyRecentIncidents incidents={recentIncidents} />
-          </div>
-          <div className="space-y-6">
-            <TeacherGroupDiagnosisOverview grupo={selectedGroup || undefined} />
-            <TeacherAlertsCard alerts={alerts} />
-            <DocenteSasitoHelper
-              insights={insights}
-              onGoToIncidents={() => incidentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          <section className="grid grid-cols-1 gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+            <GroupListCard groups={groups} selectedGroup={selectedGroup} onSelectGroup={setSelectedGroup} />
+            <StudentQuickList
+              students={visibleStudents}
+              selectedStudentId={draft.studentId}
+              onSelectStudent={(studentId) => setDraft((current) => ({ ...current, studentId }))}
+              onOpenReport={() => setQuickFormOpen(true)}
             />
-            <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5">
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-emerald-200">Acción permitida</p>
-              <h2 className="mt-1 text-xl font-black text-white">Escalar cuando aplica</h2>
-              <p className="mt-2 text-xs leading-5 text-slate-400">
-                Docente no cierra casos ni consulta datos sensibles. Solo reporta y solicita revisión.
-              </p>
-              <button type="button" onClick={handleEscalate} disabled={!permissions.can_escalate} className="mt-5 min-h-[44px] w-full rounded-2xl border border-emerald-300/30 bg-emerald-500/10 px-4 text-xs font-black uppercase tracking-widest text-emerald-100 disabled:cursor-not-allowed disabled:opacity-40">
-                Solicitar revisión
-              </button>
-            </section>
-          </div>
-        </section>
-      </main>
+          </section>
+
+          <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+            <div ref={incidentsRef as React.RefObject<HTMLDivElement>}>
+              <MyRecentIncidents incidents={recentIncidents} />
+            </div>
+            <div className="space-y-6">
+              <TeacherGroupDiagnosisOverview grupo={selectedGroup || undefined} />
+              <TeacherAlertsCard alerts={alerts} />
+              <DocenteSasitoHelper
+                insights={insights}
+                onGoToIncidents={() => incidentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              />
+              <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5">
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-emerald-200">Acción permitida</p>
+                <h2 className="mt-1 text-xl font-black text-white">Escalar cuando aplica</h2>
+                <p className="mt-2 text-xs leading-5 text-slate-400">
+                  Docente no cierra casos ni consulta datos sensibles. Solo reporta y solicita revisión.
+                </p>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    toast.error("Función de escalamiento a Dirección en preparación. No se modificó el expediente.");
+                  }} 
+                  className="mt-5 min-h-[44px] w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-xs font-black uppercase tracking-widest text-slate-400 cursor-not-allowed"
+                >
+                  En preparación
+                </button>
+              </section>
+            </div>
+          </section>
+        </main>
+      </motion.div>
 
       <IncidentQuickForm
         open={quickFormOpen}
@@ -224,8 +231,9 @@ export const DashboardDocente = () => {
         onChange={setDraft}
         onClose={() => setQuickFormOpen(false)}
         onSubmit={handleSaveIncident}
+        loading={isSubmitting}
       />
-    </motion.div>
+    </>
   );
 };
 

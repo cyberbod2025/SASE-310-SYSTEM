@@ -11,6 +11,8 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useApp } from "../../store";
+import { useAuth } from "../AuthProvider";
+import toast from "react-hot-toast";
 import type { EmergencyLocation, EmergencyType } from "../../types/emergency";
 import { IncidentType } from "../../types";
 import { EmergencyStatusPanel } from "./EmergencyStatusPanel";
@@ -22,11 +24,49 @@ interface EmergencyAlertModalProps {
 
 export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClose }) => {
   const app = useApp();
-  const { createEmergencyAlert, myActiveAlert, currentUserProfile, openQuickRegister, emergencyResponses } = app;
+  const { 
+    createEmergencyAlert, 
+    myActiveAlert, 
+    currentUserProfile, 
+    openQuickRegister, 
+    emergencyResponses,
+    closeEmergencyAlert,
+    logAudit
+  } = app;
+  const { user } = useAuth();
   const [step, setStep] = useState<'selection' | 'success'>(myActiveAlert ? 'success' : 'selection');
   const [ubicacion, setUbicacion] = useState<EmergencyLocation>('Aula');
   const [silent, setSilent] = useState(false);
   const [sendingType, setSendingType] = useState<EmergencyType | null>(null);
+
+  const handleCancelAlert = async () => {
+    if (!myActiveAlert) return;
+    
+    if (myActiveAlert.docente_id !== user?.id) {
+      toast.error("No tienes permisos para cancelar una alerta que no creaste.");
+      return;
+    }
+
+    const confirmed = window.confirm("¿Confirmas cancelar tu alerta SOS? Esta acción quedará registrada.");
+    if (!confirmed) return;
+
+    try {
+      await closeEmergencyAlert(myActiveAlert.id);
+      
+      if (logAudit) {
+        await logAudit(
+          "ACTUALIZACION",
+          `SOS CANCELADO: Alerta ${myActiveAlert.id} cancelada por el usuario ${currentUserProfile?.nombre_completo || user?.email || 'Docente'}.`,
+          "alertas_emergencia",
+          myActiveAlert.id,
+          "N/A",
+        );
+      }
+      onClose();
+    } catch (err: any) {
+      console.error("Error cancelling SOS alert:", err);
+    }
+  };
 
   const locations: EmergencyLocation[] = ['Aula', 'Patio', 'Bano', 'Pasillo', 'Otro'];
 
@@ -193,7 +233,15 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
                 />
               </div>
 
-              <div className="pt-4 border-t border-white/5 flex gap-3">
+              <div className="pt-4 border-t border-white/5 flex flex-col sm:flex-row gap-3">
+                {myActiveAlert && myActiveAlert.docente_id === user?.id && (
+                  <button
+                    onClick={handleCancelAlert}
+                    className="flex-1 rounded-xl bg-rose-600/20 border border-rose-500/30 py-4 text-xs font-black uppercase tracking-widest text-rose-300 hover:bg-rose-600 hover:text-white shadow-lg transition-all"
+                  >
+                    Cancelar mi alerta
+                  </button>
+                )}
                 <button
                   onClick={onClose}
                   className="flex-1 rounded-xl bg-white/5 py-4 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 hover:text-white transition-all"
