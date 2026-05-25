@@ -4,6 +4,7 @@
 export type TipoDocumentoInstitucional =
   | "citatorio_padres"
   | "acta_hechos"
+  | "acta_corresponsabilidad"
   | "hoja_acuerdos"
   | "informe_supervision"
   | "informe_caso"
@@ -26,6 +27,14 @@ export interface DatosDocumento {
   acuerdos?: string[];
   fecha_citatorio?: string;
   hora_citatorio?: string;
+  tutor_nombre?: string;
+  tutor_parentesco?: string;
+  personal_prefectura?: string;
+  testigo_institucional?: string;
+  reflexion_alumno?: string;
+  compromiso_alumno?: string;
+  compromiso_familia?: string;
+  observaciones?: string;
   // Extras para nuevos tipos
   destinatario?: string;
   asunto?: string;
@@ -72,6 +81,14 @@ export const TIPOS_DOCUMENTO: Record<
     color: "rose",
     categoria: "disciplinario",
     descripcion: "Narración formal de hechos para el expediente escolar.",
+  },
+  acta_corresponsabilidad: {
+    label: "Acta de Hechos y Corresponsabilidad",
+    icon: "contract_edit",
+    color: "indigo",
+    categoria: "disciplinario",
+    descripcion:
+      "Formato institucional con hechos, acuerdos, compromisos y firmas.",
   },
   hoja_acuerdos: {
     label: "Hoja de Acuerdos / Compromisos",

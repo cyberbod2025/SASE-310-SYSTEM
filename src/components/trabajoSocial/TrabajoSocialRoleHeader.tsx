@@ -7,7 +7,7 @@ interface TrabajoSocialRoleHeaderProps {
   criticalAlertsCount: number;
   onSearchChange: (value: string) => void;
   onOpenSasito: () => void;
-  onSOS: () => void;
+  onSOS: () => Promise<void> | void;
 }
 
 export const TrabajoSocialRoleHeader: React.FC<TrabajoSocialRoleHeaderProps> = ({
@@ -48,7 +48,11 @@ export const TrabajoSocialRoleHeader: React.FC<TrabajoSocialRoleHeaderProps> = (
           <button type="button" onClick={onOpenSasito} className="min-h-[56px] rounded-2xl bg-orange-500/20 px-4 text-xs font-black uppercase tracking-widest text-orange-100 ring-1 ring-orange-300/30">
             Sasito operativo
           </button>
-          <SOSButton compact onActivate={onSOS} />
+          <SOSButton
+            compact
+            onActivate={onSOS}
+            confirmationMessage="Alerta crítica registrada en modo local. La notificación automática institucional está en preparación."
+          />
         </div>
 
         <label className="relative block">
