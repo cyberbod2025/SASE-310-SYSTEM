@@ -3,9 +3,10 @@ import React, { useState } from "react";
 interface SOSButtonProps {
   compact?: boolean;
   onActivate?: () => Promise<void> | void;
+  confirmationMessage?: string;
 }
 
-export const SOSButton: React.FC<SOSButtonProps> = ({ compact = false, onActivate }) => {
+export const SOSButton: React.FC<SOSButtonProps> = ({ compact = false, onActivate, confirmationMessage }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -50,7 +51,7 @@ export const SOSButton: React.FC<SOSButtonProps> = ({ compact = false, onActivat
               </div>
             </div>
             <p className="mt-5 text-sm leading-6 text-slate-200">
-              Ya notifique a Prefectura y Orientacion. Tiempo estimado: 2-5 minutos.
+              {confirmationMessage || "Alerta crítica registrada en modo local. La notificación automática institucional está en preparación."}
             </p>
             <button
               type="button"
