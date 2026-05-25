@@ -29,7 +29,7 @@ import {
 } from "../trabajoSocial/trabajoSocialTypes";
 
 export const DashboardTrabajoSocial = () => {
-  const { students } = useApp();
+  const { students, createEmergencyAlert, currentUserProfile } = useApp();
   const rolePermissions = PERMISOS_POR_ROL.trabajo_social;
   const baseCases = buildTrabajoSocialCases(students);
 
@@ -112,6 +112,16 @@ export const DashboardTrabajoSocial = () => {
     setLastAction("Caso devuelto a Orientacion para ajuste del plan de intervencion.");
   };
 
+  const handleSOS = async () => {
+    await createEmergencyAlert("otros", {
+      ubicacion: "Otro",
+      aula: "Trabajo Social",
+      grupo: currentUserProfile?.grupo_tutor || undefined,
+      descripcion: "Alerta critica activada desde Dashboard de Trabajo Social.",
+    });
+    setLastAction("Alerta critica registrada en el flujo institucional de emergencias.");
+  };
+
   return (
     <main className="min-h-screen flex-1 overflow-y-auto bg-slate-950 px-4 pb-10 text-white md:px-6 lg:px-8">
       <TrabajoSocialRoleHeader
@@ -120,7 +130,7 @@ export const DashboardTrabajoSocial = () => {
         criticalAlertsCount={criticalAlerts}
         onSearchChange={setSearch}
         onOpenSasito={() => setSasitoOpen((current) => !current)}
-        onSOS={() => setLastAction("SOS activado desde Trabajo Social.")}
+        onSOS={handleSOS}
       />
 
       <div className="mx-auto mt-6 grid w-full max-w-7xl grid-cols-1 gap-5 xl:grid-cols-[minmax(320px,0.85fr)_minmax(0,1.15fr)]">
