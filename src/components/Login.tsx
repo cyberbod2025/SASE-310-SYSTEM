@@ -13,6 +13,30 @@ interface LoginProps {
   onRegisterClick?: () => void;
 }
 
+const LOGIN_ERROR_MESSAGE = "No se pudo iniciar sesión. Verifica correo y contraseña.";
+
+const getSafeAuthErrorDetail = (message: unknown) => {
+  const normalized = typeof message === "string" ? message.toLowerCase() : "";
+
+  if (normalized.includes("invalid login credentials")) {
+    return "Credenciales no válidas.";
+  }
+
+  if (normalized.includes("email not confirmed")) {
+    return "El correo institucional aún no está confirmado.";
+  }
+
+  if (normalized.includes("too many") || normalized.includes("rate limit")) {
+    return "Demasiados intentos. Espera unos minutos e intenta de nuevo.";
+  }
+
+  if (normalized.includes("network") || normalized.includes("fetch")) {
+    return "No se pudo conectar con el servicio de autenticación.";
+  }
+
+  return "El servicio de autenticación no permitió completar el acceso.";
+};
+
 export const Login: React.FC<LoginProps> = ({
   onDemoEnter,
 }) => {
@@ -20,6 +44,10 @@ export const Login: React.FC<LoginProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState<{
+    message: string;
+    detail?: string;
+  } | null>(null);
   const [showFeedback, setShowFeedback] = useState(() => {
     if (typeof window === "undefined") return false;
     const params = new URLSearchParams(window.location.search);
@@ -84,67 +112,90 @@ export const Login: React.FC<LoginProps> = ({
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setLoginError(null);
 
     const normalizedUsername = username.toLowerCase().trim();
     const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
     if (!emailRegex.test(normalizedUsername)) {
       toast.error("Formato de correo inválido");
+      setLoginError({
+        message: LOGIN_ERROR_MESSAGE,
+        detail: "Ingresa un correo institucional válido.",
+      });
       setLoading(false);
       return;
     }
 
-    const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
-      email: normalizedUsername,
-      password,
-    });
-    
-    if (signInError) {
-      toast.error("Credenciales no válidas");
-      await logEvent("AUTH", "LOGIN", "FAILURE", { email: normalizedUsername, error: signInError.message });
-      setLoading(false);
-      return;
-    }
-
-    // Verificar estado de seguridad en el perfil
-    const { data: perfil, error: perfilError } = await (supabase
-      .from("perfiles_usuario" as any)
-      .select("seguridad_status, blocked_until, risk_score")
-      .eq("id", user?.id)
-      .single() as any);
-
-    if (perfil) {
-      const now = new Date();
-      const blockedUntil = perfil.blocked_until ? new Date(perfil.blocked_until) : null;
-
-      if (perfil.seguridad_status === 'blocked') {
-        toast.error("Acceso denegado: Usuario bloqueado por seguridad institucional.");
-        await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'blocked_status' });
-        await supabase.auth.signOut();
-        setLoading(false);
-        return;
-      }
-
-      if (blockedUntil && now < blockedUntil) {
-        const minutesLeft = Math.ceil((blockedUntil.getTime() - now.getTime()) / 60000);
-        toast.error(`Acceso restringido temporalmente. Intente en ${minutesLeft} minutos.`);
-        await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'temporary_block', minutes_left: minutesLeft });
-        await supabase.auth.signOut();
-        setLoading(false);
-        return;
-      }
+    try {
+      const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
+        email: normalizedUsername,
+        password,
+      });
       
-      if (perfil.seguridad_status === 'restricted') {
-        toast.success("Ingreso exitoso (Modo Restringido)");
+      if (signInError) {
+        toast.error("Credenciales no válidas");
+        setLoginError({
+          message: LOGIN_ERROR_MESSAGE,
+          detail: getSafeAuthErrorDetail(signInError.message),
+        });
+        await logEvent("AUTH", "LOGIN", "FAILURE", { email: normalizedUsername, error: signInError.message });
+        setLoading(false);
+        return;
       }
-    }
 
-    await logEvent("AUTH", "LOGIN", "SUCCESS", { email: normalizedUsername, risk_score: perfil?.risk_score });
+      // Verificar estado de seguridad en el perfil
+      const { data: perfil, error: perfilError } = await (supabase
+        .from("perfiles_usuario" as any)
+        .select("seguridad_status, blocked_until, risk_score")
+        .eq("id", user?.id)
+        .single() as any);
 
-    if (onDemoEnter) {
-      onDemoEnter();
+      if (perfil) {
+        const now = new Date();
+        const blockedUntil = perfil.blocked_until ? new Date(perfil.blocked_until) : null;
+
+        if (perfil.seguridad_status === 'blocked') {
+          toast.error("Acceso denegado: Usuario bloqueado por seguridad institucional.");
+          await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'blocked_status' });
+          await supabase.auth.signOut();
+          setLoading(false);
+          return;
+        }
+
+        if (blockedUntil && now < blockedUntil) {
+          const minutesLeft = Math.ceil((blockedUntil.getTime() - now.getTime()) / 60000);
+          toast.error(`Acceso restringido temporalmente. Intente en ${minutesLeft} minutos.`);
+          await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'temporary_block', minutes_left: minutesLeft });
+          await supabase.auth.signOut();
+          setLoading(false);
+          return;
+        }
+        
+        if (perfil.seguridad_status === 'restricted') {
+          toast.success("Ingreso exitoso (Modo Restringido)");
+        }
+      }
+
+      if (perfilError) {
+        console.warn("Profile security check returned an error:", perfilError.message);
+      }
+
+      await logEvent("AUTH", "LOGIN", "SUCCESS", { email: normalizedUsername, risk_score: perfil?.risk_score });
+
+      if (onDemoEnter) {
+        onDemoEnter();
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("Unexpected login error:", err);
+      toast.error("No se pudo iniciar sesión");
+      setLoginError({
+        message: LOGIN_ERROR_MESSAGE,
+        detail: getSafeAuthErrorDetail(err instanceof Error ? err.message : undefined),
+      });
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -219,13 +270,31 @@ export const Login: React.FC<LoginProps> = ({
 
             <GlassButton
               type="submit"
-              loading={loading}
+              disabled={loading}
+              aria-busy={loading}
               className="w-full mt-4"
               size="lg"
             >
-              Entrar al Sistema
+              {loading ? "Autenticando..." : "Entrar al Sistema"}
             </GlassButton>
           </form>
+
+          {loginError && (
+            <div
+              role="alert"
+              aria-live="polite"
+              className="mt-5 w-full rounded-2xl border border-rose-300/20 bg-rose-500/10 px-4 py-3 text-left"
+            >
+              <p className="text-xs font-bold text-rose-100">
+                {loginError.message}
+              </p>
+              {loginError.detail && (
+                <p className="mt-1 text-[11px] font-medium leading-5 text-rose-100/70">
+                  {loginError.detail}
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="mt-12 text-center pt-8 w-full">
             <p className="text-[10px] text-[var(--sase-text-muted)] font-semibold tracking-[0.22em] uppercase">
