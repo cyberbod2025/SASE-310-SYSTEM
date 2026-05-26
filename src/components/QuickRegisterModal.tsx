@@ -11,6 +11,14 @@ import { NeoButton } from "./ui/NeoButton";
 
 const STUDENT_DROPDOWN_LIMIT = 50;
 
+const getProtocolKeywords = (protocol: any): string[] => {
+  if (!Array.isArray(protocol?.palabras_clave)) return [];
+  return protocol.palabras_clave.filter(
+    (keyword: unknown): keyword is string =>
+      typeof keyword === "string" && keyword.trim().length > 0,
+  );
+};
+
 export const QuickRegisterModal: React.FC = () => {
   const {
     quickRegisterOpen,
@@ -149,22 +157,21 @@ export const QuickRegisterModal: React.FC = () => {
     }
 
     const student = students.find((s) => s.id === selectedStudentId);
-    
-    // Add Incident
-    await addIncident(selectedStudentId || "PENDIENTE", {
-      type,
-      description,
-      date: new Date().toISOString(),
-      severity: "leve", // Default
-      createdBy: currentUserRole,
-    });
+
+    if (!selectedStudentId || !student) {
+      toast.error("Seleccione un alumno registrado para guardar la incidencia.");
+      return;
+    }
+
+    const incidentSaved = await addIncident(selectedStudentId, type, description);
+    if (!incidentSaved) return;
 
     // Check Protocols
-    const content = description.toLowerCase();
+    const content = String(description ?? "").toLowerCase();
     const { data: protocols } = await (supabase as any).from("protocolos").select("*");
-    if (protocols) {
-      const matched = protocols.find((p: any) => 
-        p.palabras_clave.some((kw: string) => content.includes(kw.toLowerCase()))
+    if (Array.isArray(protocols)) {
+      const matched = protocols.find((p: any) =>
+        getProtocolKeywords(p).some((keyword) => content.includes(keyword.toLowerCase())),
       );
       if (matched) setDetectedProtocol(matched);
     }
@@ -221,6 +228,8 @@ export const QuickRegisterModal: React.FC = () => {
     setSelectedStudentId("");
     setSelectedStudentName("");
     setDescription("");
+    setStudentNotFound(false);
+    setPendingStudentName("");
   };
 
   return (
