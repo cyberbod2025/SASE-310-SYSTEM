@@ -30,9 +30,16 @@ export const ComplianceTracker: React.FC<ComplianceTrackerProps> = ({
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 md:p-5">
-      <div className="mb-4">
-        <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Cumplimiento</p>
-        <h2 className="text-xl font-black text-white">Acuerdos en la vida real</h2>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Cumplimiento</p>
+          <h2 className="text-xl font-black text-white flex flex-wrap items-center gap-2">
+            <span>Acuerdos en la vida real</span>
+            <span className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-500">
+              ⚠️ BORRADOR LOCAL
+            </span>
+          </h2>
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -50,7 +57,7 @@ export const ComplianceTracker: React.FC<ComplianceTrackerProps> = ({
             </div>
             <div className="mt-4 grid grid-cols-3 gap-2">
               {(["cumplido", "en_proceso", "incumplido"] as ComplianceStatus[]).map((status) => (
-                <button key={status} type="button" disabled={!canEdit} onClick={() => onUpdateCompliance(agreement.id, status)} className="min-h-[42px] rounded-2xl border border-white/10 bg-white/[0.05] px-2 text-[10px] font-black uppercase tracking-widest text-slate-200 disabled:cursor-not-allowed disabled:text-slate-600">
+                <button key={status} type="button" disabled={!canEdit} onClick={() => onUpdateCompliance(agreement.id, status)} className="min-h-[42px] rounded-2xl border border-white/10 bg-white/[0.05] px-2 text-[9.5px] font-black uppercase tracking-widest text-slate-200 disabled:cursor-not-allowed disabled:text-slate-600 hover:bg-orange-500/15">
                   {statusLabel[status]}
                 </button>
               ))}
