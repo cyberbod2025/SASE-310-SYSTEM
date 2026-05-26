@@ -94,9 +94,9 @@ export const ExternalModuleLauncher: React.FC<{
   }, []);
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-4 md:p-6 bg-[var(--sase-bg)] bg-[radial-gradient(circle_at_0%_0%,rgba(129,106,184,0.15),transparent_45%),radial-gradient(circle_at_100%_0%,rgba(59,130,246,0.12),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(175,166,60,0.10),transparent_50%)]">
+    <div className="min-h-[calc(100vh-8rem)] w-full flex items-center justify-center p-4 md:p-6 bg-[var(--sase-bg)] bg-[radial-gradient(circle_at_0%_0%,rgba(129,106,184,0.15),transparent_45%),radial-gradient(circle_at_100%_0%,rgba(59,130,246,0.12),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(175,166,60,0.10),transparent_50%)]">
       {status === "embedded" && iframeUrl ? (
-        <div className="h-full w-full rounded-[2rem] overflow-hidden border border-[rgba(255,255,255,0.10)] bg-[rgba(17,24,39,0.72)] shadow-[0_36px_90px_rgba(0,0,0,0.5),0_0_34px_rgba(129,106,184,0.18)] backdrop-blur-[34px] flex flex-col">
+        <div className="min-h-[calc(100vh-10rem)] w-full rounded-[2rem] overflow-hidden border border-[rgba(255,255,255,0.10)] bg-[rgba(17,24,39,0.72)] shadow-[0_36px_90px_rgba(0,0,0,0.5),0_0_34px_rgba(129,106,184,0.18)] backdrop-blur-[34px] flex flex-col">
           <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-[rgba(11,10,14,0.82)]">
             <div className="flex items-center gap-3 min-w-0">
               <button
@@ -113,7 +113,7 @@ export const ExternalModuleLauncher: React.FC<{
             </div>
           </div>
 
-          <div className="relative flex-1 bg-[#0b0a0e]">
+          <div className="relative min-h-[560px] flex-1 bg-[#0b0a0e]">
             {!iframeReady && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-[#0b0a0e]/92 text-slate-200">
                 <Loader2 className={`w-8 h-8 animate-spin ${module.accentClass}`} />
@@ -123,7 +123,7 @@ export const ExternalModuleLauncher: React.FC<{
             <iframe
               src={iframeUrl}
               title={module.name}
-              className="w-full h-full border-0"
+              className="absolute inset-0 h-full w-full border-0"
               onLoad={() => setIframeReady(true)}
             />
           </div>

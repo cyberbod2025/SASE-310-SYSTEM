@@ -194,10 +194,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   // Monitorizar activación del tour (driver.js no es reactivo por sí solo)
   useEffect(() => {
     const checkTour = () => {
-      const active = !!document.querySelector(".driver-popover") || localStorage.getItem("sase_tour_active") === "true";
-      setIsTourActive(active);
+      const hasPopover = !!document.querySelector(".driver-popover");
+      const storedActive = localStorage.getItem("sase_tour_active") === "true";
+
+      if (storedActive && !hasPopover) {
+        localStorage.removeItem("sase_tour_active");
+      }
+
+      setIsTourActive(hasPopover);
     };
 
+    checkTour();
     const interval = setInterval(checkTour, 500);
     return () => clearInterval(interval);
   }, [setIsTourActive]);
@@ -750,13 +757,13 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
         {/* Main Content Scroll Area */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
-          <div data-sasito-target="tablero" className={`p-4 md:p-8 animate-fade-in relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`}>
+          <div data-sasito-target="tablero" className={`min-h-full p-4 md:p-8 animate-fade-in relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`}>
             {children}
           </div>
         </main>
 
         {/* Sasito IA: siempre presente en todas las pantallas */}
-        <SasitoAssistant suppressAssistant={isTourActive || hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
+        <SasitoAssistant suppressAssistant={hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
         {!isDemoCleanMode && <EncuestaPulso />}
       </div>
 

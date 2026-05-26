@@ -2,6 +2,14 @@ import { useState, useEffect } from "react";
 import { UserRole, AppModule } from "../../types";
 import { useAuth } from "../../components/AuthProvider";
 
+const sanitizeStoredModule = (saved: string | null): AppModule => {
+  if (!Object.values(AppModule).includes(saved as AppModule)) {
+    return AppModule.WELCOME;
+  }
+
+  return saved === AppModule.FERIA ? AppModule.WELCOME : (saved as AppModule);
+};
+
 export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
   const { role, profile } = useAuth();
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(initialRole);
@@ -9,14 +17,20 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
   const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
   const [currentModule, setCurrentModule] = useState<AppModule>(() => {
     const saved = sessionStorage.getItem("sase_current_module") || localStorage.getItem("sase_current_module");
-    return Object.values(AppModule).includes(saved as AppModule) ? (saved as AppModule) : AppModule.WELCOME;
+    return sanitizeStoredModule(saved);
   });
   const [isTutorMode, setIsTutorMode] = useState(false);
 
   useEffect(() => {
+    if (currentModule === AppModule.FERIA && currentUserRole !== UserRole.ALUMNO) {
+      sessionStorage.removeItem("sase_current_module");
+      localStorage.removeItem("sase_current_module");
+      return;
+    }
+
     sessionStorage.setItem("sase_current_module", currentModule);
     localStorage.setItem("sase_current_module", currentModule);
-  }, [currentModule]);
+  }, [currentModule, currentUserRole]);
 
   const [onboardingDays, setOnboardingDays] = useState(0);
   const [onboardingPhase, setOnboardingPhase] = useState<"intro" | "learning" | "active" | "master">("intro");

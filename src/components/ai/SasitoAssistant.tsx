@@ -68,6 +68,20 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   const currentUserName = currentUserProfile?.nombre_completo || currentUserProfile?.full_name || '';
   
   const constraintsRef = useRef(null);
+  const closeOnboardingSuggestion = () => {
+    const isOnboarding = currentSuggestion?.actionType?.startsWith("onboarding-");
+
+    localStorage.removeItem("sase_tour_active");
+    setIsTourActive(false);
+    setTourStep(0);
+
+    if (isOnboarding) {
+      updateOnboarding({ completed: true, step: 3 });
+      localStorage.setItem("sase_onboarding_v2_completed", "true");
+    }
+
+    setCurrentSuggestion(null);
+  };
 
   useEffect(() => {
     if (minimal || isWidgetMode || suppressSuggestions) return;
@@ -579,12 +593,7 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
                           {currentSuggestion.actionLabel || "ENTENDIDO"}
                         </button>
                         <button 
-                          onClick={() => {
-                            if (currentSuggestion.actionType === "onboarding-start") {
-                              updateOnboarding({ completed: true });
-                            }
-                            setCurrentSuggestion(null);
-                          }}
+                          onClick={closeOnboardingSuggestion}
                           className="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-white/10 transition-all"
                         >
                           {currentSuggestion.actionType === "onboarding-start" ? "SALTAR" : "Luego"}
