@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { useApp } from "../../store";
 import { PERMISOS_POR_ROL } from "../../utils/permisos";
 import { CaseExecutionQueue } from "../trabajoSocial/CaseExecutionQueue";
@@ -34,6 +35,62 @@ export const DashboardTrabajoSocial = () => {
   const baseCases = buildTrabajoSocialCases(students);
 
   const [search, setSearch] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudentId, setSelectedStudentId] = useState("");
+
+  // Estado de seguimiento local de la sesión (honesto, sin fingir persistencia DB)
+  const [localCases, setLocalCases] = useState<Record<string, {
+    status: "Cumplido" | "En proceso" | "Incumplido" | "Sin iniciar";
+    history: Array<{ action: string; timestamp: string }>;
+  }>>({});
+
+  const addLocalAction = (studentId: string, actionName: string) => {
+    if (!studentId) return;
+    const time = new Date().toLocaleTimeString("es-MX", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    setLocalCases((prev) => {
+      const current = prev[studentId] || { status: "Sin iniciar", history: [] };
+      return {
+        ...prev,
+        [studentId]: {
+          ...current,
+          history: [
+            ...current.history,
+            { action: actionName, timestamp: time },
+          ],
+        },
+      };
+    });
+  };
+
+  const updateLocalStatus = (studentId: string, status: "Cumplido" | "En proceso" | "Incumplido") => {
+    if (!studentId) return;
+    const time = new Date().toLocaleTimeString("es-MX", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    setLocalCases((prev) => {
+      const current = prev[studentId] || { status: "Sin iniciar", history: [] };
+      return {
+        ...prev,
+        [studentId]: {
+          ...current,
+          status,
+          history: [
+            ...current.history,
+            { action: `Estado cambiado a ${status}`, timestamp: time },
+          ],
+        },
+      };
+    });
+    toast.success(`Estado actualizado a ${status} (borrador local - pendiente de persistencia institucional)`, {
+      icon: "📝",
+    });
+  };
+
   const [sasitoOpen, setSasitoOpen] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(baseCases[0]?.id || null);
   const [statusOverrides, setStatusOverrides] = useState<Record<string, TrabajoSocialInterventionStatus>>({});
@@ -68,48 +125,70 @@ export const DashboardTrabajoSocial = () => {
   const handleStartFollowUp = (caseId: string) => {
     setSelectedCaseId(caseId);
     setCaseStatus(caseId, "seguimiento");
-    setLastAction("Seguimiento activo registrado localmente.");
+    addLocalAction(caseId, "Iniciar seguimiento");
+    setLastAction("Seguimiento iniciado (borrador local - pendiente de persistencia institucional)");
+    toast.success("Seguimiento iniciado (borrador local - pendiente de persistencia)", { icon: "🚀" });
   };
 
   const handleRegisterCitatorio = (caseId: string) => {
     const currentCount = citatorios.filter((citatorio) => citatorio.caseId === caseId).length;
     setCitatorios((current) => [...current, createCitatorio(caseId, currentCount)]);
     setCaseStatus(caseId, "alerta_sin_respuesta");
-    setLastAction("Nuevo citatorio registrado.");
+    addLocalAction(caseId, "Citatorio registrado");
+    setLastAction("Nuevo citatorio registrado (borrador local - pendiente de persistencia institucional)");
+    toast.success("Citatorio agendado (borrador local - pendiente de persistencia)", { icon: "📅" });
   };
 
   const handleMarkAttendance = (citatorioId: string) => {
+    const citatorioItem = citatorios.find((c) => c.id === citatorioId);
+    if (citatorioItem) {
+      addLocalAction(citatorioItem.caseId, "Marcar asistencia");
+    }
     setCitatorios((current) => current.map((citatorio) => citatorio.id === citatorioId ? { ...citatorio, respuesta: "asistio" } : citatorio));
-    setLastAction("Asistencia familiar marcada en citatorio.");
+    setLastAction("Asistencia familiar marcada en citatorio (registro local - pendiente de persistencia institucional)");
+    toast.success("Asistencia marcada (registro local - pendiente de persistencia)", { icon: "✅" });
   };
 
   const handleRegisterContact = (caseId: string, tipo: ContactType = "llamada", resultado = "Contacto familiar rapido registrado.") => {
     setSelectedCaseId(caseId);
     setContacts((current) => [createContact(caseId, tipo, resultado), ...current]);
     setCaseStatus(caseId, "contacto_familiar");
-    setLastAction("Contacto familiar registrado.");
+    addLocalAction(caseId, `Contacto registrado: ${tipo}`);
+    setLastAction("Contacto familiar registrado (registro local - pendiente de persistencia institucional)");
+    toast.success("Contacto registrado (registro local - pendiente de persistencia)", { icon: "📞" });
   };
 
   const handleRegisterVisit = (caseId: string, observaciones: string) => {
     setSelectedCaseId(caseId);
     setVisits((current) => [createVisit(caseId, observaciones), ...current]);
     setCaseStatus(caseId, "visita_programada");
-    setLastAction("Visita domiciliaria agregada a la bitacora local.");
+    addLocalAction(caseId, "Visita domiciliaria registrada");
+    setLastAction("Visita domiciliaria agregada a la bitacora (borrador local - pendiente de persistencia institucional)");
+    toast.success("Visita registrada (borrador local - pendiente de persistencia)", { icon: "🏠" });
   };
 
   const handleUpdateCompliance = (agreementId: string, status: ComplianceStatus) => {
+    const agreementItem = agreements.find((a) => a.id === agreementId);
+    if (agreementItem) {
+      addLocalAction(agreementItem.caseId, `Acuerdo: ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'}`);
+    }
     setAgreements((current) => current.map((agreement) => agreement.id === agreementId ? { ...agreement, estado: status } : agreement));
-    setLastAction("Cumplimiento actualizado.");
+    setLastAction(`Cumplimiento actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (borrador local - pendiente de persistencia institucional)`);
+    toast.success(`Acuerdo actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (borrador local - pendiente de persistencia)`, { icon: "📝" });
   };
 
   const handleEscalate = (caseId: string) => {
     setSelectedCaseId(caseId);
-    setLastAction("Caso escalado a Direccion para decision institucional.");
+    addLocalAction(caseId, "Escalar a Dirección");
+    setLastAction("Turnando caso a Dirección (función en preparación - pendiente de persistencia institucional)");
+    toast.success("Caso turnado a Dirección (función en preparación)", { icon: "gavel" });
   };
 
   const handleReturnToOrientacion = (caseId: string) => {
     setSelectedCaseId(caseId);
-    setLastAction("Caso devuelto a Orientacion para ajuste del plan de intervencion.");
+    addLocalAction(caseId, "Devolver a Orientación");
+    setLastAction("Devolviendo caso a Orientación (función en preparación - pendiente de persistencia institucional)");
+    toast.success("Caso devuelto a Orientación (función en preparación)", { icon: "assignment_return" });
   };
 
   const handleSOS = async () => {

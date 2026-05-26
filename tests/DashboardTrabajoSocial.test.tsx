@@ -68,7 +68,7 @@ describe("DashboardTrabajoSocial", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /^Llamada$/i }));
 
-    expect(screen.getByText("Contacto familiar registrado.")).toBeInTheDocument();
+    expect(screen.getByText("Contacto familiar registrado (registro local - pendiente de persistencia institucional)")).toBeInTheDocument();
     expect(screen.getByText("Tutor confirma llamada de seguimiento.")).toBeInTheDocument();
   });
 
@@ -76,7 +76,7 @@ describe("DashboardTrabajoSocial", () => {
     render(<DashboardTrabajoSocial />);
 
     expect(screen.getByText(/Cierre final bloqueado/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Escalar a Direccion/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /Escalar a Dirección \(en preparación\)/i })).toBeEnabled();
     expect(screen.queryByRole("button", { name: /Cerrar caso/i })).not.toBeInTheDocument();
   });
 });
