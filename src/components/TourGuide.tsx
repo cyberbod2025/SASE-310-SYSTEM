@@ -97,7 +97,18 @@ export const startProductTour = (
       return true;
     }
 
-    return Boolean(document.querySelector(step.element));
+    const el = document.querySelector(step.element) as HTMLElement;
+    if (!el) return false;
+
+    // Verificar visibilidad física (dimensiones mayores a cero y no oculto en estilos)
+    const rect = el.getBoundingClientRect();
+    const style = window.getComputedStyle(el);
+    return (
+      rect.width > 0 &&
+      rect.height > 0 &&
+      style.display !== "none" &&
+      style.visibility !== "hidden"
+    );
   });
 
   if (steps.length === 0) {

@@ -582,6 +582,12 @@
   filter: blur(14px);
 }
 
+/* Elevación de ancestros con contexto de apilamiento (Stacking Context) para driver.js */
+aside:has(.driver-active-element),
+header:has(.driver-active-element) {
+  z-index: 100002 !important;
+}
+
 /* --- SASE PREMIUM TOUR (DRIVER.JS CUSTOMIZATION) --- */
 .driver-popover.sase-tour-popover {
   background: linear-gradient(180deg, rgba(121, 118, 124, 0.16) 0%, rgba(84, 77, 95, 0.12) 100%) !important;
@@ -598,7 +604,6 @@
   padding: 32px !important;
   position: relative !important;
   overflow: visible !important;
-  z-index: 50 !important;
 }
 
 .driver-popover.sase-tour-popover::after {
@@ -782,7 +787,6 @@
     inset 0 0 15px rgba(255, 255, 255, 0.3) !important;
   animation: sase-element-glow 1.5s ease-in-out infinite alternate !important;
   position: relative !important;
-  z-index: 51 !important;
   border: 2px solid rgba(129, 106, 184, 0.35) !important;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
@@ -795,7 +799,7 @@
   background: radial-gradient(circle, rgba(129, 106, 184, 0.08) 0%, transparent 70%);
   border-radius: inherit;
   animation: sase-neural-blink 2s ease-in-out infinite;
-  z-index: 52;
+  z-index: 1;
   pointer-events: none;
 }
 
