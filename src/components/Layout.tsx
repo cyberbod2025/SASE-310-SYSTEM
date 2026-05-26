@@ -24,6 +24,7 @@ import {
 } from "../utils/onboardingLogic";
 import { useEcosystemModules } from "../hooks/useEcosystemModules";
 import { canAccessSecurityDashboard } from "../utils/securityDashboardAccess";
+import { getEcosystemModuleUiByAppModule } from "../config/ecosystemModuleUi";
 import { EmergencyButton } from "./emergency/EmergencyButton";
 import { EmergencyResponsePanel } from "./emergency/EmergencyResponsePanel";
 
@@ -208,6 +209,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   const displayUserRole =
     profile?.cargo_institucional || profile?.rol || currentUserRole;
   const neuralCoreState = aiSystemState;
+  const isExternalModule = !!getEcosystemModuleUiByAppModule(currentModule);
   const activeIncidentsCount = students.reduce(
     (total: number, student: any) =>
       total + (student.incidents ? student.incidents.length : 0),
@@ -749,8 +751,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </header>
 
         {/* Main Content Scroll Area */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
-          <div data-sasito-target="tablero" className={`p-4 md:p-8 animate-fade-in relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`}>
+        <main className={`flex-1 relative ${isExternalModule ? "overflow-hidden flex flex-col h-full w-full" : "overflow-y-auto overflow-x-hidden custom-scrollbar"}`}>
+          <div 
+            data-sasito-target="tablero" 
+            className={isExternalModule 
+              ? `h-full w-full flex-1 relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`
+              : `min-h-full p-4 md:p-8 animate-fade-in relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`
+            }
+          >
             {children}
           </div>
         </main>

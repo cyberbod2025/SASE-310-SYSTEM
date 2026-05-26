@@ -9,14 +9,34 @@ export const useAuthSlice = (initialRole: UserRole = UserRole.GUEST) => {
   const [userCreatedAt, setUserCreatedAt] = useState<string | null>(null);
   const [currentModule, setCurrentModule] = useState<AppModule>(() => {
     const saved = sessionStorage.getItem("sase_current_module") || localStorage.getItem("sase_current_module");
-    return Object.values(AppModule).includes(saved as AppModule) ? (saved as AppModule) : AppModule.WELCOME;
+    if (!saved || !Object.values(AppModule).includes(saved as AppModule)) {
+      return AppModule.WELCOME;
+    }
+    
+    // Evitar restaurar módulos externos en la carga inicial
+    const externalModules = [AppModule.FERIA, AppModule.DIAGNOSTICO, AppModule.MATE] as string[];
+    if (externalModules.includes(saved)) {
+      return AppModule.WELCOME;
+    }
+    
+    return saved as AppModule;
   });
   const [isTutorMode, setIsTutorMode] = useState(false);
 
   useEffect(() => {
+    const externalModules = [AppModule.FERIA, AppModule.DIAGNOSTICO, AppModule.MATE] as string[];
+    const isExternal = externalModules.includes(currentModule);
+    const isStaff = currentUserRole !== UserRole.ALUMNO && currentUserRole !== UserRole.GUEST;
+    
+    if (isExternal && isStaff) {
+      sessionStorage.removeItem("sase_current_module");
+      localStorage.removeItem("sase_current_module");
+      return;
+    }
+
     sessionStorage.setItem("sase_current_module", currentModule);
     localStorage.setItem("sase_current_module", currentModule);
-  }, [currentModule]);
+  }, [currentModule, currentUserRole]);
 
   const [onboardingDays, setOnboardingDays] = useState(0);
   const [onboardingPhase, setOnboardingPhase] = useState<"intro" | "learning" | "active" | "master">("intro");
