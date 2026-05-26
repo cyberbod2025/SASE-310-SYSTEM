@@ -31,9 +31,16 @@ export const FamilyContactLog: React.FC<FamilyContactLogProps> = ({
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 md:p-5">
-      <div className="mb-4">
-        <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Contacto familiar</p>
-        <h2 className="text-xl font-black text-white">Llamadas, mensajes y reuniones</h2>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Contacto familiar</p>
+          <h2 className="text-xl font-black text-white flex flex-wrap items-center gap-2">
+            <span>Llamadas, mensajes y reuniones</span>
+            <span className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-500">
+              ⚠️ REGISTRO LOCAL
+            </span>
+          </h2>
+        </div>
       </div>
 
       <textarea

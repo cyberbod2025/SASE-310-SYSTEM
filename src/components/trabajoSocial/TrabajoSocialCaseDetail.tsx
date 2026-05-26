@@ -57,7 +57,12 @@ export const TrabajoSocialCaseDetail: React.FC<TrabajoSocialCaseDetailProps> = (
     <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-4 shadow-2xl shadow-black/30 md:p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Detalle de caso</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200 flex items-center gap-1.5">
+            <span>Detalle de caso</span>
+            <span className="rounded bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-500">
+              ⚠️ BORRADOR LOCAL
+            </span>
+          </p>
           <h2 className="text-2xl font-black text-white">{selectedCase.alumno}</h2>
           <p className="mt-1 text-sm font-semibold text-slate-400">{selectedCase.grupo} · responsable previo: {selectedCase.responsablePrevio}</p>
         </div>
@@ -66,7 +71,12 @@ export const TrabajoSocialCaseDetail: React.FC<TrabajoSocialCaseDetailProps> = (
         </span>
       </div>
 
-      {lastAction && <p className="mt-4 rounded-3xl border border-emerald-300/30 bg-emerald-500/10 p-3 text-sm font-bold text-emerald-100">{lastAction}</p>}
+      {lastAction && (
+        <div className="mt-4 rounded-3xl border border-amber-300/30 bg-amber-500/10 p-3 text-sm font-bold text-amber-100 flex items-center gap-2">
+          <span className="material-icons text-xs text-amber-300">warning</span>
+          <span>{lastAction}</span>
+        </div>
+      )}
 
       <div className="mt-5 space-y-4">
         <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4">
@@ -109,17 +119,17 @@ export const TrabajoSocialCaseDetail: React.FC<TrabajoSocialCaseDetailProps> = (
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <button type="button" disabled={!canEdit} onClick={() => onRegisterContact(selectedCase.id, "llamada", "Contacto rapido desde detalle.")} className="min-h-[48px] rounded-2xl bg-orange-500 px-4 text-xs font-black uppercase tracking-widest text-slate-950 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400">
-          Registrar contacto
+        <button type="button" disabled={!canEdit} onClick={() => onRegisterContact(selectedCase.id, "llamada", "Contacto rapido desde detalle.")} className="min-h-[48px] rounded-2xl bg-orange-500 px-4 text-xs font-black uppercase tracking-widest text-slate-950 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400 hover:bg-orange-400">
+          Registrar contacto (registro local)
         </button>
-        <button type="button" disabled={!canEdit} onClick={() => onRegisterVisit(selectedCase.id, "Visita rapida desde detalle.")} className="min-h-[48px] rounded-2xl border border-orange-300/30 bg-orange-500/10 px-4 text-xs font-black uppercase tracking-widest text-orange-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500">
-          Registrar visita
+        <button type="button" disabled={!canEdit} onClick={() => onRegisterVisit(selectedCase.id, "Visita rapida desde detalle.")} className="min-h-[48px] rounded-2xl border border-orange-300/30 bg-orange-500/10 px-4 text-xs font-black uppercase tracking-widest text-orange-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500 hover:bg-orange-500/20">
+          Registrar visita (borrador local)
         </button>
-        <button type="button" disabled={!canEscalate} onClick={() => onEscalate(selectedCase.id)} className="min-h-[48px] rounded-2xl border border-red-300/40 bg-red-500/15 px-4 text-xs font-black uppercase tracking-widest text-red-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500">
-          Escalar a Direccion
+        <button type="button" disabled={!canEscalate} onClick={() => onEscalate(selectedCase.id)} className="min-h-[48px] rounded-2xl border border-red-300/40 bg-red-500/15 px-4 text-xs font-black uppercase tracking-widest text-red-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500 hover:bg-red-500/35">
+          Escalar a Dirección (en preparación)
         </button>
-        <button type="button" disabled={!canEdit} onClick={() => onReturnToOrientacion(selectedCase.id)} className="min-h-[48px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 text-xs font-black uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:text-slate-500">
-          Devolver a Orientacion
+        <button type="button" disabled={!canEdit} onClick={() => onReturnToOrientacion(selectedCase.id)} className="min-h-[48px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 text-xs font-black uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:text-slate-500 hover:bg-white/[0.12]">
+          Devolver a Orientación (en preparación)
         </button>
       </div>
 
