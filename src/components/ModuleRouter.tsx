@@ -66,6 +66,12 @@ export const ModuleRouter: React.FC = () => {
     loading: ecosystemModulesLoading,
   } = useEcosystemModules();
 
+  React.useEffect(() => {
+    if (currentModule === AppModule.FERIA && currentUserRole !== UserRole.ALUMNO) {
+      setCurrentModule(AppModule.DASHBOARD);
+    }
+  }, [currentModule, currentUserRole, setCurrentModule]);
+
   return (
     <React.Suspense fallback={<LoadingSpinner />}>
       <AnimatePresence mode="wait">
@@ -91,6 +97,10 @@ export const ModuleRouter: React.FC = () => {
                 );
               }
               return <ExternalModuleLauncher module={feriaModule} />;
+            }
+
+            if (currentModule === AppModule.FERIA) {
+              return <LoadingSpinner />;
             }
 
             if (externalModule) {
