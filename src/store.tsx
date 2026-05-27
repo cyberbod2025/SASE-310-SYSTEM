@@ -43,6 +43,7 @@ interface AppContextType {
   groups: any[];
   fetchGroups: any;
   addIncident: any;
+  applyIncidentSideEffects: any;
   markIncidentAsNotified: any;
   addJustificante: any;
   updateGrades: any;

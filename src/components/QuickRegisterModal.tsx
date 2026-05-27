@@ -29,6 +29,7 @@ export const QuickRegisterModal: React.FC = () => {
     students,
     groups,
     addIncident,
+    applyIncidentSideEffects,
     fetchStudents,
     currentUserRole,
     addDocumentoInstitucional,
@@ -176,14 +177,20 @@ export const QuickRegisterModal: React.FC = () => {
         p_descripcion: description,
       });
 
-      if (error || !data?.[0]?.success) {
+      const rpcResult = Array.isArray(data) ? data[0] : data;
+      if (error || !rpcResult?.success || !rpcResult?.incidencia_id) {
         console.error("Error al registrar incidencia post-emergencia", error);
         toast.error("No se pudo registrar por permisos o validación institucional.");
         return;
       }
 
+      incidentSaved = await applyIncidentSideEffects({
+        studentId: selectedStudentId,
+        type,
+        description,
+        incidentId: rpcResult.incidencia_id,
+      });
       await fetchStudents?.();
-      incidentSaved = true;
     } else {
       incidentSaved = await addIncident(selectedStudentId, type, description);
     }

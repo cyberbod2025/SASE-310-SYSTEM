@@ -52,6 +52,15 @@ const PERSISTENCE_ERROR_MESSAGE = "No se pudo registrar por permisos o validaci�
 const isIncidentType = (value: unknown): value is IncidentType =>
   Object.values(IncidentType).includes(value as IncidentType);
 
+interface PersistedIncidentEffectsInput {
+  studentId: string;
+  type: IncidentType;
+  description: string;
+  incidentId: string;
+  incidentDate?: string;
+  evidence?: string[];
+}
+
 // Production: No fictional data — students are loaded from Supabase
 const INITIAL_STUDENTS: Student[] = []; // v4.1 Sync
 
@@ -71,6 +80,125 @@ export const useStudentsSlice = (
 ) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
+
+  const applyIncidentSideEffects = useCallback(async ({
+    studentId,
+    type,
+    description,
+    incidentId,
+    incidentDate,
+    evidence,
+  }: PersistedIncidentEffectsInput) => {
+    const cleanDescription = String(description ?? "").trim();
+    const student = students.find((s) => s.id === studentId);
+    const reporterName = profile?.nombre_completo || profile?.nombres || user?.email || "SASE-System";
+
+    if (!student || !isIncidentType(type) || !cleanDescription || !incidentId) {
+      toast.error(PERSISTENCE_ERROR_MESSAGE);
+      return false;
+    }
+
+    const savedIncidentDate = incidentDate || new Date().toISOString();
+    const newIncidentLocal: Incident = {
+      id: incidentId,
+      studentId,
+      type,
+      description: cleanDescription,
+      date: savedIncidentDate,
+      reportedBy: currentUserRole,
+      evidence,
+      reporta: reporterName,
+      notificado_whatsapp: false,
+    };
+
+    const previousIncidents = student.incidents || [];
+    const escalationResult = evaluateEscalation(newIncidentLocal, previousIncidents);
+    const shouldDetectPattern =
+      previousIncidents.length + 1 >= 3 && student.caseState === CaseState.OBSERVADO;
+
+    setStudents((prev) =>
+      prev.map((s) => {
+        if (s.id !== studentId) return s;
+        return {
+          ...s,
+          incidents: [newIncidentLocal, ...(s.incidents || [])],
+          caseState: shouldDetectPattern ? CaseState.PATRON_DETECTADO : s.caseState,
+        };
+      }),
+    );
+
+    if (shouldDetectPattern) {
+      addNotification({
+        title: "🚨 PATRÓN DE RIESGO DETECTADO",
+        message: `El estudiante ${student.name} ha alcanzado el umbral de 3 incidencias.`,
+        type: "error",
+        targetRole: UserRole.ORIENTACION,
+        actionModule: AppModule.REPORTES,
+      });
+    }
+
+    if (type === IncidentType.RETARDO || type === IncidentType.ASISTENCIA) {
+      fetchDailyStats();
+    }
+
+    if (escalationResult?.notifyRoles) {
+      const { notifyRoles, priority, message, protocolId } = escalationResult;
+
+      notifyRoles.forEach((role: UserRole) => {
+        addNotification({
+          title:
+            priority === "CRITICAL"
+              ? "🚨 PROTOCOLO CRÍTICO"
+              : "Aviso de Seguimiento",
+          message: `${message} (Alumno: ${student.name || "N/A"})`,
+          type: priority === "CRITICAL" ? "error" : "warning",
+          targetRole: role,
+          actionModule: protocolId ? AppModule.PROTOCOLOS : AppModule.REPORTES,
+          actionData: { protocolId },
+        });
+      });
+
+      if (priority === "CRITICAL" && student.guardianInfo?.phonePrimary) {
+        const whatsappMsg = `SASE-310 ALERTA: Se ha activado un protocolo de ${message} para el alumno ${student.name}. Por favor, comuníquese con la institución.`;
+
+        sendWhatsAppNotification({
+          to: student.guardianInfo.phonePrimary,
+          message: whatsappMsg,
+          studentName: student.name,
+          incidentType: type,
+        }).then(res => {
+          if (res.success) {
+            console.log("WhatsApp enviado correctamente");
+          } else {
+            console.warn("Fallo al enviar WhatsApp:", res.error);
+          }
+        });
+      }
+
+      if (priority === "CRITICAL") {
+        toast.error(`¡ACTIVACIÓN DE PROTOCOLO! ${message}`, { duration: 6000 });
+        logAudit(
+          "CREACION",
+          `Protocolo Activado: ${message}`,
+          "incidencias",
+          newIncidentLocal.id,
+          student.name,
+        );
+      }
+    }
+
+    toast.success("Incidencia registrada institucionalmente");
+    return true;
+  }, [
+    addNotification,
+    currentUserRole,
+    fetchDailyStats,
+    logAudit,
+    profile?.nombre_completo,
+    profile?.nombres,
+    students,
+    user?.email,
+  ]);
 
   const fetchGroups = useCallback(async () => {
     if (!user) {
@@ -276,7 +404,6 @@ export const useStudentsSlice = (
     evidence?: string[],
   ) => {
     const tempId = Math.random().toString(36).substr(2, 9);
-    const reporterName = profile?.nombre_completo || profile?.nombres || user?.email || "SASE-System";
 
     try {
       const cleanDescription = String(description ?? "").trim();
@@ -299,96 +426,14 @@ export const useStudentsSlice = (
       ]);
       if (error) throw error;
 
-      const newIncidentLocal: Incident = {
-        id: tempId,
+      return await applyIncidentSideEffects({
         studentId,
         type,
         description: cleanDescription,
-        date: incidentDate,
-        reportedBy: currentUserRole,
         evidence,
-        reporta: reporterName,
-        notificado_whatsapp: false,
-      };
-
-      const previousIncidents = student.incidents || [];
-      const escalationResult = evaluateEscalation(newIncidentLocal, previousIncidents);
-      const shouldDetectPattern =
-        previousIncidents.length + 1 >= 3 && student.caseState === CaseState.OBSERVADO;
-
-      setStudents((prev) =>
-        prev.map((s) => {
-          if (s.id !== studentId) return s;
-          return {
-            ...s,
-            incidents: [newIncidentLocal, ...(s.incidents || [])],
-            caseState: shouldDetectPattern ? CaseState.PATRON_DETECTADO : s.caseState,
-          };
-        }),
-      );
-
-      if (shouldDetectPattern) {
-        addNotification({
-          title: "🚨 PATRÓN DE RIESGO DETECTADO",
-          message: `El estudiante ${student.name} ha alcanzado el umbral de 3 incidencias.`,
-          type: "error",
-          targetRole: UserRole.ORIENTACION,
-          actionModule: AppModule.REPORTES,
-        });
-      }
-
-      if (type === IncidentType.RETARDO || type === IncidentType.ASISTENCIA) {
-        fetchDailyStats();
-      }
-
-      if (escalationResult?.notifyRoles) {
-        const { notifyRoles, priority, message, protocolId } = escalationResult;
-
-        notifyRoles.forEach((role: UserRole) => {
-          addNotification({
-            title:
-              priority === "CRITICAL"
-                ? "🚨 PROTOCOLO CRÍTICO"
-                : "Aviso de Seguimiento",
-            message: `${message} (Alumno: ${student.name || "N/A"})`,
-            type: priority === "CRITICAL" ? "error" : "warning",
-            targetRole: role,
-            actionModule: protocolId ? AppModule.PROTOCOLOS : AppModule.REPORTES,
-            actionData: { protocolId },
-          });
-        });
-
-        if (priority === "CRITICAL" && student.guardianInfo?.phonePrimary) {
-          const whatsappMsg = `SASE-310 ALERTA: Se ha activado un protocolo de ${message} para el alumno ${student.name}. Por favor, comuníquese con la institución.`;
-
-          sendWhatsAppNotification({
-            to: student.guardianInfo.phonePrimary,
-            message: whatsappMsg,
-            studentName: student.name,
-            incidentType: type,
-          }).then(res => {
-            if (res.success) {
-              console.log("WhatsApp enviado correctamente");
-            } else {
-              console.warn("Fallo al enviar WhatsApp:", res.error);
-            }
-          });
-        }
-
-        if (priority === "CRITICAL") {
-          toast.error(`¡ACTIVACIÓN DE PROTOCOLO! ${message}`, { duration: 6000 });
-          logAudit(
-            "CREACION",
-            `Protocolo Activado: ${message}`,
-            "incidencias",
-            newIncidentLocal.id,
-            student.name,
-          );
-        }
-      }
-
-      toast.success("Incidencia registrada institucionalmente");
-      return true;
+        incidentId: tempId,
+        incidentDate,
+      });
     } catch (err: any) {
       console.warn("Error al guardar incidencia", err);
       toast.error(PERSISTENCE_ERROR_MESSAGE);
@@ -817,6 +862,7 @@ export const useStudentsSlice = (
     groups,
     fetchGroups,
     addIncident,
+    applyIncidentSideEffects,
     addJustificante,
     updateGrades,
     updateBapInfo,

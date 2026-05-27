@@ -26,6 +26,10 @@ declare
   v_is_emergency_requester boolean := false;
   v_is_emergency_staff boolean := false;
   v_can_audit boolean := false;
+  v_profile_exists boolean := false;
+  v_profile_name text;
+  v_profile_role_text text;
+  v_profile_role public.app_role := 'docente'::public.app_role;
   v_allowed_roles text[] := array[
     'docente',
     'docente_tutor',
@@ -35,6 +39,7 @@ declare
     'medico_escolar',
     'orientacion',
     'trabajo_social',
+    'developer',
     'system_admin',
     'admin'
   ];
@@ -46,8 +51,53 @@ begin
   v_role := lower(btrim(coalesce(public.get_my_role_text(), '')));
   v_is_emergency_requester := private.is_emergency_requester(v_actor_id);
 
+  -- Developer queda permitido solo en este flujo de emergencia porque los
+  -- helpers institucionales lo consideran operador activo de emergencia.
   if not (v_role = any(v_allowed_roles) and v_is_emergency_requester) then
     raise exception 'Rol no autorizado para registrar incidencia post-emergencia' using errcode = '42501';
+  end if;
+
+  select exists(select 1 from public.profiles where id = v_actor_id)
+  into v_profile_exists;
+
+  if not v_profile_exists then
+    select
+      p.nombre_completo,
+      lower(btrim(coalesce(p.rol, p.role, 'docente')))
+    into v_profile_name, v_profile_role_text
+    from public.perfiles_usuario p
+    where p.id = v_actor_id
+    limit 1;
+
+    if v_profile_role_text is null then
+      raise exception 'Perfil institucional no encontrado para reportado_por' using errcode = '23503';
+    end if;
+
+    -- public.profiles es compatibilidad legacy y su enum no incluye developer.
+    -- El rol vigente se mantiene en perfiles_usuario; la fila legacy solo
+    -- evita que la FK de incidencias falle al guardar reportado_por.
+    v_profile_role := case v_profile_role_text
+      when 'directivo' then 'directivo'::public.app_role
+      when 'docente' then 'docente'::public.app_role
+      when 'docente_tutor' then 'docente_tutor'::public.app_role
+      when 'prefectura' then 'prefectura'::public.app_role
+      when 'orientacion' then 'orientacion'::public.app_role
+      when 'trabajo_social' then 'trabajo_social'::public.app_role
+      when 'enfermeria' then 'enfermeria'::public.app_role
+      when 'medico_escolar' then 'medico_escolar'::public.app_role
+      when 'secretaria' then 'secretaria'::public.app_role
+      when 'udeii' then 'udeii'::public.app_role
+      when 'promotora_lectura' then 'promotora_lectura'::public.app_role
+      when 'subdireccion' then 'subdireccion'::public.app_role
+      when 'admin' then 'admin'::public.app_role
+      when 'system_admin' then 'system_admin'::public.app_role
+      when 'developer' then 'system_admin'::public.app_role
+      else 'docente'::public.app_role
+    end;
+
+    insert into public.profiles (id, full_name, role)
+    values (v_actor_id, nullif(v_profile_name, ''), v_profile_role)
+    on conflict (id) do nothing;
   end if;
 
   if v_descripcion = '' then
