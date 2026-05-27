@@ -22,7 +22,10 @@ declare
   v_incidencia_id uuid;
   v_alumno_existe boolean;
   v_alumno_activo boolean := true;
-  v_has_estado_column boolean;
+  v_is_creator boolean := false;
+  v_is_emergency_requester boolean := false;
+  v_is_emergency_staff boolean := false;
+  v_can_audit boolean := false;
   v_allowed_roles text[] := array[
     'docente',
     'docente_tutor',
@@ -33,8 +36,7 @@ declare
     'orientacion',
     'trabajo_social',
     'system_admin',
-    'admin',
-    'developer'
+    'admin'
   ];
 begin
   if v_actor_id is null then
@@ -42,6 +44,11 @@ begin
   end if;
 
   v_role := lower(btrim(coalesce(public.get_my_role_text(), '')));
+  v_is_emergency_requester := private.is_emergency_requester(v_actor_id);
+
+  if not (v_role = any(v_allowed_roles) and v_is_emergency_requester) then
+    raise exception 'Rol no autorizado para registrar incidencia post-emergencia' using errcode = '42501';
+  end if;
 
   if v_descripcion = '' then
     raise exception 'La descripción no puede estar vacía' using errcode = '22023';
@@ -56,9 +63,10 @@ begin
     raise exception 'Alerta de emergencia no encontrada' using errcode = 'P0002';
   end if;
 
-  if v_alerta.docente_id is distinct from v_actor_id
-    and not (v_role = any(v_allowed_roles) and private.is_emergency_requester(v_actor_id))
-  then
+  v_is_creator := v_alerta.docente_id is not distinct from v_actor_id;
+  v_is_emergency_staff := private.is_emergency_staff(v_actor_id);
+
+  if not (v_is_creator or v_is_emergency_staff) then
     raise exception 'Rol no autorizado para registrar incidencia post-emergencia' using errcode = '42501';
   end if;
 
@@ -69,27 +77,13 @@ begin
     raise exception 'Alumno no encontrado' using errcode = '23503';
   end if;
 
-  select exists (
-    select 1
-    from information_schema.columns
-    where table_schema = 'public'
-      and table_name = 'alumnos'
-      and column_name = 'estado'
-  )
-  into v_has_estado_column;
+  select coalesce(lower(to_jsonb(a)->>'estado'), 'activo') not in ('baja', 'inactivo', 'egresado')
+  into v_alumno_activo
+  from public.alumnos a
+  where a.id = p_alumno_id;
 
-  if v_has_estado_column then
-    execute $sql$
-      select coalesce(lower(estado::text), 'activo') not in ('baja', 'inactivo', 'egresado')
-      from public.alumnos
-      where id = $1
-    $sql$
-    into v_alumno_activo
-    using p_alumno_id;
-
-    if not coalesce(v_alumno_activo, false) then
-      raise exception 'Alumno no activo' using errcode = '23503';
-    end if;
+  if not coalesce(v_alumno_activo, false) then
+    raise exception 'Alumno no activo' using errcode = '23503';
   end if;
 
   v_tipo := case
@@ -129,32 +123,76 @@ begin
   )
   returning id into v_incidencia_id;
 
-  insert into public.auditoria (
-    usuario_id,
-    rol_usuario,
-    tipo_accion,
-    descripcion_accion,
-    tabla_objetivo,
-    id_registro_objetivo,
-    new_values
-  )
-  values (
-    v_actor_id,
-    v_role,
-    'CREACION',
-    'Incidencia registrada desde flujo post_emergencia',
-    'incidencias',
-    v_incidencia_id::text,
-    jsonb_build_object(
-      'origen', 'post_emergencia',
-      'alerta_id', p_alerta_id,
-      'alumno_id', p_alumno_id,
-      'incidencia_id', v_incidencia_id,
-      'usuario_id', v_actor_id,
-      'rol', v_role,
-      'timestamp', now()
-    )
-  );
+  -- Auditoria best-effort: una diferencia de esquema no debe revertir la incidencia.
+  begin
+    select to_regclass('public.auditoria') is not null
+      and exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public' and table_name = 'auditoria' and column_name = 'usuario_id'
+      )
+      and exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public' and table_name = 'auditoria' and column_name = 'rol_usuario'
+      )
+      and exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public' and table_name = 'auditoria' and column_name = 'tipo_accion'
+      )
+      and exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public' and table_name = 'auditoria' and column_name = 'descripcion_accion'
+      )
+      and exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public' and table_name = 'auditoria' and column_name = 'tabla_objetivo'
+      )
+      and exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public' and table_name = 'auditoria' and column_name = 'id_registro_objetivo'
+      )
+      and exists (
+        select 1 from information_schema.columns
+        where table_schema = 'public' and table_name = 'auditoria' and column_name = 'new_values'
+      )
+    into v_can_audit;
+
+    if v_can_audit then
+      execute $audit$
+        insert into public.auditoria (
+          usuario_id,
+          rol_usuario,
+          tipo_accion,
+          descripcion_accion,
+          tabla_objetivo,
+          id_registro_objetivo,
+          new_values
+        )
+        values (
+          $1,
+          $2,
+          'CREACION',
+          'Incidencia registrada desde flujo post_emergencia',
+          'incidencias',
+          $3::text,
+          jsonb_build_object(
+            'origen', 'post_emergencia',
+            'alerta_id', $4,
+            'alumno_id', $5,
+            'incidencia_id', $3,
+            'usuario_id', $1,
+            'rol', $2,
+            'timestamp', now()
+          )
+        )
+      $audit$
+      using v_actor_id, v_role, v_incidencia_id, p_alerta_id, p_alumno_id;
+    else
+      raise notice 'Auditoria post_emergencia omitida por estructura no compatible';
+    end if;
+  exception
+    when others then
+      raise notice 'Auditoria post_emergencia omitida por error interno';
+  end;
 
   return query select true, v_incidencia_id;
 end;
