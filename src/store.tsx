@@ -57,6 +57,8 @@ interface AppContextType {
   quickRegisterOpen: any;
   setQuickRegisterOpen: any;
   quickRegisterType: any;
+  quickRegisterContext: any;
+  setQuickRegisterContext: any;
   openQuickRegister: any;
   assistantMessage: any;
   assistantSuggestion: { text: string, state?: string, actionLabel?: string, actionType?: string } | null;
