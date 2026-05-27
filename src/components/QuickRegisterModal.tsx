@@ -11,7 +11,7 @@ import { NeoButton } from "./ui/NeoButton";
 
 const STUDENT_DROPDOWN_LIMIT = 50;
 
-const getProtocolKeywords = (protocol: any): string[] => {
+export const getProtocolKeywords = (protocol: any): string[] => {
   if (!Array.isArray(protocol?.palabras_clave)) return [];
   return protocol.palabras_clave.filter(
     (keyword: unknown): keyword is string =>

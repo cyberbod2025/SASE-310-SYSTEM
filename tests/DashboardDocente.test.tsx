@@ -56,7 +56,7 @@ describe("Dashboard Docente Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.profile.alcances = {};
-    mocks.addIncident.mockResolvedValue(undefined);
+    mocks.addIncident.mockResolvedValue(true);
   });
 
   it("renders DOCENTE header correctly", () => {
