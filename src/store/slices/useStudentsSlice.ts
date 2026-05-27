@@ -47,6 +47,11 @@ const mapCaseStateToDB = (state: CaseState): EstadoCasoDB => {
   }
 };
 
+const PERSISTENCE_ERROR_MESSAGE = "No se pudo registrar por permisos o validación institucional.";
+
+const isIncidentType = (value: unknown): value is IncidentType =>
+  Object.values(IncidentType).includes(value as IncidentType);
+
 // Production: No fictional data — students are loaded from Supabase
 const INITIAL_STUDENTS: Student[] = []; // v4.1 Sync
 
@@ -272,111 +277,122 @@ export const useStudentsSlice = (
   ) => {
     const tempId = Math.random().toString(36).substr(2, 9);
     const reporterName = profile?.nombre_completo || profile?.nombres || user?.email || "SASE-System";
-    
-    const newIncidentLocal: Incident = {
-      id: tempId,
-      studentId,
-      type,
-      description,
-      date: new Date().toISOString(),
-      reportedBy: currentUserRole,
-      evidence,
-      reporta: reporterName,
-      notificado_whatsapp: false,
-    };
-
-    let escalationResult: any = null;
-
-    setStudents((prev) =>
-      prev.map((s) => {
-        if (s.id !== studentId) return s;
-        const newIncidents = [newIncidentLocal, ...s.incidents];
-        escalationResult = evaluateEscalation(newIncidentLocal, s.incidents);
-
-        let newState = s.caseState;
-        if (newIncidents.length >= 3 && s.caseState === CaseState.OBSERVADO) {
-          newState = CaseState.PATRON_DETECTADO;
-          addNotification({
-            title: "🚨 PATRÓN DE RIESGO DETECTADO",
-            message: `El estudiante ${s.name} ha alcanzado el umbral de 3 incidencias.`,
-            type: "error",
-            targetRole: UserRole.ORIENTACION,
-            actionModule: AppModule.REPORTES,
-          });
-        }
-        return { ...s, incidents: newIncidents, caseState: newState };
-      }),
-    );
-
-    if (type === IncidentType.RETARDO || type === IncidentType.ASISTENCIA) {
-      fetchDailyStats();
-    }
-
-    if (escalationResult?.notifyRoles) {
-      const { notifyRoles, priority, message, protocolId } = escalationResult;
-      const student = students.find((s) => s.id === studentId);
-      
-      notifyRoles.forEach((role: UserRole) => {
-        addNotification({
-          title:
-            priority === "CRITICAL"
-              ? "🚨 PROTOCOLO CRÍTICO"
-              : "Aviso de Seguimiento",
-          message: `${message} (Alumno: ${student?.name || "N/A"})`,
-          type: priority === "CRITICAL" ? "error" : "warning",
-          targetRole: role,
-          actionModule: protocolId ? AppModule.PROTOCOLOS : AppModule.REPORTES,
-          actionData: { protocolId },
-        });
-      });
-
-      // Hallazgo 2: WhatsApp Automation for Critical Incidents
-      if (priority === "CRITICAL" && student?.guardianInfo?.phonePrimary) {
-        const whatsappMsg = `SASE-310 ALERTA: Se ha activado un protocolo de ${message} para el alumno ${student.name}. Por favor, comuníquese con la institución.`;
-        
-        sendWhatsAppNotification({
-          to: student.guardianInfo.phonePrimary,
-          message: whatsappMsg,
-          studentName: student.name,
-          incidentType: type
-        }).then(res => {
-          if (res.success) {
-            console.log("WhatsApp enviado correctamente");
-          } else {
-            console.warn("Fallo al enviar WhatsApp:", res.error);
-          }
-        });
-      }
-
-      if (priority === "CRITICAL") {
-        toast.error(`¡ACTIVACIÓN DE PROTOCOLO! ${message}`, { duration: 6000 });
-        logAudit(
-          "CREACION",
-          `Protocolo Activado: ${message}`,
-          "incidencias",
-          tempId,
-          student?.name,
-        );
-      }
-    }
 
     try {
+      const cleanDescription = String(description ?? "").trim();
+      const student = students.find((s) => s.id === studentId);
+
+      if (!user || !student || !isIncidentType(type) || !cleanDescription) {
+        toast.error(PERSISTENCE_ERROR_MESSAGE);
+        return false;
+      }
+
+      const incidentDate = new Date().toISOString();
       const { error } = await supabase.from("incidencias").insert([
         {
           alumno_id: studentId,
           tipo: mapIncidentTypeToDB(type),
-          descripcion: description,
-          reportado_por: user?.id || "unknown",
-          fecha: new Date().toISOString()
+          descripcion: cleanDescription,
+          reportado_por: user.id,
+          fecha: incidentDate,
         },
       ]);
       if (error) throw error;
-      toast.success("Incidencia registrada institucionalmente");
-    } catch (err: any) {
-      if (import.meta.env.DEV) {
-        console.warn("Error al guardar incidencia");
+
+      const newIncidentLocal: Incident = {
+        id: tempId,
+        studentId,
+        type,
+        description: cleanDescription,
+        date: incidentDate,
+        reportedBy: currentUserRole,
+        evidence,
+        reporta: reporterName,
+        notificado_whatsapp: false,
+      };
+
+      const previousIncidents = student.incidents || [];
+      const escalationResult = evaluateEscalation(newIncidentLocal, previousIncidents);
+      const shouldDetectPattern =
+        previousIncidents.length + 1 >= 3 && student.caseState === CaseState.OBSERVADO;
+
+      setStudents((prev) =>
+        prev.map((s) => {
+          if (s.id !== studentId) return s;
+          return {
+            ...s,
+            incidents: [newIncidentLocal, ...(s.incidents || [])],
+            caseState: shouldDetectPattern ? CaseState.PATRON_DETECTADO : s.caseState,
+          };
+        }),
+      );
+
+      if (shouldDetectPattern) {
+        addNotification({
+          title: "🚨 PATRÓN DE RIESGO DETECTADO",
+          message: `El estudiante ${student.name} ha alcanzado el umbral de 3 incidencias.`,
+          type: "error",
+          targetRole: UserRole.ORIENTACION,
+          actionModule: AppModule.REPORTES,
+        });
       }
-      toast.error("Error al guardar incidencia");
+
+      if (type === IncidentType.RETARDO || type === IncidentType.ASISTENCIA) {
+        fetchDailyStats();
+      }
+
+      if (escalationResult?.notifyRoles) {
+        const { notifyRoles, priority, message, protocolId } = escalationResult;
+
+        notifyRoles.forEach((role: UserRole) => {
+          addNotification({
+            title:
+              priority === "CRITICAL"
+                ? "🚨 PROTOCOLO CRÍTICO"
+                : "Aviso de Seguimiento",
+            message: `${message} (Alumno: ${student.name || "N/A"})`,
+            type: priority === "CRITICAL" ? "error" : "warning",
+            targetRole: role,
+            actionModule: protocolId ? AppModule.PROTOCOLOS : AppModule.REPORTES,
+            actionData: { protocolId },
+          });
+        });
+
+        if (priority === "CRITICAL" && student.guardianInfo?.phonePrimary) {
+          const whatsappMsg = `SASE-310 ALERTA: Se ha activado un protocolo de ${message} para el alumno ${student.name}. Por favor, comuníquese con la institución.`;
+
+          sendWhatsAppNotification({
+            to: student.guardianInfo.phonePrimary,
+            message: whatsappMsg,
+            studentName: student.name,
+            incidentType: type,
+          }).then(res => {
+            if (res.success) {
+              console.log("WhatsApp enviado correctamente");
+            } else {
+              console.warn("Fallo al enviar WhatsApp:", res.error);
+            }
+          });
+        }
+
+        if (priority === "CRITICAL") {
+          toast.error(`¡ACTIVACIÓN DE PROTOCOLO! ${message}`, { duration: 6000 });
+          logAudit(
+            "CREACION",
+            `Protocolo Activado: ${message}`,
+            "incidencias",
+            newIncidentLocal.id,
+            student.name,
+          );
+        }
+      }
+
+      toast.success("Incidencia registrada institucionalmente");
+      return true;
+    } catch (err: any) {
+      console.warn("Error al guardar incidencia", err);
+      toast.error(PERSISTENCE_ERROR_MESSAGE);
+      return false;
     }
   };
 

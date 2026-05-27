@@ -132,12 +132,13 @@ export const DashboardDocente = () => {
         .filter(Boolean)
         .map((item) => `Evidencia docente: ${item}`);
 
-      await addIncident(
+      const saved = await addIncident(
         selectedStudent.id,
         selectedOption.incidentType as IncidentType,
         description,
         evidence.length ? evidence : undefined,
       );
+      if (!saved) return;
 
       toast.success(`Incidencia guardada: ${selectedStudent.name}`);
       resetDraft(keepOpen ? selectedStudent.id : "");
