@@ -30,6 +30,7 @@ const STAFF_ROLES = new Set([
 ]);
 
 const EMERGENCY_SEND_TIMEOUT_MS = 10000;
+const PERSISTENCE_ERROR_MESSAGE = "No se pudo registrar por permisos o validación institucional.";
 
 async function withTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
   let timeoutId: number | undefined;
@@ -53,6 +54,11 @@ function createId() {
 
 function normalizeRole(role: unknown) {
   return typeof role === "string" ? role.trim().toLowerCase() : "";
+}
+
+function isDuplicateAlertError(error: any) {
+  const text = `${error?.message || ""} ${error?.details || ""}`.toLowerCase();
+  return error?.code === "23505" || error?.status === 409 || text.includes("duplicate key");
 }
 
 async function playEmergencySound() {
@@ -176,8 +182,25 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
       .single();
 
     if (error) {
+      if (isDuplicateAlertError(error)) {
+        const { data: existingAlert, error: lookupError } = await supabase
+          .from("alertas_emergencia" as any)
+          .select("*")
+          .eq("id", alerta.id)
+          .maybeSingle();
+
+        if (!lookupError && existingAlert) {
+          const sentAlert = {
+            ...(existingAlert as unknown as EmergencyAlert),
+            sync_status: "enviada" as const,
+          };
+          await deleteOfflineAlert(sentAlert.id).catch(() => undefined);
+          hydrateAlert(sentAlert);
+          return true;
+        }
+      }
+
       console.error("Error al enviar alerta de emergencia", error);
-      hydrateAlert({ ...alerta, sync_status: "error_envio" });
       return false;
     }
 
@@ -220,23 +243,30 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
 
       await saveOfflineAlert(alerta);
       await requestBackgroundSync();
+
+      if (typeof navigator !== "undefined" && navigator.onLine) {
+        const ok = await withTimeout(sendAlertToServer(alerta), "No se pudo enviar la alerta a tiempo.");
+        if (ok) {
+          if (!options.silent) {
+            void playEmergencySound();
+          }
+          toast.success("Alerta enviada. Personal responsable notificado.");
+          return;
+        }
+
+        await deleteOfflineAlert(alerta.id).catch(() => undefined);
+        throw new Error(PERSISTENCE_ERROR_MESSAGE);
+      }
+
       hydrateAlert(alerta);
 
       if (!options.silent) {
         void playEmergencySound();
       }
 
-      if (typeof navigator !== "undefined" && navigator.onLine) {
-        const ok = await withTimeout(sendAlertToServer(alerta), "No se pudo enviar la alerta a tiempo.");
-        if (ok) {
-          toast.success("Alerta enviada. Personal responsable notificado.");
-          return;
-        }
-      }
-
       toast("Alerta guardada. Se enviara automaticamente cuando haya conexion.", { icon: "OFF" });
     } catch (error) {
-      toast.error("No se pudo enviar, intenta de nuevo.");
+      toast.error(PERSISTENCE_ERROR_MESSAGE);
       throw error;
     } finally {
       createAlertLockRef.current = false;
@@ -268,7 +298,7 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
         ? Math.max(0, Math.floor((Date.now() - new Date(alerta.created_at).getTime()) / 1000))
         : null;
 
-      await supabase
+      const { error: updateError } = await supabase
         .from("alertas_emergencia" as any)
         .update({
           estado: "atendida",
@@ -277,6 +307,12 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
           tiempo_respuesta_seg: tiempoRespuesta,
         } as any)
         .eq("id", alertaId);
+
+      if (updateError) {
+        console.warn("Error al marcar emergencia como atendida:", updateError);
+        toast.error(PERSISTENCE_ERROR_MESSAGE);
+        return;
+      }
 
       stopEmergencyEscalation(alertaId);
     }
@@ -299,6 +335,7 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
 
     if (error) {
       console.warn("Error al cancelar SOS en DB, aplicando fallback local:", error);
+      toast.error(PERSISTENCE_ERROR_MESSAGE);
     }
 
     stopEmergencyEscalation(alertaId);
@@ -306,7 +343,9 @@ export const useEmergencySlice = (user: any, userProfile: any) => {
       alert.id === alertaId ? { ...alert, estado: "cancelada", cerrada_at: new Date().toISOString() } : alert
     )));
     setMyActiveAlert((current) => (current?.id === alertaId ? null : current));
-    toast.success("Alerta SOS cancelada por el usuario.");
+    if (!error) {
+      toast.success("Alerta SOS cancelada por el usuario.");
+    }
   }, [setAlertsState]);
 
   useEffect(() => {
