@@ -14,6 +14,7 @@ export const useUiSlice = (
 ) => {
   const [quickRegisterOpen, setQuickRegisterOpen] = useState(false);
   const [quickRegisterType, setQuickRegisterType] = useState<any>(null);
+  const [quickRegisterContext, setQuickRegisterContext] = useState<any>(null);
   const [assistantMessage, setAssistantMessage] = useState<string | null>(null);
   const [assistantSuggestion, setAssistantSuggestion] = useState<{ text: string, state?: string, actionLabel?: string, actionType?: string } | null>(null);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
@@ -59,8 +60,9 @@ export const useUiSlice = (
     return "normal"; 
   }, [students, isAssistantOpen, assistantStatus]);
 
-  const openQuickRegister = (type?: any) => {
+  const openQuickRegister = (type?: any, context?: any) => {
     if (type) setQuickRegisterType(type);
+    setQuickRegisterContext(context || null);
     setQuickRegisterOpen(true);
   };
 
@@ -109,6 +111,8 @@ export const useUiSlice = (
     setQuickRegisterOpen,
     quickRegisterType,
     setQuickRegisterType,
+    quickRegisterContext,
+    setQuickRegisterContext,
     openQuickRegister,
     assistantMessage,
     assistantSuggestion,
