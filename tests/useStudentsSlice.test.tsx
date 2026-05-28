@@ -29,6 +29,7 @@ vi.mock("../src/supabase/client", () => {
         nombre_completo: "Alumno Prueba",
         grupo: "3B",
         estado_semaforo: CaseState.OBSERVADO,
+        datos_tutor: { phonePrimary: "5512345678" },
         incidencias: [],
         justificantes: [],
         salud: [],
@@ -78,6 +79,7 @@ describe("useStudentsSlice addIncident", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     supabaseMocks.insert.mockResolvedValue({ error: null });
+    notificationMocks.sendWhatsAppNotification.mockResolvedValue({ success: true });
     supabaseMocks.from.mockImplementation((table: string) => {
       if (table === "grupos") {
         return {
@@ -98,6 +100,7 @@ describe("useStudentsSlice addIncident", () => {
                 nombre_completo: "Alumno Prueba",
                 grupo: "3B",
                 estado_semaforo: CaseState.OBSERVADO,
+                datos_tutor: { phonePrimary: "5512345678" },
                 incidencias: [],
                 justificantes: [],
                 salud: [],
@@ -152,5 +155,55 @@ describe("useStudentsSlice addIncident", () => {
 
     expect(supabaseMocks.insert).not.toHaveBeenCalled();
     expect(result.current.students[0].incidents).toHaveLength(0);
+  });
+
+  it("reutiliza escalamiento, notificaciones y WhatsApp tras RPC post-emergencia", async () => {
+    const { result } = renderStudentsSlice();
+    await waitFor(() => expect(result.current.students).toHaveLength(1));
+
+    let saved: boolean | undefined;
+    await act(async () => {
+      saved = await result.current.applyIncidentSideEffects({
+        studentId: "student-1",
+        type: IncidentType.CONDUCTA,
+        description: "Pelea con agresion fisica durante emergencia",
+        incidentId: "incident-db-1",
+        incidentDate: "2026-05-27T10:00:00.000Z",
+      });
+    });
+
+    expect(saved).toBe(true);
+    expect(result.current.students[0].incidents[0].id).toBe("incident-db-1");
+    expect(addNotification).toHaveBeenCalled();
+    expect(notificationMocks.sendWhatsAppNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: "5512345678",
+        studentName: "Alumno Prueba",
+        incidentType: IncidentType.CONDUCTA,
+      }),
+    );
+    expect(logAudit).toHaveBeenCalledWith(
+      "CREACION",
+      expect.stringContaining("Protocolo Activado"),
+      "incidencias",
+      "incident-db-1",
+      "Alumno Prueba",
+    );
+  });
+
+  it("actualiza stats al aplicar efectos de retardo post-emergencia", async () => {
+    const { result } = renderStudentsSlice();
+    await waitFor(() => expect(result.current.students).toHaveLength(1));
+
+    await act(async () => {
+      await result.current.applyIncidentSideEffects({
+        studentId: "student-1",
+        type: IncidentType.RETARDO,
+        description: "Ingreso tardio posterior a contencion de emergencia",
+        incidentId: "incident-db-2",
+      });
+    });
+
+    expect(fetchDailyStats).toHaveBeenCalled();
   });
 });

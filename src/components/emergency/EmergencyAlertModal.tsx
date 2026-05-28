@@ -251,7 +251,10 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
                 <button
                   onClick={() => {
                     onClose();
-                    openQuickRegister(IncidentType.CONDUCTA);
+                    openQuickRegister(IncidentType.CONDUCTA, {
+                      source: "post_emergencia",
+                      alertaId: myActiveAlert.id,
+                    });
                   }}
                   className="flex-1 rounded-xl bg-blue-600 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all"
                 >

@@ -24,9 +24,13 @@ export const QuickRegisterModal: React.FC = () => {
     quickRegisterOpen,
     setQuickRegisterOpen,
     quickRegisterType,
+    quickRegisterContext,
+    setQuickRegisterContext,
     students,
     groups,
     addIncident,
+    applyIncidentSideEffects,
+    fetchStudents,
     currentUserRole,
     addDocumentoInstitucional,
     setIsAssistantOpen,
@@ -149,6 +153,7 @@ export const QuickRegisterModal: React.FC = () => {
     return selectedGrupo ? true : false;
   });
   const visibleFilteredStudents = filteredStudents.slice(0, STUDENT_DROPDOWN_LIMIT);
+  const isPostEmergencyReport = quickRegisterContext?.source === "post_emergencia" && quickRegisterContext?.alertaId;
 
   const handleRegister = async () => {
     if (!selectedStudentId && !studentNotFound) {
@@ -163,7 +168,33 @@ export const QuickRegisterModal: React.FC = () => {
       return;
     }
 
-    const incidentSaved = await addIncident(selectedStudentId, type, description);
+    let incidentSaved = false;
+    if (isPostEmergencyReport) {
+      const { data, error } = await (supabase as any).rpc("registrar_incidencia_post_emergencia", {
+        p_alerta_id: quickRegisterContext.alertaId,
+        p_alumno_id: selectedStudentId,
+        p_tipo: type,
+        p_descripcion: description,
+      });
+
+      const rpcResult = Array.isArray(data) ? data[0] : data;
+      if (error || !rpcResult?.success || !rpcResult?.incidencia_id) {
+        console.error("Error al registrar incidencia post-emergencia", error);
+        toast.error("No se pudo registrar por permisos o validación institucional.");
+        return;
+      }
+
+      incidentSaved = await applyIncidentSideEffects({
+        studentId: selectedStudentId,
+        type,
+        description,
+        incidentId: rpcResult.incidencia_id,
+      });
+      await fetchStudents?.();
+    } else {
+      incidentSaved = await addIncident(selectedStudentId, type, description);
+    }
+
     if (!incidentSaved) return;
 
     // Check Protocols
@@ -230,6 +261,7 @@ export const QuickRegisterModal: React.FC = () => {
     setDescription("");
     setStudentNotFound(false);
     setPendingStudentName("");
+    setQuickRegisterContext(null);
   };
 
   return (
