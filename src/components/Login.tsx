@@ -15,6 +15,14 @@ interface LoginProps {
 
 const LOGIN_ERROR_MESSAGE = "No se pudo iniciar sesión. Verifica correo y contraseña.";
 
+const createEmptyRecoveryData = () => ({
+  identifier: "",
+  answer1: "",
+  answer2: "",
+  newPassword: "",
+  confirmPassword: "",
+});
+
 const getSafeAuthErrorDetail = (message: unknown) => {
   const normalized = typeof message === "string" ? message.toLowerCase() : "";
 
@@ -58,20 +66,47 @@ export const Login: React.FC<LoginProps> = ({
 
   const [showRecovery, setShowRecovery] = useState(false);
   const [recoveryStep, setRecoveryStep] = useState(1);
-  const [recoveryData, setRecoveryData] = useState({
-    identifier: "",
-    answer1: "",
-    answer2: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const [securityQuestions] = useState({
-    q1: "¿Nombre de su primera escuela primaria?",
-    q2: "¿Título de su libro favorito?",
-  });
+  const [recoveryData, setRecoveryData] = useState(createEmptyRecoveryData);
+  const [recoveryError, setRecoveryError] = useState("");
 
   const { logEvent } = useApp();
+
+  const resetRecoveryState = () => {
+    setRecoveryStep(1);
+    setRecoveryData(createEmptyRecoveryData());
+    setRecoveryError("");
+  };
+
+  const openRecovery = () => {
+    resetRecoveryState();
+    setShowRecovery(true);
+  };
+
+  const closeRecovery = () => {
+    setShowRecovery(false);
+    resetRecoveryState();
+  };
+
+  const handleRecoveryIdentifier = () => {
+    const identifier = recoveryData.identifier.trim().toUpperCase();
+    if (identifier.length !== 18) {
+      setRecoveryError("Ingrese una CURP válida de 18 caracteres.");
+      return;
+    }
+
+    setRecoveryData((prev) => ({ ...prev, identifier }));
+    setRecoveryData((prev) => ({
+      ...prev,
+      answer1: "",
+      answer2: "",
+      newPassword: "",
+      confirmPassword: "",
+    }));
+    setRecoveryError(
+      "Por seguridad, SASE no permite cambiar la clave solo con CURP o pregunta secreta desde esta pantalla. Solicite restablecimiento institucional a Dirección o Subdirección.",
+    );
+    toast.error("Validación institucional requerida");
+  };
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -258,10 +293,7 @@ export const Login: React.FC<LoginProps> = ({
 
               <button
                 type="button"
-                onClick={() => {
-                  setShowRecovery(true);
-                  setRecoveryStep(1);
-                }}
+                onClick={openRecovery}
                 className="text-[10px] font-semibold text-[var(--sase-primary)] hover:text-[#9a89c2] uppercase tracking-[0.22em] transition-all"
               >
                 ¿Olvidó su clave?
@@ -329,7 +361,8 @@ export const Login: React.FC<LoginProps> = ({
                     </div>
                   </div>
                   <button
-                    onClick={() => setShowRecovery(false)}
+                    onClick={closeRecovery}
+                    aria-label="Cerrar recuperación"
                     className="size-8 rounded-full border border-[rgba(227,221,236,0.14)] flex items-center justify-center text-[var(--sase-text-muted)] hover:text-white transition-all"
                   >
                     <span className="material-icons">close</span>
@@ -339,57 +372,29 @@ export const Login: React.FC<LoginProps> = ({
                 {recoveryStep === 1 && (
                   <div className="space-y-6">
                       <p className="text-sm text-[var(--sase-text-main)] font-medium leading-relaxed">
-                         Ingresa tu <span className="text-[var(--sase-text-head)] font-semibold">CURP</span> para iniciar el protocolo de validación.
+                         Ingresa tu <span className="text-[var(--sase-text-head)] font-semibold">CURP</span> para revisar el procedimiento de recuperación.
                     </p>
                     <GlassInput
+                      id="recovery-curp"
+                      name="recovery-curp"
                       label="CURP Institucional"
                       placeholder="CURP EN MAYÚSCULAS"
+                      autoComplete="off"
+                      maxLength={18}
                       value={recoveryData.identifier}
                       onChange={(e) => setRecoveryData({...recoveryData, identifier: e.target.value.toUpperCase()})}
                     />
+                    {recoveryError && (
+                      <p role="alert" className="text-[11px] font-semibold text-rose-200">
+                        {recoveryError}
+                      </p>
+                    )}
                     <GlassButton
-                      onClick={() => setRecoveryStep(2)}
+                      onClick={handleRecoveryIdentifier}
                       className="w-full"
                       loading={loading}
                     >
-                      Continuar Proceso
-                    </GlassButton>
-                  </div>
-                )}
-
-                {recoveryStep === 2 && (
-                  <div className="space-y-6">
-                      <p className="text-sm text-[var(--sase-text-main)] font-medium leading-relaxed">
-                      Responda a los desafíos de seguridad configurados.
-                    </p>
-                    <GlassInput
-                      label={securityQuestions.q1}
-                      placeholder="Respuesta"
-                      value={recoveryData.answer1}
-                      onChange={(e) => setRecoveryData({...recoveryData, answer1: e.target.value})}
-                    />
-                    <GlassButton onClick={() => setRecoveryStep(3)} className="w-full">
-                      Verificar Identidad
-                    </GlassButton>
-                  </div>
-                )}
-
-                {recoveryStep === 3 && (
-                  <div className="space-y-6">
-                    <p className="text-xs text-[#d7d09a] font-semibold uppercase tracking-[0.22em] bg-[rgba(175,166,60,0.12)] p-4 rounded-2xl border border-[rgba(175,166,60,0.2)] text-center">
-                      Identidad verificada correctamente
-                    </p>
-                    <GlassInput
-                      label="Nueva Contraseña"
-                      type="password"
-                      value={recoveryData.newPassword}
-                      onChange={(e) => setRecoveryData({...recoveryData, newPassword: e.target.value})}
-                    />
-                    <GlassButton
-                      onClick={() => setShowRecovery(false)}
-                      className="w-full"
-                    >
-                      Restablecer Clave
+                      Revisar Recuperación
                     </GlassButton>
                   </div>
                 )}
