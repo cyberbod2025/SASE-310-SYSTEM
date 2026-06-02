@@ -26,6 +26,15 @@ ${datos.testigos ? `- Testigos: ${datos.testigos}` : ""}
 ${datos.tutor_nombre ? `- Madre, padre o tutor: ${datos.tutor_nombre}` : "- Madre, padre o tutor: En preparación"}
 ${datos.personal_prefectura ? `- Personal de Prefectura: ${datos.personal_prefectura}` : "- Personal de Prefectura: En preparación"}
 ${datos.testigo_institucional ? `- Testigo institucional: ${datos.testigo_institucional}` : "- Testigo institucional: En preparación"}
+${datos.asunto ? `- Asunto: ${datos.asunto}` : "- Asunto: En preparación"}
+${datos.periodo_seguimiento ? `- Periodo de seguimiento: ${datos.periodo_seguimiento}` : ""}
+${datos.situaciones_observadas ? `- Situaciones observadas: ${datos.situaciones_observadas}` : ""}
+${datos.acciones_implementadas ? `- Acciones implementadas: ${datos.acciones_implementadas}` : ""}
+${datos.medidas_implementadas ? `- Medidas implementadas: ${datos.medidas_implementadas}` : ""}
+${datos.compromiso_alumno ? `- Compromiso del alumno: ${datos.compromiso_alumno}` : ""}
+${datos.compromiso_familia ? `- Compromiso de la familia: ${datos.compromiso_familia}` : ""}
+${datos.objetivo_seguimiento ? `- Objetivo del seguimiento: ${datos.objetivo_seguimiento}` : ""}
+${datos.soporte_atencion_familia ? `- Soporte/constancia de atención familiar: ${datos.soporte_atencion_familia}` : ""}
 
 REGLAS INQUEBRANTABLES:
 1. Usa lenguaje técnico-pedagógico, neutro y objetivo. NUNCA uses juicios de valor.
@@ -102,6 +111,58 @@ Estructura:
 7. Nota: "El presente documento es de carácter formativo y busca favorecer la sana convivencia escolar."
 
 Tono: Conciliador, proactivo, formativo.`;
+
+    case "reporte_seguimiento_individual":
+      return `${contextoComun}
+TIPO DE DOCUMENTO: REPORTE INDIVIDUAL DE SEGUIMIENTO ACADÉMICO Y CONDUCTUAL
+
+Genera el cuerpo de un reporte individual institucional, con enfoque académico, conductual, preventivo y de corresponsabilidad.
+El sistema agregará encabezado, tablas de datos, firmas, folio y pie institucional.
+
+Estructura requerida:
+1. Asunto del seguimiento.
+2. Constancia de atención y diálogo con la madre, padre o tutor, indicando que fue atendido de manera oportuna, amable, respetuosa e institucional.
+3. Situaciones observadas en el aula o espacio escolar, redactadas en viñetas o párrafos breves.
+4. Acciones implementadas por el docente o personal escolar.
+5. Observación académica relevante, sin prejuzgar ni responsabilizar de forma absoluta.
+6. Objetivo del seguimiento.
+7. Compromisos del alumno, de la familia y del docente.
+8. Soporte institucional o constancia de atención que deje claro que la familia tuvo espacio de escucha, aclaración y acompañamiento.
+9. Cierre formativo.
+
+Reglas adicionales:
+- No inventes nombres, fechas, sanciones, diagnósticos ni hechos no proporcionados.
+- Si un dato no fue proporcionado, escribe literalmente "En preparación".
+- Evita acusaciones directas; usa "se observó", "se identificó", "se informó" y "se brindó seguimiento".
+- No incluyas firmas ni encabezado institucional.
+
+Tono: Formal, amable, objetivo, institucional y protector de la actuación escolar.`;
+
+    case "informe_seguimiento_grupal":
+      return `${contextoComun}
+TIPO DE DOCUMENTO: INFORME GRUPAL DE SEGUIMIENTO ACADÉMICO Y CONDUCTUAL
+
+Genera el cuerpo de un informe grupal institucional para el grupo ${datos.grupo}.
+El sistema agregará encabezado, datos del grupo, firmas, folio y pie institucional.
+
+Estructura requerida:
+1. Asunto del informe.
+2. Contexto general del grupo y periodo observado.
+3. Situaciones observadas en organización de trabajo, cumplimiento académico y convivencia.
+4. Acciones o medidas implementadas por el docente o personal escolar.
+5. Reconocimiento explícito de que puede existir alumnado que sí cumple cuando corresponda; evita generalizaciones absolutas.
+6. Objetivo del seguimiento grupal.
+7. Compromisos del grupo, de las familias y del personal escolar.
+8. Soporte institucional: deja claro que las familias, madres, padres o tutores fueron atendidos o serán atendidos de manera oportuna, amable y respetuosa en ambiente institucional.
+9. Cierre para conocimiento y seguimiento correspondiente.
+
+Reglas adicionales:
+- No individualices alumnos salvo que el dato venga expresamente proporcionado.
+- No inventes porcentajes, sanciones, acuerdos de dirección ni determinaciones disciplinarias.
+- Si un dato no fue proporcionado, escribe literalmente "En preparación".
+- No incluyas firmas ni encabezado institucional.
+
+Tono: Ejecutivo, objetivo, formativo, institucional y orientado a seguimiento.`;
 
     case "informe_caso":
       return `${contextoComun}

@@ -33,6 +33,28 @@ function parrafosOPreparacion(valor?: string): string {
     .join("");
 }
 
+function limpiarMarcadorLista(valor: string): string {
+  return valor.replace(/^\s*(?:[-*•□]|\d+[.)])\s*/, "").trim();
+}
+
+function listaOPreparacion(valor?: string, respaldo: string[] = []): string {
+  const lineas = valor
+    ?.split(/\n+/)
+    .map(limpiarMarcadorLista)
+    .filter(Boolean);
+  const elementos = lineas && lineas.length > 0 ? lineas : respaldo;
+
+  if (elementos.length === 0) {
+    return `<ul style="margin:0; padding-left:18px;"><li>${EN_PREPARACION_HTML}</li></ul>`;
+  }
+
+  return `
+    <ul style="margin:0; padding-left:18px; line-height:1.75;">
+      ${elementos.map((item) => `<li style="margin:0 0 6px;">${escapeHtml(item)}</li>`).join("")}
+    </ul>
+  `;
+}
+
 /**
  * Genera el HTML de un documento institucional con encabezado oficial,
  * cuerpo normativo, espacios de firma, y pie institucional con QR.
@@ -45,6 +67,14 @@ export function generarPlantillaHTML(
 ): string {
   if (tipo === "acta_corresponsabilidad") {
     return generarActaCorresponsabilidadHTML(datos, contenidoIA, folio);
+  }
+
+  if (tipo === "reporte_seguimiento_individual") {
+    return generarReporteSeguimientoIndividualHTML(datos, contenidoIA, folio);
+  }
+
+  if (tipo === "informe_seguimiento_grupal") {
+    return generarInformeSeguimientoGrupalHTML(datos, contenidoIA, folio);
   }
 
   const encabezado = `
@@ -76,6 +106,10 @@ export function generarPlantillaHTML(
     acta_corresponsabilidad:
       "ACTA DE HECHOS Y ACUERDOS DE CORRESPONSABILIDAD",
     hoja_acuerdos: "HOJA DE ACUERDOS Y COMPROMISOS",
+    reporte_seguimiento_individual:
+      "REPORTE DE SEGUIMIENTO ACADÉMICO Y CONDUCTUAL",
+    informe_seguimiento_grupal:
+      "INFORME GRUPAL DE SEGUIMIENTO ACADÉMICO Y CONDUCTUAL",
     informe_supervision: "INFORME DE SUPERVISIÓN",
     informe_caso: "INFORME DE CASO",
     circular_docentes: "CIRCULAR INTERNA",
@@ -201,6 +235,346 @@ export function generarPlantillaHTML(
       ${seccionExtra}
       ${normativa}
       ${firmas}
+      ${pie}
+    </div>
+  `;
+}
+
+function generarReporteSeguimientoIndividualHTML(
+  datos: DatosDocumento,
+  contenidoIA: string,
+  folio: string,
+): string {
+  const pie = generarPieInstitucional(folio, datos.fecha);
+  const sintesis = contenidoIA.trim() || datos.descripcion;
+  const asunto =
+    datos.asunto ||
+    "Seguimiento académico y conductual del alumno(a)";
+  const soporte =
+    datos.soporte_atencion_familia ||
+    "Se hace constar que la madre, padre o tutor fue atendido de manera oportuna, amable, respetuosa e institucional, en un ambiente de diálogo, escucha y colaboración orientado al bienestar del alumno(a).";
+
+  const firma = (cargo: string, nombre?: string) => `
+    <div style="width:45%; min-width:230px; margin:28px 0 12px; text-align:center;">
+      <p style="font-size:10px; font-weight:900; color:#334155; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 28px;">
+        ${escapeHtml(cargo)}
+      </p>
+      <div style="border-top:1px solid #1f2937; padding-top:7px; font-size:11px; line-height:1.5;">
+        ${datoOPreparacion(nombre)}<br/>
+        <span style="color:#64748b;">Nombre y firma</span>
+      </div>
+    </div>
+  `;
+
+  return `
+    <div style="font-family:Arial, Helvetica, sans-serif; max-width:760px; margin:0 auto; padding:34px 38px; color:#111827; font-size:12px; line-height:1.65;">
+      <header style="text-align:center; border-bottom:2px solid #111827; padding-bottom:14px; margin-bottom:18px;">
+        <h1 style="font-size:16px; font-weight:900; margin:0 0 4px; text-transform:uppercase;">
+          ESCUELA SECUNDARIA DIURNA No. 310 "PRESIDENTES DE MÉXICO"
+        </h1>
+        <p style="font-size:11px; font-weight:800; margin:0 0 8px; text-transform:uppercase;">Turno vespertino</p>
+        <h2 style="font-size:14px; font-weight:900; margin:0; text-transform:uppercase; letter-spacing:1px;">
+          REPORTE DE SEGUIMIENTO ACADÉMICO Y CONDUCTUAL
+        </h2>
+      </header>
+
+      <table style="width:100%; border-collapse:collapse; margin:0 0 18px; font-size:12px;">
+        <tbody>
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:7px; width:22%; font-weight:900; background:#f8fafc;">Alumno(a)</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.alumno_nombre)}</td>
+            <td style="border:1px solid #cbd5e1; padding:7px; width:16%; font-weight:900; background:#f8fafc;">Grupo</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.grupo)}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Docente / Personal</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.docente_reporta)}</td>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Fecha</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.fecha)}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Madre, padre o tutor</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.tutor_nombre)}</td>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Parentesco</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.tutor_parentesco)}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Asunto</td>
+            <td colspan="3" style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(asunto)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <section style="margin:18px 0;">
+        <p style="margin:0 0 10px; text-align:justify;">
+          Por medio del presente se documenta el seguimiento académico y conductual del alumno(a) ${datoOPreparacion(datos.alumno_nombre)}, con la finalidad de dejar constancia objetiva de las situaciones observadas, las acciones implementadas y los compromisos de corresponsabilidad establecidos entre escuela y familia.
+        </p>
+        <p style="margin:0; text-align:justify;">${escapeHtml(soporte)}</p>
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">I. Síntesis institucional</h3>
+        ${parrafosOPreparacion(sintesis)}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">II. Situaciones observadas</h3>
+        ${listaOPreparacion(datos.situaciones_observadas, [
+          "Cumplimiento irregular de actividades o evidencias académicas.",
+          "Necesidad de redireccionamiento para iniciar o concluir el trabajo escolar.",
+          "Dificultad para sostener condiciones adecuadas de participación y convivencia.",
+        ])}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">III. Acciones implementadas</h3>
+        ${listaOPreparacion(datos.acciones_implementadas, [
+          "Explicación grupal e individual de actividades.",
+          "Seguimiento durante las sesiones de clase.",
+          "Registro de incidencias académicas o conductuales relevantes.",
+          "Comunicación y orientación para fortalecer hábitos de responsabilidad.",
+        ])}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">IV. Observación académica relevante</h3>
+        ${parrafosOPreparacion(
+          datos.observacion_academica ||
+            "Las actividades, indicaciones y oportunidades de trabajo han sido proporcionadas durante las sesiones ordinarias, por lo que se considera necesario fortalecer hábitos de organización, atención a instrucciones y entrega de evidencias.",
+        )}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">V. Objetivo del seguimiento</h3>
+        ${parrafosOPreparacion(
+          datos.objetivo_seguimiento ||
+            "Favorecer el desarrollo de hábitos de responsabilidad, organización, respeto a las normas de convivencia y cumplimiento de actividades académicas, fortaleciendo el trabajo coordinado entre alumno, familia y escuela.",
+        )}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">VI. Compromisos</h3>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+          <div style="border:1px solid #cbd5e1; padding:10px;">
+            <p style="font-size:10px; font-weight:900; text-transform:uppercase; margin:0 0 6px;">Alumno(a)</p>
+            ${listaOPreparacion(datos.compromiso_alumno, [
+              "Atender indicaciones emitidas por el personal escolar.",
+              "Realizar y entregar las actividades solicitadas.",
+              "Mantener un lenguaje respetuoso durante la convivencia escolar.",
+            ])}
+          </div>
+          <div style="border:1px solid #cbd5e1; padding:10px;">
+            <p style="font-size:10px; font-weight:900; text-transform:uppercase; margin:0 0 6px;">Familia</p>
+            ${listaOPreparacion(datos.compromiso_familia, [
+              "Dar seguimiento al cuaderno, avisos y actividades escolares.",
+              "Acompañar el cumplimiento de los compromisos establecidos.",
+              "Mantener comunicación respetuosa y oportuna con la escuela.",
+            ])}
+          </div>
+          <div style="border:1px solid #cbd5e1; padding:10px;">
+            <p style="font-size:10px; font-weight:900; text-transform:uppercase; margin:0 0 6px;">Escuela</p>
+            ${listaOPreparacion(datos.medidas_implementadas, [
+              "Continuar brindando acompañamiento académico y formativo.",
+              "Mantener seguimiento y registro de avances.",
+              "Informar oportunamente situaciones relevantes del desempeño escolar.",
+            ])}
+          </div>
+        </div>
+      </section>
+
+      <section style="margin:18px 0; padding:12px; border:1px solid #cbd5e1; background:#f8fafc;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">VII. Soporte institucional y constancia de atención</h3>
+        <p style="margin:0 0 10px; text-align:justify;">
+          Se deja constancia de que la madre, padre o tutor fue atendido de manera oportuna, amable, respetuosa e institucional, brindando un espacio de escucha, aclaración y revisión objetiva de la situación académica y conductual observada.
+        </p>
+        <p style="margin:0; text-align:justify;">
+          La intervención se realizó en un ambiente de respeto e institucionalidad, privilegiando el diálogo, la corresponsabilidad familia-escuela, el interés superior del estudiante y el seguimiento formativo.
+        </p>
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">VIII. Observaciones finales</h3>
+        ${parrafosOPreparacion(datos.observaciones)}
+      </section>
+
+      <section style="margin:20px 0 10px;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">IX. Firmas</h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between;">
+          ${firma("Madre, padre o tutor", datos.tutor_nombre)}
+          ${firma("Alumno(a)", datos.alumno_nombre)}
+          ${firma("Docente / personal que atiende", datos.docente_reporta)}
+          ${firma("Tutor(a) de grupo")}
+        </div>
+      </section>
+
+      ${pie}
+    </div>
+  `;
+}
+
+function generarInformeSeguimientoGrupalHTML(
+  datos: DatosDocumento,
+  contenidoIA: string,
+  folio: string,
+): string {
+  const pie = generarPieInstitucional(folio, datos.fecha);
+  const sintesis = contenidoIA.trim() || datos.descripcion;
+  const asunto =
+    datos.asunto ||
+    `Seguimiento académico y conductual del grupo ${datos.grupo}`;
+  const soporte =
+    datos.soporte_atencion_familia ||
+    "Las madres, padres o tutores que soliciten aclaración o seguimiento serán atendidos de manera oportuna, amable, respetuosa e institucional, en un ambiente de escucha y corresponsabilidad.";
+
+  const firma = (cargo: string, nombre?: string) => `
+    <div style="width:30%; min-width:190px; margin:30px 0 12px; text-align:center;">
+      <p style="font-size:10px; font-weight:900; color:#334155; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 28px;">
+        ${escapeHtml(cargo)}
+      </p>
+      <div style="border-top:1px solid #1f2937; padding-top:7px; font-size:11px; line-height:1.5;">
+        ${datoOPreparacion(nombre)}<br/>
+        <span style="color:#64748b;">Nombre y firma</span>
+      </div>
+    </div>
+  `;
+
+  return `
+    <div style="font-family:Arial, Helvetica, sans-serif; max-width:760px; margin:0 auto; padding:34px 38px; color:#111827; font-size:12px; line-height:1.65;">
+      <header style="text-align:center; border-bottom:2px solid #111827; padding-bottom:14px; margin-bottom:18px;">
+        <h1 style="font-size:16px; font-weight:900; margin:0 0 4px; text-transform:uppercase;">
+          ESCUELA SECUNDARIA DIURNA No. 310 "PRESIDENTES DE MÉXICO"
+        </h1>
+        <p style="font-size:11px; font-weight:800; margin:0 0 8px; text-transform:uppercase;">Turno vespertino</p>
+        <h2 style="font-size:14px; font-weight:900; margin:0; text-transform:uppercase; letter-spacing:1px;">
+          INFORME GRUPAL DE SEGUIMIENTO ACADÉMICO Y CONDUCTUAL
+        </h2>
+      </header>
+
+      <table style="width:100%; border-collapse:collapse; margin:0 0 18px; font-size:12px;">
+        <tbody>
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:7px; width:20%; font-weight:900; background:#f8fafc;">Grupo</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.grupo)}</td>
+            <td style="border:1px solid #cbd5e1; padding:7px; width:20%; font-weight:900; background:#f8fafc;">Fecha</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.fecha)}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Periodo</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.periodo_seguimiento)}</td>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Docente / Personal</td>
+            <td style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(datos.docente_reporta)}</td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #cbd5e1; padding:7px; font-weight:900; background:#f8fafc;">Asunto</td>
+            <td colspan="3" style="border:1px solid #cbd5e1; padding:7px;">${datoOPreparacion(asunto)}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <section style="margin:18px 0;">
+        <p style="margin:0 0 10px; text-align:justify;">
+          A quien corresponda: por medio del presente se informa el seguimiento académico y conductual del grupo ${datoOPreparacion(datos.grupo)}, con base en registros de clase, observaciones de trabajo y acciones implementadas para fortalecer la organización escolar.
+        </p>
+        <p style="margin:0; text-align:justify;">${escapeHtml(soporte)}</p>
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">I. Contexto y síntesis institucional</h3>
+        ${parrafosOPreparacion(sintesis)}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">II. Situaciones observadas</h3>
+        ${listaOPreparacion(datos.situaciones_observadas, [
+          "Falta de realización de actividades previamente indicadas.",
+          "Ausencia de materiales o evidencias solicitadas.",
+          "Necesidad de redireccionamiento para mantener condiciones adecuadas de trabajo grupal.",
+          "Conversaciones o distracciones que afectan el desarrollo de actividades académicas.",
+        ])}
+        <p style="margin:10px 0 0; text-align:justify;">
+          Se reconoce que puede existir alumnado que sí da seguimiento a las indicaciones, presenta evidencias y mantiene participación acorde con lo solicitado; el presente informe evita generalizaciones absolutas y se emite para seguimiento formativo.
+        </p>
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">III. Acciones y medidas implementadas</h3>
+        ${listaOPreparacion(
+          datos.acciones_implementadas || datos.medidas_implementadas,
+          [
+            "Actividades cortas y verificables durante cada sesión.",
+            "Revisión periódica de evidencias en cuaderno.",
+            "Registro individual de cumplimiento e incumplimiento.",
+            "Seguimiento continuo mediante listas de control y revisión docente.",
+          ],
+        )}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">IV. Objetivo del seguimiento grupal</h3>
+        ${parrafosOPreparacion(
+          datos.objetivo_seguimiento ||
+            "Fortalecer hábitos de organización, cumplimiento académico, escucha de indicaciones y convivencia respetuosa, mediante acciones verificables y seguimiento continuo del desempeño grupal.",
+        )}
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">V. Compromisos</h3>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
+          <div style="border:1px solid #cbd5e1; padding:10px;">
+            <p style="font-size:10px; font-weight:900; text-transform:uppercase; margin:0 0 6px;">Grupo</p>
+            ${listaOPreparacion(datos.compromiso_alumno, [
+              "Atender instrucciones durante las sesiones de clase.",
+              "Presentar evidencias y materiales solicitados.",
+              "Conservar condiciones de trabajo respetuosas y colaborativas.",
+            ])}
+          </div>
+          <div style="border:1px solid #cbd5e1; padding:10px;">
+            <p style="font-size:10px; font-weight:900; text-transform:uppercase; margin:0 0 6px;">Familias</p>
+            ${listaOPreparacion(datos.compromiso_familia, [
+              "Dar seguimiento al cumplimiento de actividades y avisos escolares.",
+              "Apoyar hábitos de responsabilidad y organización en casa.",
+              "Mantener comunicación respetuosa y oportuna con el plantel.",
+            ])}
+          </div>
+          <div style="border:1px solid #cbd5e1; padding:10px;">
+            <p style="font-size:10px; font-weight:900; text-transform:uppercase; margin:0 0 6px;">Escuela</p>
+            ${listaOPreparacion(datos.medidas_implementadas, [
+              "Continuar con seguimiento académico verificable.",
+              "Registrar avances y áreas de oportunidad.",
+              "Brindar atención institucional a familias que requieran aclaración o acompañamiento.",
+            ])}
+          </div>
+        </div>
+      </section>
+
+      <section style="margin:18px 0; padding:12px; border:1px solid #cbd5e1; background:#f8fafc;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">VI. Soporte institucional y atención a familias</h3>
+        <p style="margin:0 0 10px; text-align:justify;">
+          Se deja constancia de que las madres, padres o tutores serán atendidos de manera oportuna, amable y respetuosa para revisar inquietudes, aclaraciones o solicitudes de seguimiento relacionadas con el desempeño académico y conductual del grupo.
+        </p>
+        <p style="margin:0; text-align:justify;">
+          La atención se realizará en ambiente institucional, privilegiando el diálogo, la escucha activa, la colaboración familia-escuela y el carácter formativo de las acciones implementadas.
+        </p>
+      </section>
+
+      <section style="margin:18px 0;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">VII. Observaciones finales</h3>
+        ${parrafosOPreparacion(datos.observaciones)}
+      </section>
+
+      <p style="margin:20px 0 0; text-align:justify;">
+        Sin más por el momento, se emite el presente para conocimiento y seguimiento correspondiente.
+      </p>
+
+      <section style="margin:20px 0 10px;">
+        <h3 style="font-size:12px; font-weight:900; margin:0 0 8px; text-transform:uppercase;">VIII. Firmas</h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between;">
+          ${firma("Docente / personal que emite", datos.docente_reporta)}
+          ${firma("Tutor(a) de grupo")}
+          ${firma("Vo. Bo. Dirección")}
+        </div>
+      </section>
+
       ${pie}
     </div>
   `;

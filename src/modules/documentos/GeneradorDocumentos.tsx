@@ -42,6 +42,13 @@ function obtenerCicloEscolar(fecha = new Date()): string {
   return iniciaNuevoCiclo ? `${anio}-${anio + 1}` : `${anio - 1}-${anio}`;
 }
 
+function esDocumentoSeguimiento(tipo: TipoDocumentoInstitucional): boolean {
+  return (
+    tipo === "reporte_seguimiento_individual" ||
+    tipo === "informe_seguimiento_grupal"
+  );
+}
+
 /**
  * Generador Institucional de Documentos SASE
  * - Citatorio a Padres
@@ -115,6 +122,14 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     compromiso_alumno: "",
     compromiso_familia: "",
     observaciones: "",
+    situaciones_observadas: "",
+    acciones_implementadas: "",
+    medidas_implementadas: "",
+    observacion_academica: "",
+    objetivo_seguimiento: "",
+    soporte_atencion_familia: "",
+    periodo_seguimiento: "",
+    asunto: "",
   });
 
   // Detección automática de incidencias previas
@@ -127,7 +142,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     if (tipoDoc === "citatorio_padres") {
       checkCitatoriosPrevios();
     }
-  }, [tipoDoc]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tipoDoc]);
 
   // Análisis en tiempo real del texto editado
   const advertencias: Advertencia[] = useMemo(() => {
@@ -656,6 +671,228 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
                 </div>
               )}
 
+              {esDocumentoSeguimiento(tipoDoc) && (
+                <div className="space-y-4 p-4 bg-cyan-50 border border-cyan-200 rounded-xl">
+                  <p className="text-[10px] font-black text-cyan-700 uppercase tracking-widest">
+                    Datos de seguimiento académico/conductual
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Asunto
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.asunto}
+                        onChange={(e) => updateDato("asunto", e.target.value)}
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="Seguimiento académico y conductual"
+                        title="Asunto del documento"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Periodo de Seguimiento
+                      </label>
+                      <input
+                        type="text"
+                        value={datos.periodo_seguimiento}
+                        onChange={(e) =>
+                          updateDato("periodo_seguimiento", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="En preparación"
+                        title="Periodo que cubre el seguimiento"
+                      />
+                    </div>
+                  </div>
+
+                  {tipoDoc === "reporte_seguimiento_individual" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                          Madre, Padre o Tutor
+                        </label>
+                        <input
+                          type="text"
+                          value={datos.tutor_nombre}
+                          onChange={(e) =>
+                            updateDato("tutor_nombre", e.target.value)
+                          }
+                          className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                          placeholder="En preparación"
+                          title="Nombre del familiar atendido"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                          Parentesco
+                        </label>
+                        <input
+                          type="text"
+                          value={datos.tutor_parentesco}
+                          onChange={(e) =>
+                            updateDato("tutor_parentesco", e.target.value)
+                          }
+                          className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                          placeholder="Madre, padre, tutor(a)"
+                          title="Parentesco del familiar atendido"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Situaciones Observadas
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={datos.situaciones_observadas}
+                        onChange={(e) =>
+                          updateDato("situaciones_observadas", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="Una situación por línea"
+                        title="Situaciones observadas"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Acciones Implementadas
+                      </label>
+                      <textarea
+                        rows={4}
+                        value={datos.acciones_implementadas}
+                        onChange={(e) =>
+                          updateDato("acciones_implementadas", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="Una acción por línea"
+                        title="Acciones implementadas"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                      Observación Académica Relevante
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={datos.observacion_academica}
+                      onChange={(e) =>
+                        updateDato("observacion_academica", e.target.value)
+                      }
+                      className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                      placeholder="En preparación"
+                      title="Observación académica relevante"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Objetivo del Seguimiento
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={datos.objetivo_seguimiento}
+                        onChange={(e) =>
+                          updateDato("objetivo_seguimiento", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="En preparación"
+                        title="Objetivo del seguimiento"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Soporte de Atención Familiar
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={datos.soporte_atencion_familia}
+                        onChange={(e) =>
+                          updateDato("soporte_atencion_familia", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="Atención oportuna, amable, respetuosa e institucional"
+                        title="Constancia de atención familiar"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        {tipoDoc === "informe_seguimiento_grupal"
+                          ? "Compromisos del Grupo"
+                          : "Compromisos del Alumno"}
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={datos.compromiso_alumno}
+                        onChange={(e) =>
+                          updateDato("compromiso_alumno", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="Un compromiso por línea"
+                        title="Compromisos del alumno o grupo"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Compromisos de la Familia
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={datos.compromiso_familia}
+                        onChange={(e) =>
+                          updateDato("compromiso_familia", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="Un compromiso por línea"
+                        title="Compromisos de la familia"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                        Medidas de la Escuela
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={datos.medidas_implementadas}
+                        onChange={(e) =>
+                          updateDato("medidas_implementadas", e.target.value)
+                        }
+                        className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                        placeholder="Una medida por línea"
+                        title="Medidas o compromisos de la escuela"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black text-cyan-700 uppercase tracking-widest mb-1.5">
+                      Observaciones Finales
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={datos.observaciones}
+                      onChange={(e) =>
+                        updateDato("observaciones", e.target.value)
+                      }
+                      className="w-full bg-white border border-cyan-200 rounded-xl p-3 text-sm font-medium text-slate-700 focus:ring-2 focus:ring-cyan-500 outline-none"
+                      placeholder="En preparación"
+                      title="Observaciones finales"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Descripción */}
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">
@@ -1103,6 +1340,52 @@ SEGUIMIENTO:
 Se acuerda una revisión de cumplimiento en un plazo de 15 días hábiles.
 
 El presente documento es de carácter formativo y busca favorecer la sana convivencia escolar en beneficio del alumno(a).`;
+
+    case "reporte_seguimiento_individual":
+      return `ASUNTO:
+${datos.asunto || "Seguimiento académico y conductual del alumno(a)."}
+
+Por medio del presente se hace constar que se sostuvo atención y diálogo con la madre, padre o tutor del alumno(a) ${datos.alumno_nombre}, brindando un espacio de escucha, revisión objetiva y seguimiento institucional en un ambiente de respeto.
+
+SITUACIONES OBSERVADAS:
+${datos.situaciones_observadas || datos.descripcion}
+
+ACCIONES IMPLEMENTADAS:
+${datos.acciones_implementadas || "Se brindó explicación, seguimiento durante las sesiones de clase, revisión de evidencias y orientación para fortalecer el cumplimiento de responsabilidades escolares."}
+
+OBJETIVO DEL SEGUIMIENTO:
+${datos.objetivo_seguimiento || "Favorecer hábitos de responsabilidad, organización, respeto a las normas de convivencia y cumplimiento de actividades académicas mediante trabajo coordinado entre alumno, familia y escuela."}
+
+COMPROMISOS:
+- Alumno(a): ${datos.compromiso_alumno || "Atender indicaciones, realizar actividades y mantener comunicación respetuosa."}
+- Familia: ${datos.compromiso_familia || "Dar seguimiento al cumplimiento de actividades, revisar avisos y mantener comunicación con la escuela."}
+- Escuela: ${datos.medidas_implementadas || "Continuar brindando acompañamiento académico y seguimiento formativo."}
+
+SOPORTE INSTITUCIONAL:
+${datos.soporte_atencion_familia || "Se deja constancia de que la madre, padre o tutor fue atendido de manera oportuna, amable, respetuosa e institucional, con oportunidad de expresar inquietudes y recibir información correspondiente."}`;
+
+    case "informe_seguimiento_grupal":
+      return `ASUNTO:
+${datos.asunto || `Seguimiento académico y conductual del grupo ${datos.grupo}.`}
+
+Por medio del presente se informa el seguimiento académico y de organización de trabajo correspondiente al grupo ${datos.grupo}, con base en observaciones de clase, registros de evidencias y acciones implementadas por el personal escolar.
+
+SITUACIONES OBSERVADAS:
+${datos.situaciones_observadas || datos.descripcion}
+
+ACCIONES Y MEDIDAS IMPLEMENTADAS:
+${datos.acciones_implementadas || datos.medidas_implementadas || "Se implementaron actividades cortas y verificables, revisión periódica de evidencias, registro individual de cumplimiento y seguimiento continuo durante las sesiones."}
+
+OBJETIVO DEL SEGUIMIENTO GRUPAL:
+${datos.objetivo_seguimiento || "Fortalecer hábitos de organización, cumplimiento académico, escucha de indicaciones y convivencia respetuosa mediante acciones verificables y seguimiento continuo."}
+
+COMPROMISOS:
+- Grupo: ${datos.compromiso_alumno || "Atender indicaciones, presentar evidencias y conservar condiciones adecuadas de trabajo."}
+- Familias: ${datos.compromiso_familia || "Dar seguimiento a actividades, materiales y avisos escolares."}
+- Escuela: ${datos.medidas_implementadas || "Mantener seguimiento académico verificable y atención institucional a familias."}
+
+SOPORTE INSTITUCIONAL:
+${datos.soporte_atencion_familia || "Las madres, padres o tutores serán atendidos de manera oportuna, amable y respetuosa, en un ambiente institucional de escucha, aclaración y colaboración familia-escuela."}`;
 
     default:
       return datos.descripcion;

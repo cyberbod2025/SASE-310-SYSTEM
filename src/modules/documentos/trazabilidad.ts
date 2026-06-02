@@ -14,6 +14,8 @@ const PREFIJO_TIPO: Record<TipoDocumentoInstitucional, string> = {
   acta_hechos: "ACTA",
   acta_corresponsabilidad: "COR",
   hoja_acuerdos: "ACU",
+  reporte_seguimiento_individual: "SEG-IND",
+  informe_seguimiento_grupal: "SEG-GRP",
   informe_supervision: "SUP",
   informe_caso: "CASO",
   circular_docentes: "CIRC",

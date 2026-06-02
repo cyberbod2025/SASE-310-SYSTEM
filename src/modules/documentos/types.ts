@@ -6,6 +6,8 @@ export type TipoDocumentoInstitucional =
   | "acta_hechos"
   | "acta_corresponsabilidad"
   | "hoja_acuerdos"
+  | "reporte_seguimiento_individual"
+  | "informe_seguimiento_grupal"
   | "informe_supervision"
   | "informe_caso"
   | "circular_docentes"
@@ -35,6 +37,13 @@ export interface DatosDocumento {
   compromiso_alumno?: string;
   compromiso_familia?: string;
   observaciones?: string;
+  situaciones_observadas?: string;
+  acciones_implementadas?: string;
+  medidas_implementadas?: string;
+  observacion_academica?: string;
+  objetivo_seguimiento?: string;
+  soporte_atencion_familia?: string;
+  periodo_seguimiento?: string;
   // Extras para nuevos tipos
   destinatario?: string;
   asunto?: string;
@@ -104,8 +113,24 @@ export const TIPOS_DOCUMENTO: Record<
     categoria: "disciplinario",
     descripcion: "Informe detallado de seguimiento a caso específico.",
   },
+  reporte_seguimiento_individual: {
+    label: "Reporte Individual Académico/Conductual",
+    icon: "person_search",
+    color: "cyan",
+    categoria: "disciplinario",
+    descripcion:
+      "Seguimiento académico y conductual con constancia de atención familiar.",
+  },
 
   // === OPERATIVOS ===
+  informe_seguimiento_grupal: {
+    label: "Informe Grupal Académico/Conductual",
+    icon: "groups_2",
+    color: "slate",
+    categoria: "operativo",
+    descripcion:
+      "Informe de seguimiento académico, organización de trabajo y acciones grupales.",
+  },
   informe_supervision: {
     label: "Informe de Supervisión",
     icon: "fact_check",
