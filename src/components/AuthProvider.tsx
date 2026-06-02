@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../supabase/client";
 import { UserRole } from "../types";
+import { getInstitutionalAccountStatus } from "../utils/accountStatus";
 
 interface AuthContextType {
   user: User | null;
@@ -89,6 +90,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setRole(null);
         setProfile(null);
       } else {
+        const accountStatus = getInstitutionalAccountStatus(userData);
+        if (accountStatus.blocked) {
+          console.warn("Institutional account blocked, signing out.");
+          setRole(null);
+          setProfile(null);
+          await supabase.auth.signOut();
+          return;
+        }
+
         const dbRole = (userData.rol || userData.role) as UserRole;
         if (Object.values(UserRole).includes(dbRole)) {
           setRole(dbRole);

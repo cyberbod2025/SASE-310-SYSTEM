@@ -7,6 +7,7 @@ import { GlassCard } from "./ui/GlassCard";
 import { GlassButton } from "./ui/GlassButton";
 import { GlassInput } from "./ui/GlassInput";
 import { useApp } from "../store";
+import { getInstitutionalAccountStatus } from "../utils/accountStatus";
 
 interface LoginProps {
   onDemoEnter?: () => void;
@@ -182,32 +183,35 @@ export const Login: React.FC<LoginProps> = ({
       // Verificar estado de seguridad en el perfil
       const { data: perfil, error: perfilError } = await (supabase
         .from("perfiles_usuario" as any)
-        .select("seguridad_status, blocked_until, risk_score")
+        .select("seguridad_status, blocked_until, risk_score, estatus, estado_cuenta")
         .eq("id", user?.id)
         .single() as any);
 
       if (perfil) {
-        const now = new Date();
-        const blockedUntil = perfil.blocked_until ? new Date(perfil.blocked_until) : null;
+        const accountStatus = getInstitutionalAccountStatus(perfil);
 
-        if (perfil.seguridad_status === 'blocked') {
-          toast.error("Acceso denegado: Usuario bloqueado por seguridad institucional.");
-          await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'blocked_status' });
-          await supabase.auth.signOut();
-          setLoading(false);
-          return;
-        }
-
-        if (blockedUntil && now < blockedUntil) {
-          const minutesLeft = Math.ceil((blockedUntil.getTime() - now.getTime()) / 60000);
+        if (accountStatus.blockedUntil) {
+          const minutesLeft = Math.ceil((accountStatus.blockedUntil.getTime() - Date.now()) / 60000);
           toast.error(`Acceso restringido temporalmente. Intente en ${minutesLeft} minutos.`);
           await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", { email: normalizedUsername, reason: 'temporary_block', minutes_left: minutesLeft });
           await supabase.auth.signOut();
           setLoading(false);
           return;
         }
+
+        if (accountStatus.blocked) {
+          toast.error("Acceso denegado: Usuario bloqueado por seguridad institucional.");
+          await logEvent("SECURITY", "LOGIN_BLOCKED", "FAILURE", {
+            email: normalizedUsername,
+            reason: accountStatus.reason,
+            status: accountStatus.status,
+          });
+          await supabase.auth.signOut();
+          setLoading(false);
+          return;
+        }
         
-        if (perfil.seguridad_status === 'restricted') {
+        if (accountStatus.restricted) {
           toast.success("Ingreso exitoso (Modo Restringido)");
         }
       }
