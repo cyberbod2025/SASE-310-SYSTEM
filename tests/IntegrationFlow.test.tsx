@@ -62,6 +62,7 @@ vi.mock("../src/supabase/client", () => {
   });
 
   mocks.update.mockReturnValue({ eq: mocks.eq });
+  mocks.insert.mockReturnValue({ select: mocks.select });
 
   return {
     supabase: {
@@ -130,7 +131,6 @@ describe("Integration: Docente -> Direccion Flow", () => {
       },
     ];
 
-    mocks.insert.mockResolvedValue({ error: null });
     // No usar mockResolvedValue en eq, ya que rompe la cadena (order, limit, etc)
     // mocks.eq ya tiene una implementación por defecto que devuelve un thenable con queryChain
   });
