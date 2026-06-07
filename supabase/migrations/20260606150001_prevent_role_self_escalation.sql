@@ -16,11 +16,62 @@
 --   Edge Functions (invoke con service_role bypassa RLS)
 
 -- ─────────────────────────────────────────────────────────────
+-- 0. Funciones Auxiliares SECURITY DEFINER para evitar recursión
+-- ─────────────────────────────────────────────────────────────
+
+CREATE OR REPLACE FUNCTION public.check_perfil_usuario_unmodified(
+  p_id uuid,
+  p_new_rol text,
+  p_new_permisos jsonb,
+  p_new_alcances jsonb,
+  p_new_matricula text,
+  p_new_email text,
+  p_new_role text
+)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+declare
+  v_old public.perfiles_usuario;
+begin
+  select * into v_old from public.perfiles_usuario where id = p_id;
+  if not found then
+    return true;
+  end if;
+  return (
+    p_new_rol is not distinct from v_old.rol
+    and p_new_permisos is not distinct from v_old.permisos
+    and p_new_alcances is not distinct from v_old.alcances
+    and p_new_matricula is not distinct from v_old.matricula_sase
+    and p_new_email is not distinct from v_old.email
+    and p_new_role is not distinct from v_old.role
+  );
+end;
+$$;
+
+CREATE OR REPLACE FUNCTION public.check_profile_unmodified(
+  p_id uuid,
+  p_new_role public.app_role
+)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+declare
+  v_old_role public.app_role;
+begin
+  select role into v_old_role from public.profiles where id = p_id;
+  if not found then
+    return true;
+  end if;
+  return p_new_role is not distinct from v_old_role;
+end;
+$$;
+
+-- ─────────────────────────────────────────────────────────────
 -- 1. perfiles_usuario: Recrear policy de UPDATE con protección real
 -- ─────────────────────────────────────────────────────────────
--- La policy anterior tenía WITH CHECK con autorreferencias a NEW
--- (rol IS NOT DISTINCT FROM rol → siempre true). Esta nueva policy
--- compara cada campo sensible contra su valor almacenado.
 
 drop policy if exists "Usuarios actualizan su propio perfil" on public.perfiles_usuario;
 
@@ -31,18 +82,12 @@ to authenticated
 using (auth.uid() = id)
 with check (
   auth.uid() = id
-  and (rol, permisos, alcances, matricula_sase, email, role)
-      is not distinct from (
-        select p.rol, p.permisos, p.alcances, p.matricula_sase, p.email, p.role
-        from public.perfiles_usuario p
-        where p.id = auth.uid()
-      )
+  and public.check_perfil_usuario_unmodified(id, rol, permisos, alcances, matricula_sase, email, role)
 );
 
 -- ─────────────────────────────────────────────────────────────
 -- 2. profiles: Recrear policy de UPDATE con protección de role
 -- ─────────────────────────────────────────────────────────────
--- La policy anterior no tenía WITH CHECK, permitiendo cambiar role.
 
 drop policy if exists "Users can update their own profile." on public.profiles;
 drop policy if exists "Users update own profile" on public.profiles;
@@ -54,9 +99,7 @@ to authenticated
 using (auth.uid() = id)
 with check (
   auth.uid() = id
-  and role is not distinct from (
-    select p.role from public.profiles p where p.id = auth.uid()
-  )
+  and public.check_profile_unmodified(id, role)
 );
 
 -- ─────────────────────────────────────────────────────────────
