@@ -70,3 +70,32 @@
 - [x] T032 Agregar slice/store frontend para consultar el snapshot sin leer catálogos directamente desde React.
 - [x] T033 Implementar `SecurityDashboard` y exponerlo en navegación para Dirección, Soporte Nivel 3 y Desarrollo.
 - [x] T034 Verificar `npm run lint`, `npm run type-check`, `npm run test`, `npm run build` y `./scripts/audit-migrations.sh` tras la integración.
+
+## Fase 10 — Prevención de autoescalamiento de roles (PR #91, 2026-06-08)
+
+- [ ] T035 Migración `prevent_role_self_escalation`: Campos sensibles (rol, permisos, alcances, matricula_sase, email, role) protegidos contra self-update via RLS WITH CHECK.
+- [ ] T036 Migración `fix_rls_helpers_hardening`: Helpers SECURITY DEFINER movidos a schema `private`, ejecución revocada para public/anon/authenticated. Campos seguridad_status, blocked_until, grupo_tutor, grupos agregados al conjunto inmutable.
+- [ ] T037 Corrección Sasito: Matching de señales rojas por word-boundary (evita falsos positivos de subcadena). Prioridad de señales rojas sobre coincidencias académicas.
+- [ ] T038 Runbook de pruebas RLS: Corregido para usar cliente autenticado real en vez de SQL Editor con service_role.
+- [ ] T039 Verificación: pnpm type-check, pnpm test, pnpm build, audit-migrations.sh
+
+### Campos protegidos contra self-update
+
+| Tabla | Campo | Razón |
+|-------|-------|-------|
+| perfiles_usuario | rol | Escalamiento de privilegios |
+| perfiles_usuario | permisos | Modificación de permisos JSONB |
+| perfiles_usuario | alcances | Modificación de alcances JSONB |
+| perfiles_usuario | matricula_sase | Identidad institucional |
+| perfiles_usuario | email | Identidad |
+| perfiles_usuario | role | Campo legacy de rol |
+| perfiles_usuario | seguridad_status | Bloqueo de seguridad |
+| perfiles_usuario | blocked_until | Bloqueo temporal |
+| perfiles_usuario | grupo_tutor | Scope de grupo para tokens |
+| perfiles_usuario | grupos | Scope de grupos para tokens |
+| profiles | role | Rol en tabla legacy |
+
+### Riesgos residuales
+
+- Validación completa pendiente en Supabase real/staging con usuario QA.
+- El campo `risk_score` en perfiles_usuario no está protegido explícitamente (usado solo en lectura por Login.tsx).

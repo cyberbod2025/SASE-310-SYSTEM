@@ -54,6 +54,7 @@ Hoy existen fallas verificadas de seguridad y consistencia que vuelven frágil l
 - FR-008: `.env.example` debe reflejar el puerto local real y las variables server-side mínimas que el repositorio ya usa.
 - FR-009: `supabase/config.toml` debe apuntar al seed real del repositorio o dejar explícita la ausencia de seed compatible.
 - FR-010: Todo cambio de esta fase debe quedar respaldado por migración trazable y guía de validación en `quickstart.md`.
+- FR-011: Los campos sensibles de identidad, rol, permisos, alcances, seguridad y grupo en `perfiles_usuario` deben ser inmutables para self-update por el usuario autenticado. Solo flujos server-side o service_role pueden modificarlos.
 
 ## Escenarios de aceptación
 

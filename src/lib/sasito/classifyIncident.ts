@@ -3,7 +3,20 @@ import {
   SASITO_EXPERIENCE_CATALOG,
 } from "../../data/sasitoExperienceCatalog";
 import type { SasitoExperience, SasitoIncidentInput, SasitoRecommendation } from "../../types/sasitoExperience";
-import { HUMAN_REVIEW_ACTION, normalizeSasitoText, resolveSasitoRisk } from "./riskRules";
+import { HUMAN_REVIEW_ACTION, matchesAnyTerm, normalizeSasitoText, resolveSasitoRisk } from "./riskRules";
+
+const RULE_TO_EXPERIENCE_MAP: Record<string, string> = {
+  agresion_fisica: "agresion_fisica",
+  posible_arma: "posible_riesgo_seguridad",
+  fuego: "posible_riesgo_seguridad",
+  alumno_no_localizado: "posible_riesgo_seguridad",
+  conducta_sexualizada: "posible_riesgo_seguridad",
+};
+
+const findSecurityExperienceByRule = (rule: string): SasitoExperience | undefined => {
+  const experienceId = RULE_TO_EXPERIENCE_MAP[rule];
+  return experienceId ? findSasitoExperienceById(experienceId) : undefined;
+};
 
 const findExperienceBySignals = (input: SasitoIncidentInput): SasitoExperience | undefined => {
   const normalizedInput = normalizeSasitoText(
@@ -21,7 +34,7 @@ const findExperienceBySignals = (input: SasitoIncidentInput): SasitoExperience |
     return (
       normalizedInput.includes(normalizedId) ||
       normalizedInput.includes(normalizedName) ||
-      experience.senales.some((signal) => normalizedInput.includes(normalizeSasitoText(signal)))
+      matchesAnyTerm(normalizedInput, experience.senales.map((s) => normalizeSasitoText(s)))
     );
   });
 };
@@ -46,6 +59,26 @@ export const classifyIncident = (input: SasitoIncidentInput): SasitoRecommendati
   }
 
   const risk = resolveSasitoRisk(input, experience);
+
+  // P2 fix: When red safety signal is detected but experience is not security-type,
+  // override with security experience to ensure proper protocol.
+  if (risk.riesgo === "rojo" && experience.tipo !== "seguridad") {
+    const securityExperience = findSecurityExperienceByRule(risk.reglaAplicada);
+    if (securityExperience) {
+      return {
+        experienciaId: securityExperience.id,
+        experienciaNombre: securityExperience.nombre,
+        tipo: securityExperience.tipo,
+        riesgo: "rojo",
+        accionesRecomendadas: [...securityExperience.accionesRecomendadas],
+        noHacer: [...securityExperience.noHacer],
+        plantillaSugerida: securityExperience.plantillaSugerida,
+        requiereEscalamiento: true,
+        reglaAplicada: risk.reglaAplicada,
+        revisionHumana: false,
+      };
+    }
+  }
 
   return {
     experienciaId: experience.id,

@@ -30,8 +30,11 @@ const hasReincidence = (input: SasitoIncidentInput): boolean =>
 const hasThreeReincidences = (input: SasitoIncidentInput): boolean =>
   (input.reincidenciasPrevias ?? 0) >= 3;
 
-const matchesAnyTerm = (normalizedText: string, terms: readonly string[]): boolean =>
-  terms.some((term) => normalizedText.includes(term));
+export const matchesAnyTerm = (normalizedText: string, terms: readonly string[]): boolean =>
+  terms.some((term) => {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(?:^|\\s)${escaped}(?:\\s|$)`).test(normalizedText);
+  });
 
 export const resolveSasitoRisk = (
   input: SasitoIncidentInput,
