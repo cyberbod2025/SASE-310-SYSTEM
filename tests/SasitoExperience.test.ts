@@ -82,4 +82,59 @@ describe("Sasito Experiencia Institucional", () => {
     expect(result.revisionHumana).toBe(true);
     expect(result.accionesRecomendadas).toEqual([HUMAN_REVIEW_ACTION]);
   });
+
+  // --- False positive tests - substring matching ---
+
+  it('"armar equipo" NO activa riesgo rojo (falso positivo de arma)', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "vamos a armar equipos" });
+    expect(result.riesgo).not.toBe("rojo");
+  });
+
+  it('"desarmar material" NO activa riesgo rojo', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "desarmar el material" });
+    expect(result.riesgo).not.toBe("rojo");
+  });
+
+  // --- True positive tests ---
+
+  it('"posible arma" SÍ activa riesgo rojo', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "posible arma" });
+    expect(result.riesgo).toBe("rojo");
+    expect(result.tipo).toBe("seguridad");
+    expect(result.requiereEscalamiento).toBe(true);
+  });
+
+  it('"trae arma" SÍ activa riesgo rojo (token completo)', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "trae arma" });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  it('"arma blanca" SÍ activa riesgo rojo', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "arma blanca" });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  // --- Priority tests - red safety overrides academic ---
+
+  it("no_trabaja_en_clase + posible arma → riesgo rojo y tipo seguridad", () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "posible arma en mochila" });
+    expect(result.riesgo).toBe("rojo");
+    expect(result.tipo).toBe("seguridad");
+    expect(result.requiereEscalamiento).toBe(true);
+    expect(result.accionesRecomendadas).toEqual(expect.arrayContaining([
+      expect.stringContaining("protocolo"),
+    ]));
+  });
+
+  it("no_trabaja_en_clase + fuego → riesgo rojo y tipo seguridad", () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "posible fuego en laboratorio" });
+    expect(result.riesgo).toBe("rojo");
+    expect(result.tipo).toBe("seguridad");
+  });
+
+  it("no_trabaja_en_clase sin señal roja → académico verde", () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase" });
+    expect(result.riesgo).toBe("verde");
+    expect(result.tipo).toBe("academica");
+  });
 });
