@@ -33,7 +33,8 @@ const hasThreeReincidences = (input: SasitoIncidentInput): boolean =>
 export const matchesAnyTerm = (normalizedText: string, terms: readonly string[]): boolean =>
   terms.some((term) => {
     const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(`(?:^|\\s)${escaped}(?:\\s|$)`).test(normalizedText);
+    // Usamos \b para que cualquier no-alfanumérico (incluida puntuación) cuente como límite
+    return new RegExp(`\\b${escaped}\\b`).test(normalizedText);
   });
 
 export const resolveSasitoRisk = (

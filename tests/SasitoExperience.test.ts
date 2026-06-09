@@ -114,6 +114,28 @@ describe("Sasito Experiencia Institucional", () => {
     expect(result.riesgo).toBe("rojo");
   });
 
+  // --- Punctuation boundary tests ---
+
+  it('"trae arma." SÍ activa riesgo rojo (puntuación)', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "trae arma." });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  it('"arma," SÍ activa riesgo rojo (puntuación)', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "arma," });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  it('"posible fuego;" SÍ activa riesgo rojo (puntuación)', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "posible fuego;" });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  it('"hubo golpe," SÍ activa riesgo rojo (puntuación)', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "hubo golpe," });
+    expect(result.riesgo).toBe("rojo");
+  });
+
   // --- Priority tests - red safety overrides academic ---
 
   it("no_trabaja_en_clase + posible arma → riesgo rojo y tipo seguridad", () => {

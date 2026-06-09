@@ -29,6 +29,8 @@ Este documento detalla las pruebas de seguridad para verificar que los usuarios 
 | `perfiles_usuario` | `blocked_until` | Bloqueo temporal |
 | `perfiles_usuario` | `grupo_tutor` | Scope de grupo para tokens |
 | `perfiles_usuario` | `grupos` | Scope de grupos para tokens |
+| `perfiles_usuario` | `estado_cuenta` | Estado de la cuenta |
+| `perfiles_usuario` | `risk_score` | Puntaje de riesgo automático |
 | `profiles` | `role` | Rol en tabla legacy |
 
 ## Campos permitidos (self-update PERMITIDO)
@@ -125,10 +127,12 @@ async function main() {
     { name: "matricula_sase", table: "perfiles_usuario", payload: { matricula_sase: "HACK-001" }, expectBlocked: true },
     { name: "email", table: "perfiles_usuario", payload: { email: "hacked@evil.com" }, expectBlocked: true },
     { name: "role (legacy)", table: "perfiles_usuario", payload: { role: "directivo" }, expectBlocked: true },
-    { name: "seguridad_status", table: "perfiles_usuario", payload: { seguridad_status: "limpio" }, expectBlocked: true },
+    { name: "seguridad_status", table: "perfiles_usuario", payload: { seguridad_status: "active" }, expectBlocked: true },
     { name: "blocked_until → null", table: "perfiles_usuario", payload: { blocked_until: null }, expectBlocked: true },
     { name: "grupo_tutor", table: "perfiles_usuario", payload: { grupo_tutor: "admin-group" }, expectBlocked: true },
     { name: "grupos", table: "perfiles_usuario", payload: { grupos: ["all-access"] }, expectBlocked: true },
+    { name: "estado_cuenta", table: "perfiles_usuario", payload: { estado_cuenta: "active" }, expectBlocked: true },
+    { name: "risk_score", table: "perfiles_usuario", payload: { risk_score: 0 }, expectBlocked: true },
   ];
 
   // Campo que DEBE ser bloqueado en profiles (tabla legacy)
@@ -232,14 +236,14 @@ curl -s -X PATCH \
 
 # Resultado esperado: [] o error 40x
 
-# Intentar cambiar seguridad_status
+# Intentar cambiar seguridad_status (usando un valor válido de constraint 'active' para que el error provenga del RLS y no de una constraint de dominio)
 curl -s -X PATCH \
   "${SUPABASE_URL}/rest/v1/perfiles_usuario?id=eq.${USER_ID}" \
   -H "apikey: ${SUPABASE_ANON_KEY}" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
   -H "Prefer: return=representation" \
-  -d '{"seguridad_status": "limpio"}'
+  -d '{"seguridad_status": "active"}'
 
 # Resultado esperado: [] o error 40x
 ```
@@ -273,6 +277,8 @@ curl -s -X PATCH \
 | `PATCH blocked_until=...` | `[]` vacío o HTTP 403/400 |
 | `PATCH grupo_tutor=...` | `[]` vacío o HTTP 403/400 |
 | `PATCH grupos=...` | `[]` vacío o HTTP 403/400 |
+| `PATCH estado_cuenta=...` | `[]` vacío o HTTP 403/400 |
+| `PATCH risk_score=...` | `[]` vacío o HTTP 403/400 |
 | `PATCH nombre_completo=...` | Registro actualizado ✅ |
 | `PATCH telefono=...` | Registro actualizado ✅ |
 | `PATCH preferencias_dashboard=...` | Registro actualizado ✅ |
@@ -328,7 +334,7 @@ BEGIN;
 
   -- ── Prueba 3: Intentar modificar seguridad_status (DEBE FALLAR) ──
   UPDATE public.perfiles_usuario
-  SET seguridad_status = 'limpio'
+  SET seguridad_status = 'active'
   WHERE id = '<uuid-real-del-usuario-qa>';
   -- Esperado: 0 filas afectadas
 

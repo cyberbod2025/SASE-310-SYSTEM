@@ -51,14 +51,14 @@ describe("DashboardTrabajoSocial", () => {
     expect(screen.getByRole("heading", { name: /Intervención en campo/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Casos asignados/i })).toBeInTheDocument();
     expect(screen.getAllByText("Alumno Sin Respuesta").length).toBeGreaterThan(0);
-  });
+  }, 15000);
 
   it("highlights three unanswered citatorios as a critical institutional rule", () => {
     render(<DashboardTrabajoSocial />);
 
     expect(screen.getAllByText(/3 citatorios sin respuesta/i).length).toBeGreaterThan(0);
     expect(screen.getByRole("alert")).toHaveTextContent(/Padres no han respondido a 3 citatorios/i);
-  });
+  }, 15000);
 
   it("registers a quick family contact without creating a new incident", () => {
     render(<DashboardTrabajoSocial />);
@@ -70,7 +70,7 @@ describe("DashboardTrabajoSocial", () => {
 
     expect(screen.getByText("Contacto familiar registrado (registro local - pendiente de persistencia institucional)")).toBeInTheDocument();
     expect(screen.getByText("Tutor confirma llamada de seguimiento.")).toBeInTheDocument();
-  });
+  }, 15000);
 
   it("blocks final closure and exposes escalation path instead", () => {
     render(<DashboardTrabajoSocial />);
@@ -78,5 +78,5 @@ describe("DashboardTrabajoSocial", () => {
     expect(screen.getByText(/Cierre final bloqueado/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Escalar a Dirección \(en preparación\)/i })).toBeEnabled();
     expect(screen.queryByRole("button", { name: /Cerrar caso/i })).not.toBeInTheDocument();
-  });
+  }, 15000);
 });

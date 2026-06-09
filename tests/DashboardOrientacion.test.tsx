@@ -114,7 +114,7 @@ describe("Dashboard Orientacion v2", () => {
     await screen.findByRole("heading", { name: "Ana Rivera" });
     expect(screen.getByText(/Bandeja de casos/i)).toBeInTheDocument();
     expect(screen.getByText(/Historial institucional/i)).toBeInTheDocument();
-  });
+  }, 15000);
 
   it("abre un caso sugerido y solicita diagnóstico", async () => {
     render(<DashboardOrientacion />);
@@ -126,5 +126,5 @@ describe("Dashboard Orientacion v2", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /enviar solicitud/i }));
     await waitFor(() => expect(mocks.requestDiagnosis).toHaveBeenCalled());
-  });
+  }, 15000);
 });

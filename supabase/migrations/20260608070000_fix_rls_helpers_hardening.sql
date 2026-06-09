@@ -12,10 +12,13 @@
 --        • blocked_until     (TIMESTAMPTZ) – temporal block
 --        • grupo_tutor       (TEXT)    – tutor group scope
 --        • grupos            (TEXT[])  – group array scope
+--        • estado_cuenta     (TEXT)    – account status
+--        • risk_score        (NUMERIC) – risk score
 --   3. Adds SET search_path = '' to each SECURITY DEFINER function.
---   4. REVOKEs execution from PUBLIC / anon / authenticated.
---   5. GRANTs execution only to postgres (RLS policies execute as
---      table owner = postgres, so the policy can still call them).
+--   4. REVOKEs execution from PUBLIC / anon.
+--   5. GRANTs execution to postgres and authenticated (RLS policies evaluate
+--      as the calling user, so authenticated needs EXECUTE, but being in
+--      private schema prevents RPC exposure).
 --   6. Drops the old public-schema versions.
 --   7. Recreates RLS policies referencing private.* helpers.
 --
@@ -36,7 +39,8 @@ CREATE SCHEMA IF NOT EXISTS private;
 --
 --    Protected fields (10 total):
 --      rol, permisos, alcances, matricula_sase, email, role,
---      seguridad_status, blocked_until, grupo_tutor, grupos
+--      seguridad_status, blocked_until, grupo_tutor, grupos,
+--      estado_cuenta, risk_score
 -- ───────────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION private.check_perfil_usuario_unmodified(
   p_id                uuid,
@@ -49,7 +53,9 @@ CREATE OR REPLACE FUNCTION private.check_perfil_usuario_unmodified(
   p_new_seguridad     text,
   p_new_blocked_until timestamptz,
   p_new_grupo_tutor   text,
-  p_new_grupos        text[]
+  p_new_grupos        text[],
+  p_new_estado_cuenta text,
+  p_new_risk_score    numeric
 )
 RETURNS boolean
 LANGUAGE plpgsql
@@ -74,6 +80,8 @@ BEGIN
     AND p_new_blocked_until IS NOT DISTINCT FROM v_old.blocked_until
     AND p_new_grupo_tutor   IS NOT DISTINCT FROM v_old.grupo_tutor
     AND p_new_grupos        IS NOT DISTINCT FROM v_old.grupos
+    AND p_new_estado_cuenta IS NOT DISTINCT FROM v_old.estado_cuenta
+    AND p_new_risk_score    IS NOT DISTINCT FROM v_old.risk_score
   );
 END;
 $$;
@@ -107,21 +115,22 @@ $$;
 -- 3. Lock down execution on the new private functions
 -- ───────────────────────────────────────────────────────────────
 REVOKE ALL ON FUNCTION private.check_perfil_usuario_unmodified(
-  uuid, text, jsonb, jsonb, text, text, text, text, timestamptz, text, text[]
-) FROM PUBLIC, anon, authenticated;
+  uuid, text, jsonb, jsonb, text, text, text, text, timestamptz, text, text[], text, numeric
+) FROM PUBLIC, anon;
 
 REVOKE ALL ON FUNCTION private.check_profile_unmodified(
   uuid, public.app_role
-) FROM PUBLIC, anon, authenticated;
+) FROM PUBLIC, anon;
 
--- RLS policies run as the table owner (postgres), so grant to postgres only.
+-- RLS policies evaluate as the calling user, so authenticated needs EXECUTE.
+-- The private schema ensures PostgREST does not expose them as RPC.
 GRANT EXECUTE ON FUNCTION private.check_perfil_usuario_unmodified(
-  uuid, text, jsonb, jsonb, text, text, text, text, timestamptz, text, text[]
-) TO postgres;
+  uuid, text, jsonb, jsonb, text, text, text, text, timestamptz, text, text[], text, numeric
+) TO postgres, authenticated;
 
 GRANT EXECUTE ON FUNCTION private.check_profile_unmodified(
   uuid, public.app_role
-) TO postgres;
+) TO postgres, authenticated;
 
 -- ───────────────────────────────────────────────────────────────
 -- 4. Recreate RLS policies using private.* helpers
@@ -148,7 +157,9 @@ WITH CHECK (
     seguridad_status,
     blocked_until,
     grupo_tutor,
-    grupos
+    grupos,
+    estado_cuenta,
+    risk_score
   )
 );
 
@@ -183,11 +194,12 @@ DROP FUNCTION IF EXISTS public.check_profile_unmodified(
 -- ───────────────────────────────────────────────────────────────
 -- ✅ Helpers are in the `private` schema (not RPC-accessible)
 -- ✅ SECURITY DEFINER with SET search_path = '' on both functions
--- ✅ REVOKE ALL FROM PUBLIC, anon, authenticated on both functions
--- ✅ GRANT EXECUTE to postgres only (for RLS policy evaluation)
--- ✅ 10 fields frozen on perfiles_usuario:
+-- ✅ REVOKE ALL FROM PUBLIC, anon on both functions
+-- ✅ GRANT EXECUTE to postgres and authenticated (for RLS policy evaluation)
+-- ✅ 12 fields frozen on perfiles_usuario:
 --      rol, permisos, alcances, matricula_sase, email, role,
---      seguridad_status, blocked_until, grupo_tutor, grupos
+--      seguridad_status, blocked_until, grupo_tutor, grupos,
+--      estado_cuenta, risk_score
 -- ✅ 1 field frozen on profiles: role
 -- ✅ No recursion: helpers use SECURITY DEFINER to bypass RLS
 -- ✅ Old public.check_* functions dropped
