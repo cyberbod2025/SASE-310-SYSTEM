@@ -127,12 +127,12 @@ async function main() {
     { name: "matricula_sase", table: "perfiles_usuario", payload: { matricula_sase: "HACK-001" }, expectBlocked: true },
     { name: "email", table: "perfiles_usuario", payload: { email: "hacked@evil.com" }, expectBlocked: true },
     { name: "role (legacy)", table: "perfiles_usuario", payload: { role: "directivo" }, expectBlocked: true },
-    { name: "seguridad_status", table: "perfiles_usuario", payload: { seguridad_status: "active" }, expectBlocked: true },
+    { name: "seguridad_status", table: "perfiles_usuario", payload: { seguridad_status: "restricted" }, expectBlocked: true },
     { name: "blocked_until → 2099", table: "perfiles_usuario", payload: { blocked_until: "2099-01-01T00:00:00.000Z" }, expectBlocked: true }, // Se usa un valor futuro distinto al actual para probar que realmente está congelado (NULL a NULL no lo probaría)
     { name: "grupo_tutor", table: "perfiles_usuario", payload: { grupo_tutor: "admin-group" }, expectBlocked: true },
     { name: "grupos", table: "perfiles_usuario", payload: { grupos: ["all-access"] }, expectBlocked: true },
-    { name: "estado_cuenta", table: "perfiles_usuario", payload: { estado_cuenta: "active" }, expectBlocked: true },
-    { name: "risk_score", table: "perfiles_usuario", payload: { risk_score: 0 }, expectBlocked: true },
+    { name: "estado_cuenta", table: "perfiles_usuario", payload: { estado_cuenta: "suspendido" }, expectBlocked: true },
+    { name: "risk_score", table: "perfiles_usuario", payload: { risk_score: 100 }, expectBlocked: true },
   ];
 
   // Campo que DEBE ser bloqueado en profiles (tabla legacy)
@@ -174,7 +174,10 @@ async function main() {
   process.exit(allPass ? 0 : 1);
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
 ```
 
 ### Ejecución
@@ -236,14 +239,14 @@ curl -s -X PATCH \
 
 # Resultado esperado: [] o error 40x
 
-# Intentar cambiar seguridad_status (usando un valor válido de constraint 'active' para que el error provenga del RLS y no de una constraint de dominio)
+# Intentar cambiar seguridad_status
 curl -s -X PATCH \
   "${SUPABASE_URL}/rest/v1/perfiles_usuario?id=eq.${USER_ID}" \
   -H "apikey: ${SUPABASE_ANON_KEY}" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
   -H "Prefer: return=representation" \
-  -d '{"seguridad_status": "active"}'
+  -d '{"seguridad_status": "restricted"}'
 
 # Resultado esperado: [] o error 40x
 ```
@@ -321,28 +324,36 @@ BEGIN;
   SELECT set_config('request.jwt.claim.role', 'authenticated', true);
 
   -- ── Prueba 1: Intentar autoescalamiento de rol (DEBE FALLAR) ──
+  SAVEPOINT before_test1;
   UPDATE public.perfiles_usuario
   SET rol = 'admin'
   WHERE id = '<uuid-real-del-usuario-qa>';
   -- Esperado: 0 filas afectadas (la política WITH CHECK lo rechaza)
+  ROLLBACK TO before_test1;
 
   -- ── Prueba 2: Intentar modificar permisos (DEBE FALLAR) ──
+  SAVEPOINT before_test2;
   UPDATE public.perfiles_usuario
   SET permisos = '{"all": true}'::jsonb
   WHERE id = '<uuid-real-del-usuario-qa>';
   -- Esperado: 0 filas afectadas
+  ROLLBACK TO before_test2;
 
   -- ── Prueba 3: Intentar modificar seguridad_status (DEBE FALLAR) ──
+  SAVEPOINT before_test3;
   UPDATE public.perfiles_usuario
-  SET seguridad_status = 'active'
+  SET seguridad_status = 'restricted'
   WHERE id = '<uuid-real-del-usuario-qa>';
   -- Esperado: 0 filas afectadas
+  ROLLBACK TO before_test3;
 
   -- ── Prueba 4: Modificar nombre_completo (DEBE TENER ÉXITO) ──
+  SAVEPOINT before_test4;
   UPDATE public.perfiles_usuario
   SET nombre_completo = 'QA Test User SQL'
   WHERE id = '<uuid-real-del-usuario-qa>';
   -- Esperado: 1 fila afectada ✅
+  RELEASE SAVEPOINT before_test4;
 
   -- Verificar estado final
   SELECT id, rol, nombre_completo, seguridad_status
@@ -393,6 +404,14 @@ curl -s -X PATCH \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" \
   -d '{"rol": "docente"}'
+
+# Crear fila legacy profile si existe la tabla (usar service_role para SETUP)
+curl -s -X POST \
+  "${SUPABASE_URL}/rest/v1/profiles" \
+  -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+  -H "Content-Type: application/json" \
+  -d "{\"id\": \"${QA_USER_ID}\", \"role\": \"docente\"}"
 ```
 
 ---
