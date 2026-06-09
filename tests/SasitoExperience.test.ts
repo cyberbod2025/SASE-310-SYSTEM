@@ -159,4 +159,28 @@ describe("Sasito Experiencia Institucional", () => {
     expect(result.riesgo).toBe("verde");
     expect(result.tipo).toBe("academica");
   });
+
+  // --- Plural and routing tests ---
+
+  it('"armas" SÍ activa riesgo rojo', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "trajo armas" });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  it('"golpes" SÍ activa riesgo rojo', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "hubo golpes" });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  it('"empujones" SÍ activa riesgo rojo', () => {
+    const result = classifyIncident({ conducta: "no_trabaja_en_clase", descripcion: "se dieron empujones" });
+    expect(result.riesgo).toBe("rojo");
+  });
+
+  it("salida_aula_sin_autorizacion + posible arma → protocolo de seguridad", () => {
+    const result = classifyIncident({ conducta: "salida_aula_sin_autorizacion", descripcion: "posible arma" });
+    expect(result.riesgo).toBe("rojo");
+    expect(result.tipo).toBe("seguridad");
+    expect(result.experienciaId).toBe("posible_riesgo_seguridad");
+  });
 });

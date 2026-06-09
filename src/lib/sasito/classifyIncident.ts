@@ -60,11 +60,12 @@ export const classifyIncident = (input: SasitoIncidentInput): SasitoRecommendati
 
   const risk = resolveSasitoRisk(input, experience);
 
-  // P2 fix: When red safety signal is detected but experience is not security-type,
-  // override with security experience to ensure proper protocol.
-  if (risk.riesgo === "rojo" && experience.tipo !== "seguridad") {
+  // P2 fix: When red safety signal is detected, override with the specific
+  // security experience to ensure proper protocol, even if the base experience
+  // is already of type "seguridad".
+  if (risk.riesgo === "rojo") {
     const securityExperience = findSecurityExperienceByRule(risk.reglaAplicada);
-    if (securityExperience) {
+    if (securityExperience && experience.id !== securityExperience.id) {
       return {
         experienciaId: securityExperience.id,
         experienciaNombre: securityExperience.nombre,

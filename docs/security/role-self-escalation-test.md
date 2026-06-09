@@ -128,7 +128,7 @@ async function main() {
     { name: "email", table: "perfiles_usuario", payload: { email: "hacked@evil.com" }, expectBlocked: true },
     { name: "role (legacy)", table: "perfiles_usuario", payload: { role: "directivo" }, expectBlocked: true },
     { name: "seguridad_status", table: "perfiles_usuario", payload: { seguridad_status: "active" }, expectBlocked: true },
-    { name: "blocked_until → null", table: "perfiles_usuario", payload: { blocked_until: null }, expectBlocked: true },
+    { name: "blocked_until → 2099", table: "perfiles_usuario", payload: { blocked_until: "2099-01-01T00:00:00.000Z" }, expectBlocked: true }, // Se usa un valor futuro distinto al actual para probar que realmente está congelado (NULL a NULL no lo probaría)
     { name: "grupo_tutor", table: "perfiles_usuario", payload: { grupo_tutor: "admin-group" }, expectBlocked: true },
     { name: "grupos", table: "perfiles_usuario", payload: { grupos: ["all-access"] }, expectBlocked: true },
     { name: "estado_cuenta", table: "perfiles_usuario", payload: { estado_cuenta: "active" }, expectBlocked: true },

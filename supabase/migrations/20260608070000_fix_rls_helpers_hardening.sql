@@ -93,7 +93,7 @@ $$;
 -- ───────────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION private.check_profile_unmodified(
   p_id       uuid,
-  p_new_role public.app_role
+  p_new_role text
 )
 RETURNS boolean
 LANGUAGE plpgsql
@@ -101,9 +101,9 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 DECLARE
-  v_old_role public.app_role;
+  v_old_role text;
 BEGIN
-  SELECT role INTO v_old_role FROM public.profiles WHERE id = p_id;
+  SELECT role::text INTO v_old_role FROM public.profiles WHERE id = p_id;
   IF NOT FOUND THEN
     RETURN true;
   END IF;
@@ -119,8 +119,11 @@ REVOKE ALL ON FUNCTION private.check_perfil_usuario_unmodified(
 ) FROM PUBLIC, anon;
 
 REVOKE ALL ON FUNCTION private.check_profile_unmodified(
-  uuid, public.app_role
+  uuid, text
 ) FROM PUBLIC, anon;
+
+-- PostgreSQL requires USAGE on the schema to access functions within it
+GRANT USAGE ON SCHEMA private TO postgres, authenticated;
 
 -- RLS policies evaluate as the calling user, so authenticated needs EXECUTE.
 -- The private schema ensures PostgREST does not expose them as RPC.
@@ -129,7 +132,7 @@ GRANT EXECUTE ON FUNCTION private.check_perfil_usuario_unmodified(
 ) TO postgres, authenticated;
 
 GRANT EXECUTE ON FUNCTION private.check_profile_unmodified(
-  uuid, public.app_role
+  uuid, text
 ) TO postgres, authenticated;
 
 -- ───────────────────────────────────────────────────────────────
@@ -174,7 +177,7 @@ TO authenticated
 USING (auth.uid() = id)
 WITH CHECK (
   auth.uid() = id
-  AND private.check_profile_unmodified(id, role)
+  AND private.check_profile_unmodified(id, role::text)
 );
 
 -- ───────────────────────────────────────────────────────────────
@@ -185,9 +188,18 @@ DROP FUNCTION IF EXISTS public.check_perfil_usuario_unmodified(
   uuid, text, jsonb, jsonb, text, text, text
 );
 
-DROP FUNCTION IF EXISTS public.check_profile_unmodified(
-  uuid, public.app_role
-);
+DO $$
+BEGIN
+  -- We use dynamic SQL to avoid parsing errors if public.app_role does not exist
+  EXECUTE 'DROP FUNCTION IF EXISTS public.check_profile_unmodified(uuid, public.app_role)';
+EXCEPTION WHEN OTHERS THEN
+  -- Fallback if the type doesn't exist or it was using text
+  BEGIN
+    EXECUTE 'DROP FUNCTION IF EXISTS public.check_profile_unmodified(uuid, text)';
+  EXCEPTION WHEN OTHERS THEN
+    NULL;
+  END;
+END $$;
 
 -- ───────────────────────────────────────────────────────────────
 -- 6. Verification comments

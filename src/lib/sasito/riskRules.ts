@@ -8,8 +8,8 @@ export interface SasitoRiskResolution {
 }
 
 const RED_SECURITY_RULES = [
-  { rule: "agresion_fisica", terms: ["agresion fisica", "golpe", "empujon", "pelea", "lesion fisica"] },
-  { rule: "posible_arma", terms: ["posible arma", "arma"] },
+  { rule: "agresion_fisica", terms: ["agresion fisica", "golpe", "golpes", "empujon", "empujones", "pelea", "lesion fisica"] },
+  { rule: "posible_arma", terms: ["posible arma", "arma", "armas"] },
   { rule: "fuego", terms: ["fuego", "incendio"] },
   { rule: "alumno_no_localizado", terms: ["alumno no localizado", "no localizado"] },
   { rule: "conducta_sexualizada", terms: ["conducta sexualizada"] },
