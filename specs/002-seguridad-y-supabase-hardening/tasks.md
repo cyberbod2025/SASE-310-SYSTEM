@@ -74,7 +74,7 @@
 ## Fase 10 — Prevención de autoescalamiento de roles (PR #91, 2026-06-08)
 
 - [ ] T035 Migración `prevent_role_self_escalation`: Campos sensibles (rol, permisos, alcances, matricula_sase, email, role) protegidos contra self-update via RLS WITH CHECK.
-- [ ] T036 Migración `fix_rls_helpers_hardening`: Helpers SECURITY DEFINER movidos a schema `private`, ejecución revocada para public/anon/authenticated. Campos seguridad_status, blocked_until, grupo_tutor, grupos agregados al conjunto inmutable.
+- [ ] T036 Migración `fix_rls_helpers_hardening`: Helpers SECURITY DEFINER movidos a schema `private`, el cual no se expone como API pública por PostgREST. `authenticated` necesita `USAGE` sobre el schema `private` y `EXECUTE` sobre los helpers usados en policies; esto no abre RPC pública. `anon` no debe tener permisos. Campos `seguridad_status`, `blocked_until`, `grupo_tutor`, `grupos` agregados al conjunto inmutable.
 - [ ] T037 Corrección Sasito: Matching de señales rojas por word-boundary (evita falsos positivos de subcadena). Prioridad de señales rojas sobre coincidencias académicas.
 - [ ] T038 Runbook de pruebas RLS: Corregido para usar cliente autenticado real en vez de SQL Editor con service_role.
 - [ ] T039 Verificación: pnpm type-check, pnpm test, pnpm build, audit-migrations.sh
