@@ -187,38 +187,38 @@ describe("Sasito Experiencia Institucional", () => {
   // --- No base experience red signal tests ---
 
   it('"trajo armas" → rojo / seguridad / protocolo', () => {
-    const result = classifyIncident({ descripcion: "trajo armas" });
+    const result = classifyIncident({ conducta: "otra", descripcion: "trajo armas" });
     expect(result.riesgo).toBe("rojo");
     expect(result.tipo).toBe("seguridad");
     expect(result.requiereEscalamiento).toBe(true);
   });
 
   it('"hubo golpes" → rojo / seguridad / protocolo', () => {
-    const result = classifyIncident({ descripcion: "hubo golpes" });
+    const result = classifyIncident({ conducta: "otra", descripcion: "hubo golpes" });
     expect(result.riesgo).toBe("rojo");
     expect(result.tipo).toBe("seguridad");
     expect(result.requiereEscalamiento).toBe(true);
   });
 
   it('"hubo empujones" → rojo / seguridad / protocolo', () => {
-    const result = classifyIncident({ descripcion: "hubo empujones" });
+    const result = classifyIncident({ conducta: "otra", descripcion: "hubo empujones" });
     expect(result.riesgo).toBe("rojo");
     expect(result.tipo).toBe("seguridad");
     expect(result.requiereEscalamiento).toBe(true);
   });
 
   it('"armar equipo" → no rojo', () => {
-    const result = classifyIncident({ descripcion: "armar equipo" });
+    const result = classifyIncident({ conducta: "otra", descripcion: "armar equipo" });
     expect(result.riesgo).not.toBe("rojo");
   });
 
   it('"desarmar material" → no rojo', () => {
-    const result = classifyIncident({ descripcion: "desarmar material" });
+    const result = classifyIncident({ conducta: "otra", descripcion: "desarmar material" });
     expect(result.riesgo).not.toBe("rojo");
   });
 
   it('"comentario no reconocido" → unknown/verde/revisión humana', () => {
-    const result = classifyIncident({ descripcion: "comentario no reconocido" });
+    const result = classifyIncident({ conducta: "otra", descripcion: "comentario no reconocido" });
     expect(result.riesgo).toBe("verde");
     expect(result.revisionHumana).toBe(true);
   });
