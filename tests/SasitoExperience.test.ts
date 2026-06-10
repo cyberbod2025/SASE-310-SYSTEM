@@ -183,4 +183,43 @@ describe("Sasito Experiencia Institucional", () => {
     expect(result.tipo).toBe("seguridad");
     expect(result.experienciaId).toBe("posible_riesgo_seguridad");
   });
+
+  // --- No base experience red signal tests ---
+
+  it('"trajo armas" → rojo / seguridad / protocolo', () => {
+    const result = classifyIncident({ descripcion: "trajo armas" });
+    expect(result.riesgo).toBe("rojo");
+    expect(result.tipo).toBe("seguridad");
+    expect(result.requiereEscalamiento).toBe(true);
+  });
+
+  it('"hubo golpes" → rojo / seguridad / protocolo', () => {
+    const result = classifyIncident({ descripcion: "hubo golpes" });
+    expect(result.riesgo).toBe("rojo");
+    expect(result.tipo).toBe("seguridad");
+    expect(result.requiereEscalamiento).toBe(true);
+  });
+
+  it('"hubo empujones" → rojo / seguridad / protocolo', () => {
+    const result = classifyIncident({ descripcion: "hubo empujones" });
+    expect(result.riesgo).toBe("rojo");
+    expect(result.tipo).toBe("seguridad");
+    expect(result.requiereEscalamiento).toBe(true);
+  });
+
+  it('"armar equipo" → no rojo', () => {
+    const result = classifyIncident({ descripcion: "armar equipo" });
+    expect(result.riesgo).not.toBe("rojo");
+  });
+
+  it('"desarmar material" → no rojo', () => {
+    const result = classifyIncident({ descripcion: "desarmar material" });
+    expect(result.riesgo).not.toBe("rojo");
+  });
+
+  it('"comentario no reconocido" → unknown/verde/revisión humana', () => {
+    const result = classifyIncident({ descripcion: "comentario no reconocido" });
+    expect(result.riesgo).toBe("verde");
+    expect(result.revisionHumana).toBe(true);
+  });
 });

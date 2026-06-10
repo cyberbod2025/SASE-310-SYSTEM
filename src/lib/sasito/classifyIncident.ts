@@ -3,7 +3,7 @@ import {
   SASITO_EXPERIENCE_CATALOG,
 } from "../../data/sasitoExperienceCatalog";
 import type { SasitoExperience, SasitoIncidentInput, SasitoRecommendation } from "../../types/sasitoExperience";
-import { HUMAN_REVIEW_ACTION, matchesAnyTerm, normalizeSasitoText, resolveSasitoRisk } from "./riskRules";
+import { HUMAN_REVIEW_ACTION, matchesAnyTerm, normalizeSasitoText, resolveSasitoRisk, detectRedSignal } from "./riskRules";
 
 const RULE_TO_EXPERIENCE_MAP: Record<string, string> = {
   agresion_fisica: "agresion_fisica",
@@ -55,6 +55,24 @@ export const classifyIncident = (input: SasitoIncidentInput): SasitoRecommendati
     : findExperienceBySignals(input);
 
   if (!experience) {
+    const redSignal = detectRedSignal(input);
+    if (redSignal) {
+      const securityExperience = findSecurityExperienceByRule(redSignal);
+      if (securityExperience) {
+        return {
+          experienciaId: securityExperience.id,
+          experienciaNombre: securityExperience.nombre,
+          tipo: securityExperience.tipo,
+          riesgo: "rojo",
+          accionesRecomendadas: [...securityExperience.accionesRecomendadas],
+          noHacer: [...securityExperience.noHacer],
+          plantillaSugerida: securityExperience.plantillaSugerida,
+          requiereEscalamiento: true,
+          reglaAplicada: redSignal,
+          revisionHumana: false,
+        };
+      }
+    }
     return buildUnknownRecommendation();
   }
 
