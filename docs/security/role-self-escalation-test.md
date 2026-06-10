@@ -199,18 +199,28 @@ npx tsx scripts/test-rls-self-escalation.ts
 
 Este método usa la API REST (PostgREST) de Supabase directamente con `curl`. Útil para validación rápida sin escribir código.
 
+> **Nota:** Este script asume que tienes `jq` instalado en tu sistema para extraer el token y el ID del JSON de respuesta. Si no tienes `jq`, deberás extraer estos valores manualmente de la respuesta.
+
 ### 1. Obtener un token de usuario autenticado
 
 ```bash
 # Login con usuario QA (usar anon key, NUNCA service_role)
-ACCESS_TOKEN=$(curl -s -X POST \
+LOGIN_RESPONSE=$(curl -s -X POST \
   "${SUPABASE_URL}/auth/v1/token?grant_type=password" \
   -H "apikey: ${SUPABASE_ANON_KEY}" \
   -H "Content-Type: application/json" \
-  -d "{\"email\": \"${TEST_EMAIL}\", \"password\": \"${TEST_PASSWORD}\"}" \
-  | jq -r '.access_token')
+  -d "{\"email\": \"${TEST_EMAIL}\", \"password\": \"${TEST_PASSWORD}\"}")
 
-echo "Token: ${ACCESS_TOKEN:0:20}..."
+ACCESS_TOKEN=$(echo "$LOGIN_RESPONSE" | jq -r '.access_token')
+USER_ID=$(echo "$LOGIN_RESPONSE" | jq -r '.user.id')
+
+# Validaciones defensivas para asegurar la prueba
+test -n "$ACCESS_TOKEN" || { echo "❌ Falta ACCESS_TOKEN"; exit 1; }
+test "$ACCESS_TOKEN" != "null" || { echo "❌ ACCESS_TOKEN es null"; exit 1; }
+test -n "$USER_ID" || { echo "❌ Falta USER_ID"; exit 1; }
+test "$USER_ID" != "null" || { echo "❌ USER_ID es null"; exit 1; }
+
+echo "Testing QA user id: $USER_ID"
 ```
 
 ### 2. Intentar self-escalation (DEBE fallar)

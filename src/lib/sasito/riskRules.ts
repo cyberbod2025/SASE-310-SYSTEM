@@ -37,6 +37,14 @@ export const matchesAnyTerm = (normalizedText: string, terms: readonly string[])
     return new RegExp(`\\b${escaped}\\b`).test(normalizedText);
   });
 
+export const detectRedSignal = (input: SasitoIncidentInput): string | undefined => {
+  const normalizedText = normalizeSasitoText(
+    [input.experienciaId, input.conducta, input.descripcion].filter(Boolean).join(" "),
+  );
+
+  return RED_SECURITY_RULES.find((rule) => matchesAnyTerm(normalizedText, rule.terms))?.rule;
+};
+
 export const resolveSasitoRisk = (
   input: SasitoIncidentInput,
   experience: SasitoExperience,
@@ -45,16 +53,17 @@ export const resolveSasitoRisk = (
     [input.experienciaId, input.conducta, input.descripcion].filter(Boolean).join(" "),
   );
 
-  const redRule = RED_SECURITY_RULES.find((rule) => {
-    if (normalizeSasitoText(experience.id) === normalizeSasitoText(rule.rule)) {
-      return true;
-    }
+  const redSignal = detectRedSignal(input);
+  if (redSignal) {
+    return { riesgo: "rojo", reglaAplicada: redSignal };
+  }
 
-    return matchesAnyTerm(normalizedText, rule.terms);
-  });
+  const redRuleByExperience = RED_SECURITY_RULES.find(
+    (rule) => normalizeSasitoText(experience.id) === normalizeSasitoText(rule.rule)
+  );
 
-  if (redRule) {
-    return { riesgo: "rojo", reglaAplicada: redRule.rule };
+  if (redRuleByExperience) {
+    return { riesgo: "rojo", reglaAplicada: redRuleByExperience.rule };
   }
 
   if (experience.id === "conducta_positiva") {
