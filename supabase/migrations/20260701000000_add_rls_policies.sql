@@ -15,7 +15,7 @@ as $$
   select exists (
     select 1
     from public.perfiles_usuario p
-    where p.id = (select auth.uid())
+    where p.id = auth.uid()
       and lower(trim(coalesce(p.rol, p.role, ''))) = any (allowed_roles)
   );
 $$;
@@ -35,7 +35,7 @@ CREATE POLICY "interventions_log_select" ON public.interventions_log
 FOR SELECT
 TO authenticated
 USING (
-  (select private.is_institutional_actor(array[
+  private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -44,14 +44,14 @@ USING (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 CREATE POLICY "interventions_log_insert" ON public.interventions_log
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  user_id = (select auth.uid())
-  and (select private.is_institutional_actor(array[
+  user_id = auth.uid()
+  and private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -60,7 +60,7 @@ WITH CHECK (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 
 DROP POLICY IF EXISTS "evidence_log_select" ON public.evidence_log;
@@ -69,7 +69,7 @@ CREATE POLICY "evidence_log_select" ON public.evidence_log
 FOR SELECT
 TO authenticated
 USING (
-  (select private.is_institutional_actor(array[
+  private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -78,14 +78,14 @@ USING (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 CREATE POLICY "evidence_log_insert" ON public.evidence_log
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  user_id = (select auth.uid())
-  and (select private.is_institutional_actor(array[
+  user_id = auth.uid()
+  and private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -94,7 +94,7 @@ WITH CHECK (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 
 DROP POLICY IF EXISTS "citas_padres_select" ON public.citas_padres;
@@ -103,7 +103,7 @@ CREATE POLICY "citas_padres_select" ON public.citas_padres
 FOR SELECT
 TO authenticated
 USING (
-  (select private.is_institutional_actor(array[
+  private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -112,14 +112,14 @@ USING (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 CREATE POLICY "citas_padres_insert" ON public.citas_padres
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  creado_por = (select auth.uid())
-  and (select private.is_institutional_actor(array[
+  creado_por = auth.uid()
+  and private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -128,7 +128,7 @@ WITH CHECK (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 
 DROP POLICY IF EXISTS "contacts_log_select" ON public.contacts_log;
@@ -137,7 +137,7 @@ CREATE POLICY "contacts_log_select" ON public.contacts_log
 FOR SELECT
 TO authenticated
 USING (
-  (select private.is_institutional_actor(array[
+  private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -146,14 +146,14 @@ USING (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 CREATE POLICY "contacts_log_insert" ON public.contacts_log
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  user_id = (select auth.uid())
-  and (select private.is_institutional_actor(array[
+  user_id = auth.uid()
+  and private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -162,7 +162,7 @@ WITH CHECK (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 
 DROP POLICY IF EXISTS "activities_log_select" ON public.activities_log;
@@ -171,7 +171,7 @@ CREATE POLICY "activities_log_select" ON public.activities_log
 FOR SELECT
 TO authenticated
 USING (
-  (select private.is_institutional_actor(array[
+  private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -180,14 +180,14 @@ USING (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
 CREATE POLICY "activities_log_insert" ON public.activities_log
 FOR INSERT
 TO authenticated
 WITH CHECK (
-  user_id = (select auth.uid())
-  and (select private.is_institutional_actor(array[
+  user_id = auth.uid()
+  and private.is_institutional_actor(array[
     'directivo',
     'subdireccion',
     'orientacion',
@@ -196,5 +196,5 @@ WITH CHECK (
     'docente',
     'secretaria',
     'udeii'
-  ]))
+  ])
 );
