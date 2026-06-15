@@ -8,6 +8,7 @@
  */
 import { useCallback } from "react";
 import { supabase } from "../supabase/client";
+import type { Json } from "../supabase/types";
 import { useAuth } from "../components/AuthProvider";
 import { useApp } from "../store";
 import { UserRole, AppModule, CaseState } from "../types";
@@ -27,6 +28,28 @@ interface ActionResult {
   success: boolean;
   error?: string;
 }
+
+const isJsonObject = (
+  value: Json | null | undefined,
+): value is Record<string, Json | undefined> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const mergeJsonObject = (
+  base: Json | null | undefined,
+  patch: Record<string, Json>,
+): Json => ({
+  ...(isJsonObject(base) ? base : {}),
+  ...patch,
+});
+
+const getJsonString = (
+  value: Json | null | undefined,
+  key: string,
+): string | undefined => {
+  if (!isJsonObject(value)) return undefined;
+  const candidate = value[key];
+  return typeof candidate === "string" ? candidate : undefined;
+};
 
 export const useInstitutionalActions = () => {
   const { user } = useAuth();
@@ -52,10 +75,10 @@ export const useInstitutionalActions = () => {
       studentId: string,
       studentName: string,
       reason: string,
-    ): Promise<ActionResult> => {
+      ): Promise<ActionResult> => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
-        const { error } = await supabase.from("interventions_log" as any).insert({
+        const { error } = await supabase.from("interventions_log").insert({
           student_id: studentId,
           user_id: user.id,
           reason: `ESCALAMIENTO: ${reason}`,
@@ -119,7 +142,7 @@ export const useInstitutionalActions = () => {
       try {
         // Registrar la intervención de cierre
         const { error: logError } = await supabase
-          .from("interventions_log" as any)
+          .from("interventions_log")
           .insert({
             student_id: studentId,
             user_id: user.id,
@@ -168,7 +191,7 @@ export const useInstitutionalActions = () => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
         const { error: logError } = await supabase
-          .from("interventions_log" as any)
+          .from("interventions_log")
           .insert({
             student_id: studentId,
             user_id: user.id,
@@ -218,7 +241,7 @@ export const useInstitutionalActions = () => {
       try {
         // Registro en interventions_log
         const { error: logError } = await supabase
-          .from("interventions_log" as any)
+          .from("interventions_log")
           .insert({
             student_id: studentId,
             user_id: user.id,
@@ -230,7 +253,7 @@ export const useInstitutionalActions = () => {
 
         // Si hay fecha, crear cita
         if (followUpDate) {
-          await supabase.from("citas_padres" as any).insert({
+          const { error: appointmentError } = await supabase.from("citas_padres").insert({
             alumno_id: studentId,
             creado_por: user.id,
             fecha_cita: followUpDate,
@@ -238,6 +261,7 @@ export const useInstitutionalActions = () => {
             estado: "PENDIENTE",
             observaciones: `Generado desde Dashboard de ${currentUserRole}`,
           });
+          if (appointmentError) throw appointmentError;
         }
 
         await logAudit(
@@ -299,13 +323,7 @@ export const useInstitutionalActions = () => {
   );
 
   /**
-   * SOS: Alerta masiva a Prefectura + auto-escalamiento backend
-   * 
-   * Cadena automática (vía pg_cron + auto_escalate_sos):
-   *   T+0    → Prefectura notificada (aquí)
-   *   T+1min → Orientación (auto)
-   *   T+2min → Dirección (auto)
-   *   T+3min → Broadcast institucional (auto)
+   * SOS: alerta operativa en alertas_emergencia + registro institucional.
    */
   const sosAlert = useCallback(
     async (
@@ -315,9 +333,37 @@ export const useInstitutionalActions = () => {
     ): Promise<ActionResult> => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
-        // 1. Registro en interventions_log (histórico)
+        const now = new Date().toISOString();
+        const alertMetadata: Record<string, Json> = {
+          student_id: studentId || null,
+          student_name: studentName || null,
+          context: context || null,
+          origin: "useInstitutionalActions.sosAlert",
+        };
+
+        const { data: emergencyAlert, error: emergencyAlertError } = await supabase
+          .from("alertas_emergencia")
+          .insert({
+            tipo_alerta: "otros",
+            descripcion_opcional: context || (studentName ? `Alumno relacionado: ${studentName}` : "SOS institucional"),
+            grupo: null,
+            aula: null,
+            docente_id: user.id,
+            docente_nombre: reporterName,
+            estado: "activa",
+            prioridad: "critica",
+            protocolo_activado: "SOS",
+            metadata: alertMetadata,
+            escalado_nivel: 0,
+            ultima_notificacion_at: now,
+          })
+          .select("id")
+          .single();
+        if (emergencyAlertError) throw emergencyAlertError;
+
+        // Registro obligatorio en interventions_log (histórico)
         const { error: logError } = await supabase
-          .from("interventions_log" as any)
+          .from("interventions_log")
           .insert({
             student_id: studentId || null,
             user_id: user.id,
@@ -327,24 +373,7 @@ export const useInstitutionalActions = () => {
           });
         if (logError) throw logError;
 
-        // 2. Crear registro en sos_alerts (alimenta auto-escalamiento)
-        const { error: sosError } = await supabase
-          .from("sos_alerts" as any)
-          .insert({
-            created_by: user.id,
-            reporter_name: reporterName,
-            reporter_role: currentUserRole,
-            student_id: studentId || null,
-            student_name: studentName || null,
-            context: context || null,
-            escalation_level: 0,
-          });
-        if (sosError) {
-          console.warn("sos_alerts insert failed (tabla puede no existir aún):", sosError);
-          // No bloqueamos — el SOS sigue funcionando sin auto-escalamiento
-        }
-
-        // 3. Notificación inmediata a Prefectura (T+0)
+        // Notificación inmediata a Prefectura (T+0)
         addNotification({
           title: "🚨 ALERTA SOS ACTIVADA",
           message: `${reporterName} ha activado SOS.${studentName ? ` Alumno: ${studentName}.` : ""} ${context || ""}`,
@@ -353,16 +382,16 @@ export const useInstitutionalActions = () => {
           actionModule: AppModule.DASHBOARD,
         });
 
-        // 4. Auditoría
+        // Auditoría
         await logAudit(
           "CREACION",
           `SOS INSTITUCIONAL: ${reporterName}${studentName ? ` — Alumno: ${studentName}` : ""}`,
-          "interventions_log",
-          studentId || "GLOBAL",
-          studentName || "N/A",
+          "alertas_emergencia",
+          emergencyAlert.id,
+          studentName || reporterName,
         );
 
-        toast.success("SOS activado — Prefectura notificada. Escalamiento automático iniciado.");
+        toast.success("SOS activado — Prefectura notificada y alerta operativa creada.");
         return { success: true };
       } catch (err: any) {
         console.error("Error al activar SOS:", err);
@@ -385,7 +414,7 @@ export const useInstitutionalActions = () => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
         const { error } = await supabase
-          .from("interventions_log" as any)
+          .from("interventions_log")
           .insert({
             student_id: studentId,
             user_id: user.id,
@@ -427,7 +456,7 @@ export const useInstitutionalActions = () => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
         const { error } = await supabase
-          .from("interventions_log" as any)
+          .from("interventions_log")
           .insert({
             student_id: studentId,
             user_id: user.id,
@@ -465,8 +494,7 @@ export const useInstitutionalActions = () => {
   );
 
   /**
-   * Reconocer SOS: detiene la cadena de escalamiento automático
-   * Lo llama el departamento que atiende la alerta.
+   * Reconocer SOS: deja constancia de atención preliminar sin cerrar la alerta.
    */
   const acknowledgeSOS = useCallback(
     async (
@@ -475,12 +503,26 @@ export const useInstitutionalActions = () => {
     ): Promise<ActionResult> => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
+        const acknowledgedAt = new Date().toISOString();
+        const { data: currentAlert, error: currentAlertError } = await supabase
+          .from("alertas_emergencia")
+          .select("metadata, atendida_at")
+          .eq("id", sosAlertId)
+          .maybeSingle();
+        if (currentAlertError) throw currentAlertError;
+
         const { error } = await supabase
-          .from("sos_alerts" as any)
+          .from("alertas_emergencia")
           .update({
-            acknowledged_at: new Date().toISOString(),
-            acknowledged_by: user.id,
-            resolution_notes: resolutionNotes || `Atendido por ${reporterName} (${currentUserRole})`,
+            estado: "atendida",
+            atendida_at: currentAlert?.atendida_at || acknowledgedAt,
+            atendida_por: user.id,
+            metadata: mergeJsonObject(currentAlert?.metadata, {
+              status: "acknowledged",
+              acknowledged_at: acknowledgedAt,
+              acknowledged_by: user.id,
+              resolution_notes: resolutionNotes || `Atendido por ${reporterName} (${currentUserRole})`,
+            }),
           })
           .eq("id", sosAlertId);
         if (error) throw error;
@@ -488,12 +530,12 @@ export const useInstitutionalActions = () => {
         await logAudit(
           "ACTUALIZACION",
           `SOS reconocido: ${sosAlertId}`,
-          "sos_alerts",
+          "alertas_emergencia",
           sosAlertId,
           reporterName,
         );
 
-        toast.success("SOS reconocido — Escalamiento automático detenido");
+        toast.success("SOS reconocido — atención registrada.");
         return { success: true };
       } catch (err: any) {
         console.error("Error al reconocer SOS:", err);
@@ -505,7 +547,7 @@ export const useInstitutionalActions = () => {
   );
 
   /**
-   * Resolver SOS: cierra definitivamente la alerta
+   * Resolver SOS: cierra definitivamente la alerta operativa
    */
   const resolveSOS = useCallback(
     async (
@@ -514,32 +556,51 @@ export const useInstitutionalActions = () => {
     ): Promise<ActionResult> => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
+        const resolvedAt = new Date().toISOString();
+        const { data: currentAlert, error: currentAlertError } = await supabase
+          .from("alertas_emergencia")
+          .select("metadata, atendida_at")
+          .eq("id", sosAlertId)
+          .maybeSingle();
+        if (currentAlertError) throw currentAlertError;
+
+        const relatedStudentId = getJsonString(currentAlert?.metadata, "student_id") || null;
+
         const { error } = await supabase
-          .from("sos_alerts" as any)
+          .from("alertas_emergencia")
           .update({
-            acknowledged_at: new Date().toISOString(),
-            acknowledged_by: user.id,
-            resolved_at: new Date().toISOString(),
-            resolved_by: user.id,
-            resolution_notes: resolutionNotes,
+            estado: "cancelada",
+            cerrada_at: resolvedAt,
+            atendida_at: currentAlert?.atendida_at || resolvedAt,
+            atendida_por: user.id,
+            metadata: mergeJsonObject(currentAlert?.metadata, {
+              status: "resolved",
+              acknowledged_at: currentAlert?.atendida_at || resolvedAt,
+              acknowledged_by: user.id,
+              resolved_at: resolvedAt,
+              resolved_by: user.id,
+              resolution_notes: resolutionNotes,
+            }),
           })
           .eq("id", sosAlertId);
         if (error) throw error;
 
         // Registro en interventions_log
-        await supabase
-          .from("interventions_log" as any)
+        const { error: resolutionLogError } = await supabase
+          .from("interventions_log")
           .insert({
+            student_id: relatedStudentId,
             user_id: user.id,
             reason: "SOS RESUELTO",
             result: "RESUELTO",
             notes: `SOS ${sosAlertId} resuelto por ${reporterName}. ${resolutionNotes}`,
           });
+        if (resolutionLogError) throw resolutionLogError;
 
         await logAudit(
           "ACTUALIZACION",
           `SOS resuelto: ${sosAlertId} — ${resolutionNotes}`,
-          "sos_alerts",
+          "alertas_emergencia",
           sosAlertId,
           reporterName,
         );
