@@ -18,7 +18,7 @@ as $$
     where p.id = (select auth.uid())
       and p.estado_cuenta = 'activo'
       and p.seguridad_status = 'active'
-      and lower(trim(coalesce(p.rol, p.role, ''))) = any (array[
+      and nullif(lower(trim(p.rol)), '') = any (array[
         'directivo',
         'subdireccion',
         'docente',
@@ -33,7 +33,7 @@ as $$
         'developer',
         'system_admin'
       ]::text[])
-      and lower(trim(coalesce(p.rol, p.role, ''))) = any (allowed_roles)
+      and nullif(lower(trim(p.rol)), '') = any (allowed_roles)
   );
 $$;
 
