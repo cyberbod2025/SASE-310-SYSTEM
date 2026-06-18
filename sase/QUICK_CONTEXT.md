@@ -1,0 +1,31 @@
+# QUICK CONTEXT
+
+Project: SASE-310 SYSTEM
+Stack: React + TypeScript + Vite + Tailwind + Supabase + Vercel
+
+Authorized agents:
+- Codex
+- Antigravity
+- OpenCode
+
+Core rules:
+- microtasks only
+- privacy first
+- no fake toasts
+- no silent DB failures
+- Git/repo files are source of truth
+- update STATE.md and HANDOFF.md after each task
+
+Current status:
+- PR-1 permissions/privacy completed
+- PR-2 audit failure handling completed
+- PR-3 Lectura evidence persistence completed or in review
+- PR-3.5 startup protocol optimization completed or in review
+
+Next planned task:
+- PR-4 Promotora evidence persistence real
+
+Startup:
+- Read this file first
+- Then read TASK.md, STATE.md, HANDOFF.md
+- Read PROJECT_MASTER.md or RULES.md only if context is missing, risky, contradictory, or architectural

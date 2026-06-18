@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-3 completed: Make Lectura evidence persistence real.
+PR-3.5 completed: Optimize SASE agent startup protocol.
 
 ---
 
@@ -49,6 +49,14 @@ PR-3 implementation completed and validated:
 - If Supabase/store persistence fails, the modal shows the existing error path and does not show success.
 - New `DashboardLectura` tests cover success and persistence failure.
 
+PR-3.5 documentation-only protocol update completed and validated:
+
+- Added `QUICK_CONTEXT.md` as the first-read startup summary.
+- Updated `RULES.md` so agents do not always reread stable SASE files.
+- Startup still requires `TASK.md`, `STATE.md` and `HANDOFF.md`.
+- Defined safe conditions for rereading `PROJECT_MASTER.md` and `RULES.md`.
+- No app code, package files, lockfiles, Supabase migrations, Bridge, or math module touched.
+
 ---
 
 ## MODIFIED FILES
@@ -65,6 +73,8 @@ PR-3 implementation completed and validated:
 `src/store/slices/useCierreCicloSlice.ts`
 `src/store/slices/useMatriculaSlice.ts`
 `src/store/slices/useStudentsSlice.ts`
+`sase/QUICK_CONTEXT.md`
+`sase/RULES.md`
 `tests/DashboardPrefectura.test.tsx`
 `tests/DashboardLectura.test.tsx`
 `tests/DashboardSecretaria.test.tsx`
@@ -76,7 +86,7 @@ PR-3 implementation completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-3 is done. Next agent should start PR-4 and focus on:
+PR-3.5 is done. Next agent should start PR-4 and focus on:
 
 - Promotora evidence persistence.
 - Removing local-only success flows in Promotora.
@@ -92,15 +102,16 @@ PR-3 is done. Next agent should start PR-4 and focus on:
 - UI still depends on student data in some modules outside PR-1 scope.
 - Some non-critical fire-and-forget audit calls remain for telemetry-like access logs.
 - `saveEvidence` now reports persistence failure, but other callers may need review before relying on its result.
+- `QUICK_CONTEXT.md` is a summary, not a replacement for `TASK.md`, `STATE.md` or `HANDOFF.md`.
 - Existing tests still emit known mocked Supabase warning logs, but the suite passes.
 
 ---
 
 ## NEXT AGENT INSTRUCTION
 
-1. Read `/sase/PROJECT_MASTER.md`.
-2. Read `/sase/TASK.md`.
-3. Read `/sase/STATE.md`.
+1. Read `/sase/QUICK_CONTEXT.md`, then `/sase/TASK.md`, `/sase/STATE.md`, and `/sase/HANDOFF.md`.
+2. Reread `/sase/PROJECT_MASTER.md` or `/sase/RULES.md` only when context is missing, risky, contradictory, architectural, or protocol-related.
+3. Confirm scope, risks and validation before editing.
 4. Start PR-4 on Promotora evidence persistence.
 5. Validate TypeScript/build if possible.
 6. Update `/sase/STATE.md` and `/sase/HANDOFF.md`.

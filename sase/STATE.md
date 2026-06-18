@@ -1,13 +1,13 @@
 # STATE
 
 STATUS:
-PR-3_APPLIED_VALIDATED
+PR-3.5_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-3 applied and validated. Lectura evidence now uses real persistence through the existing saveEvidence store action and reports failures explicitly.
+PR-3.5 applied and validated. SASE startup protocol now uses QUICK_CONTEXT.md to reduce repeated stable-file reading while preserving TASK/STATE/HANDOFF continuity.
 
 CURRENT:
-Await review/commit for PR-3.
+Await review/commit for PR-3.5 documentation-only protocol update.
 
 NEXT:
 PR-4: Make Promotora evidence persistence real.
@@ -22,16 +22,16 @@ None currently known.
 HIGH
 
 Reason:
-Lectura evidence persistence was fixed, but several dashboards still have weak or local-only evidence/action flows.
+Startup overhead was reduced, but dashboard functional risks remain unchanged: several dashboards still have weak or local-only evidence/action flows.
 
 ---
 
 ## LAST DECISION
 
-Completed PR-3: use the existing store persistence path for Lectura evidence instead of creating a new pattern.
+Completed PR-3.5: create QUICK_CONTEXT.md and make RULES.md allow optimized startup.
 
 Rationale:
-Smallest safe change: DashboardLectura delegates to saveEvidence, and saveEvidence returns explicit success/error from the Supabase evidence_log insert.
+Agents should not repeatedly reread stable context when QUICK_CONTEXT.md plus TASK/STATE/HANDOFF are sufficient, but must still reread PROJECT_MASTER.md/RULES.md for risky, contradictory, architectural, or unclear work.
 
 ---
 
@@ -40,5 +40,6 @@ Smallest safe change: DashboardLectura delegates to saveEvidence, and saveEviden
 1. PR-1: Fix permission leaks in Docente and Prefectura.
 2. PR-2: Fix audit reliability / logAudit silent failures.
 3. PR-3: Make Lectura evidence persistence real.
-4. PR-4: Make Promotora evidence persistence real.
-5. PR-5: Reduce fake actions in UDEII / Developer / Subdirección.
+4. PR-3.5: Optimize SASE agent startup protocol.
+5. PR-4: Make Promotora evidence persistence real.
+6. PR-5: Reduce fake actions in UDEII / Developer / Subdirección.
