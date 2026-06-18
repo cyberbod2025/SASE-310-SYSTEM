@@ -26,7 +26,7 @@ export const MyRecentIncidents: React.FC<MyRecentIncidentsProps> = ({ incidents,
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="truncate text-sm font-black text-white">{canViewNames ? incident.studentName : "Estudiante Protegido"}</p>
-              <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">{incident.group} · {incident.type}</p>
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">{canViewNames ? `${incident.group} · ${incident.type}` : `Registro confidencial · ${incident.type}`}</p>
             </div>
             <span className={`shrink-0 rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-widest ${statusClass[incident.status]}`}>{incident.status}</span>
           </div>

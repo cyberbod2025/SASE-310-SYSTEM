@@ -65,10 +65,11 @@ describe("Dashboard Docente Unit Tests", () => {
     expect(screen.getByRole("heading", { name: /Aula en 10 segundos/i })).toBeInTheDocument();
   });
 
-  it("displays quick student list", () => {
+  it("displays anonymized quick student list when names are restricted", () => {
     render(<DashboardDocente />);
-    expect(screen.getAllByText("Test Student").length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/3º B/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Alumno 1").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Identidad reservada").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Test Student")).not.toBeInTheDocument();
   });
 
   it("opens quick form and saves an incident", async () => {

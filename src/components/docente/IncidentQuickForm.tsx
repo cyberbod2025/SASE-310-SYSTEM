@@ -6,6 +6,7 @@ interface IncidentQuickFormProps {
   draft: QuickIncidentDraft;
   students: TeacherStudentSummary[];
   canRegister: boolean;
+  canViewNames?: boolean;
   onChange: (draft: QuickIncidentDraft) => void;
   onClose: () => void;
   onSubmit: (keepOpen: boolean) => void;
@@ -17,6 +18,7 @@ export const IncidentQuickForm: React.FC<IncidentQuickFormProps> = ({
   draft,
   students,
   canRegister,
+  canViewNames = false,
   onChange,
   onClose,
   onSubmit,
@@ -53,7 +55,7 @@ export const IncidentQuickForm: React.FC<IncidentQuickFormProps> = ({
               className="min-h-[48px] w-full rounded-2xl border border-white/10 bg-slate-900 px-4 text-sm font-bold text-white outline-none focus:border-emerald-300/50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">Selecciona alumno</option>
-              {students.map((student) => <option key={student.id} value={student.id}>{student.name} · {student.group}</option>)}
+              {students.map((student, index) => <option key={student.id} value={student.id}>{canViewNames ? `${student.name} · ${student.group}` : `Alumno ${index + 1} · Reservado`}</option>)}
             </select>
           </label>
 

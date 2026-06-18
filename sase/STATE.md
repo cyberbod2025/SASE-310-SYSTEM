@@ -4,10 +4,10 @@ STATUS:
 IN_PROGRESS
 
 LAST_COMPLETED:
-Read-only dashboard audit completed. The gate is not ready yet. Major findings include permission leaks, fake toasts, local-only flows, and silent Supabase failure risks.
+PR-1 applied and validated. Docente and Prefectura now respect can_view_names=false in visible UI paths for student names and related labels.
 
 CURRENT:
-Fix privacy leaks in Docente and Prefectura.
+Prepare PR-2 for logAudit silent failures.
 
 NEXT:
 Fix logAudit silent failures.
@@ -22,7 +22,7 @@ None currently known.
 HIGH
 
 Reason:
-Docente and Prefectura appear to expose names or family data despite can_view_names=false.
+Docente and Prefectura privacy leaks were reduced, but audit reliability and other dashboards still need review.
 
 ---
 

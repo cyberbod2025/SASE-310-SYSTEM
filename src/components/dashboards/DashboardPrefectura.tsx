@@ -7,6 +7,7 @@ import {
   AppModule,
   CaseState, CaseLabels,
 } from "../../types";
+import { PERMISOS_POR_ROL } from "../../utils/permisos";
 import { printContent } from "../PrintButtons";
 import { GlassCard } from "../ui/GlassCard";
 import { NeoButton } from "../ui/NeoButton";
@@ -157,6 +158,8 @@ const TacticalBarChart = ({
 export const DashboardPrefectura = () => {
   const {
     students,
+    currentUserRole,
+    currentUserProfile,
     addIncident,
     logAudit,
     setCurrentModule,
@@ -179,6 +182,15 @@ export const DashboardPrefectura = () => {
     day: "numeric",
     month: "long",
   });
+  const permissions = useMemo(
+    () => ({
+      ...(PERMISOS_POR_ROL[String(currentUserRole).toLowerCase()] || PERMISOS_POR_ROL.prefectura),
+      ...(currentUserProfile?.alcances || {}),
+    }),
+    [currentUserProfile, currentUserRole],
+  );
+  const canViewNames = permissions.can_view_names;
+  const getAnonymousStudentLabel = (index: number) => `Alumno ${index + 1}`;
 
   const retainedObjectsCount = useMemo(() => {
     return students
@@ -193,12 +205,12 @@ export const DashboardPrefectura = () => {
         s.incidents.map((i) => ({
           ...i,
           studentId: s.id,
-          studentName: s.name,
+          studentName: canViewNames ? s.name : "Alumno protegido",
           group: s.group,
           avatar: s.avatar,
         })),
       ),
-    [students],
+    [canViewNames, students],
   );
 
   const dailyIncidents = allIncidents.filter((i) =>
@@ -232,10 +244,13 @@ export const DashboardPrefectura = () => {
   // Pattern Data: Top Students by Risk Score
   const studentsWithIncidents = useMemo(() => {
     return [...students]
-      .map((s) => ({ label: s.name.split(" ")[0], value: Math.round(s.puntajeRiesgo || 0) }))
+      .map((s, index) => ({
+        label: canViewNames ? s.name.split(" ")[0] : getAnonymousStudentLabel(index),
+        value: Math.round(s.puntajeRiesgo || 0),
+      }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 4);
-  }, [students]);
+  }, [canViewNames, students]);
 
   // --- ACTIONS ---
   const handleAction = async (
@@ -280,12 +295,21 @@ export const DashboardPrefectura = () => {
       { type, desc },
     );
 
-    toast.success(`${label} registrado a ${student.name.split(" ")[0]}`);
+    toast.success(`${label} registrado a ${canViewNames ? student.name.split(" ")[0] : "alumno protegido"}`);
     setMatriculaInput(""); // Clear for mobility
     setSelectedStudentId(student.id); // Keep context
   };
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
+  const selectedStudentLabel = selectedStudent
+    ? (canViewNames ? selectedStudent.name : "Alumno protegido")
+    : "";
+  const selectedStudentShortLabel = selectedStudent
+    ? (canViewNames ? selectedStudent.name.split(" ")[0] : "Alumno protegido")
+    : "";
+  const selectedStudentIdentityLabel = selectedStudent
+    ? (canViewNames ? `${selectedStudent.group} • ${selectedStudent.matricula}` : "Identidad reservada")
+    : "";
 
   return (
       <GlassCard className="flex-1 min-h-full p-4 lg:p-8 bg-[rgba(121,118,124,0.08)] relative overflow-hidden custom-scrollbar pb-32">
@@ -370,7 +394,7 @@ export const DashboardPrefectura = () => {
                     );
                     if (s) {
                       setSelectedStudentId(s.id);
-                      toast(`Alumno identificado: ${s.name}`, { icon: "🎓" });
+                      toast(`Alumno identificado${canViewNames ? `: ${s.name}` : ""}`, { icon: "🎓" });
                     } else {
                       toast.error("Matrícula no encontrada");
                     }
@@ -386,7 +410,7 @@ export const DashboardPrefectura = () => {
               >
                 <div className="size-1.5 bg-sase-warning rounded-full animate-pulse"></div>
                 <span className="text-[10px] font-black text-sase-warning uppercase tracking-widest">
-                  Alumno: {selectedStudent.name.split(" ")[0]}
+                  Alumno: {selectedStudentShortLabel}
                 </span>
               </motion.div>
             )}
@@ -666,7 +690,7 @@ export const DashboardPrefectura = () => {
                         </span>
                         <div>
                           <p className="text-xs font-black text-white uppercase tracking-tight group-hover/item:text-sase-warning transition-colors">
-                            {item.studentName}
+                            {canViewNames ? item.studentName : `Alumno ${idx + 1}`}
                           </p>
                           <p className="text-[10px] text-slate-700 font-bold">
                             {item.description}
@@ -675,14 +699,14 @@ export const DashboardPrefectura = () => {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-[9px] font-black px-2 py-1 bg-white/5 border border-slate-100 rounded-2xl text-slate-700 uppercase">
-                          {item.group}
+                          {canViewNames ? item.group : "Reservado"}
                         </span>
                         <button
                           onClick={() =>
                             printDocument({
                               type: "REPORTE_INCIDENCIA",
                               studentId: item.studentId,
-                              data: item,
+                              data: canViewNames ? item : { ...item, studentName: "Alumno protegido", group: "Reservado" },
                             })
                           }
                           className="size-8 bg-white/5 hover:bg-sase-warning hover:text-white rounded-2xl flex items-center justify-center transition-all opacity-0 group-hover/item:opacity-100"
@@ -743,7 +767,7 @@ export const DashboardPrefectura = () => {
               className="p-3 bg-[var(--sase-surface-low)] border border-sase-danger/10 rounded-xl cursor-pointer hover:bg-[rgba(121,118,124,0.12)] hover:border-sase-danger/30 transition-all group/alert"
                     >
                       <p className="text-xs font-black text-white uppercase tracking-tight italic group-hover/alert:text-sase-danger transition-colors">
-                        {s.name}
+                        {canViewNames ? s.name : "Alumno protegido"}
                       </p>
                       <p className="text-[9px] font-black text-sase-danger/60 mt-1 uppercase tracking-widest">
                         {s.incidents.length} Seguimientos en curso
@@ -784,15 +808,15 @@ export const DashboardPrefectura = () => {
                           alt="avatar"
                         />
                       ) : (
-                        selectedStudent.name.charAt(0)
+                        canViewNames ? selectedStudent.name.charAt(0) : "A"
                       )}
                     </div>
                     <div>
                       <p className="text-sm font-black text-white uppercase italic tracking-tight">
-                        {selectedStudent.name}
+                        {selectedStudentLabel}
                       </p>
                       <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-widest">
-                        {selectedStudent.group} • {selectedStudent.matricula}
+                        {selectedStudentIdentityLabel}
                       </p>
                     </div>
                   </div>
@@ -847,7 +871,7 @@ export const DashboardPrefectura = () => {
                   <div className="space-y-2 pt-2">
                     <button
                       onClick={() => {
-                        toast.success(`Notificación enviada al tutor legal de ${selectedStudent.name.split(" ")[0]} a través de la pasarela institucional.`);
+                        toast.success(`Notificación enviada al tutor legal de ${selectedStudentShortLabel} a través de la pasarela institucional.`);
                       }}
                       className="w-full py-3 bg-sase-warning text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-sase-warning transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95"
                     >
@@ -896,7 +920,7 @@ export const DashboardPrefectura = () => {
               </div>
             </div>
             <p className="mt-4 text-xs leading-6 text-slate-300 font-medium">
-              ¿Confirmas el escalamiento preventivo del alumno <strong className="text-white font-black">{selectedStudent.name}</strong> al departamento de Orientación Psicopedagógica?
+              ¿Confirmas el escalamiento preventivo del alumno <strong className="text-white font-black">{selectedStudentLabel}</strong> al departamento de Orientación Psicopedagógica?
             </p>
             <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-sase-warning/90 bg-amber-950/20 border border-sase-warning/20 p-3 rounded-xl leading-relaxed">
               ⚠️ Esta acción registrará el reporte de prefectura en el expediente y alertará a los orientadores en su bandeja de prioridad.
@@ -925,11 +949,11 @@ export const DashboardPrefectura = () => {
                       `Prefectura: Escalamiento preventivo a Orientación`,
                       "incidencias",
                       selectedStudent.id,
-                      selectedStudent.name,
+                      canViewNames ? selectedStudent.name : "Alumno protegido",
                       null,
                       { type: IncidentType.CONDUCTA, desc: "Escalamiento preventivo a Orientación" }
                     );
-                    toast.success(`Caso de ${selectedStudent.name.split(" ")[0]} escalado a Orientación correctamente.`);
+                    toast.success(`Caso de ${selectedStudentShortLabel} escalado a Orientación correctamente.`);
                     setShowEscalateConfirm(false);
                   } catch (err) {
                     console.error("Error escalating in Prefectura:", err);

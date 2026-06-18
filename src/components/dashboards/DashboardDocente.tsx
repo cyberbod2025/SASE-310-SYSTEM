@@ -141,7 +141,8 @@ export const DashboardDocente = () => {
       );
       if (!saved) return;
 
-      toast.success(`Incidencia guardada: ${selectedStudent.name}`);
+      const savedLabel = canViewNames ? selectedStudent.name : "alumno protegido";
+      toast.success(`Incidencia guardada: ${savedLabel}`);
       resetDraft(keepOpen ? selectedStudent.id : "");
       setQuickFormOpen(keepOpen);
     } catch (err) {
@@ -188,6 +189,7 @@ export const DashboardDocente = () => {
             <StudentQuickList
               students={visibleStudents}
               selectedStudentId={draft.studentId}
+              canViewNames={canViewNames}
               onSelectStudent={(studentId) => setDraft((current) => ({ ...current, studentId }))}
               onOpenReport={() => setQuickFormOpen(true)}
             />
@@ -236,6 +238,7 @@ export const DashboardDocente = () => {
         draft={draft.studentId ? draft : { ...draft, studentId: activeStudents[0]?.id || defaultStudentId }}
         students={activeStudents}
         canRegister={permissions.can_register}
+        canViewNames={canViewNames}
         onChange={setDraft}
         onClose={() => setQuickFormOpen(false)}
         onSubmit={handleSaveIncident}
