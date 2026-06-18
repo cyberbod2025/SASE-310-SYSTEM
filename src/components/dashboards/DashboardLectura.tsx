@@ -1,19 +1,33 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
-import { AppModule } from "../../types";
 import { GenericActionModal } from "../GenericActionModal";
-import toast from "react-hot-toast";
 
 export const DashboardLectura = () => {
+  const { saveEvidence } = useApp();
   const [activeTab, setActiveTab] = useState<
     "PROYECTOS" | "EVENTOS" | "EVIDENCIAS"
   >("PROYECTOS");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSaveEvidence = async (data: any) => {
-    toast.success("Evidencia de lectura sincronizada correctamente");
-    setIsModalOpen(false);
+    const proyecto = String(data.proyecto || "").trim();
+    const observaciones = String(data.obs || "").trim();
+
+    if (!proyecto || !observaciones) {
+      throw new Error("Complete los datos requeridos.");
+    }
+
+    const result = await saveEvidence({
+      title: `Evidencia de lectura: ${proyecto}`,
+      fileType: "registro_lectura",
+      notes: observaciones,
+      proyectoNombre: proyecto,
+    });
+
+    if (!result.success) {
+      throw new Error(result.error || "No se pudo guardar la evidencia.");
+    }
   };
 
   return (

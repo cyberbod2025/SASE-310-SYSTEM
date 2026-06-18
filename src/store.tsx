@@ -124,7 +124,7 @@ interface AppContextType {
   addInstitutionalDocument: any;
   addDocumentoInstitucional: any;
   deleteDocumentoInstitucional: any;
-  saveEvidence: (data: EvidenceInput) => Promise<void>;
+  saveEvidence: (data: EvidenceInput) => Promise<ActionResult>;
 
   // Matricula Inteligente
   matricula: any;
@@ -164,6 +164,19 @@ interface EvidenceInput {
   role?: string;
   userId?: string;
 }
+
+interface ActionResult {
+  success: boolean;
+  error?: string;
+}
+
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error && "message" in error) {
+    return String((error as { message?: unknown }).message || fallback);
+  }
+  return fallback;
+};
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -274,10 +287,13 @@ export const AppProvider: React.FC<{
       });
 
       if (error) throw error;
-      toast.success("Evidencia guardada correctamente");
+      return { success: true };
     } catch (error: any) {
       console.error("Error saving evidence:", error);
-      toast.error("Error al guardar evidencia");
+      return {
+        success: false,
+        error: getErrorMessage(error, "Error al guardar evidencia"),
+      };
     }
   };
 

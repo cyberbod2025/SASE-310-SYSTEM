@@ -1,16 +1,16 @@
 # STATE
 
 STATUS:
-IN_PROGRESS
+PR-3_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-2 applied and validated. logAudit now returns explicit success/error and critical callers no longer show success when audit persistence fails.
+PR-3 applied and validated. Lectura evidence now uses real persistence through the existing saveEvidence store action and reports failures explicitly.
 
 CURRENT:
-Prepare PR-3 for Lectura evidence persistence.
+Await review/commit for PR-3.
 
 NEXT:
-Make Lectura evidence persistence real.
+PR-4: Make Promotora evidence persistence real.
 
 BLOCKERS:
 None currently known.
@@ -22,16 +22,16 @@ None currently known.
 HIGH
 
 Reason:
-Audit silent failures were reduced, but several dashboards still have weak or local-only evidence/action flows.
+Lectura evidence persistence was fixed, but several dashboards still have weak or local-only evidence/action flows.
 
 ---
 
 ## LAST DECISION
 
-Completed PR-2: traceability before additional evidence persistence.
+Completed PR-3: use the existing store persistence path for Lectura evidence instead of creating a new pattern.
 
 Rationale:
-No dashboard action should report success when audit persistence fails.
+Smallest safe change: DashboardLectura delegates to saveEvidence, and saveEvidence returns explicit success/error from the Supabase evidence_log insert.
 
 ---
 

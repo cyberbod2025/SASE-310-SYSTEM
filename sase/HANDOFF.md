@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-2 completed: Fix logAudit silent failures and audit traceability.
+PR-3 completed: Make Lectura evidence persistence real.
 
 ---
 
@@ -40,12 +40,22 @@ PR-2 implementation completed and validated:
 - Critical callers that show success after audit now require `success: true`.
 - New `useAuditLogic` tests cover success and Supabase error paths.
 
+PR-3 implementation completed and validated:
+
+- `DashboardLectura.tsx` no longer shows a fake evidence success toast.
+- Lectura evidence now calls the existing `saveEvidence` store action.
+- `saveEvidence` now returns `{ success: true }` or `{ success: false, error }` after the Supabase `evidence_log` insert.
+- The Lectura modal keeps the same success behavior when persistence succeeds.
+- If Supabase/store persistence fails, the modal shows the existing error path and does not show success.
+- New `DashboardLectura` tests cover success and persistence failure.
+
 ---
 
 ## MODIFIED FILES
 
 `src/components/Asistencia.tsx`
 `src/components/StudentAdvancedPanel.tsx`
+`src/components/dashboards/DashboardLectura.tsx`
 `src/components/dashboards/DashboardPrefectura.tsx`
 `src/components/dashboards/DashboardSecretaria.tsx`
 `src/components/emergency/EmergencyAlertModal.tsx`
@@ -56,6 +66,7 @@ PR-2 implementation completed and validated:
 `src/store/slices/useMatriculaSlice.ts`
 `src/store/slices/useStudentsSlice.ts`
 `tests/DashboardPrefectura.test.tsx`
+`tests/DashboardLectura.test.tsx`
 `tests/DashboardSecretaria.test.tsx`
 `tests/useAuditLogic.test.ts`
 `sase/STATE.md`
@@ -65,10 +76,11 @@ PR-2 implementation completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-2 is done. Next agent should start PR-3 and focus on:
+PR-3 is done. Next agent should start PR-4 and focus on:
 
-- Lectura evidence persistence.
-- Removing local-only success flows in Lectura.
+- Promotora evidence persistence.
+- Removing local-only success flows in Promotora.
+- Reusing existing store/Supabase persistence paths where safe.
 - Keeping audit checks explicit for any new write flow.
 
 ---
@@ -79,6 +91,7 @@ PR-2 is done. Next agent should start PR-3 and focus on:
 - Role mismatch remains a risk if future dashboards bypass `can_view_names`.
 - UI still depends on student data in some modules outside PR-1 scope.
 - Some non-critical fire-and-forget audit calls remain for telemetry-like access logs.
+- `saveEvidence` now reports persistence failure, but other callers may need review before relying on its result.
 - Existing tests still emit known mocked Supabase warning logs, but the suite passes.
 
 ---
@@ -88,7 +101,7 @@ PR-2 is done. Next agent should start PR-3 and focus on:
 1. Read `/sase/PROJECT_MASTER.md`.
 2. Read `/sase/TASK.md`.
 3. Read `/sase/STATE.md`.
-4. Start PR-3 on Lectura evidence persistence.
+4. Start PR-4 on Promotora evidence persistence.
 5. Validate TypeScript/build if possible.
 6. Update `/sase/STATE.md` and `/sase/HANDOFF.md`.
 7. Report modified files and validation results.
