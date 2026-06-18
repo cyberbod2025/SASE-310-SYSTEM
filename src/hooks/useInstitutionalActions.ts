@@ -11,6 +11,7 @@ import { supabase } from "../supabase/client";
 import type { Json } from "../supabase/types";
 import { useAuth } from "../components/AuthProvider";
 import { useApp } from "../store";
+import { requireAuditSuccess } from "../store/slices/useAuditLogic";
 import { UserRole, AppModule, CaseState } from "../types";
 import toast from "react-hot-toast";
 
@@ -109,13 +110,13 @@ export const useInstitutionalActions = () => {
           actionModule: AppModule.REPORTES,
         });
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "CREACION",
           `Escalamiento: ${studentName} — ${reason}`,
           "interventions_log",
           studentId,
           studentName,
-        );
+        ));
 
         toast.success(`Caso escalado: ${studentName}`);
         fetchStudents();
@@ -159,13 +160,13 @@ export const useInstitutionalActions = () => {
           .eq("id", studentId);
         if (updateError) throw updateError;
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "ACTUALIZACION",
           `Cierre institucional: ${studentName}`,
           "alumnos",
           studentId,
           studentName,
-        );
+        ));
 
         toast.success(`Caso cerrado: ${studentName}`);
         fetchStudents();
@@ -207,13 +208,13 @@ export const useInstitutionalActions = () => {
           .eq("id", studentId);
         if (updateError) throw updateError;
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "ACTUALIZACION",
           `Caso reabierto: ${studentName}`,
           "alumnos",
           studentId,
           studentName,
-        );
+        ));
 
         toast.success(`Caso reabierto: ${studentName}`);
         fetchStudents();
@@ -264,13 +265,13 @@ export const useInstitutionalActions = () => {
           if (appointmentError) throw appointmentError;
         }
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "CREACION",
           `Seguimiento programado: ${studentName} — ${notes}`,
           "interventions_log",
           studentId,
           studentName,
-        );
+        ));
 
         toast.success(`Seguimiento programado: ${studentName}`);
         return { success: true };
@@ -303,13 +304,13 @@ export const useInstitutionalActions = () => {
         });
         if (error) throw error;
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "CREACION",
           `Evidencia registrada: ${studentName} — ${description}`,
           "evidence_log",
           studentId,
           studentName,
-        );
+        ));
 
         toast.success(`Evidencia registrada: ${studentName}`);
         return { success: true };
@@ -383,13 +384,13 @@ export const useInstitutionalActions = () => {
         });
 
         // Auditoría
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "CREACION",
           `SOS INSTITUCIONAL: ${reporterName}${studentName ? ` — Alumno: ${studentName}` : ""}`,
           "alertas_emergencia",
           emergencyAlert.id,
           studentName || reporterName,
-        );
+        ));
 
         toast.success("SOS activado — Prefectura notificada y alerta operativa creada.");
         return { success: true };
@@ -424,13 +425,13 @@ export const useInstitutionalActions = () => {
           });
         if (error) throw error;
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "ACTUALIZACION",
           `Atención confirmada: ${studentName} — ${attentionType}`,
           "interventions_log",
           studentId,
           studentName,
-        );
+        ));
 
         toast.success(`Atención confirmada: ${studentName}`);
         return { success: true };
@@ -474,13 +475,13 @@ export const useInstitutionalActions = () => {
           actionModule: AppModule.EXPEDIENTES,
         });
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "CREACION",
           `Notificación a ${targetRole}: ${studentName} — ${message}`,
           "interventions_log",
           studentId,
           studentName,
-        );
+        ));
 
         toast.success(`Notificación enviada a ${targetRole}`);
         return { success: true };
@@ -527,13 +528,13 @@ export const useInstitutionalActions = () => {
           .eq("id", sosAlertId);
         if (error) throw error;
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "ACTUALIZACION",
           `SOS reconocido: ${sosAlertId}`,
           "alertas_emergencia",
           sosAlertId,
           reporterName,
-        );
+        ));
 
         toast.success("SOS reconocido — atención registrada.");
         return { success: true };
@@ -597,13 +598,13 @@ export const useInstitutionalActions = () => {
           });
         if (resolutionLogError) throw resolutionLogError;
 
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "ACTUALIZACION",
           `SOS resuelto: ${sosAlertId} — ${resolutionNotes}`,
           "alertas_emergencia",
           sosAlertId,
           reporterName,
-        );
+        ));
 
         toast.success("SOS resuelto — Alerta cerrada");
         return { success: true };

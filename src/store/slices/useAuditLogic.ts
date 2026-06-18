@@ -1,6 +1,27 @@
 import { supabase } from "../../supabase/client";
 import { UserRole, AuditActionType } from "../../types";
 
+export interface AuditResult {
+  success: boolean;
+  error?: string;
+  rawError?: unknown;
+}
+
+export const AUDIT_FAILURE_MESSAGE = "No se pudo registrar la auditoría institucional.";
+
+const getAuditErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error && "message" in error) {
+    return String((error as { message?: unknown }).message || AUDIT_FAILURE_MESSAGE);
+  }
+  return AUDIT_FAILURE_MESSAGE;
+};
+
+export const requireAuditSuccess = (result: AuditResult | undefined | null): AuditResult => {
+  if (result?.success) return result;
+  throw new Error(result?.error || AUDIT_FAILURE_MESSAGE);
+};
+
 export const useAuditLogic = (user: any, currentUserRole: UserRole) => {
   const logAudit = async (
     actionType: AuditActionType,
@@ -10,7 +31,7 @@ export const useAuditLogic = (user: any, currentUserRole: UserRole) => {
     studentName?: string,
     oldValues?: any,
     newValues?: any,
-  ) => {
+  ): Promise<AuditResult> => {
     console.log(
       `%c[AUDIT] ${actionType}: ${description}`,
       "color: #ef4444; font-weight: bold;",
@@ -29,7 +50,7 @@ export const useAuditLogic = (user: any, currentUserRole: UserRole) => {
     }
 
     try {
-      await (supabase.from("auditoria") as any).insert([
+      const { error } = await (supabase.from("auditoria") as any).insert([
         {
           usuario_id: auditUserId,
           email_usuario: auditUserEmail,
@@ -44,8 +65,11 @@ export const useAuditLogic = (user: any, currentUserRole: UserRole) => {
           new_values: newValues || null,
         },
       ]);
+      if (error) throw error;
+      return { success: true };
     } catch (err) {
       console.warn("Audit logging failed:", err);
+      return { success: false, error: getAuditErrorMessage(err), rawError: err };
     }
   };
 
@@ -54,7 +78,7 @@ export const useAuditLogic = (user: any, currentUserRole: UserRole) => {
     studentId: string,
     studentName?: string,
   ) => {
-    logAudit("CONSULTA", action, "alumnos", studentId, studentName);
+    return logAudit("CONSULTA", action, "alumnos", studentId, studentName);
   };
 
   const logEvent = async (

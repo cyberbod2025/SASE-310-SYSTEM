@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../store";
 import { Student, IncidentType } from "../types";
+import { requireAuditSuccess } from "../store/slices/useAuditLogic";
 import toast from "react-hot-toast";
 import { GlassCard } from "./ui/GlassCard";
 import { GlassInput } from "./ui/GlassInput";
@@ -43,7 +44,7 @@ export const Asistencia: React.FC = () => {
         await addIncident(student.id, IncidentType.ASISTENCIA, "Inasistencia registrada en control de asistencia");
       }
 
-      await logAudit(
+      requireAuditSuccess(await logAudit(
         "CREACION",
         `Asistencia: ${estado.toUpperCase()} para ${student.name}`,
         "attendance_logs",
@@ -51,11 +52,12 @@ export const Asistencia: React.FC = () => {
         student.name,
         null,
         { estado }
-      );
+      ));
 
       toast.success(`Registro exitoso: ${student.name.split(" ")[0]}`);
     } catch (error) {
       console.error("Error en registro:", error);
+      toast.error("No se pudo confirmar el registro institucional.");
     }
   };
 

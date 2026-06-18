@@ -49,6 +49,7 @@ vi.mock("react-hot-toast", () => ({
 describe("Dashboard Prefectura Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.logAudit.mockResolvedValue({ success: true });
   });
 
   it("renders Header correctly", () => {

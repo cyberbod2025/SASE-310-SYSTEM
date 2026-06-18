@@ -12,7 +12,7 @@ import { useNotificationSlice } from "./store/slices/useNotificationSlice";
 import { useInventoryStatsSlice } from "./store/slices/useInventoryStatsSlice";
 import { useStudentsSlice } from "./store/slices/useStudentsSlice";
 import { useUiSlice } from "./store/slices/useUiSlice";
-import { useAuditLogic } from "./store/slices/useAuditLogic";
+import { requireAuditSuccess, useAuditLogic } from "./store/slices/useAuditLogic";
 import { useSystemStateSlice } from "./store/slices/useSystemStateSlice";
 import { useMatriculaSlice } from "./store/slices/useMatriculaSlice";
 import { useCierreCicloSlice } from "./store/slices/useCierreCicloSlice";
@@ -241,18 +241,23 @@ export const AppProvider: React.FC<{
   };
 
   const addInstitutionalDocument = async (doc: any) => {
-    await audit.logAudit(
-      "CREACION",
-      `Documento Institucional IA: ${doc.titulo} (Folio: ${doc.folio})`,
-      "documentos",
-      doc.studentId,
-      doc.studentName || "N/A",
-      null,
-      { tipo: doc.tipo, folio: doc.folio },
-    );
-    toast.success(
-      `Documento ${doc.tipo} guardado en expediente con folio ${doc.folio}`,
-    );
+    try {
+      requireAuditSuccess(await audit.logAudit(
+        "CREACION",
+        `Documento Institucional IA: ${doc.titulo} (Folio: ${doc.folio})`,
+        "documentos",
+        doc.studentId,
+        doc.studentName || "N/A",
+        null,
+        { tipo: doc.tipo, folio: doc.folio },
+      ));
+      toast.success(
+        `Documento ${doc.tipo} guardado en expediente con folio ${doc.folio}`,
+      );
+    } catch (err) {
+      console.error("Error auditando documento institucional:", err);
+      toast.error("No se pudo confirmar la auditoría institucional.");
+    }
   };
 
   const saveEvidence = async (data: EvidenceInput) => {

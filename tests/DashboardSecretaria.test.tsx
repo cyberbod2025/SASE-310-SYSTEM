@@ -78,6 +78,7 @@ vi.mock("../src/components/Archivo", () => ({
 describe("Dashboard Secretaria Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.logAudit.mockResolvedValue({ success: true });
   });
 
   it("renders Header correctly", () => {

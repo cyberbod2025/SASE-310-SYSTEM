@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useApp } from "../../store";
 import { useAuth } from "../AuthProvider";
+import { requireAuditSuccess } from "../../store/slices/useAuditLogic";
 import toast from "react-hot-toast";
 import type { EmergencyLocation, EmergencyType } from "../../types/emergency";
 import { IncidentType } from "../../types";
@@ -54,13 +55,13 @@ export const EmergencyAlertModal: React.FC<EmergencyAlertModalProps> = ({ onClos
       await closeEmergencyAlert(myActiveAlert.id);
       
       if (logAudit) {
-        await logAudit(
+        requireAuditSuccess(await logAudit(
           "ACTUALIZACION",
           `SOS CANCELADO: Alerta ${myActiveAlert.id} cancelada por el usuario ${currentUserProfile?.nombre_completo || user?.email || 'Docente'}.`,
           "alertas_emergencia",
           myActiveAlert.id,
           "N/A",
-        );
+        ));
       }
       onClose();
     } catch (err: any) {

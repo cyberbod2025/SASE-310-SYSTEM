@@ -7,6 +7,7 @@ import {
   AppModule,
   CaseState, CaseLabels,
 } from "../../types";
+import { requireAuditSuccess } from "../../store/slices/useAuditLogic";
 import { PERMISOS_POR_ROL } from "../../utils/permisos";
 import { printContent } from "../PrintButtons";
 import { GlassCard } from "../ui/GlassCard";
@@ -277,27 +278,32 @@ export const DashboardPrefectura = () => {
       return;
     }
 
-    // Execute Registration
-    if (type === IncidentType.RETARDO) {
-      await registerAttendance(student.id, "retardo");
-    } else if (type === IncidentType.ASISTENCIA) {
-      await registerAttendance(student.id, "falta");
+    try {
+      // Execute Registration
+      if (type === IncidentType.RETARDO) {
+        await registerAttendance(student.id, "retardo");
+      } else if (type === IncidentType.ASISTENCIA) {
+        await registerAttendance(student.id, "falta");
+      }
+
+      addIncident(student.id, type, desc);
+      requireAuditSuccess(await logAudit(
+        "CREACION",
+        `Prefectura: ${desc}`,
+        "incidencias",
+        student.id,
+        student.name,
+        null,
+        { type, desc },
+      ));
+
+      toast.success(`${label} registrado a ${canViewNames ? student.name.split(" ")[0] : "alumno protegido"}`);
+      setMatriculaInput(""); // Clear for mobility
+      setSelectedStudentId(student.id); // Keep context
+    } catch (err) {
+      console.error("Error registrando acción de Prefectura:", err);
+      toast.error("No se pudo confirmar la auditoría institucional.");
     }
-
-    addIncident(student.id, type, desc);
-    await logAudit(
-      "CREACION",
-      `Prefectura: ${desc}`,
-      "incidencias",
-      student.id,
-      student.name,
-      null,
-      { type, desc },
-    );
-
-    toast.success(`${label} registrado a ${canViewNames ? student.name.split(" ")[0] : "alumno protegido"}`);
-    setMatriculaInput(""); // Clear for mobility
-    setSelectedStudentId(student.id); // Keep context
   };
 
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
@@ -944,7 +950,7 @@ export const DashboardPrefectura = () => {
                       IncidentType.CONDUCTA,
                       "Escalamiento preventivo a Orientación por Prefectura"
                     );
-                    await logAudit(
+                    requireAuditSuccess(await logAudit(
                       "CREACION",
                       `Prefectura: Escalamiento preventivo a Orientación`,
                       "incidencias",
@@ -952,7 +958,7 @@ export const DashboardPrefectura = () => {
                       canViewNames ? selectedStudent.name : "Alumno protegido",
                       null,
                       { type: IncidentType.CONDUCTA, desc: "Escalamiento preventivo a Orientación" }
-                    );
+                    ));
                     toast.success(`Caso de ${selectedStudentShortLabel} escalado a Orientación correctamente.`);
                     setShowEscalateConfirm(false);
                   } catch (err) {

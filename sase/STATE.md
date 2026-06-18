@@ -4,13 +4,13 @@ STATUS:
 IN_PROGRESS
 
 LAST_COMPLETED:
-PR-1 applied and validated. Docente and Prefectura now respect can_view_names=false in visible UI paths for student names and related labels.
+PR-2 applied and validated. logAudit now returns explicit success/error and critical callers no longer show success when audit persistence fails.
 
 CURRENT:
-Prepare PR-2 for logAudit silent failures.
+Prepare PR-3 for Lectura evidence persistence.
 
 NEXT:
-Fix logAudit silent failures.
+Make Lectura evidence persistence real.
 
 BLOCKERS:
 None currently known.
@@ -22,16 +22,16 @@ None currently known.
 HIGH
 
 Reason:
-Docente and Prefectura privacy leaks were reduced, but audit reliability and other dashboards still need review.
+Audit silent failures were reduced, but several dashboards still have weak or local-only evidence/action flows.
 
 ---
 
 ## LAST DECISION
 
-Start with PR-1: permissions and privacy.
+Completed PR-2: traceability before additional evidence persistence.
 
 Rationale:
-Privacy risks block release more severely than incomplete evidence persistence.
+No dashboard action should report success when audit persistence fails.
 
 ---
 

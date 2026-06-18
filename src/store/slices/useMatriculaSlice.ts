@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "../../supabase/client";
 import type { AlumnoCiclo, CicloEscolar, Group } from "../../types";
+import { requireAuditSuccess, type AuditResult } from "./useAuditLogic";
 import toast from "react-hot-toast";
 
 interface MoveAction {
@@ -23,7 +24,7 @@ interface MatriculaState {
 
 export const useMatriculaSlice = (
   userId: string | undefined,
-  logAudit: (action: string, description: string, table: string, recordId?: string, studentId?: string, oldValues?: any, newValues?: any) => Promise<void>
+  logAudit: (action: string, description: string, table: string, recordId?: string, studentId?: string, oldValues?: any, newValues?: any) => Promise<AuditResult>
 ) => {
   const [matriculaState, setMatriculaState] = useState<MatriculaState>({
     cicloActivo: null,
@@ -271,7 +272,7 @@ export const useMatriculaSlice = (
       }
 
       // Auditoría
-      await logAudit(
+      requireAuditSuccess(await logAudit(
         "ACTUALIZACION",
         `Matrícula Inteligente: ${entries.length} movimientos aprobados`,
         "alumno_ciclo",
@@ -282,7 +283,7 @@ export const useMatriculaSlice = (
           ciclo: cicloActivo.nombre,
           movimientos: entries.length,
         }
-      );
+      ));
 
       toast.success(`${entries.length} asignaciones guardadas`);
 

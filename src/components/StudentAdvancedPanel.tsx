@@ -10,6 +10,7 @@ import {
   IncidentType,
 } from "../types";
 import { useApp } from "../store";
+import { requireAuditSuccess } from "../store/slices/useAuditLogic";
 import { printContent } from "./PrintButtons";
 // Lazy Loading para Módulos Pesados (IA y Generación PDF)
 const GeneradorDocumentos = lazy(() =>
@@ -947,14 +948,19 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
                 <span className="text-[10px] font-black uppercase">Llamar</span>
               </button>
               <button
-                onClick={() => {
-                  handleContactTutor("email");
-                  logAudit(
-                    "CONSULTA",
-                    "Acceso a Email de Tutor",
-                    "alumnos",
-                    student.id,
-                  );
+                onClick={async () => {
+                  try {
+                    requireAuditSuccess(await logAudit(
+                      "CONSULTA",
+                      "Acceso a Email de Tutor",
+                      "alumnos",
+                      student.id,
+                    ));
+                    handleContactTutor("email");
+                  } catch (err) {
+                    console.error("Error auditando contacto con tutor:", err);
+                    toast.error("No se pudo confirmar la auditoría institucional.");
+                  }
                 }}
                 className="flex-1 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg py-2.5 flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5"
               >
@@ -1146,17 +1152,22 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
 
               {/* Solicitar Actualización de Datos */}
               <button
-                onClick={() => {
-                  toast.success(
-                    "Solicitud de actualización enviada a Secretaría",
-                    { icon: "📈" },
-                  );
-                  logAudit(
-                    "CREACION",
-                    "Solicitud de Actualización de Datos",
-                    "avisos",
-                    student.id,
-                  );
+                onClick={async () => {
+                  try {
+                    requireAuditSuccess(await logAudit(
+                      "CREACION",
+                      "Solicitud de Actualización de Datos",
+                      "avisos",
+                      student.id,
+                    ));
+                    toast.success(
+                      "Solicitud de actualización enviada a Secretaría",
+                      { icon: "📈" },
+                    );
+                  } catch (err) {
+                    console.error("Error auditando solicitud de actualización:", err);
+                    toast.error("No se pudo confirmar la auditoría institucional.");
+                  }
                 }}
                 className="w-full p-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 text-slate-500 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 transition-all flex items-center gap-3 group text-left"
               >

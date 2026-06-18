@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-1 completed: Fix permission leaks in Docente and Prefectura.
+PR-2 completed: Fix logAudit silent failures and audit traceability.
 
 ---
 
@@ -33,16 +33,31 @@ PR-1 implementation completed and validated:
 - `StudentQuickList.tsx`, `MyRecentIncidents.tsx`, and `IncidentQuickForm.tsx` now render anonymized labels when required.
 - `TeacherGroupDiagnosisOverview.tsx` already respected `canViewNames` and remains aligned.
 
+PR-2 implementation completed and validated:
+
+- `logAudit` now returns `{ success: true }` or `{ success: false, error }`.
+- Supabase insert errors from `auditoria` are inspected explicitly instead of being swallowed.
+- Critical callers that show success after audit now require `success: true`.
+- New `useAuditLogic` tests cover success and Supabase error paths.
+
 ---
 
 ## MODIFIED FILES
 
-`src/components/dashboards/DashboardDocente.tsx`
+`src/components/Asistencia.tsx`
+`src/components/StudentAdvancedPanel.tsx`
 `src/components/dashboards/DashboardPrefectura.tsx`
-`src/components/docente/StudentQuickList.tsx`
-`src/components/docente/MyRecentIncidents.tsx`
-`src/components/docente/IncidentQuickForm.tsx`
-`tests/DashboardDocente.test.tsx`
+`src/components/dashboards/DashboardSecretaria.tsx`
+`src/components/emergency/EmergencyAlertModal.tsx`
+`src/hooks/useInstitutionalActions.ts`
+`src/store.tsx`
+`src/store/slices/useAuditLogic.ts`
+`src/store/slices/useCierreCicloSlice.ts`
+`src/store/slices/useMatriculaSlice.ts`
+`src/store/slices/useStudentsSlice.ts`
+`tests/DashboardPrefectura.test.tsx`
+`tests/DashboardSecretaria.test.tsx`
+`tests/useAuditLogic.test.ts`
 `sase/STATE.md`
 `sase/HANDOFF.md`
 
@@ -50,11 +65,11 @@ PR-1 implementation completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-1 is done. Next agent should start PR-2 and focus on:
+PR-2 is done. Next agent should start PR-3 and focus on:
 
-- `logAudit` silent failures.
-- Supabase write reliability.
-- Any dashboards still pending privacy review outside Docente/Prefectura.
+- Lectura evidence persistence.
+- Removing local-only success flows in Lectura.
+- Keeping audit checks explicit for any new write flow.
 
 ---
 
@@ -63,7 +78,8 @@ PR-1 is done. Next agent should start PR-2 and focus on:
 - Privacy leak is reduced but not fully audited across the whole app.
 - Role mismatch remains a risk if future dashboards bypass `can_view_names`.
 - UI still depends on student data in some modules outside PR-1 scope.
-- Overcorrecting permissions globally would break operational screens.
+- Some non-critical fire-and-forget audit calls remain for telemetry-like access logs.
+- Existing tests still emit known mocked Supabase warning logs, but the suite passes.
 
 ---
 
@@ -72,7 +88,7 @@ PR-1 is done. Next agent should start PR-2 and focus on:
 1. Read `/sase/PROJECT_MASTER.md`.
 2. Read `/sase/TASK.md`.
 3. Read `/sase/STATE.md`.
-4. Start PR-2 on `logAudit` silent failures.
+4. Start PR-3 on Lectura evidence persistence.
 5. Validate TypeScript/build if possible.
 6. Update `/sase/STATE.md` and `/sase/HANDOFF.md`.
 7. Report modified files and validation results.

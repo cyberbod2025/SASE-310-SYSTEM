@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { supabase } from "../../supabase/client";
 import type { SimulacionPromocion, CicloEscolar, DecisionPromocion } from "../../types";
 import type { Database } from "../../supabase/types";
+import { requireAuditSuccess, type AuditResult } from "./useAuditLogic";
 import { toast } from "react-hot-toast";
 
 type CicloEscolarRow = Database["public"]["Tables"]["ciclos_escolares"]["Row"];
@@ -24,7 +25,7 @@ interface CierreCicloState {
 }
 
 export const useCierreCicloSlice = (
-  logAudit: (action: string, description: string, table: string, recordId?: string, studentId?: string, oldValues?: any, newValues?: any) => Promise<void>
+  logAudit: (action: string, description: string, table: string, recordId?: string, studentId?: string, oldValues?: any, newValues?: any) => Promise<AuditResult>
 ) => {
   const [cierreState, setCierreState] = useState<CierreCicloState>({
     cicloActivo: null,
@@ -202,7 +203,7 @@ export const useCierreCicloSlice = (
         retenidos: number;
       };
 
-      await logAudit(
+      requireAuditSuccess(await logAudit(
         "CIERRE_CICLO",
         `Cierre de ciclo ${cicloActivo.nombre} → ${cicloNuevo.nombre}`,
         "ciclos_escolares",
@@ -215,7 +216,7 @@ export const useCierreCicloSlice = (
           egresados: resultado?.egresados,
           bajas: resultado?.bajas,
         }
-      );
+      ));
 
       setCierreState((s) => ({
         ...s,

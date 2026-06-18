@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useApp } from "../../store";
 import toast from "react-hot-toast";
 import { CaseState, AppModule, Student, IncidentType } from "../../types";
+import { requireAuditSuccess } from "../../store/slices/useAuditLogic";
 import { Inscripciones } from "../Inscripciones";
 import { Archivo } from "../Archivo";
 import { CICLO_ESCOLAR } from "../../config/sase.config";
@@ -52,7 +53,7 @@ export const DashboardSecretaria = () => {
   const [showQuickAccess, setShowQuickAccess] = useState(false);
   const [quickSearch, setQuickSearch] = useState("");
 
-  const handleQuickRegister = (
+  const handleQuickRegister = async (
     student: Student,
     type: "NO_CREDENCIAL" | "RETARDO",
   ) => {
@@ -64,23 +65,31 @@ export const DashboardSecretaria = () => {
       });
     }
 
-    addIncident(
-      student.id,
-      type === "RETARDO" ? IncidentType.RETARDO : IncidentType.CONDUCTA,
-      `${type.replace("_", " ")} en Entrada Principal (Registro Veloz)`,
-    );
-    toast.success(`Registro exitoso: ${student.name} pasó al salón.`, {
-      icon: "⚡",
-      duration: 3000,
-    });
-    setShowQuickAccess(false);
-    setQuickSearch("");
-    logAudit(
-      "CREACION",
-      `${type} - Registro Veloz Entrada`,
-      "alumnos",
-      student.id,
-    );
+    try {
+      const saved = await addIncident(
+        student.id,
+        type === "RETARDO" ? IncidentType.RETARDO : IncidentType.CONDUCTA,
+        `${type.replace("_", " ")} en Entrada Principal (Registro Veloz)`,
+      );
+      if (!saved) return;
+
+      requireAuditSuccess(await logAudit(
+        "CREACION",
+        `${type} - Registro Veloz Entrada`,
+        "alumnos",
+        student.id,
+      ));
+
+      toast.success(`Registro exitoso: ${student.name} pasó al salón.`, {
+        icon: "⚡",
+        duration: 3000,
+      });
+      setShowQuickAccess(false);
+      setQuickSearch("");
+    } catch (err) {
+      console.error("Error en registro veloz de Secretaría:", err);
+      toast.error("No se pudo confirmar la auditoría institucional.");
+    }
   };
 
   const activeUserName =
@@ -224,38 +233,48 @@ export const DashboardSecretaria = () => {
   const handleSaveAudit = async (studentId: string) => {
     const student = students.find((s) => s.id === studentId);
 
-    await logAudit(
-      "ACTUALIZACION",
-      `Expediente modificado por ${activeUserName} (${activeUserRole})`,
-      "alumnos",
-      studentId,
-      student?.name,
-      null,
-      { modifiedBy: activeUserName, modifiedAt: new Date().toISOString() },
-    );
+    try {
+      requireAuditSuccess(await logAudit(
+        "ACTUALIZACION",
+        `Expediente modificado por ${activeUserName} (${activeUserRole})`,
+        "alumnos",
+        studentId,
+        student?.name,
+        null,
+        { modifiedBy: activeUserName, modifiedAt: new Date().toISOString() },
+      ));
 
-    updateStudentAudit(studentId, activeUserName);
-    toast.success(`[REGISTRO] Cambios guardados por: ${activeUserName}`);
-    setEditingId(null);
+      updateStudentAudit(studentId, activeUserName);
+      toast.success(`[REGISTRO] Cambios guardados por: ${activeUserName}`);
+      setEditingId(null);
+    } catch (err) {
+      console.error("Error auditando expediente:", err);
+      toast.error("No se pudo confirmar la auditoría institucional.");
+    }
   };
 
   const confirmDistribution = async () => {
-    // Actually import the students with their assigned groups
-    importStudents(proposedStudents);
+    try {
+      requireAuditSuccess(await logAudit(
+        "CREACION",
+        `Importación y distribución inteligente de ${proposedStudents.length} alumnos`,
+        "sistema",
+        "BATCH",
+        "N/A",
+        null,
+        { count: proposedStudents.length, distributedBy: activeUserName },
+      ));
 
-    await logAudit(
-      "CREACION",
-      `Importación y distribución inteligente de ${proposedStudents.length} alumnos`,
-      "sistema",
-      "BATCH",
-      "N/A",
-      null,
-      { count: proposedStudents.length, distributedBy: activeUserName },
-    );
-    toast.success("Alumnos importados y distribuidos correctamente");
-    setShowDistributionModal(false);
-    setProposedStudents([]);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+      // Actually import the students with their assigned groups
+      importStudents(proposedStudents);
+      toast.success("Alumnos importados y distribuidos correctamente");
+      setShowDistributionModal(false);
+      setProposedStudents([]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      console.error("Error auditando distribución inteligente:", err);
+      toast.error("No se pudo confirmar la auditoría institucional.");
+    }
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -20,6 +20,7 @@ import {
 } from "../../types";
 import { evaluateEscalation } from "../../utils/saseUtils";
 import { sendWhatsAppNotification } from "../../utils/notifications";
+import { requireAuditSuccess, type AuditResult } from "./useAuditLogic";
 import toast from "react-hot-toast";
 
 type TipoIncidencia = Database["public"]["Enums"]["tipo_incidencia"];
@@ -74,7 +75,7 @@ export const useStudentsSlice = (
     table: string,
     id: string,
     name?: string,
-  ) => Promise<void>,
+  ) => Promise<AuditResult>,
   fetchDailyStats: () => Promise<void>,
   profile?: any,
 ) => {
@@ -710,13 +711,13 @@ export const useStudentsSlice = (
       if (objError) throw objError;
 
       // 3. Auditoría
-      await logAudit(
+      requireAuditSuccess(await logAudit(
         "CREACION",
         `Objeto retenido registrado: ${objeto} (Alumno: ${student?.name})`,
         "objetos_retenidos",
         studentId,
         student?.name
-      );
+      ));
 
       toast.success("Objeto retenido registrado correctamente");
       fetchStudents();
@@ -789,17 +790,16 @@ export const useStudentsSlice = (
 
       if (error) throw error;
 
-      toast.success("Atención médica guardada ✔️");
-      
       // Auditoría
-      await logAudit(
+      requireAuditSuccess(await logAudit(
         "CREACION",
         `Atención médica registrada: ${data.motivo}`,
         "atenciones_medicas",
         studentId,
         data.nombre_alumno
-      );
+      ));
 
+      toast.success("Atención médica guardada ✔️");
       fetchStudents();
       return { success: true };
     } catch (err: any) {
