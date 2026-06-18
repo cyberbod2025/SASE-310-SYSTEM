@@ -2,10 +2,9 @@ import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
 import { GenericActionModal } from "../GenericActionModal";
-import toast from "react-hot-toast";
 
 export const DashboardUDEII = () => {
-  const { students, addIncident, updateBapInfo, printDocument } = useApp();
+  const { students, updateBapInfo, printDocument } = useApp();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
 
@@ -15,13 +14,24 @@ export const DashboardUDEII = () => {
   );
 
   const handleUpdateAdjustment = async (data: any) => {
-    if (!selectedStudent) return;
-    await updateBapInfo(selectedStudent.id, {
+    if (!selectedStudent) {
+      throw new Error("Seleccione un expediente UDEII.");
+    }
+
+    const adjustment = String(data.adjustment || "").trim();
+
+    if (!adjustment) {
+      throw new Error("Complete los datos requeridos.");
+    }
+
+    const result = await updateBapInfo(selectedStudent.id, {
       ...selectedStudent.bapInfo,
-      accommodations: [data.adjustment],
+      accommodations: [adjustment],
     });
-    toast.success(`Ajuste razonable actualizado para ${selectedStudent.name}`);
-    setModalOpen(false);
+
+    if (!result.success) {
+      throw new Error(result.error || "No se pudo actualizar el ajuste.");
+    }
   };
 
   return (
@@ -53,8 +63,9 @@ export const DashboardUDEII = () => {
         </div>
 
         <button
-          onClick={() => toast("Función en preparación: Exportación de log BAP")}
-          className="px-8 py-3.5 bg-indigo-600/50 text-white/50 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/5 hover:bg-indigo-500/60 transition-all active:scale-95 flex items-center gap-3"
+          disabled
+          title="Exportación de log BAP en preparación"
+          className="px-8 py-3.5 bg-indigo-600/30 text-white/50 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-600/5 flex items-center gap-3 cursor-not-allowed opacity-70"
         >
           <span className="material-symbols-outlined text-xl">file_save</span>
           EXPORTAR_LOG_BAP (Próximamente)
@@ -117,6 +128,7 @@ export const DashboardUDEII = () => {
                     </td>
                     <td className="px-8 py-6 text-right flex justify-end gap-2">
                       <button
+                        aria-label={`Actualizar ajustes razonables de ${s.name}`}
                         onClick={() => {
                           setSelectedStudent(s);
                           setModalOpen(true);
@@ -128,6 +140,7 @@ export const DashboardUDEII = () => {
                         </span>
                       </button>
                       <button
+                        aria-label={`Imprimir bitácora BAP de ${s.name}`}
                         onClick={() =>
                           printDocument({
                             type: "BITACORA",
@@ -164,8 +177,9 @@ export const DashboardUDEII = () => {
 
             <div className="space-y-4">
               <button
-                onClick={() => toast("Función en preparación: Manual de Estrategias")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left opacity-60"
+                disabled
+                title="Manual de Estrategias en preparación"
+                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 text-left opacity-60 cursor-not-allowed"
               >
                 <span className="material-symbols-outlined text-indigo-400">
                   menu_book
@@ -175,8 +189,9 @@ export const DashboardUDEII = () => {
                 </span>
               </button>
               <button
-                onClick={() => toast("Función en preparación: Notificación automática")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-white/10 transition-all text-left opacity-60"
+                disabled
+                title="Notificación automática en preparación"
+                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 text-left opacity-60 cursor-not-allowed"
               >
                 <span className="material-symbols-outlined text-emerald-400">
                   mark_as_unread

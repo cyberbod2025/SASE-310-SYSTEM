@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 import { useApp } from "../../store";
 import { UserRole, AppModule } from "../../types";
 import { supabase } from "../../supabase/client";
@@ -41,7 +40,7 @@ const SystemStat = ({
 // --- MAIN DASHBOARD ---
 
 export const DashboardDeveloper = () => {
-  const { students, currentUserRole } = useApp();
+  const { students, currentUserRole, setCurrentModule } = useApp();
   const [logs, setLogs] = useState<string[]>([
     "Kernel initialized",
     "Auth context linked",
@@ -62,14 +61,6 @@ export const DashboardDeveloper = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
-
-  const handleForceRLSCheck = () => {
-    toast.promise(new Promise((resolve) => setTimeout(resolve, 1500)), {
-      loading: "Auditing RLS Policies...",
-      success: "14 Policies Validated - SECURE",
-      error: "Policy Drift Detected",
-    });
-  };
 
   return (
     <div className="min-h-full p-4 md:p-8 pb-32 bg-transparent text-white">
@@ -93,11 +84,11 @@ export const DashboardDeveloper = () => {
 
         <div className="flex gap-3">
           <button
-            onClick={handleForceRLSCheck}
-            className="px-4 py-2 bg-white/5 border border-slate-200 rounded-xl text-[10px] font-black uppercase hover:bg-white/10 transition-all flex items-center gap-2"
+            disabled
+            className="px-4 py-2 bg-white/5 border border-slate-200 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 opacity-50 cursor-not-allowed"
           >
             <span className="material-icons text-sm">security</span>
-            Auditar RLS
+            Auditar RLS (Próximamente)
           </button>
         </div>
       </div>
@@ -137,6 +128,7 @@ export const DashboardDeveloper = () => {
             {Object.values(AppModule).map((mod) => (
               <button
                 key={mod}
+                onClick={() => setCurrentModule(mod)}
                 className="w-full p-3 bg-white/5 rounded-xl text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white hover:bg-sase-info transition-all text-left flex items-center justify-between group"
               >
                 {mod}
@@ -171,8 +163,8 @@ export const DashboardDeveloper = () => {
               <p className="text-xs text-white/70 italic mb-4">
                 "Predictive pattern analysis for student dropout - Model V2.4"
               </p>
-              <button className="w-full py-2 bg-sase-info text-[10px] font-black uppercase rounded-2xl shadow-xl shadow-black/5">
-                Run Simulation
+              <button disabled className="w-full py-2 bg-sase-info text-[10px] font-black uppercase rounded-2xl shadow-xl shadow-black/5 opacity-50 cursor-not-allowed">
+                Run Simulation (Próximamente)
               </button>
             </div>
             <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-100 flex flex-col justify-between">
@@ -180,16 +172,16 @@ export const DashboardDeveloper = () => {
                 "Automated scheduling for 1,200 students with 40 teacher
                 constraints"
               </p>
-              <button className="w-full py-2 bg-slate-800 text-[10px] font-black uppercase rounded-2xl border border-slate-200">
-                Compute Matrix
+              <button disabled className="w-full py-2 bg-slate-800 text-[10px] font-black uppercase rounded-2xl border border-slate-200 opacity-50 cursor-not-allowed">
+                Compute Matrix (Próximamente)
               </button>
             </div>
-            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-200 border-dashed flex items-center justify-center opacity-40 hover:opacity-100 transition-opacity cursor-pointer">
+            <div className="p-4 bg-slate-900/50 rounded-xl border border-slate-200 border-dashed flex items-center justify-center opacity-40 cursor-not-allowed">
               <span className="material-icons text-3xl mb-1">
                 add_circle
               </span>
               <p className="text-[10px] font-bold uppercase ml-2 tracking-widest">
-                New Experiment
+                New Experiment (Próximamente)
               </p>
             </div>
           </div>

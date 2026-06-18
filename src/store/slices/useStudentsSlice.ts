@@ -50,6 +50,19 @@ const mapCaseStateToDB = (state: CaseState): EstadoCasoDB => {
 
 const PERSISTENCE_ERROR_MESSAGE = "No se pudo registrar por permisos o validación institucional.";
 
+interface ActionResult {
+  success: boolean;
+  error?: string;
+}
+
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error && "message" in error) {
+    return String((error as { message?: unknown }).message || fallback);
+  }
+  return fallback;
+};
+
 const isIncidentType = (value: unknown): value is IncidentType =>
   Object.values(IncidentType).includes(value as IncidentType);
 
@@ -526,22 +539,33 @@ export const useStudentsSlice = (
     }
   };
 
-  const updateBapInfo = async (studentId: string, bapData: BAPInfo) => {
-    setStudents((prev) =>
-      prev.map((s) => (s.id === studentId ? { ...s, bapInfo: bapData } : s)),
-    );
+  const updateBapInfo = async (studentId: string, bapData: BAPInfo): Promise<ActionResult> => {
+    const updatedBapInfo = { ...bapData, lastUpdated: new Date().toISOString() };
+
     try {
-      await supabase
+      const { error } = await supabase
         .from("alumnos")
         .update({
-            datos_bap: { ...bapData, lastUpdated: new Date().toISOString() },
+            datos_bap: updatedBapInfo,
         })
         .eq("id", studentId);
+
+      if (error) throw error;
+
+      setStudents((prev) =>
+        prev.map((s) =>
+          s.id === studentId ? { ...s, bapInfo: updatedBapInfo } : s,
+        ),
+      );
       toast.success("Información UDEII actualizada");
+      return { success: true };
     } catch (err) {
-      if (import.meta.env.DEV) {
-        console.warn("Error al actualizar informacion UDEII");
-      }
+      console.error("Error al actualizar informacion UDEII:", err);
+      toast.error("No se pudo actualizar información UDEII");
+      return {
+        success: false,
+        error: getErrorMessage(err, PERSISTENCE_ERROR_MESSAGE),
+      };
     }
   };
 

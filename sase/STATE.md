@@ -1,16 +1,16 @@
 # STATE
 
 STATUS:
-PR-4_APPLIED_VALIDATED
+PR-5B_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-4 applied and validated. Promotora evidence now uses real persistence through the existing saveEvidence store action and reports failures explicitly.
+PR-5B applied and validated. Developer dashboard fake/decorative actions were disabled or connected to existing real functionality.
 
 CURRENT:
-Await review/commit for PR-4.
+Await review/commit for PR-5B.
 
 NEXT:
-PR-5: Reduce fake actions in UDEII / Developer / Subdirección.
+PR-5C: Reduce fake actions in Subdirección dashboard.
 
 BLOCKERS:
 None currently known.
@@ -22,16 +22,16 @@ None currently known.
 HIGH
 
 Reason:
-Lectura and Promotora evidence persistence were fixed, but several dashboards still have weak or local-only evidence/action flows.
+Developer fake actions were reduced, but Subdirección still needs fake-action review.
 
 ---
 
 ## LAST DECISION
 
-Completed PR-4: use the existing store persistence path for Promotora evidence instead of creating a new pattern.
+Completed PR-5B: disable Developer actions without backend and connect quick access tools to real store actions.
 
 Rationale:
-Smallest safe change: DashboardPromotora delegates to saveEvidence, and saveEvidence already returns explicit success/error from the Supabase evidence_log insert.
+Smallest safe change: keep real developer navigation connected via `setCurrentModule`, disable decorative tools (RLS audit, experiments) explicitly as in preparation.
 
 ---
 
@@ -42,4 +42,6 @@ Smallest safe change: DashboardPromotora delegates to saveEvidence, and saveEvid
 3. PR-3: Make Lectura evidence persistence real.
 4. PR-3.5: Optimize SASE agent startup protocol.
 5. PR-4: Make Promotora evidence persistence real.
-6. PR-5: Reduce fake actions in UDEII / Developer / Subdirección.
+6. PR-5A: Reduce fake actions in UDEII.
+7. PR-5B: Reduce fake actions in Developer.
+8. PR-5C: Reduce fake actions in Subdirección.

@@ -5,6 +5,7 @@ import { CaseState, IncidentType, UserRole } from "../src/types";
 
 const supabaseMocks = vi.hoisted(() => ({
   insert: vi.fn(),
+  update: vi.fn(),
   from: vi.fn(),
   removeChannel: vi.fn(),
 }));
@@ -34,6 +35,7 @@ vi.mock("../src/supabase/client", () => {
         justificantes: [],
         salud: [],
         calificaciones: [],
+        datos_bap: null,
         documentos_institucionales: [],
         objetos_retenidos: [],
         behavior_metrics: [],
@@ -79,6 +81,9 @@ describe("useStudentsSlice addIncident", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     supabaseMocks.insert.mockResolvedValue({ error: null });
+    supabaseMocks.update.mockReturnValue({
+      eq: vi.fn().mockResolvedValue({ error: null }),
+    });
     notificationMocks.sendWhatsAppNotification.mockResolvedValue({ success: true });
     supabaseMocks.from.mockImplementation((table: string) => {
       if (table === "grupos") {
@@ -105,6 +110,7 @@ describe("useStudentsSlice addIncident", () => {
                 justificantes: [],
                 salud: [],
                 calificaciones: [],
+                datos_bap: null,
                 documentos_institucionales: [],
                 objetos_retenidos: [],
                 behavior_metrics: [],
@@ -112,6 +118,7 @@ describe("useStudentsSlice addIncident", () => {
             ],
             error: null,
           })),
+          update: supabaseMocks.update,
         };
       }
 
@@ -205,5 +212,55 @@ describe("useStudentsSlice addIncident", () => {
     });
 
     expect(fetchDailyStats).toHaveBeenCalled();
+  });
+
+  it("updateBapInfo actualiza estado local solo cuando Supabase confirma", async () => {
+    const { result } = renderStudentsSlice();
+    await waitFor(() => expect(result.current.students).toHaveLength(1));
+
+    await act(async () => {
+      const saved = await result.current.updateBapInfo("student-1", {
+        hasBAP: true,
+        diagnosisPrivate: "Barrera de lectoescritura",
+        accommodations: ["Lectura asistida"],
+        lastUpdated: "",
+      });
+
+      expect(saved).toEqual({ success: true });
+    });
+
+    expect(supabaseMocks.update).toHaveBeenCalledWith({
+      datos_bap: expect.objectContaining({
+        hasBAP: true,
+        diagnosisPrivate: "Barrera de lectoescritura",
+        accommodations: ["Lectura asistida"],
+      }),
+    });
+    expect(result.current.students[0].bapInfo.hasBAP).toBe(true);
+    expect(result.current.students[0].bapInfo.accommodations).toEqual([
+      "Lectura asistida",
+    ]);
+  });
+
+  it("updateBapInfo devuelve error explícito y no muta estado local si Supabase falla", async () => {
+    supabaseMocks.update.mockReturnValueOnce({
+      eq: vi.fn().mockResolvedValue({ error: { message: "RLS" } }),
+    });
+    const { result } = renderStudentsSlice();
+    await waitFor(() => expect(result.current.students).toHaveLength(1));
+
+    await act(async () => {
+      const saved = await result.current.updateBapInfo("student-1", {
+        hasBAP: true,
+        diagnosisPrivate: "Barrera de lectoescritura",
+        accommodations: ["Lectura asistida"],
+        lastUpdated: "",
+      });
+
+      expect(saved).toEqual({ success: false, error: "RLS" });
+    });
+
+    expect(result.current.students[0].bapInfo.hasBAP).toBe(false);
+    expect(result.current.students[0].bapInfo.accommodations).toEqual([]);
   });
 });

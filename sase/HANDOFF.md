@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-4 completed: Make Promotora evidence persistence real.
+PR-5B completed: Reduce fake actions in Developer dashboard.
 
 ---
 
@@ -66,6 +66,23 @@ PR-4 implementation completed and validated:
 - If Supabase/store persistence fails, the modal shows the existing error path and does not show success.
 - New `DashboardPromotora` tests cover success and persistence failure.
 
+PR-5A implementation completed and validated:
+
+- `DashboardUDEII.tsx` no longer uses informational toast clicks for unavailable tools.
+- Exportar log BAP, Manual de Estrategias and Notificar a Tutores are disabled with explicit "Próximamente/en preparación" labels.
+- The BAP adjustment action remains connected to the existing `updateBapInfo` store action.
+- `updateBapInfo` now checks Supabase `alumnos.update(...).eq(...)` errors and returns `{ success, error }` explicitly.
+- UDEII does not close/show modal success when BAP persistence fails.
+- BAP print remains connected to the existing `printDocument` action.
+- New tests cover disabled tools, BAP success/failure behavior and print wiring.
+
+PR-5B implementation completed and validated:
+
+- `DashboardDeveloper.tsx` no longer shows a fake RLS audit success toast.
+- The `handleForceRLSCheck` function was removed, and its trigger button was disabled with an explicit "Próximamente" label.
+- The Quick Access modules buttons were wired correctly to `setCurrentModule` using `useApp`.
+- Experimental laboratory tools ("Run Simulation", "Compute Matrix", "New Experiment") were disabled, visually faded (`opacity-50`/`opacity-40`), labeled "(Próximamente)", and their pointer cursors removed.
+
 ---
 
 ## MODIFIED FILES
@@ -76,6 +93,8 @@ PR-4 implementation completed and validated:
 `src/components/dashboards/DashboardPrefectura.tsx`
 `src/components/dashboards/DashboardPromotora.tsx`
 `src/components/dashboards/DashboardSecretaria.tsx`
+`src/components/dashboards/DashboardUDEII.tsx`
+`src/components/dashboards/DashboardDeveloper.tsx`
 `src/components/emergency/EmergencyAlertModal.tsx`
 `src/hooks/useInstitutionalActions.ts`
 `src/store.tsx`
@@ -85,11 +104,14 @@ PR-4 implementation completed and validated:
 `src/store/slices/useStudentsSlice.ts`
 `sase/QUICK_CONTEXT.md`
 `sase/RULES.md`
+`sase/TASK.md`
 `tests/DashboardPrefectura.test.tsx`
 `tests/DashboardLectura.test.tsx`
 `tests/DashboardPromotora.test.tsx`
 `tests/DashboardSecretaria.test.tsx`
+`tests/DashboardUDEII.test.tsx`
 `tests/useAuditLogic.test.ts`
+`tests/useStudentsSlice.test.tsx`
 `sase/STATE.md`
 `sase/HANDOFF.md`
 
@@ -97,9 +119,9 @@ PR-4 implementation completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-4 is done. Next agent should start PR-5 and focus on:
+PR-5B is done. Next agent should start PR-5C and focus on:
 
-- Reducing fake actions in UDEII / Developer / Subdirección.
+- Reducing fake actions in Subdirección dashboard.
 - Removing local-only success flows or labelling them honestly.
 - Reusing existing store/Supabase persistence paths where safe.
 - Keeping audit checks explicit for any new write flow.
@@ -114,7 +136,8 @@ PR-4 is done. Next agent should start PR-5 and focus on:
 - Some non-critical fire-and-forget audit calls remain for telemetry-like access logs.
 - `saveEvidence` now reports persistence failure, but other callers may need review before relying on its result.
 - `QUICK_CONTEXT.md` is a summary, not a replacement for `TASK.md`, `STATE.md` or `HANDOFF.md`.
-- Lectura and Promotora evidence persistence are fixed, but UDEII / Developer / Subdirección still need fake-action review.
+- Developer fake actions were reduced, but Subdirección still needs fake-action review.
+- `updateBapInfo` now returns explicit results; any future caller should check `success` before showing success UI.
 - Existing tests still emit known mocked Supabase warning logs, but the suite passes.
 
 ---
@@ -124,7 +147,7 @@ PR-4 is done. Next agent should start PR-5 and focus on:
 1. Read `/sase/QUICK_CONTEXT.md`, then `/sase/TASK.md`, `/sase/STATE.md`, and `/sase/HANDOFF.md`.
 2. Reread `/sase/PROJECT_MASTER.md` or `/sase/RULES.md` only when context is missing, risky, contradictory, architectural, or protocol-related.
 3. Confirm scope, risks and validation before editing.
-4. Start PR-5 on fake actions in UDEII / Developer / Subdirección.
+4. Start PR-5C on fake actions in Subdirección dashboard.
 5. Validate TypeScript/build if possible.
 6. Update `/sase/STATE.md` and `/sase/HANDOFF.md`.
 7. Report modified files and validation results.
