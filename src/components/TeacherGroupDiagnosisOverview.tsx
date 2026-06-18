@@ -3,9 +3,10 @@ import { getResumenGrupo, ResumenGrupo } from "../services/diagnosticosService";
 
 interface TeacherGroupDiagnosisOverviewProps {
   grupo?: string;
+  canViewNames?: boolean;
 }
 
-export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOverviewProps> = ({ grupo }) => {
+export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOverviewProps> = ({ grupo, canViewNames = false }) => {
   const [resumen, setResumen] = useState<ResumenGrupo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,7 +122,7 @@ export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOvervi
               <div className="space-y-2">
                 {resumen.alumnosCriticos.slice(0, 3).map((alumno) => (
                   <div key={alumno.alumnoId} className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 border border-white/5">
-                    <span className="text-[11px] font-medium text-slate-200 truncate pr-2">{alumno.nombre}</span>
+                    <span className="text-[11px] font-medium text-slate-200 truncate pr-2">{canViewNames ? alumno.nombre : "Estudiante Protegido"}</span>
                     <span className="flex items-center gap-1.5 rounded-md bg-rose-500/20 px-2 py-0.5 text-[9px] font-bold text-rose-400 border border-rose-500/20">
                       {alumno.indicadoresAlto} obs.
                     </span>

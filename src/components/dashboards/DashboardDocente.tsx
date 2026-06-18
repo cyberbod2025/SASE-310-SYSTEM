@@ -71,6 +71,7 @@ export const DashboardDocente = () => {
 
   const role = (currentUserRole || UserRole.DOCENTE) as UserRole;
   const permissions = useMemo(() => getPermissions(role, currentUserProfile), [currentUserProfile, role]);
+  const canViewNames = permissions.can_view_names;
   const studentList = students as Student[];
   const teacherStudents = useMemo(() => buildTeacherStudents(studentList), [studentList]);
   const groups = useMemo(() => buildTeacherGroups(teacherStudents), [teacherStudents]);
@@ -194,10 +195,16 @@ export const DashboardDocente = () => {
 
           <section className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
             <div ref={incidentsRef as React.RefObject<HTMLDivElement>}>
-              <MyRecentIncidents incidents={recentIncidents} />
+              <MyRecentIncidents
+                incidents={recentIncidents}
+                canViewNames={canViewNames}
+              />
             </div>
             <div className="space-y-6">
-              <TeacherGroupDiagnosisOverview grupo={selectedGroup || undefined} />
+              <TeacherGroupDiagnosisOverview
+                grupo={selectedGroup || undefined}
+                canViewNames={canViewNames}
+              />
               <TeacherAlertsCard alerts={alerts} />
               <DocenteSasitoHelper
                 insights={insights}

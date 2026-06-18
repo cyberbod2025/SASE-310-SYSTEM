@@ -3,6 +3,7 @@ import { TeacherIncidentSummary } from "./docenteTypes";
 
 interface MyRecentIncidentsProps {
   incidents: TeacherIncidentSummary[];
+  canViewNames?: boolean;
 }
 
 const statusClass: Record<TeacherIncidentSummary["status"], string> = {
@@ -10,7 +11,7 @@ const statusClass: Record<TeacherIncidentSummary["status"], string> = {
   escalada: "border-amber-300/30 bg-amber-500/15 text-amber-100",
 };
 
-export const MyRecentIncidents: React.FC<MyRecentIncidentsProps> = ({ incidents }) => (
+export const MyRecentIncidents: React.FC<MyRecentIncidentsProps> = ({ incidents, canViewNames = false }) => (
   <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5">
     <div className="mb-5 flex items-center justify-between gap-3">
       <div>
@@ -24,7 +25,7 @@ export const MyRecentIncidents: React.FC<MyRecentIncidentsProps> = ({ incidents 
         <article key={incident.id} className="rounded-[1.3rem] border border-white/10 bg-slate-950/35 p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-sm font-black text-white">{incident.studentName}</p>
+              <p className="truncate text-sm font-black text-white">{canViewNames ? incident.studentName : "Estudiante Protegido"}</p>
               <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">{incident.group} · {incident.type}</p>
             </div>
             <span className={`shrink-0 rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-widest ${statusClass[incident.status]}`}>{incident.status}</span>
