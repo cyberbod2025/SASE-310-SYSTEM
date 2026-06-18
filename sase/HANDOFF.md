@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-3.5 completed: Optimize SASE agent startup protocol.
+PR-4 completed: Make Promotora evidence persistence real.
 
 ---
 
@@ -57,6 +57,15 @@ PR-3.5 documentation-only protocol update completed and validated:
 - Defined safe conditions for rereading `PROJECT_MASTER.md` and `RULES.md`.
 - No app code, package files, lockfiles, Supabase migrations, Bridge, or math module touched.
 
+PR-4 implementation completed and validated:
+
+- `DashboardPromotora.tsx` no longer shows a fake evidence success toast.
+- Promotora evidence now calls the existing `saveEvidence` store action.
+- The persistence path writes to Supabase `evidence_log` through the existing store mechanism.
+- The Promotora modal keeps the same success behavior when persistence succeeds.
+- If Supabase/store persistence fails, the modal shows the existing error path and does not show success.
+- New `DashboardPromotora` tests cover success and persistence failure.
+
 ---
 
 ## MODIFIED FILES
@@ -65,6 +74,7 @@ PR-3.5 documentation-only protocol update completed and validated:
 `src/components/StudentAdvancedPanel.tsx`
 `src/components/dashboards/DashboardLectura.tsx`
 `src/components/dashboards/DashboardPrefectura.tsx`
+`src/components/dashboards/DashboardPromotora.tsx`
 `src/components/dashboards/DashboardSecretaria.tsx`
 `src/components/emergency/EmergencyAlertModal.tsx`
 `src/hooks/useInstitutionalActions.ts`
@@ -77,6 +87,7 @@ PR-3.5 documentation-only protocol update completed and validated:
 `sase/RULES.md`
 `tests/DashboardPrefectura.test.tsx`
 `tests/DashboardLectura.test.tsx`
+`tests/DashboardPromotora.test.tsx`
 `tests/DashboardSecretaria.test.tsx`
 `tests/useAuditLogic.test.ts`
 `sase/STATE.md`
@@ -86,10 +97,10 @@ PR-3.5 documentation-only protocol update completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-3.5 is done. Next agent should start PR-4 and focus on:
+PR-4 is done. Next agent should start PR-5 and focus on:
 
-- Promotora evidence persistence.
-- Removing local-only success flows in Promotora.
+- Reducing fake actions in UDEII / Developer / Subdirección.
+- Removing local-only success flows or labelling them honestly.
 - Reusing existing store/Supabase persistence paths where safe.
 - Keeping audit checks explicit for any new write flow.
 
@@ -103,6 +114,7 @@ PR-3.5 is done. Next agent should start PR-4 and focus on:
 - Some non-critical fire-and-forget audit calls remain for telemetry-like access logs.
 - `saveEvidence` now reports persistence failure, but other callers may need review before relying on its result.
 - `QUICK_CONTEXT.md` is a summary, not a replacement for `TASK.md`, `STATE.md` or `HANDOFF.md`.
+- Lectura and Promotora evidence persistence are fixed, but UDEII / Developer / Subdirección still need fake-action review.
 - Existing tests still emit known mocked Supabase warning logs, but the suite passes.
 
 ---
@@ -112,7 +124,7 @@ PR-3.5 is done. Next agent should start PR-4 and focus on:
 1. Read `/sase/QUICK_CONTEXT.md`, then `/sase/TASK.md`, `/sase/STATE.md`, and `/sase/HANDOFF.md`.
 2. Reread `/sase/PROJECT_MASTER.md` or `/sase/RULES.md` only when context is missing, risky, contradictory, architectural, or protocol-related.
 3. Confirm scope, risks and validation before editing.
-4. Start PR-4 on Promotora evidence persistence.
+4. Start PR-5 on fake actions in UDEII / Developer / Subdirección.
 5. Validate TypeScript/build if possible.
 6. Update `/sase/STATE.md` and `/sase/HANDOFF.md`.
 7. Report modified files and validation results.

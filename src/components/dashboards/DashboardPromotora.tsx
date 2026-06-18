@@ -1,19 +1,33 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../../store";
-import { AppModule } from "../../types";
 import { GenericActionModal } from "../GenericActionModal";
-import toast from "react-hot-toast";
 
 export const DashboardPromotora = () => {
+  const { saveEvidence } = useApp();
   const [activeTab, setActiveTab] = useState<
     "AVANCES" | "EVENTOS" | "EVIDENCIAS"
   >("AVANCES");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSaveEvidence = async (data: any) => {
-    toast.success("Evidencia sincronizada con el repositorio central");
-    setIsModalOpen(false);
+    const title = String(data.title || "").trim();
+    const description = String(data.desc || "").trim();
+
+    if (!title || !description) {
+      throw new Error("Complete los datos requeridos.");
+    }
+
+    const result = await saveEvidence({
+      title: `Evidencia de promotoría: ${title}`,
+      fileType: "registro_promotoria",
+      notes: description,
+      proyectoNombre: title,
+    });
+
+    if (!result.success) {
+      throw new Error(result.error || "No se pudo guardar la evidencia.");
+    }
   };
 
   return (

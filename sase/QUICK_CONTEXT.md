@@ -21,9 +21,10 @@ Current status:
 - PR-2 audit failure handling completed
 - PR-3 Lectura evidence persistence completed or in review
 - PR-3.5 startup protocol optimization completed or in review
+- PR-4 Promotora evidence persistence completed or in review
 
 Next planned task:
-- PR-4 Promotora evidence persistence real
+- PR-5 Reduce fake actions in UDEII / Developer / Subdirección
 
 Startup:
 - Read this file first
