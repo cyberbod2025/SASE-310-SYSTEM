@@ -7,17 +7,17 @@ Await next user instructions.
 
 ## STATUS
 
-PR-6B completed and validated.
+PR-6A and PR-6B completed and validated.
 
 ---
 
-## COMPLETED PR-6B SCOPE
+## COMPLETED PR-6A SCOPE
 
-- Prefectura dashboard hardened against silent/fake successes.
-- Changed registerAttendance to return explicit status.
-- Checked success of registerAttendance and addIncident.
-- Disabled fake Notificar Tutor button.
-- Added comprehensive unit tests.
+- Integrated `canAccessModule` from `usePermissions` centrally in `ModuleRouter.tsx`.
+- Implemented central RBAC module guard rendering `<Unauthorized />` on access denial.
+- Aligned permissions for `AppModule.SEGURIDAD` and added `UserRole.SYSTEM_ADMIN` where `DEVELOPER` has access.
+- Simplified `BITACORA`, `SEGURIDAD`, and `APROBACIONES_PERSONAL` in `ModuleRouter.tsx` by removing inline checks.
+- Created and validated comprehensive unit tests in `tests/ModuleRouter.test.tsx`.
 
 ---
 

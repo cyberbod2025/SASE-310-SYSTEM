@@ -4,7 +4,7 @@ import { AppModule, UserRole } from "../types";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEcosystemModules } from "../hooks/useEcosystemModules";
 import { ExternalModuleLauncher } from "./ExternalModuleLauncher";
-import { canAccessSecurityDashboard } from "../utils/securityDashboardAccess";
+import { usePermissions } from "../hooks/usePermissions";
 const Unauthorized = React.lazy(() => import("./Unauthorized").then(m => ({ default: m.Unauthorized })));
 
 // Loading Component
@@ -60,6 +60,7 @@ const ObjetosRetenidos = React.lazy(() => import("./ObjetosRetenidos").then((m) 
 
 export const ModuleRouter: React.FC = () => {
   const { currentModule, currentUserRole, setCurrentModule } = useApp();
+  const { canAccessModule } = usePermissions();
   const {
     getModuleByAppModule,
     isKnownExternalModule,
@@ -93,6 +94,11 @@ export const ModuleRouter: React.FC = () => {
               return <ExternalModuleLauncher module={feriaModule} />;
             }
 
+            // Central RBAC guard
+            if (!canAccessModule(currentModule)) {
+              return <Unauthorized />;
+            }
+
             if (externalModule) {
               return <ExternalModuleLauncher module={externalModule} />;
             }
@@ -105,31 +111,14 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.AGENDA) return <Agenda />;
             if (currentModule === AppModule.REPORTES) return <Reportes />;
             if (currentModule === AppModule.EXPEDIENTES) return <Expedientes />;
-            if (currentModule === AppModule.BITACORA) {
-              const allowedRoles = [UserRole.DIRECTIVO, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
-              if (!allowedRoles.includes(currentUserRole as UserRole)) {
-                return <Unauthorized />;
-              }
-              return <BitacoraAuditoria />;
-            }
-            if (currentModule === AppModule.SEGURIDAD) {
-              if (!canAccessSecurityDashboard(currentUserRole as UserRole)) {
-                return <Unauthorized />;
-              }
-              return <SecurityDashboard />;
-            }
+            if (currentModule === AppModule.BITACORA) return <BitacoraAuditoria />;
+            if (currentModule === AppModule.SEGURIDAD) return <SecurityDashboard />;
             if (currentModule === AppModule.SOLICITUDES) return <PanelSolicitudes />;
             if (currentModule === AppModule.REPORTES_DOCENTES) return <SolicitudReportesDocentes />;
             if (currentModule === AppModule.INSCRIPCIONES) return <Inscripciones />;
             if (currentModule === AppModule.ARCHIVO) return <Archivo />;
             if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
-            if (currentModule === AppModule.APROBACIONES_PERSONAL) {
-              const allowedRoles = [UserRole.DIRECTIVO, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
-              if (!allowedRoles.includes(currentUserRole as UserRole)) {
-                return <Unauthorized />;
-              }
-              return <AprobacionesPersonal />;
-            }
+            if (currentModule === AppModule.APROBACIONES_PERSONAL) return <AprobacionesPersonal />;
 
             if (currentModule === AppModule.MIS_GRUPOS) return <MisGrupos />;
             if (currentModule === AppModule.PLANEACION_NEM) return <PlaneacionNEM />;

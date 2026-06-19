@@ -1,13 +1,13 @@
 # STATE
 
 STATUS:
-PR-6B_APPLIED_VALIDATED
+PR-6A_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-6B applied and validated. Prefectura dashboard hardened to prevent fake success messages when database operations fail.
+PR-6A applied and validated. Central RBAC guard implemented in ModuleRouter using usePermissions().canAccessModule.
 
 CURRENT:
-Completed PR-6B. Awaiting review/commit.
+Completed PR-6A. Awaiting review/commit.
 
 NEXT:
 Await next user instructions.

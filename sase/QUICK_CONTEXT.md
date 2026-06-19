@@ -25,6 +25,8 @@ Current status:
 - PR-5A UDEII fake actions reduced completed or in review
 - PR-5B Developer fake actions reduced completed or in review
 - PR-5C Subdirección fake actions reduced completed or in review
+- PR-6B Prefectura hardening completed
+- PR-6A Central RBAC guard in ModuleRouter completed
 
 Next planned task:
 - Await next user instructions

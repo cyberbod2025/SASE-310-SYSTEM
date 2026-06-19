@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-6B completed: Prefectura hardening.
+PR-6A completed: Central RBAC guard in ModuleRouter.
 
 ---
 
@@ -98,6 +98,15 @@ PR-6B implementation completed and validated:
 - Updated `Asistencia.tsx` to check database status of `registerAttendance` and `addIncident` before showing success toasts.
 - Added comprehensive unit tests in `tests/DashboardPrefectura.test.tsx` to verify error paths and disabled tutor notification button.
 
+PR-6A implementation completed and validated:
+
+- Integrated `canAccessModule` from `usePermissions` centrally inside `ModuleRouter.tsx`.
+- Implemented central RBAC module guard rendering `<Unauthorized />` when `canAccessModule(currentModule)` is false.
+- Aligned permissions for `AppModule.SEGURIDAD` in `usePermissions.ts` to allow directivo, system_admin, and developer.
+- Added `UserRole.SYSTEM_ADMIN` to all restricted dashboards/modules in `usePermissions.ts` where `UserRole.DEVELOPER` has access, ensuring admins are not locked out.
+- Simplified `AppModule.BITACORA`, `AppModule.SEGURIDAD`, and `AppModule.APROBACIONES_PERSONAL` in `ModuleRouter.tsx` by removing redundant inline allowedRoles checks.
+- Created and ran a unit test suite in `tests/ModuleRouter.test.tsx` verifying authorized/unauthorized access, SYSTEM_ADMIN role, and ALUMNO strict restrictions.
+
 ---
 
 ## MODIFIED FILES
@@ -119,6 +128,8 @@ PR-6B implementation completed and validated:
 `src/store/slices/useInventoryStatsSlice.ts`
 `src/store/slices/useMatriculaSlice.ts`
 `src/store/slices/useStudentsSlice.ts`
+`src/hooks/usePermissions.ts`
+`src/components/ModuleRouter.tsx`
 `sase/QUICK_CONTEXT.md`
 `sase/RULES.md`
 `sase/TASK.md`
@@ -130,6 +141,7 @@ PR-6B implementation completed and validated:
 `tests/DashboardUDEII.test.tsx`
 `tests/useAuditLogic.test.ts`
 `tests/useStudentsSlice.test.tsx`
+`tests/ModuleRouter.test.tsx`
 `sase/STATE.md`
 `sase/HANDOFF.md`
 
@@ -137,7 +149,7 @@ PR-6B implementation completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-5 (A, B, and C) is now completely done. Fake actions in UDEII, Developer, and Subdirección have been successfully reduced or connected to real existing functionality.
+PR-6A and PR-6B are now completely done. Hardening of Prefectura and central RBAC routing guards are fully applied and verified.
 
 Next agent should await explicit instructions from the user for the next assignment.
 
