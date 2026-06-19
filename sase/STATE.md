@@ -1,13 +1,13 @@
 # STATE
 
 STATUS:
-PR-6A_APPLIED_VALIDATED
+PR-6C_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-6A applied and validated. Central RBAC guard implemented in ModuleRouter using usePermissions().canAccessModule.
+PR-6C applied and validated. bulk import and AI balance flows disabled with Próximamente label in DashboardSecretaria.tsx to eliminate fake successes.
 
 CURRENT:
-Completed PR-6A. Awaiting review/commit.
+Completed PR-6C. Awaiting review/commit.
 
 NEXT:
 Await next user instructions.

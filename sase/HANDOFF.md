@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-6A completed: Central RBAC guard in ModuleRouter.
+PR-6C completed: Secretaría bulk import hardening.
 
 ---
 
@@ -107,6 +107,13 @@ PR-6A implementation completed and validated:
 - Simplified `AppModule.BITACORA`, `AppModule.SEGURIDAD`, and `AppModule.APROBACIONES_PERSONAL` in `ModuleRouter.tsx` by removing redundant inline allowedRoles checks.
 - Created and ran a unit test suite in `tests/ModuleRouter.test.tsx` verifying authorized/unauthorized access, SYSTEM_ADMIN role, and ALUMNO strict restrictions.
 
+PR-6C implementation completed and validated:
+
+- Inspected the local-only/mock bulk student import flow in `DashboardSecretaria.tsx`.
+- Disabled the file upload trigger button and labeled it with `INICIAR IMPORTACIÓN (Próximamente)` to indicate it is not yet implemented, styled with reduced opacity and unclickable cursor.
+- Disabled the AI distribution toggle switch, styled with reduced opacity/unclickable cursor, and labeled it with `Próximamente` to prevent fake simulation runs.
+- Added a unit test in `tests/DashboardSecretaria.test.tsx` to verify the disabled bulk import button.
+
 ---
 
 ## MODIFIED FILES
@@ -149,7 +156,7 @@ PR-6A implementation completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-6A and PR-6B are now completely done. Hardening of Prefectura and central RBAC routing guards are fully applied and verified.
+PR-6A, PR-6B, and PR-6C are now completely done. Hardening of Prefectura, central RBAC routing guards, and Secretaría bulk import disabling are fully applied and verified.
 
 Next agent should await explicit instructions from the user for the next assignment.
 

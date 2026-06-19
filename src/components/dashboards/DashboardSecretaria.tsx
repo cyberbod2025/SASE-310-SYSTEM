@@ -445,32 +445,26 @@ export const DashboardSecretaria = () => {
             </div>
 
             <div className="flex items-center justify-between mb-4 bg-white/[0.02] p-3 rounded-xl border border-white/5 relative z-10">
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] italic">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] italic opacity-50">
                 Equilibrar con IA
               </span>
               <button
+                disabled
                 id="ai-distribution-toggle"
-                onClick={() => setUseAIDistribution(!useAIDistribution)}
-                title={
-                  useAIDistribution
-                    ? "Desactivar equilibrio con IA (Asignación manual)"
-                    : "Activar equilibrio con IA (Asignación automática optimizada)"
-                }
+                title="Balanceo inteligente de grupos (Próximamente)"
                 role="switch"
                 aria-checked={useAIDistribution}
                 aria-label="Alternar balanceo inteligente de grupos"
-                className={`w-12 h-6 rounded-full p-1 transition-all focus:ring-2 focus:ring-cyan-500/50 outline-none ${useAIDistribution ? "bg-cyan-600" : "bg-white/10"}`}
+                className="w-12 h-6 rounded-full p-1 transition-all outline-none bg-white/10 opacity-50 cursor-not-allowed"
               >
                 <div
-                  className={`w-4 h-4 bg-white rounded-full shadow-[0_0_10px_white] transition-all ${useAIDistribution ? "translate-x-6" : "translate-x-0"}`}
+                  className="w-4 h-4 bg-white rounded-full shadow-[0_0_10px_white] transition-all translate-x-0"
                 ></div>
               </button>
             </div>
 
-            <p className="text-[9px] text-slate-500 mb-6 font-medium leading-relaxed italic uppercase relative z-10">
-              {useAIDistribution
-                ? "Algoritmo de balanceo por género y promedio activo."
-                : "Asignación secuencial por grupo nominal."}
+            <p className="text-[9px] text-slate-500 mb-6 font-medium leading-relaxed italic uppercase relative z-10 opacity-50">
+              Algoritmo de balanceo por género y promedio (Próximamente).
             </p>
 
             <input
@@ -482,14 +476,14 @@ export const DashboardSecretaria = () => {
               title="Archivo de importación de alumnos"
             />
             <button
-              onClick={() => fileInputRef.current?.click()}
-              title="Cargar archivo Excel o CSV para inscripción masiva"
-              className="btn-sase-primary w-full py-4 text-[10px] font-black tracking-[0.2em] shadow-cyan-600/20 relative z-10"
+              disabled
+              title="Carga masiva e IA (Próximamente)"
+              className="btn-sase-primary w-full py-4 text-[10px] font-black tracking-[0.2em] shadow-cyan-600/20 relative z-10 opacity-50 cursor-not-allowed"
             >
               <span className="material-symbols-outlined text-[18px]">
                 upload_file
               </span>
-              INICIAR IMPORTACIÓN
+              INICIAR IMPORTACIÓN (Próximamente)
             </button>
             {/* Decorative corner accent */}
             <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/10 opacity-20 group-hover:opacity-100 transition-opacity"></div>

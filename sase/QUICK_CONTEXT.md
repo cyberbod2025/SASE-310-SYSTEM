@@ -27,6 +27,7 @@ Current status:
 - PR-5C Subdirección fake actions reduced completed or in review
 - PR-6B Prefectura hardening completed
 - PR-6A Central RBAC guard in ModuleRouter completed
+- PR-6C Secretaría bulk import hardening completed
 
 Next planned task:
 - Await next user instructions

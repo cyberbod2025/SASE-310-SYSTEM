@@ -81,6 +81,7 @@ describe("Dashboard Secretaria Unit Tests", () => {
     mocks.logAudit.mockResolvedValue({ success: true });
   });
 
+
   it("renders Header correctly", () => {
     render(<DashboardSecretaria />);
     expect(screen.getByText(/División de Servicios Escolares/i)).toBeInTheDocument();
@@ -108,5 +109,12 @@ describe("Dashboard Secretaria Unit Tests", () => {
       expect(mocks.logAudit).toHaveBeenCalled();
       expect(mocks.updateStudentAudit).toHaveBeenCalled();
     });
+  });
+
+  it("disables bulk import button with Próximamente label", () => {
+    render(<DashboardSecretaria />);
+    const btn = screen.getByRole("button", { name: /INICIAR IMPORTACIÓN/i });
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveTextContent(/Próximamente/i);
   });
 });

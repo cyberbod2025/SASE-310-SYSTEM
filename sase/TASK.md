@@ -7,17 +7,16 @@ Await next user instructions.
 
 ## STATUS
 
-PR-6A and PR-6B completed and validated.
+PR-6A, PR-6B, and PR-6C completed and validated.
 
 ---
 
-## COMPLETED PR-6A SCOPE
+## COMPLETED PR-6C SCOPE
 
-- Integrated `canAccessModule` from `usePermissions` centrally in `ModuleRouter.tsx`.
-- Implemented central RBAC module guard rendering `<Unauthorized />` on access denial.
-- Aligned permissions for `AppModule.SEGURIDAD` and added `UserRole.SYSTEM_ADMIN` where `DEVELOPER` has access.
-- Simplified `BITACORA`, `SEGURIDAD`, and `APROBACIONES_PERSONAL` in `ModuleRouter.tsx` by removing inline checks.
-- Created and validated comprehensive unit tests in `tests/ModuleRouter.test.tsx`.
+- Inspected bulk student import in `DashboardSecretaria.tsx`.
+- Disabled bulk import button and styled with reduced opacity/unclickable cursor, renamed to `INICIAR IMPORTACIÓN (Próximamente)`.
+- Disabled AI group balancing switch, styled with reduced opacity/unclickable cursor, and labeled `Próximamente`.
+- Added unit test to verify disabled controls in `tests/DashboardSecretaria.test.tsx`.
 
 ---
 
