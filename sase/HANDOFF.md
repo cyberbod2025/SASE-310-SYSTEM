@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-6C completed: Secretaría bulk import hardening.
+PR-6D completed: Trabajo Social minimum persistence hardening.
 
 ---
 
@@ -152,11 +152,25 @@ PR-6C implementation completed and validated:
 `sase/STATE.md`
 `sase/HANDOFF.md`
 
+### PR-6D
+`src/components/dashboards/DashboardTrabajoSocial.tsx`
+`tests/DashboardTrabajoSocial.test.tsx`
+`sase/STATE.md`
+`sase/HANDOFF.md`
+
 ---
 
-## REMAINING FOR CURRENT TASK
+PR-6A, PR-6B, PR-6C, and PR-6D are now completely done.
 
-PR-6A, PR-6B, and PR-6C are now completely done. Hardening of Prefectura, central RBAC routing guards, and Secretaría bulk import disabling are fully applied and verified.
+PR-6D implementation completed and validated:
+
+- `handleRegisterContact` in `DashboardTrabajoSocial.tsx` is now async and persists to `contacts_log` via Supabase.
+- On DB success: shows `toast.success` confirming institutional persistence.
+- On DB failure: shows `toast.error` with honest message; contact is still visible locally in the session.
+- All other local-only flows (citatorio, asistencia, visita, acuerdos, escalar, devolver, seguimiento) retain local state but toasts no longer use `toast.success` or imply DB persistence — replaced with neutral `toast()` wording.
+- `updateLocalStatus` toast also updated to remove fake-success language.
+- 6 new/updated tests in `tests/DashboardTrabajoSocial.test.tsx` cover: contact DB success, contact DB failure (local fallback), no fake-success wording in initial render, escalation path, and role header render.
+- All 105 tests pass. type-check clean. build clean. Commit: `fd80f1a`.
 
 Next agent should await explicit instructions from the user for the next assignment.
 
@@ -173,6 +187,8 @@ Next agent should await explicit instructions from the user for the next assignm
 - Fake actions in UDEII, Developer, and Subdirección dashboards were successfully neutralized.
 - `updateBapInfo` now returns explicit results; any future caller should check `success` before showing success UI.
 - Existing tests still emit known mocked Supabase warning logs, but the suite passes.
+- Trabajo Social citatorio, visita, acuerdos, escalate, and return-to-orientacion remain local-only borrador; no DB tables exist for them yet — this is honest and documented.
+- `contacts_log` RLS allows `trabajo_social` INSERT but not UPDATE; future edits need a new policy.
 
 ---
 

@@ -1,13 +1,13 @@
 # STATE
 
 STATUS:
-PR-6C_APPLIED_VALIDATED
+PR-6D_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-6C applied and validated. bulk import and AI balance flows disabled with Próximamente label in DashboardSecretaria.tsx to eliminate fake successes.
+PR-6D applied and validated. Family contact now persists to contacts_log via Supabase (success/error explicit). All other local-only flows (citatorio, visita, acuerdos, escalar, devolver) retain local state but no longer show fake-success toasts implying DB persistence. Commit: fd80f1a.
 
 CURRENT:
-Completed PR-6C. Awaiting review/commit.
+Completed PR-6D. Awaiting next user instructions.
 
 NEXT:
 Await next user instructions.
