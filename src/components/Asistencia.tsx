@@ -8,15 +8,15 @@ import { GlassCard } from "./ui/GlassCard";
 import { GlassInput } from "./ui/GlassInput";
 
 export const Asistencia: React.FC = () => {
-  const { 
-    students, 
-    registerAttendance, 
-    dailyStats, 
+  const {
+    students,
+    registerAttendance,
+    dailyStats,
     addIncident,
     logAudit,
     userCreatedAt,
   } = useApp();
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<string>("ALL");
 
@@ -27,7 +27,7 @@ export const Asistencia: React.FC = () => {
 
   const filteredStudents = useMemo(() => {
     return students.filter((s: Student) => {
-      const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            s.matricula.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesGroup = selectedGroup === "ALL" || s.group === selectedGroup;
       return matchesSearch && matchesGroup;
@@ -36,12 +36,15 @@ export const Asistencia: React.FC = () => {
 
   const handleRegister = async (student: Student, estado: "presente" | "retardo" | "falta") => {
     try {
-      await registerAttendance(student.id, estado);
-      
+      const attRes = await registerAttendance(student.id, estado);
+      if (!attRes || !attRes.success) return;
+
       if (estado === "retardo") {
-        await addIncident(student.id, IncidentType.RETARDO, "Retardo registrado en control de asistencia");
+        const incSaved = await addIncident(student.id, IncidentType.RETARDO, "Retardo registrado en control de asistencia");
+        if (!incSaved) return;
       } else if (estado === "falta") {
-        await addIncident(student.id, IncidentType.ASISTENCIA, "Inasistencia registrada en control de asistencia");
+        const incSaved = await addIncident(student.id, IncidentType.ASISTENCIA, "Inasistencia registrada en control de asistencia");
+        if (!incSaved) return;
       }
 
       requireAuditSuccess(await logAudit(

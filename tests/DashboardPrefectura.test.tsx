@@ -39,17 +39,22 @@ vi.mock("../src/components/PrintButtons", () => ({
   printContent: mocks.printContent,
 }));
 
-vi.mock("react-hot-toast", () => ({
-  default: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-}));
+vi.mock("react-hot-toast", () => {
+  const mockToast = vi.fn();
+  (mockToast as any).success = vi.fn();
+  (mockToast as any).error = vi.fn();
+  return {
+    default: mockToast,
+    toast: mockToast,
+  };
+});
 
 describe("Dashboard Prefectura Unit Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.logAudit.mockResolvedValue({ success: true });
+    mocks.registerAttendance.mockResolvedValue({ success: true });
+    mocks.addIncident.mockResolvedValue(true);
   });
 
   it("renders Header correctly", () => {
@@ -81,5 +86,49 @@ describe("Dashboard Prefectura Unit Tests", () => {
     await waitFor(() => {
       expect(mocks.logAudit).toHaveBeenCalled();
     });
+  });
+
+  it("Quick Register failure of registerAttendance prevents adding incident and audit log", async () => {
+    mocks.registerAttendance.mockResolvedValue({ success: false });
+    render(<DashboardPrefectura />);
+
+    const input = screen.getByPlaceholderText(/MATRÍCULA/i);
+    fireEvent.change(input, { target: { value: "2024-PREF" } });
+
+    const btn = screen.getByText("Retardo");
+    fireEvent.click(btn);
+
+    await new Promise((r) => setTimeout(r, 100));
+
+    expect(mocks.addIncident).not.toHaveBeenCalled();
+    expect(mocks.logAudit).not.toHaveBeenCalled();
+  });
+
+  it("Quick Register failure of addIncident prevents audit log", async () => {
+    mocks.addIncident.mockResolvedValue(false);
+    render(<DashboardPrefectura />);
+
+    const input = screen.getByPlaceholderText(/MATRÍCULA/i);
+    fireEvent.change(input, { target: { value: "2024-PREF" } });
+
+    const btn = screen.getByText("Retardo");
+    fireEvent.click(btn);
+
+    await new Promise((r) => setTimeout(r, 100));
+
+    expect(mocks.addIncident).toHaveBeenCalled();
+    expect(mocks.logAudit).not.toHaveBeenCalled();
+  });
+
+  it("Tutor notification button is disabled with Próximamente label", () => {
+    render(<DashboardPrefectura />);
+
+    const input = screen.getByPlaceholderText(/MATRÍCULA/i);
+    fireEvent.change(input, { target: { value: "2024-PREF" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    const btn = screen.getByRole("button", { name: /Notificar Tutor/i });
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveTextContent(/Próximamente/i);
   });
 });

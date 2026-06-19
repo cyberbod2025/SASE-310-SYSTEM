@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import toast from "react-hot-toast";
 import { useApp } from "../../store";
-import { CaseState, AppModule, IncidentType } from "../../types";
+import { CaseState, AppModule } from "../../types";
 
 // --- MICRO-COMPONENTS (NEURAL UI) ---
 
@@ -46,8 +45,7 @@ const TacticalKPI = ({ label, value, icon, color, trend }: any) => {
 };
 
 export const DashboardSubdireccion = () => {
-  const { students, setCurrentModule, addIncident } = useApp();
-  const [isSyncing, setIsSyncing] = useState(false);
+  const { students, setCurrentModule } = useApp();
 
   // Estadísticas calculadas
   const stats = useMemo(() => {
@@ -66,19 +64,6 @@ export const DashboardSubdireccion = () => {
       riskLevel: interventions > 5 ? "CRÍTICO" : "ESTABLE",
     };
   }, [students]);
-
-  const handleQuickAction = async (action: string) => {
-    setIsSyncing(true);
-    toast.loading(`Ejecutando: ${action}...`, { id: "action" });
-
-    await new Promise((r) => setTimeout(r, 1000));
-
-    setIsSyncing(false);
-    toast.success(`Acción validada por el sistema`, { id: "action" });
-
-    if (action === "planeaciones") setCurrentModule(AppModule.PLANEACION_NEM);
-    if (action === "protocolos") setCurrentModule(AppModule.PROTOCOLOS);
-  };
 
   return (
     <div className="flex-1 h-full min-h-screen p-6 lg:p-10 space-y-10 bg-transparent relative overflow-y-auto custom-scrollbar font-sans selection:bg-orange-500/30">
@@ -127,25 +112,20 @@ export const DashboardSubdireccion = () => {
 
         <div className="flex items-center gap-4">
           <button
-            onClick={() => handleQuickAction("reporte_mensual")}
-            className="px-6 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all flex items-center gap-3 active:scale-95"
+            disabled
+            className="px-6 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-3 opacity-50 cursor-not-allowed"
           >
             <span className="material-symbols-outlined text-xl">ios_share</span>
-            EXP_ZONA.PDF
+            EXP_ZONA.PDF (Próximamente)
           </button>
           <button
-            onClick={() => handleQuickAction("sincronizar")}
-            disabled={isSyncing}
-            className="px-8 py-3.5 bg-orange-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-600/20 hover:bg-orange-500 transition-all flex items-center gap-3 active:scale-95 disabled:opacity-50"
+            disabled
+            className="px-8 py-3.5 bg-orange-600/50 text-white/50 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-orange-600/5 flex items-center gap-3 cursor-not-allowed opacity-50"
           >
-            {isSyncing ? (
-              <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-            ) : (
-              <span className="material-symbols-outlined text-xl">
-                sync_lock
-              </span>
-            )}
-            FORZAR_SYNC
+            <span className="material-symbols-outlined text-xl">
+              sync_lock
+            </span>
+            FORZAR_SYNC (Próximamente)
           </button>
         </div>
       </div>
@@ -243,10 +223,10 @@ export const DashboardSubdireccion = () => {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleQuickAction(`revisar_${s.name}`)}
-                        className="px-5 py-2.5 bg-orange-600/10 border border-orange-500/20 text-orange-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-xl"
+                        disabled
+                        className="px-5 py-2.5 bg-orange-600/5 border border-orange-500/10 text-orange-500/50 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-not-allowed opacity-50 shadow-none"
                       >
-                        AUTORIZAR_PASO
+                        AUTORIZAR_PASO (Próximamente)
                       </button>
                     </motion.div>
                   ))}
@@ -283,7 +263,7 @@ export const DashboardSubdireccion = () => {
 
             <div className="space-y-4">
               <button
-                onClick={() => handleQuickAction("protocolos")}
+                onClick={() => setCurrentModule(AppModule.PROTOCOLOS)}
                 className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-orange-600 hover:border-orange-500 active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover/btn:bg-white/20 group-hover/btn:text-white">
@@ -302,26 +282,26 @@ export const DashboardSubdireccion = () => {
               </button>
 
               <button
-                onClick={() => handleQuickAction("suplencia")}
-                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-blue-600 hover:border-blue-500 active:scale-95 transition-all group/btn"
+                disabled
+                className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 opacity-50 cursor-not-allowed group/btn"
               >
-                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover/btn:bg-white/20 group-hover/btn:text-white">
+                <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-400">
                   <span className="material-symbols-outlined text-2xl">
                     group_add
                   </span>
                 </div>
                 <div className="text-left">
-                  <p className="text-xs font-black text-white uppercase tracking-widest italic leading-none mb-1">
-                    Gestionar Suplencia
+                  <p className="text-xs font-black text-white/50 uppercase tracking-widest italic leading-none mb-1">
+                    Gestionar Suplencia (Próximamente)
                   </p>
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter group-hover:text-white/60">
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">
                     SISTEMA_DE_COBERTURA
                   </p>
                 </div>
               </button>
 
               <button
-                onClick={() => handleQuickAction("planeaciones")}
+                onClick={() => setCurrentModule(AppModule.PLANEACION_NEM)}
                 className="w-full p-5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-5 hover:bg-emerald-600 hover:border-emerald-500 active:scale-95 transition-all group/btn"
               >
                 <div className="size-12 bg-white/5 rounded-xl flex items-center justify-center text-slate-400 group-hover/btn:bg-white/20 group-hover/btn:text-white">

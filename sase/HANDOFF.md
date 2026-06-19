@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-5B completed: Reduce fake actions in Developer dashboard.
+PR-6B completed: Prefectura hardening.
 
 ---
 
@@ -83,6 +83,21 @@ PR-5B implementation completed and validated:
 - The Quick Access modules buttons were wired correctly to `setCurrentModule` using `useApp`.
 - Experimental laboratory tools ("Run Simulation", "Compute Matrix", "New Experiment") were disabled, visually faded (`opacity-50`/`opacity-40`), labeled "(Próximamente)", and their pointer cursors removed.
 
+PR-5C implementation completed and validated:
+
+- `DashboardSubdireccion.tsx` fake `handleQuickAction` was entirely removed, effectively killing all fake async toasts.
+- Actions "Inyectar Protocolo" and "Validar NEEM" were connected to `setCurrentModule(AppModule.PROTOCOLOS / PLANEACION_NEM)`.
+- Fictional/placeholder actions ("EXP_ZONA.PDF", "FORZAR_SYNC", "AUTORIZAR_PASO", "Gestionar Suplencia") were disabled (`disabled` prop), styled with `opacity-50`, cursor `not-allowed`, and appended with `(Próximamente)`.
+- New `DashboardSubdireccion` tests cover disabled placeholder actions and connected module navigation.
+
+PR-6B implementation completed and validated:
+
+- Modified `registerAttendance` in `src/store/slices/useInventoryStatsSlice.ts` to return explicit success/error objects instead of `void`.
+- Updated `DashboardPrefectura.tsx` to check database status for both `registerAttendance` and `addIncident` before proceeding to show success messages or log audits.
+- Disabled the fake "Notificar Tutor" button in `DashboardPrefectura.tsx` and styled it as a future feature with a `(Próximamente)` label.
+- Updated `Asistencia.tsx` to check database status of `registerAttendance` and `addIncident` before showing success toasts.
+- Added comprehensive unit tests in `tests/DashboardPrefectura.test.tsx` to verify error paths and disabled tutor notification button.
+
 ---
 
 ## MODIFIED FILES
@@ -95,11 +110,13 @@ PR-5B implementation completed and validated:
 `src/components/dashboards/DashboardSecretaria.tsx`
 `src/components/dashboards/DashboardUDEII.tsx`
 `src/components/dashboards/DashboardDeveloper.tsx`
+`src/components/dashboards/DashboardSubdireccion.tsx`
 `src/components/emergency/EmergencyAlertModal.tsx`
 `src/hooks/useInstitutionalActions.ts`
 `src/store.tsx`
 `src/store/slices/useAuditLogic.ts`
 `src/store/slices/useCierreCicloSlice.ts`
+`src/store/slices/useInventoryStatsSlice.ts`
 `src/store/slices/useMatriculaSlice.ts`
 `src/store/slices/useStudentsSlice.ts`
 `sase/QUICK_CONTEXT.md`
@@ -109,6 +126,7 @@ PR-5B implementation completed and validated:
 `tests/DashboardLectura.test.tsx`
 `tests/DashboardPromotora.test.tsx`
 `tests/DashboardSecretaria.test.tsx`
+`tests/DashboardSubdireccion.test.tsx`
 `tests/DashboardUDEII.test.tsx`
 `tests/useAuditLogic.test.ts`
 `tests/useStudentsSlice.test.tsx`
@@ -119,12 +137,9 @@ PR-5B implementation completed and validated:
 
 ## REMAINING FOR CURRENT TASK
 
-PR-5B is done. Next agent should start PR-5C and focus on:
+PR-5 (A, B, and C) is now completely done. Fake actions in UDEII, Developer, and Subdirección have been successfully reduced or connected to real existing functionality.
 
-- Reducing fake actions in Subdirección dashboard.
-- Removing local-only success flows or labelling them honestly.
-- Reusing existing store/Supabase persistence paths where safe.
-- Keeping audit checks explicit for any new write flow.
+Next agent should await explicit instructions from the user for the next assignment.
 
 ---
 
@@ -136,7 +151,7 @@ PR-5B is done. Next agent should start PR-5C and focus on:
 - Some non-critical fire-and-forget audit calls remain for telemetry-like access logs.
 - `saveEvidence` now reports persistence failure, but other callers may need review before relying on its result.
 - `QUICK_CONTEXT.md` is a summary, not a replacement for `TASK.md`, `STATE.md` or `HANDOFF.md`.
-- Developer fake actions were reduced, but Subdirección still needs fake-action review.
+- Fake actions in UDEII, Developer, and Subdirección dashboards were successfully neutralized.
 - `updateBapInfo` now returns explicit results; any future caller should check `success` before showing success UI.
 - Existing tests still emit known mocked Supabase warning logs, but the suite passes.
 
@@ -147,7 +162,7 @@ PR-5B is done. Next agent should start PR-5C and focus on:
 1. Read `/sase/QUICK_CONTEXT.md`, then `/sase/TASK.md`, `/sase/STATE.md`, and `/sase/HANDOFF.md`.
 2. Reread `/sase/PROJECT_MASTER.md` or `/sase/RULES.md` only when context is missing, risky, contradictory, architectural, or protocol-related.
 3. Confirm scope, risks and validation before editing.
-4. Start PR-5C on fake actions in Subdirección dashboard.
+4. Await next user instructions.
 5. Validate TypeScript/build if possible.
 6. Update `/sase/STATE.md` and `/sase/HANDOFF.md`.
 7. Report modified files and validation results.

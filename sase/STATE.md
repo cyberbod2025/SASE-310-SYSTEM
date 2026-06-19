@@ -1,16 +1,16 @@
 # STATE
 
 STATUS:
-PR-5B_APPLIED_VALIDATED
+PR-6B_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-5B applied and validated. Developer dashboard fake/decorative actions were disabled or connected to existing real functionality.
+PR-6B applied and validated. Prefectura dashboard hardened to prevent fake success messages when database operations fail.
 
 CURRENT:
-Await review/commit for PR-5B.
+Completed PR-6B. Awaiting review/commit.
 
 NEXT:
-PR-5C: Reduce fake actions in Subdirección dashboard.
+Await next user instructions.
 
 BLOCKERS:
 None currently known.
@@ -19,19 +19,19 @@ None currently known.
 
 ## CURRENT RISK LEVEL
 
-HIGH
+LOW
 
 Reason:
-Developer fake actions were reduced, but Subdirección still needs fake-action review.
+All identified fake actions in UDEII, Developer, and Subdirección have been neutralized, resulting in a more honest and reliable UI.
 
 ---
 
 ## LAST DECISION
 
-Completed PR-5B: disable Developer actions without backend and connect quick access tools to real store actions.
+Completed PR-5C: disable Subdirección fake actions (sincronizar, reporte, suplencia, autorizar) and connect real actions to navigation (planeaciones, protocolos).
 
 Rationale:
-Smallest safe change: keep real developer navigation connected via `setCurrentModule`, disable decorative tools (RLS audit, experiments) explicitly as in preparation.
+Smallest safe change: remove fake async toast loading completely. Disable tools without backend support and connect existing tools to actual routing.
 
 ---
 

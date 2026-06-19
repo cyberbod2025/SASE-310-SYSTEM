@@ -281,12 +281,16 @@ export const DashboardPrefectura = () => {
     try {
       // Execute Registration
       if (type === IncidentType.RETARDO) {
-        await registerAttendance(student.id, "retardo");
+        const attRes = await registerAttendance(student.id, "retardo");
+        if (!attRes || !attRes.success) return;
       } else if (type === IncidentType.ASISTENCIA) {
-        await registerAttendance(student.id, "falta");
+        const attRes = await registerAttendance(student.id, "falta");
+        if (!attRes || !attRes.success) return;
       }
 
-      addIncident(student.id, type, desc);
+      const incidentSaved = await addIncident(student.id, type, desc);
+      if (!incidentSaved) return;
+
       requireAuditSuccess(await logAudit(
         "CREACION",
         `Prefectura: ${desc}`,
@@ -876,12 +880,10 @@ export const DashboardPrefectura = () => {
 
                   <div className="space-y-2 pt-2">
                     <button
-                      onClick={() => {
-                        toast.success(`Notificación enviada al tutor legal de ${selectedStudentShortLabel} a través de la pasarela institucional.`);
-                      }}
-                      className="w-full py-3 bg-sase-warning text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-sase-warning transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95"
+                      disabled
+                      className="w-full py-3 bg-white/5 border border-white/10 text-slate-400 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] opacity-50 cursor-not-allowed"
                     >
-                      Notificar Tutor
+                      Notificar Tutor (Próximamente)
                     </button>
                     <button
                       onClick={() => {
@@ -945,11 +947,14 @@ export const DashboardPrefectura = () => {
                 onClick={async () => {
                   setIsSubmitting(true);
                   try {
-                    await addIncident(
+                    const success = await addIncident(
                       selectedStudent.id,
                       IncidentType.CONDUCTA,
                       "Escalamiento preventivo a Orientación por Prefectura"
                     );
+                    if (!success) {
+                      return;
+                    }
                     requireAuditSuccess(await logAudit(
                       "CREACION",
                       `Prefectura: Escalamiento preventivo a Orientación`,

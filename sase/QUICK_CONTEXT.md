@@ -23,9 +23,11 @@ Current status:
 - PR-3.5 startup protocol optimization completed or in review
 - PR-4 Promotora evidence persistence completed or in review
 - PR-5A UDEII fake actions reduced completed or in review
+- PR-5B Developer fake actions reduced completed or in review
+- PR-5C Subdirección fake actions reduced completed or in review
 
 Next planned task:
-- PR-5B Reduce fake actions in Developer dashboard
+- Await next user instructions
 
 Startup:
 - Read this file first

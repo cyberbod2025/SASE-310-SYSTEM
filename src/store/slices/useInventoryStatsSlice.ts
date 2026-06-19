@@ -93,7 +93,7 @@ export const useInventoryStatsSlice = (user: any) => {
   const registerAttendance = async (
     alumnoId: string,
     estado: "presente" | "falta" | "retardo" | "justificado",
-  ) => {
+  ): Promise<{ success: boolean; error?: any }> => {
     try {
       const { error } = await (supabase as any).from("attendance_logs").insert([
         {
@@ -107,16 +107,19 @@ export const useInventoryStatsSlice = (user: any) => {
         if (error.code === "23505") {
           toast.error("Este alumno ya tiene registro de asistencia hoy");
         } else {
-          throw error;
+          toast.error("Error en registro de asistencia");
         }
+        return { success: false, error };
       } else {
-        fetchDailyStats();
+        await fetchDailyStats();
+        return { success: true };
       }
     } catch (err) {
       if (import.meta.env.DEV) {
-        console.warn("Error registering attendance");
+        console.warn("Error registering attendance", err);
       }
       toast.error("Error en registro de asistencia");
+      return { success: false, error: err };
     }
   };
 
