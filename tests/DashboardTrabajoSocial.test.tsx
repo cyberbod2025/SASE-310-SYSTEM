@@ -1,9 +1,26 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { DashboardTrabajoSocial } from "../src/components/dashboards/DashboardTrabajoSocial";
 import { CaseState, IncidentType } from "../src/types";
 
+// ── Hoisted mocks (must be declared before vi.mock factories are evaluated) ──
+const { mockInsert, mockFrom, mockGetUser } = vi.hoisted(() => {
+  const mockInsert = vi.fn();
+  const mockFrom = vi.fn(() => ({ insert: mockInsert }));
+  const mockGetUser = vi.fn();
+  return { mockInsert, mockFrom, mockGetUser };
+});
+
+// ── Mock supabase client ──────────────────────────────────────────────────────
+vi.mock("../src/supabase/client", () => ({
+  supabase: {
+    from: (table: string) => mockFrom(table),
+    auth: { getUser: mockGetUser },
+  },
+}));
+
+// ── Mock store ────────────────────────────────────────────────────────────────
 vi.mock("../src/store", () => ({
   useApp: () => ({
     students: [
@@ -40,11 +57,25 @@ vi.mock("../src/store", () => ({
         justificantes: [],
       },
     ],
+    createEmergencyAlert: vi.fn(),
+    currentUserProfile: null,
   }),
 }));
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const setupContactSuccess = () => {
+  mockGetUser.mockResolvedValue({ data: { user: { id: "user-abc" } } });
+  mockInsert.mockResolvedValue({ error: null });
+};
+
+const setupContactFailure = () => {
+  mockGetUser.mockResolvedValue({ data: { user: { id: "user-abc" } } });
+  mockInsert.mockResolvedValue({ error: { message: "DB connection refused" } });
+};
+
 describe("DashboardTrabajoSocial", () => {
   it("renders role header and execution queue", () => {
+    setupContactSuccess();
     render(<DashboardTrabajoSocial />);
 
     expect(screen.getByText("TRABAJO SOCIAL")).toBeInTheDocument();
@@ -54,13 +85,15 @@ describe("DashboardTrabajoSocial", () => {
   });
 
   it("highlights three unanswered citatorios as a critical institutional rule", () => {
+    setupContactSuccess();
     render(<DashboardTrabajoSocial />);
 
     expect(screen.getAllByText(/3 citatorios sin respuesta/i).length).toBeGreaterThan(0);
     expect(screen.getByRole("alert")).toHaveTextContent(/Padres no han respondido a 3 citatorios/i);
   });
 
-  it("registers a quick family contact without creating a new incident", () => {
+  it("persists family contact to contacts_log on success", async () => {
+    setupContactSuccess();
     render(<DashboardTrabajoSocial />);
 
     fireEvent.change(screen.getByPlaceholderText(/Resultado breve del contacto/i), {
@@ -68,11 +101,53 @@ describe("DashboardTrabajoSocial", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /^Llamada$/i }));
 
-    expect(screen.getByText("Contacto familiar registrado (registro local - pendiente de persistencia institucional)")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockFrom).toHaveBeenCalledWith("contacts_log");
+      expect(mockInsert).toHaveBeenCalledWith(
+        expect.objectContaining({ method: "llamada", outcome: "registrado" })
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Contacto familiar registrado y guardado en base de datos institucional.")
+      ).toBeInTheDocument();
+    });
+
+    // Contact still appears in the local list
     expect(screen.getByText("Tutor confirma llamada de seguimiento.")).toBeInTheDocument();
   });
 
+  it("shows error lastAction when contacts_log insert fails, contact still visible locally", async () => {
+    setupContactFailure();
+    render(<DashboardTrabajoSocial />);
+
+    fireEvent.change(screen.getByPlaceholderText(/Resultado breve del contacto/i), {
+      target: { value: "Llamada sin respuesta." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /^Llamada$/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Error al guardar contacto en base de datos. Registro disponible solo en esta sesion.")
+      ).toBeInTheDocument();
+    });
+
+    // Contact still visible locally even after DB failure
+    expect(screen.getByText("Llamada sin respuesta.")).toBeInTheDocument();
+  });
+
+  it("citatorio and other local actions do not claim institutional DB persistence in UI text", () => {
+    setupContactSuccess();
+    render(<DashboardTrabajoSocial />);
+
+    // None of the old fake-success phrases should appear in the initial render
+    expect(screen.queryByText(/pendiente de persistencia institucional/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/borrador local - pendiente de persistencia/i)).not.toBeInTheDocument();
+  });
+
   it("blocks final closure and exposes escalation path instead", () => {
+    setupContactSuccess();
     render(<DashboardTrabajoSocial />);
 
     expect(screen.getByText(/Cierre final bloqueado/i)).toBeInTheDocument();

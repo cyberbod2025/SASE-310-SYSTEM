@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { supabase } from "../../supabase/client";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
 import { PERMISOS_POR_ROL } from "../../utils/permisos";
@@ -86,7 +87,7 @@ export const DashboardTrabajoSocial = () => {
         },
       };
     });
-    toast.success(`Estado actualizado a ${status} (borrador local - pendiente de persistencia institucional)`, {
+    toast(`Estado actualizado a ${status} (solo borrador local — sin persistencia en base de datos).`, {
       icon: "📝",
     });
   };
@@ -126,8 +127,8 @@ export const DashboardTrabajoSocial = () => {
     setSelectedCaseId(caseId);
     setCaseStatus(caseId, "seguimiento");
     addLocalAction(caseId, "Iniciar seguimiento");
-    setLastAction("Seguimiento iniciado (borrador local - pendiente de persistencia institucional)");
-    toast.success("Seguimiento iniciado (borrador local - pendiente de persistencia)", { icon: "🚀" });
+    setLastAction("Seguimiento iniciado (solo borrador local — sin persistencia en base de datos).");
+    toast("Seguimiento iniciado (solo borrador local — sin persistencia en base de datos).", { icon: "🚀" });
   };
 
   const handleRegisterCitatorio = (caseId: string) => {
@@ -135,8 +136,8 @@ export const DashboardTrabajoSocial = () => {
     setCitatorios((current) => [...current, createCitatorio(caseId, currentCount)]);
     setCaseStatus(caseId, "alerta_sin_respuesta");
     addLocalAction(caseId, "Citatorio registrado");
-    setLastAction("Nuevo citatorio registrado (borrador local - pendiente de persistencia institucional)");
-    toast.success("Citatorio agendado (borrador local - pendiente de persistencia)", { icon: "📅" });
+    setLastAction("Citatorio registrado en borrador local. Sin persistencia en base de datos.");
+    toast("Citatorio registrado (solo borrador local — sin persistencia en base de datos).", { icon: "📅" });
   };
 
   const handleMarkAttendance = (citatorioId: string) => {
@@ -145,17 +146,37 @@ export const DashboardTrabajoSocial = () => {
       addLocalAction(citatorioItem.caseId, "Marcar asistencia");
     }
     setCitatorios((current) => current.map((citatorio) => citatorio.id === citatorioId ? { ...citatorio, respuesta: "asistio" } : citatorio));
-    setLastAction("Asistencia familiar marcada en citatorio (registro local - pendiente de persistencia institucional)");
-    toast.success("Asistencia marcada (registro local - pendiente de persistencia)", { icon: "✅" });
+    setLastAction("Asistencia marcada en borrador local. Sin persistencia en base de datos.");
+    toast("Asistencia marcada (solo borrador local — sin persistencia en base de datos).", { icon: "✅" });
   };
 
-  const handleRegisterContact = (caseId: string, tipo: ContactType = "llamada", resultado = "Contacto familiar rapido registrado.") => {
+  const handleRegisterContact = async (caseId: string, tipo: ContactType = "llamada", resultado = "Contacto familiar rapido registrado.") => {
     setSelectedCaseId(caseId);
     setContacts((current) => [createContact(caseId, tipo, resultado), ...current]);
     setCaseStatus(caseId, "contacto_familiar");
     addLocalAction(caseId, `Contacto registrado: ${tipo}`);
-    setLastAction("Contacto familiar registrado (registro local - pendiente de persistencia institucional)");
-    toast.success("Contacto registrado (registro local - pendiente de persistencia)", { icon: "📞" });
+
+    const student = cases.find((c) => c.id === caseId)?.student;
+    const studentUuid = student?.id ?? null;
+    const { data: authData } = await supabase.auth.getUser();
+    const userId = authData?.user?.id ?? null;
+
+    const { error: dbError } = await (supabase.from("contacts_log" as any) as any).insert({
+      method: tipo,
+      notes: resultado,
+      outcome: "registrado",
+      student_id: studentUuid,
+      user_id: userId,
+    });
+
+    if (dbError) {
+      console.error("[TrabajoSocial] contacts_log insert failed:", dbError);
+      setLastAction("Error al guardar contacto en base de datos. Registro disponible solo en esta sesion.");
+      toast.error("No se pudo guardar el contacto en la base de datos. Solo disponible en esta sesion.", { icon: "⚠️" });
+    } else {
+      setLastAction("Contacto familiar registrado y guardado en base de datos institucional.");
+      toast.success("Contacto registrado y guardado en base de datos.", { icon: "📞" });
+    }
   };
 
   const handleRegisterVisit = (caseId: string, observaciones: string) => {
@@ -163,8 +184,8 @@ export const DashboardTrabajoSocial = () => {
     setVisits((current) => [createVisit(caseId, observaciones), ...current]);
     setCaseStatus(caseId, "visita_programada");
     addLocalAction(caseId, "Visita domiciliaria registrada");
-    setLastAction("Visita domiciliaria agregada a la bitacora (borrador local - pendiente de persistencia institucional)");
-    toast.success("Visita registrada (borrador local - pendiente de persistencia)", { icon: "🏠" });
+    setLastAction("Visita registrada en borrador local. Sin persistencia en base de datos.");
+    toast("Visita registrada (solo borrador local — sin persistencia en base de datos).", { icon: "🏠" });
   };
 
   const handleUpdateCompliance = (agreementId: string, status: ComplianceStatus) => {
@@ -173,22 +194,22 @@ export const DashboardTrabajoSocial = () => {
       addLocalAction(agreementItem.caseId, `Acuerdo: ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'}`);
     }
     setAgreements((current) => current.map((agreement) => agreement.id === agreementId ? { ...agreement, estado: status } : agreement));
-    setLastAction(`Cumplimiento actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (borrador local - pendiente de persistencia institucional)`);
-    toast.success(`Acuerdo actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (borrador local - pendiente de persistencia)`, { icon: "📝" });
+    setLastAction(`Acuerdo actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (solo borrador local — sin persistencia en base de datos).`);
+    toast(`Acuerdo actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (solo borrador local — sin persistencia en base de datos).`, { icon: "📝" });
   };
 
   const handleEscalate = (caseId: string) => {
     setSelectedCaseId(caseId);
     addLocalAction(caseId, "Escalar a Dirección");
-    setLastAction("Turnando caso a Dirección (función en preparación - pendiente de persistencia institucional)");
-    toast.success("Caso turnado a Dirección (función en preparación)", { icon: "gavel" });
+    setLastAction("Escalar a Dirección: función en preparación. Sin persistencia en base de datos.");
+    toast("Función en preparación — acción registrada solo localmente.", { icon: "ℹ️" });
   };
 
   const handleReturnToOrientacion = (caseId: string) => {
     setSelectedCaseId(caseId);
     addLocalAction(caseId, "Devolver a Orientación");
-    setLastAction("Devolviendo caso a Orientación (función en preparación - pendiente de persistencia institucional)");
-    toast.success("Caso devuelto a Orientación (función en preparación)", { icon: "assignment_return" });
+    setLastAction("Devolver a Orientación: función en preparación. Sin persistencia en base de datos.");
+    toast("Función en preparación — acción registrada solo localmente.", { icon: "ℹ️" });
   };
 
   const handleSOS = async () => {
