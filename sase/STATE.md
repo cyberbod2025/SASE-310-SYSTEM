@@ -1,13 +1,13 @@
 # STATE
 
 STATUS:
-PR-6D_APPLIED_VALIDATED
+PR-6E_APPLIED_VALIDATED
 
 LAST_COMPLETED:
-PR-6D applied and validated. Family contact now persists to contacts_log via Supabase (success/error explicit). All other local-only flows (citatorio, visita, acuerdos, escalar, devolver) retain local state but no longer show fake-success toasts implying DB persistence. Commit: fd80f1a.
+PR-6E applied and validated. DashboardSalud now checks every medical incident write, suppresses per-write green toasts during the batch, and shows aggregate success only when all writes succeed. Partial or thrown failures produce explicit error messaging without a green success state.
 
 CURRENT:
-Completed PR-6D. Awaiting next user instructions.
+Completed PR-6E. Awaiting next user instructions.
 
 NEXT:
 Await next user instructions.
@@ -28,10 +28,10 @@ All identified fake actions in UDEII, Developer, and Subdirección have been neu
 
 ## LAST DECISION
 
-Completed PR-5C: disable Subdirección fake actions (sincronizar, reporte, suplencia, autorizar) and connect real actions to navigation (planeaciones, protocolos).
+Completed PR-6E: aggregate medical incident results and defer the green success toast until every required write succeeds.
 
 Rationale:
-Smallest safe change: remove fake async toast loading completely. Disable tools without backend support and connect existing tools to actual routing.
+Smallest safe change: reuse the existing boolean result from addIncident and add an opt-in flag that suppresses only its individual success toast during Salud batch operations.
 
 ---
 
@@ -45,3 +45,4 @@ Smallest safe change: remove fake async toast loading completely. Disable tools 
 6. PR-5A: Reduce fake actions in UDEII.
 7. PR-5B: Reduce fake actions in Developer.
 8. PR-5C: Reduce fake actions in Subdirección.
+9. PR-6E: Harden Salud medical alert batch persistence.

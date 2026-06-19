@@ -14,6 +14,11 @@ const notificationMocks = vi.hoisted(() => ({
   sendWhatsAppNotification: vi.fn(),
 }));
 
+const toastMocks = vi.hoisted(() => ({
+  error: vi.fn(),
+  success: vi.fn(),
+}));
+
 const testUser = { id: "user-1", email: "docente@sase.mx" } as any;
 const testProfile = { nombre_completo: "Docente Prueba" };
 const addNotification = vi.fn();
@@ -62,7 +67,7 @@ vi.mock("../src/utils/notifications", () => ({
 }));
 
 vi.mock("react-hot-toast", () => ({
-  default: { error: vi.fn(), success: vi.fn() },
+  default: toastMocks,
 }));
 
 const renderStudentsSlice = () =>
@@ -162,6 +167,23 @@ describe("useStudentsSlice addIncident", () => {
 
     expect(supabaseMocks.insert).not.toHaveBeenCalled();
     expect(result.current.students[0].incidents).toHaveLength(0);
+  });
+
+  it("permite suprimir el toast de éxito para operaciones por lote", async () => {
+    const { result } = renderStudentsSlice();
+    await waitFor(() => expect(result.current.students).toHaveLength(1));
+
+    await act(async () => {
+      await result.current.addIncident(
+        "student-1",
+        IncidentType.SALUD,
+        "Alerta médica institucional",
+        undefined,
+        { showSuccessToast: false },
+      );
+    });
+
+    expect(toastMocks.success).not.toHaveBeenCalled();
   });
 
   it("reutiliza escalamiento, notificaciones y WhatsApp tras RPC post-emergencia", async () => {

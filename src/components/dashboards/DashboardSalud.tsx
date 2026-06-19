@@ -38,19 +38,37 @@ export const DashboardSalud = () => {
 
     setNotifying(true);
     try {
+      let failedWrites = 0;
+
       for (const s of activeAlerts) {
-        await addIncident(
+        const saved = await addIncident(
           s.id,
           IncidentType.SALUD,
           `AVISO MEDICO: El alumno cuenta con historial de salud (${s.medicalAlerts.join(", ")}). Favor de observar protocolos de atencion indicados en su expediente.`,
+          undefined,
+          { showSuccessToast: false },
         );
+        if (!saved) failedWrites += 1;
       }
+
+      if (failedWrites > 0) {
+        toast.error(
+          `No se completó la alerta institucional: ${failedWrites} de ${activeAlerts.length} incidencias no se guardaron. Revise los casos antes de reintentar.`,
+          { duration: 6000 },
+        );
+        return;
+      }
+
       toast.success(
-        `Se notifico a docentes sobre ${activeAlerts.length} casos medicos`,
+        `Se registraron institucionalmente ${activeAlerts.length} alertas médicas`,
         { duration: 5000 },
       );
     } catch (err) {
-      toast.error("Error al difundir alertas medicas");
+      console.error("[Salud] Error al registrar alertas médicas:", err);
+      toast.error(
+        "No se pudo completar la alerta institucional. Puede haber registros parciales; revise los casos antes de reintentar.",
+        { duration: 6000 },
+      );
     } finally {
       setNotifying(false);
     }

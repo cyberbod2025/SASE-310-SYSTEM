@@ -9,7 +9,7 @@ AUTHORIZED AGENTS:
 - OpenCode
 
 CURRENT TASK:
-PR-6D completed: Trabajo Social minimum persistence hardening.
+PR-6E completed: Salud medical alerts hardening.
 
 ---
 
@@ -114,6 +114,14 @@ PR-6C implementation completed and validated:
 - Disabled the AI distribution toggle switch, styled with reduced opacity/unclickable cursor, and labeled it with `Próximamente` to prevent fake simulation runs.
 - Added a unit test in `tests/DashboardSecretaria.test.tsx` to verify the disabled bulk import button.
 
+PR-6E implementation completed and validated:
+
+- `DashboardSalud.tsx` now checks the boolean result of every medical `addIncident` write.
+- The batch suppresses individual green success toasts and shows aggregate success only after every required write succeeds.
+- Partial failures and unexpected exceptions show explicit errors and warn that records may be partial before retrying.
+- Success copy confirms registered medical alerts without claiming unverified teacher notification delivery.
+- Tests cover total success, partial failure, thrown failure, and store-level success-toast suppression.
+
 ---
 
 ## MODIFIED FILES
@@ -158,9 +166,18 @@ PR-6C implementation completed and validated:
 `sase/STATE.md`
 `sase/HANDOFF.md`
 
+### PR-6E
+`src/components/dashboards/DashboardSalud.tsx`
+`src/store/slices/useStudentsSlice.ts`
+`tests/DashboardSalud.test.tsx`
+`tests/useStudentsSlice.test.tsx`
+`sase/QUICK_CONTEXT.md`
+`sase/STATE.md`
+`sase/HANDOFF.md`
+
 ---
 
-PR-6A, PR-6B, PR-6C, and PR-6D are now completely done.
+PR-6A, PR-6B, PR-6C, PR-6D, and PR-6E are now completely done.
 
 PR-6D implementation completed and validated:
 
@@ -171,6 +188,14 @@ PR-6D implementation completed and validated:
 - `updateLocalStatus` toast also updated to remove fake-success language.
 - 6 new/updated tests in `tests/DashboardTrabajoSocial.test.tsx` cover: contact DB success, contact DB failure (local fallback), no fake-success wording in initial render, escalation path, and role header render.
 - All 105 tests pass. type-check clean. build clean. Commit: `fd80f1a`.
+
+PR-6E validation completed:
+
+- Focused DashboardSalud tests: 3/3 pass.
+- Focused useStudentsSlice tests: 7/7 pass.
+- Full suite: 109/109 pass.
+- Type-check and build pass.
+- Lint completes with 5 existing warnings and no errors.
 
 Next agent should await explicit instructions from the user for the next assignment.
 
@@ -189,6 +214,7 @@ Next agent should await explicit instructions from the user for the next assignm
 - Existing tests still emit known mocked Supabase warning logs, but the suite passes.
 - Trabajo Social citatorio, visita, acuerdos, escalate, and return-to-orientacion remain local-only borrador; no DB tables exist for them yet — this is honest and documented.
 - `contacts_log` RLS allows `trabajo_social` INSERT but not UPDATE; future edits need a new policy.
+- Salud success guarantees all incident writes returned success, but indirect notification and critical audit side effects inside `addIncident` remain outside that return contract. The UI no longer claims teacher notification delivery.
 
 ---
 

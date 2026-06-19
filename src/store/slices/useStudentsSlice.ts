@@ -73,6 +73,11 @@ interface PersistedIncidentEffectsInput {
   incidentId: string;
   incidentDate?: string;
   evidence?: string[];
+  showSuccessToast?: boolean;
+}
+
+interface AddIncidentOptions {
+  showSuccessToast?: boolean;
 }
 
 // Production: No fictional data — students are loaded from Supabase
@@ -102,6 +107,7 @@ export const useStudentsSlice = (
     incidentId,
     incidentDate,
     evidence,
+    showSuccessToast = true,
   }: PersistedIncidentEffectsInput) => {
     const cleanDescription = String(description ?? "").trim();
     const student = students.find((s) => s.id === studentId);
@@ -201,7 +207,9 @@ export const useStudentsSlice = (
       }
     }
 
-    toast.success("Incidencia registrada institucionalmente");
+    if (showSuccessToast) {
+      toast.success("Incidencia registrada institucionalmente");
+    }
     return true;
   }, [
     addNotification,
@@ -416,6 +424,7 @@ export const useStudentsSlice = (
     type: IncidentType,
     description: string,
     evidence?: string[],
+    options: AddIncidentOptions = {},
   ) => {
     const tempId = Math.random().toString(36).substr(2, 9);
 
@@ -447,6 +456,7 @@ export const useStudentsSlice = (
         evidence,
         incidentId: tempId,
         incidentDate,
+        showSuccessToast: options.showSuccessToast,
       });
     } catch (err: any) {
       console.warn("Error al guardar incidencia", err);

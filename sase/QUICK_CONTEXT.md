@@ -29,6 +29,7 @@ Current status:
 - PR-6A Central RBAC guard in ModuleRouter completed
 - PR-6C Secretaría bulk import hardening completed
 - PR-6D Trabajo Social minimum persistence completed
+- PR-6E Salud medical alerts hardening completed
 
 Next planned task:
 - Await next user instructions
