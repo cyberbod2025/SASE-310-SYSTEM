@@ -8,7 +8,7 @@ const adminClient = createClient(PROJECT_URL, SECRET_KEY);
 const publicClient = createClient(PROJECT_URL, PUBLISHABLE_KEY);
 
 const TEST_EMAIL = `victim.security.${Date.now()}@sase.mx`;
-const PASSWORD = "SecurityPassword123!";
+const PASSWORD = process.env.TEST_SECURITY_PASSWORD || (() => { throw new Error("Falta TEST_SECURITY_PASSWORD en .env.local"); })();
 
 async function runSecurityTest() {
   console.log("🛡️ Iniciando Test de Auto-Defensa SASE...");

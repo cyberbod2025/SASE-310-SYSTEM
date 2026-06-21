@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import "@testing-library/jest-dom/vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import { AppProvider, useApp } from "../src/store";
@@ -62,6 +63,7 @@ vi.mock("../src/supabase/client", () => {
   });
 
   mocks.update.mockReturnValue({ eq: mocks.eq });
+  mocks.insert.mockReturnValue({ select: mocks.select });
 
   return {
     supabase: {
@@ -130,7 +132,6 @@ describe("Integration: Docente -> Direccion Flow", () => {
       },
     ];
 
-    mocks.insert.mockResolvedValue({ error: null });
     // No usar mockResolvedValue en eq, ya que rompe la cadena (order, limit, etc)
     // mocks.eq ya tiene una implementación por defecto que devuelve un thenable con queryChain
   });
@@ -156,5 +157,10 @@ describe("Integration: Docente -> Direccion Flow", () => {
     await waitFor(() => {
       expect(mocks.insert).toHaveBeenCalled();
     });
-  });
+
+    await waitFor(() => {
+      const kpiElement = screen.getByText(/Poblacion total atendida/i).closest("div");
+      expect(kpiElement).toHaveTextContent("1");
+    });
+  }, 15000);
 });

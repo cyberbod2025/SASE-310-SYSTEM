@@ -54,6 +54,7 @@ Hoy existen fallas verificadas de seguridad y consistencia que vuelven frágil l
 - FR-008: `.env.example` debe reflejar el puerto local real y las variables server-side mínimas que el repositorio ya usa.
 - FR-009: `supabase/config.toml` debe apuntar al seed real del repositorio o dejar explícita la ausencia de seed compatible.
 - FR-010: Todo cambio de esta fase debe quedar respaldado por migración trazable y guía de validación en `quickstart.md`.
+- FR-011: Los campos sensibles de identidad, rol, permisos, alcances, seguridad y grupo en `perfiles_usuario` deben ser inmutables para self-update por el usuario autenticado. Solo flujos server-side o service_role pueden modificarlos.
 
 ## Escenarios de aceptación
 
@@ -91,3 +92,50 @@ entonces no debe fallar por un `ALLOWED_ORIGINS` desalineado con el puerto real.
 - `whatsapp.ts` aplica autorización por rol y auditoría válida.
 - El entorno local mínimo queda alineado con el comportamiento real del repo.
 - Existe validación reproducible para confirmar que no se rompió registro ni aprobación.
+
+## Hardening RLS y Autoescalamiento (PR #91)
+
+### Problema Original
+Se detectó una vulnerabilidad de autoescalamiento de roles y permisos mediante *self-update* en las tablas `public.perfiles_usuario` y `public.profiles`.
+
+### Tablas Afectadas
+- `public.perfiles_usuario`
+- `public.profiles`
+
+### Campos Congelados para Self-Update
+- `rol`
+- `role`
+- `permisos`
+- `alcances`
+- `matricula_sase`
+- `email`
+- `seguridad_status`
+- `blocked_until`
+- `grupo_tutor`
+- `grupos`
+- `estado_cuenta`
+- `risk_score`
+
+### Decisión Técnica
+- Helpers movidos a schema `private`.
+- `REVOKE ALL FROM PUBLIC, anon`.
+- `GRANT EXECUTE TO postgres, authenticated`.
+- Evitar superficie RPC pública.
+- Evitar recursión infinita RLS.
+
+### Validación
+- `pnpm type-check`: PASS
+- `pnpm test`: PASS, 100 pruebas
+- `pnpm build`: PASS
+- `pnpm lint`: PASS con warnings no bloqueantes
+- `npx supabase db reset`: pendiente por Docker no disponible
+- `audit-migrations.sh`: pendiente por CRLF/LF del entorno
+
+### Riesgo Residual
+- Falta prueba real en staging/Supabase con usuario QA autenticado.
+
+### Criterios de Aceptación antes de merge
+- Validar en staging que usuario QA no puede modificar campos congelados.
+- Confirmar que sí puede modificar campos permitidos.
+- Verificar que no haya error de recursión RLS.
+- Pedir rereview en GitHub.

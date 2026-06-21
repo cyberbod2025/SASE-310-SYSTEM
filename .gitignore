@@ -72,3 +72,7 @@ scripts/*.txt
 
 # Local agent working context
 .agent-context/
+
+# Scratch / dev artifacts (may contain secrets)
+scratch/
+*.secrets
