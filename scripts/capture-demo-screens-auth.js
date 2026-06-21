@@ -25,8 +25,8 @@ if (!supabaseUrl || !serviceKey) {
 
 const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
-const TEST_EMAIL = "docente.demo.video@sase.mx";
-const TEST_PASSWORD = "DemoPassword123!";
+const TEST_EMAIL = process.env.TEST_DEMO_EMAIL || "docente.demo.video@sase.mx";
+const TEST_PASSWORD = process.env.TEST_DEMO_PASSWORD || (() => { throw new Error("Falta TEST_DEMO_PASSWORD en .env.local"); })();
 
 async function setupUser() {
   console.log("Configurando usuario QA en base de datos...");

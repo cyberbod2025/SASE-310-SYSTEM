@@ -16,9 +16,9 @@ const admin = createClient(supabaseUrl, serviceRoleKey, {
 
 async function main() {
   const users = [
-    { email: "docente.smoke@sase.mx", password: "SmokePass123!", name: "Docente Smoke", hasAccess: true },
-    { email: "bloqueado.smoke@sase.mx", password: "SmokePass123!", name: "Bloqueado Smoke", hasAccess: false },
-    { email: "new.smoke@sase.mx", password: "password123", name: "New Smoke", hasAccess: true }
+    { email: "docente.smoke@sase.mx", password: process.env.SMOKE_DOCENTE_PASS || "SmokePass123!", name: "Docente Smoke", hasAccess: true },
+    { email: "bloqueado.smoke@sase.mx", password: process.env.SMOKE_BLOQUEADO_PASS || "SmokePass123!", name: "Bloqueado Smoke", hasAccess: false },
+    { email: "new.smoke@sase.mx", password: process.env.SMOKE_NEW_PASS || "password123", name: "New Smoke", hasAccess: true }
   ];
 
   for (const u of users) {

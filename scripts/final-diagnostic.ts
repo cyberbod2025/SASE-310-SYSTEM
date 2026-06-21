@@ -21,7 +21,7 @@ async function main() {
   console.log(`Creating user ${email}...`);
   const { data, error } = await admin.auth.admin.createUser({
     email,
-    password: "Password123!",
+    password: process.env.TEST_DIAGNOSTIC_PASSWORD || (() => { throw new Error("Falta TEST_DIAGNOSTIC_PASSWORD en .env.local"); })(),
     email_confirm: true
   });
 

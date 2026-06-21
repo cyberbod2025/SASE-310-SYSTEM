@@ -1,7 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://xdtjebvfoueubortsxre.supabase.co';
-const supabaseKey = 'sb_publishable_U1kRWqhblC_HYqMAt1dV2Q_eYNbx5oG';
+const supabaseUrl = process.env.VITE_SUPABASE_URL || "";
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || "";
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error("Faltan VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en .env.local");
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function testInsert() {
@@ -10,10 +16,9 @@ async function testInsert() {
     fullName: "Test User",
     email: "test@example.com",
     mobile: "1234567890",
-    classId: "00000000-0000-0000-0000-000000000000" // we'll need a real classId to test registrations
+    classId: "00000000-0000-0000-0000-000000000000"
   };
 
-  // Get a real classId to make sure foreign key doesn't fail
   const { data: classes } = await supabase.from('classes').select('id').limit(1);
   if (classes && classes.length > 0) {
     formData.classId = classes[0].id;
