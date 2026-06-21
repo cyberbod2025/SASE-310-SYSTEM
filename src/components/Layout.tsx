@@ -764,7 +764,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </main>
 
         {/* Sasito IA: siempre presente en todas las pantallas */}
-        <SasitoAssistant suppressAssistant={isTourActive || hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
+        <SasitoAssistant suppressAssistant={hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
         {!isDemoCleanMode && <EncuestaPulso />}
       </div>
 
