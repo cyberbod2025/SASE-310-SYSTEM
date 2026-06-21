@@ -14,8 +14,8 @@ if (!supabaseUrl || !serviceKey) {
 const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
 async function main() {
-  const testEmail = "debug.ui.insert@sase.mx";
-  const testPassword = "DebugPassword123!";
+  const testEmail = process.env.TEST_DEBUG_UI_EMAIL || "debug.ui.insert@sase.mx";
+  const testPassword = process.env.TEST_DEBUG_UI_PASSWORD || (() => { throw new Error("Falta TEST_DEBUG_UI_PASSWORD en .env.local"); })();
 
   // 1. Clean up
   const { data: users } = await supabaseAdmin.auth.admin.listUsers();

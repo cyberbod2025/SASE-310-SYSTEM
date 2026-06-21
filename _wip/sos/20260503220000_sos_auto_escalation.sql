@@ -203,6 +203,7 @@ CREATE OR REPLACE FUNCTION public.auto_resolve_previous_sos()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
     -- Cuando se marca un SOS como atendido, resolver previos del mismo estudiante
@@ -225,6 +226,12 @@ CREATE TRIGGER trg_auto_resolve_sos
     FOR EACH ROW
     EXECUTE FUNCTION public.auto_resolve_previous_sos();
 
--- 5. Comentarios de documentación
+-- 5. Restringir ejecución — solo authenticated, nunca anon/public
+revoke all on function public.auto_escalate_sos() from anon, public;
+revoke all on function public.auto_resolve_previous_sos() from anon, public;
+grant execute on function public.auto_escalate_sos() to authenticated;
+grant execute on function public.auto_resolve_previous_sos() to authenticated;
+
+-- 6. Comentarios de documentación
 COMMENT ON TABLE public.sos_alerts IS 'Registro de alertas SOS con escalamiento automático progresivo';
 COMMENT ON FUNCTION public.auto_escalate_sos() IS 'Motor de auto-escalamiento: verifica SOS sin ACK y genera notificaciones progresivas cada minuto';

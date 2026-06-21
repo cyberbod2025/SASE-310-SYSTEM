@@ -1,15 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = "https://uvnetpnjinxzhggoqmwz.supabase.co";
-const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2bmV0cG5qaW54emhnZ29xbXd6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYyNzEzMzksImV4cCI6MjA4MTg0NzMzOX0.JyWCrAGDvaKpmcn3HRJHjoJmdbTg7VfaCXkomeyUBNw";
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "";
+const ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || "";
+
+if (!SUPABASE_URL || !ANON_KEY) {
+  console.error("Faltan VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en .env.local");
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, ANON_KEY);
 
 async function testFetch() {
-  console.log("Signing in with prefectura@sase.mx / PruebaSASE2026!");
+  const email = process.env.TEST_AUTH_EMAIL || "prefectura@sase.mx";
+  const password = process.env.TEST_AUTH_PASS || "";
+  if (!password) {
+    console.error("Falta TEST_AUTH_PASS en .env.local");
+    process.exit(1);
+  }
+  console.log(`Signing in with ${email}...`);
   const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email: 'prefectura@sase.mx',
-    password: 'PruebaSASE2026!'
+    email,
+    password
   });
 
   if (authError) {

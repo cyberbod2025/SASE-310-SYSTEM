@@ -6,8 +6,8 @@ dotenv.config({ path: ".env.local" });
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
-const TEST_EMAIL = process.env.TEST_DOCENTE_EMAIL || "docente.smoke@sase.mx";
-const TEST_PASSWORD = process.env.TEST_DOCENTE_PASSWORD || "CambiaEstaClave123!";
+const TEST_EMAIL = process.env.TEST_DOCENTE_EMAIL || (() => { throw new Error("Falta TEST_DOCENTE_EMAIL en .env.local"); })();
+const TEST_PASSWORD = process.env.TEST_DOCENTE_PASSWORD || (() => { throw new Error("Falta TEST_DOCENTE_PASSWORD en .env.local"); })();
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error("Missing Supabase credentials in .env.local");
