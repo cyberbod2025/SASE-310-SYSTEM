@@ -126,23 +126,23 @@ export const DashboardHoy = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="flex-1 p-6 lg:p-8 relative z-10 w-full max-w-7xl mx-auto h-full overflow-y-auto no-scrollbar"
+      className="flex-1 p-6 lg:p-8 relative w-full max-w-7xl mx-auto h-full overflow-y-auto no-scrollbar"
     >
-      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
+      <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div className="min-w-0">
           <h1 id="dashboard-header" className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
             {getGreeting()}, <span className="text-sase-primary capitalize">{displayNameFirst}</span>
           </h1>
-          <p className="text-slate-300 font-medium flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Sistema SASE-310 operativo • {config.focus}
+          <p className="text-slate-300 font-medium flex items-start sm:items-center gap-2">
+            <span className="mt-2 sm:mt-0 w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
+            <span>Sistema SASE-310 operativo • {config.focus}</span>
           </p>
         </div>
-        
+
         <GlassButton
           id="export-btn"
           onClick={handlePrimaryAction}
-          className="px-8"
+          className="w-full sm:w-auto lg:flex-shrink-0 px-6 sm:px-8 self-stretch sm:self-start lg:self-auto"
           size="lg"
         >
           <span className="material-icons mr-2 text-xl">{config.icon}</span>
