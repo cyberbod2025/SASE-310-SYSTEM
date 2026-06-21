@@ -119,6 +119,16 @@ describe("useStudentsSlice addIncident", () => {
         return { insert: supabaseMocks.insert };
       }
 
+      if (table === "notificaciones") {
+        return {
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({ data: null, error: null }),
+            }),
+          }),
+        };
+      }
+
       return { select: vi.fn(), insert: supabaseMocks.insert };
     });
   });
