@@ -41,9 +41,9 @@ export const EmergencyResponsePanel: React.FC = () => {
   const showBoard = currentUserProfile?.rol === 'directivo' || currentUserProfile?.rol === 'subdireccion';
 
   return (
-    <div className="fixed top-20 right-0 z-40 w-full px-4 pointer-events-none md:right-6 md:top-24 md:w-96 md:px-0">
+    <div className="fixed inset-x-4 top-20 z-40 pointer-events-none xl:left-auto xl:right-6 xl:top-24 xl:w-[26rem]">
       {/* Indicador Compacto para Móvil */}
-      <div className="flex justify-end md:hidden">
+      <div className="flex justify-end xl:hidden">
         <motion.button
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -57,9 +57,9 @@ export const EmergencyResponsePanel: React.FC = () => {
       </div>
 
       {/* Panel Contenido (Board + Alertas) */}
-      <div className={`space-y-3 pointer-events-auto transition-all duration-300 ${!isExpanded ? 'hidden md:block' : 'block'}`}>
+      <div className={`min-w-0 space-y-3 pointer-events-auto transition-all duration-300 ${!isExpanded ? 'hidden xl:block' : 'block'}`}>
         {showBoard && (
-          <div className="max-h-[32vh] overflow-y-auto rounded-2xl">
+          <div className="max-h-[min(60vh,32rem)] min-w-0 overflow-y-auto overflow-x-hidden rounded-2xl">
             <EmergencyBoard alerts={activeAlerts} />
           </div>
         )}

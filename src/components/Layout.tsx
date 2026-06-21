@@ -755,8 +755,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <div 
             data-sasito-target="tablero" 
             className={isExternalModule 
-              ? `h-full w-full flex-1 relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`
-              : `min-h-full p-4 md:p-8 animate-fade-in relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "lg:pr-[28rem]" : ""}`
+              ? `h-full w-full flex-1 relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "xl:pr-[28rem]" : ""}`
+              : `min-h-full p-4 md:p-8 animate-fade-in relative z-10 transition-[padding] duration-300 ${hasActiveEmergency ? "xl:pr-[28rem]" : ""}`
             }
           >
             {children}
@@ -764,7 +764,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </main>
 
         {/* Sasito IA: siempre presente en todas las pantallas */}
-        <SasitoAssistant suppressAssistant={hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
+        <SasitoAssistant suppressAssistant={isTourActive || hasActiveEmergency} suppressSuggestions={suppressNonCriticalOverlays} />
         {!isDemoCleanMode && <EncuestaPulso />}
       </div>
 
