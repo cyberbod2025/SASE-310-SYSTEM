@@ -3,9 +3,10 @@ import { getResumenGrupo, ResumenGrupo } from "../services/diagnosticosService";
 
 interface TeacherGroupDiagnosisOverviewProps {
   grupo?: string;
+  periodo?: string;
 }
 
-export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOverviewProps> = ({ grupo }) => {
+export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOverviewProps> = ({ grupo, periodo }) => {
   const [resumen, setResumen] = useState<ResumenGrupo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,7 @@ export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOvervi
       setLoading(true);
       setError(null);
       try {
-        const data = await getResumenGrupo(grupo);
+        const data = await getResumenGrupo(grupo, periodo);
         setResumen(data);
       } catch (err: any) {
         console.error("Error al cargar resumen de diagnóstico:", err);
@@ -31,7 +32,7 @@ export const TeacherGroupDiagnosisOverview: React.FC<TeacherGroupDiagnosisOvervi
     };
 
     fetchResumen();
-  }, [grupo]);
+  }, [grupo, periodo]);
 
   if (!grupo) {
     return (
