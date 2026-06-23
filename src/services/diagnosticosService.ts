@@ -103,12 +103,19 @@ export async function getDiagnosticosByAlumno(
  * Obtiene resumen agregado de un grupo para el dashboard
  */
 export async function getResumenGrupo(
-  grupoId: string
+  grupoId: string,
+  periodo?: string
 ): Promise<ResumenGrupo> {
-  const { data, error } = await supabase
+  let query = supabase
     .from("diagnosticos_colectivos_docentes")
     .select("*")
     .eq("grupo", grupoId);
+
+  if (periodo) {
+    query = query.eq("periodo", periodo);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw error;
 
