@@ -67,6 +67,7 @@ export const DashboardDocente = () => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [quickFormOpen, setQuickFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [periodoDiagnostico, setPeriodoDiagnostico] = useState<string | undefined>(undefined);
 
 
   const role = (currentUserRole || UserRole.DOCENTE) as UserRole;
@@ -197,7 +198,20 @@ export const DashboardDocente = () => {
               <MyRecentIncidents incidents={recentIncidents} />
             </div>
             <div className="space-y-6">
-              <TeacherGroupDiagnosisOverview grupo={selectedGroup || undefined} />
+              <div className="flex items-center justify-between gap-3">
+                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Periodo</label>
+                <select
+                  value={periodoDiagnostico ?? ""}
+                  onChange={(e) => setPeriodoDiagnostico(e.target.value || undefined)}
+                  className="w-36 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-200 outline-none focus:border-indigo-500/50"
+                >
+                  <option value="">Todos</option>
+                  <option value="T1-2025">T1-2025</option>
+                  <option value="T2-2026">T2-2026</option>
+                  <option value="T3-2026">T3-2026</option>
+                </select>
+              </div>
+              <TeacherGroupDiagnosisOverview grupo={selectedGroup || undefined} periodo={periodoDiagnostico} />
               <TeacherAlertsCard alerts={alerts} />
               <DocenteSasitoHelper
                 insights={insights}
