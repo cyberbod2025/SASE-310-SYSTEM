@@ -4,6 +4,38 @@ import type { Database } from "../supabase/types";
 type DiagnosticoRow = Database["public"]["Tables"]["diagnosticos_colectivos_docentes"]["Row"];
 type DiagnosticoInsert = Database["public"]["Tables"]["diagnosticos_colectivos_docentes"]["Insert"];
 
+interface AlumnoReportadoRaw {
+  alumno_id?: string;
+  nombre?: string;
+  behaviors?: Record<string, string>;
+  [key: string]: unknown;
+}
+
+function normalizeAlumnosReportados(raw: unknown): AlumnoReportadoRaw[] {
+  if (raw == null) return [];
+  if (Array.isArray(raw)) return raw as AlumnoReportadoRaw[];
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed as AlumnoReportadoRaw[] : [];
+    } catch {
+      return [];
+    }
+  }
+  if (typeof raw === "object") {
+    return [raw as AlumnoReportadoRaw];
+  }
+  return [];
+}
+
+function extractBehaviors(alumno: AlumnoReportadoRaw): Record<string, string> {
+  if (alumno.behaviors && typeof alumno.behaviors === "object") {
+    return alumno.behaviors as Record<string, string>;
+  }
+  const { alumno_id, nombre, behaviors, ...rest } = alumno;
+  return rest as Record<string, string>;
+}
+
 export type DiagnosticoDocente = DiagnosticoRow;
 
 export interface ResumenGrupo {
@@ -113,9 +145,8 @@ export async function getResumenGrupo(
   > = {};
 
   diagnosticos.forEach((d) => {
-    if (!d.alumnos_reportados) return;
-    const reportados = d.alumnos_reportados as any[];
-    reportados.forEach((a: any) => {
+    const reportados = normalizeAlumnosReportados(d.alumnos_reportados);
+    reportados.forEach((a) => {
       const id = a.alumno_id;
       if (!id) return;
       if (!alumnoIndicadores[id]) {
@@ -124,9 +155,8 @@ export async function getResumenGrupo(
           indicadoresAlto: 0,
         };
       }
-      // Contar indicadores en alto/bajo
-      const behaviors = a.behaviors || {};
-      Object.values(behaviors).forEach((val: any) => {
+      const behaviors = extractBehaviors(a);
+      Object.values(behaviors).forEach((val) => {
         if (val === "alto" || val === "bajo") {
           alumnoIndicadores[id].indicadoresAlto++;
         }
