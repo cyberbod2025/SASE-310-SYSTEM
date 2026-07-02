@@ -68,6 +68,8 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
   const currentUserName = currentUserProfile?.nombre_completo || currentUserProfile?.full_name || '';
   
   const constraintsRef = useRef(null);
+  const suggestionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const proactiveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (minimal || isWidgetMode || suppressSuggestions) return;
@@ -164,10 +166,14 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         const suggestion = saseSuggestions[Math.floor(Math.random() * saseSuggestions.length)];
         setCurrentSuggestion(suggestion);
         if (suggestion.state) setLocalState(suggestion.state);
-        setTimeout(() => setCurrentSuggestion(null), 6000);
+        if (proactiveTimerRef.current) clearTimeout(proactiveTimerRef.current);
+        proactiveTimerRef.current = setTimeout(() => setCurrentSuggestion(null), 6000);
       }
     }, 90000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (proactiveTimerRef.current) clearTimeout(proactiveTimerRef.current);
+    };
   }, [minimal, suppressSuggestions, isBubbleExpanded, isChatOpen, saseSuggestions]);
 
   const INTENT_RULES = [
@@ -248,18 +254,18 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         return;
       }
       
-      // --- SECURITY & INSTITUTIONAL RULES ---
-      if (normalized.includes("cambiar rol") || normalized.includes("hazme director") || 
-          normalized.includes("quiero ser admin") || normalized.includes("acceso total") || 
-          normalized.includes("subir de puesto")) {
-        setLocalState('alert');
-        setCurrentSuggestion({ 
-          text: "Lo siento, como asistente institucional no tengo permitido modificar jerarquías ni roles de usuario. Por favor, contacta a Soporte Técnico.", 
-          state: 'alert' 
-        });
-        toast.error("Acceso denegado: Intento de cambio de rol no autorizado.");
-        return;
-      }
+          // --- SECURITY & INSTITUTIONAL RULES ---
+          if (normalized.includes("cambiar rol") || normalized.includes("hazme director") || 
+              normalized.includes("quiero ser admin") || normalized.includes("acceso total") || 
+              normalized.includes("subir de puesto")) {
+            setLocalState('alert');
+            setCurrentSuggestion({ 
+              text: "Lo siento, como asistente institucional no tengo permitido modificar jerarquías ni roles de usuario. Por favor, contacta a Soporte Técnico.", 
+              state: 'alert' 
+            });
+            toast.error("Acceso denegado: Intento de cambio de rol no autorizado.");
+            return;
+          }
 
       if (normalized.includes("borra") || normalized.includes("eliminar") || normalized.includes("destruir") || normalized.includes("limpiar")) {
         setLocalState('attention');
@@ -467,7 +473,6 @@ export const SasitoAssistant: React.FC<SasitoProps> = ({ minimal = false, isWidg
         <motion.div 
           id="sasito-assistant-anchor"
           drag
-          dragConstraints={constraintsRef}
           dragElastic={0.02}
           dragMomentum={false}
           onDragStart={() => setShowDragHint(false)}
