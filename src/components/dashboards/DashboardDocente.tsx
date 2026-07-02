@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { DIAGNOSTICO_PERIODOS, type DiagnosticoPeriodo } from "../../constants/diagnosticoPeriodos";
 import { useInstitutionalActions } from "../../hooks/useInstitutionalActions";
 import { useApp } from "../../store";
 import { IncidentType, Student, UserRole } from "../../types";
@@ -67,7 +68,7 @@ export const DashboardDocente = () => {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [quickFormOpen, setQuickFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [periodoDiagnostico, setPeriodoDiagnostico] = useState<string | undefined>(undefined);
+  const [periodoDiagnostico, setPeriodoDiagnostico] = useState<DiagnosticoPeriodo | undefined>(undefined);
 
 
   const role = (currentUserRole || UserRole.DOCENTE) as UserRole;
@@ -202,13 +203,13 @@ export const DashboardDocente = () => {
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Periodo</label>
                 <select
                   value={periodoDiagnostico ?? ""}
-                  onChange={(e) => setPeriodoDiagnostico(e.target.value || undefined)}
+                  onChange={(e) => setPeriodoDiagnostico(e.target.value ? e.target.value as DiagnosticoPeriodo : undefined)}
                   className="w-36 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-200 outline-none focus:border-indigo-500/50"
                 >
                   <option value="">Todos</option>
-                  <option value="T1-2025">T1-2025</option>
-                  <option value="T2-2026">T2-2026</option>
-                  <option value="T3-2026">T3-2026</option>
+                  {DIAGNOSTICO_PERIODOS.map((periodo) => (
+                    <option key={periodo} value={periodo}>{periodo}</option>
+                  ))}
                 </select>
               </div>
               <TeacherGroupDiagnosisOverview grupo={selectedGroup || undefined} periodo={periodoDiagnostico} />
