@@ -88,10 +88,11 @@ export const useInstitutionalActions = () => {
         if (error) throw error;
 
         // Actualizar estado del alumno si está en observación
-        await supabase
+        const { error: updateError } = await supabase
           .from("alumnos")
           .update({ estado_semaforo: CaseState.INTERVENCION })
           .eq("id", studentId);
+        if (updateError) throw updateError;
 
         addNotification({
           title: "🚨 CASO ESCALADO",
@@ -295,6 +296,7 @@ export const useInstitutionalActions = () => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
         const { error } = await supabase.from("evidence_log").insert({
+          student_id: studentId,
           user_id: user.id,
           title: `Evidencia: ${studentName}`,
           notes: description,
