@@ -49,10 +49,12 @@ function normalizeAlumnosReportados(raw: unknown): AlumnoReportadoRaw[] {
   return [];
 }
 
+function isStringEntry(entry: [string, unknown]): entry is [string, string] {
+  return typeof entry[1] === "string";
+}
+
 function toStringRecord(source: Record<string, unknown>): Record<string, string> {
-  return Object.fromEntries(
-    Object.entries(source).filter(([, value]): value is string => typeof value === "string"),
-  );
+  return Object.fromEntries(Object.entries(source).filter(isStringEntry));
 }
 
 function extractBehaviors(alumno: AlumnoReportadoRaw): Record<string, string> {
