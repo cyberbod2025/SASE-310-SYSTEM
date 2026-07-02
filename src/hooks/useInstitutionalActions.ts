@@ -296,7 +296,6 @@ export const useInstitutionalActions = () => {
       if (!user) return { success: false, error: "Sin sesión" };
       try {
         const { error } = await supabase.from("evidence_log").insert({
-          student_id: studentId,
           user_id: user.id,
           title: `Evidencia: ${studentName}`,
           notes: description,
