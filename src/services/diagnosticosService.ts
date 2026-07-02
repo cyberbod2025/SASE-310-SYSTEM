@@ -1,39 +1,74 @@
+import { DIAGNOSTICO_PERIODOS, normalizeDiagnosticoPeriodo, type DiagnosticoPeriodo } from "../constants/diagnosticoPeriodos";
 import { supabase } from "../lib/supabaseClient";
 import type { Database } from "../supabase/types";
 
+export { DIAGNOSTICO_PERIODOS, normalizeDiagnosticoPeriodo };
+export type { DiagnosticoPeriodo };
+
 type DiagnosticoRow = Database["public"]["Tables"]["diagnosticos_colectivos_docentes"]["Row"];
 type DiagnosticoInsert = Database["public"]["Tables"]["diagnosticos_colectivos_docentes"]["Insert"];
+type NivelRiesgo = "alto" | "bajo";
 
 interface AlumnoReportadoRaw {
   alumno_id?: string;
   nombre?: string;
-  behaviors?: Record<string, string>;
+  behaviors?: Record<string, unknown>;
   [key: string]: unknown;
+}
+
+const ALUMNO_METADATA_KEYS = new Set(["alumno_id", "nombre", "behaviors"]);
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isAlumnoReportadoRaw(value: unknown): value is AlumnoReportadoRaw {
+  return isPlainObject(value);
 }
 
 function normalizeAlumnosReportados(raw: unknown): AlumnoReportadoRaw[] {
   if (raw == null) return [];
-  if (Array.isArray(raw)) return raw as AlumnoReportadoRaw[];
+
+  if (Array.isArray(raw)) {
+    return raw.filter(isAlumnoReportadoRaw);
+  }
+
   if (typeof raw === "string") {
     try {
       const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed as AlumnoReportadoRaw[] : [];
+      return normalizeAlumnosReportados(parsed);
     } catch {
       return [];
     }
   }
-  if (typeof raw === "object") {
-    return [raw as AlumnoReportadoRaw];
+
+  if (isAlumnoReportadoRaw(raw)) {
+    return [raw];
   }
+
   return [];
 }
 
+function toStringRecord(source: Record<string, unknown>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(source).filter(([, value]): value is string => typeof value === "string"),
+  );
+}
+
 function extractBehaviors(alumno: AlumnoReportadoRaw): Record<string, string> {
-  if (alumno.behaviors && typeof alumno.behaviors === "object") {
-    return alumno.behaviors as Record<string, string>;
+  if (isPlainObject(alumno.behaviors)) {
+    return toStringRecord(alumno.behaviors);
   }
-  const { alumno_id, nombre, behaviors, ...rest } = alumno;
-  return rest as Record<string, string>;
+
+  return toStringRecord(
+    Object.fromEntries(
+      Object.entries(alumno).filter(([key]) => !ALUMNO_METADATA_KEYS.has(key)),
+    ),
+  );
+}
+
+function isNivelRiesgo(value: string): value is NivelRiesgo {
+  return value === "alto" || value === "bajo";
 }
 
 export type DiagnosticoDocente = DiagnosticoRow;
@@ -68,13 +103,14 @@ export async function getDiagnosticos({
   fechaFin,
   periodo,
 }: FiltroDiagnosticos): Promise<DiagnosticoDocente[]> {
+  const periodoSeguro = normalizeDiagnosticoPeriodo(periodo);
   let query = supabase
     .from("diagnosticos_colectivos_docentes")
     .select("*")
     .order("fecha_diagnostico", { ascending: false });
 
   if (grupoId) query = query.eq("grupo", grupoId);
-  if (periodo) query = query.eq("periodo", periodo);
+  if (periodoSeguro) query = query.eq("periodo", periodoSeguro);
   if (fechaInicio) query = query.gte("fecha_diagnostico", fechaInicio);
   if (fechaFin) query = query.lte("fecha_diagnostico", fechaFin);
 
@@ -106,13 +142,14 @@ export async function getResumenGrupo(
   grupoId: string,
   periodo?: string
 ): Promise<ResumenGrupo> {
+  const periodoSeguro = normalizeDiagnosticoPeriodo(periodo);
   let query = supabase
     .from("diagnosticos_colectivos_docentes")
     .select("*")
     .eq("grupo", grupoId);
 
-  if (periodo) {
-    query = query.eq("periodo", periodo);
+  if (periodoSeguro) {
+    query = query.eq("periodo", periodoSeguro);
   }
 
   const { data, error } = await query;
@@ -164,7 +201,7 @@ export async function getResumenGrupo(
       }
       const behaviors = extractBehaviors(a);
       Object.values(behaviors).forEach((val) => {
-        if (val === "alto" || val === "bajo") {
+        if (isNivelRiesgo(val)) {
           alumnoIndicadores[id].indicadoresAlto++;
         }
       });
