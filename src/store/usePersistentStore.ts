@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import { AppModule } from '../types'
 
 interface PersistentState {
-  user: any | null; // Placeholder según solicitó el usuario, aunque el sistema use Supabase
+  user: any | null; // Placeholder segun solicito el usuario, aunque el sistema use Supabase
   currentModule: AppModule;
   setCurrentModule: (module: AppModule) => void;
   setUser: (user: any) => void;
@@ -11,12 +11,8 @@ interface PersistentState {
 
 /**
  * @deprecated Usar `useStore.ts` (useStore) en su lugar.
- * Ambos stores persistían bajo la misma clave 'sase-storage'.
- * Este archivo queda como referencia; no importar en código nuevo.
- */
- * 🔮 SASE PERSISTENT STORE
- * Gestiona el estado que debe sobrevivir a recargas de página (F5).
- * Específicamente la vista actual y datos ligeros de sesión.
+ * Ambos stores persistian bajo la misma clave 'sase-storage'.
+ * Este archivo queda como referencia; no importar en codigo nuevo.
  */
 export const usePersistentStore = create<PersistentState>()(
   persist(
@@ -27,7 +23,7 @@ export const usePersistentStore = create<PersistentState>()(
       setUser: (user) => set({ user }),
     }),
     {
-      name: 'sase-storage', // Key en localStorage
+      name: 'sase-storage',
     }
   )
 )
