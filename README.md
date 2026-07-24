@@ -1,177 +1,83 @@
-# Supabase CLI
+# SASE 310 — Sistema de Acompañamiento y Seguimiento Escolar
 
-[![Coverage Status](https://coveralls.io/repos/github/supabase/cli/badge.svg?branch=develop)](https://coveralls.io/github/supabase/cli?branch=develop) [![Bitbucket Pipelines](https://img.shields.io/bitbucket/pipelines/supabase-cli/setup-cli/master?style=flat-square&label=Bitbucket%20Canary)](https://bitbucket.org/supabase-cli/setup-cli/pipelines) [![Gitlab Pipeline Status](https://img.shields.io/gitlab/pipeline-status/sweatybridge%2Fsetup-cli?label=Gitlab%20Canary)
-](https://gitlab.com/sweatybridge/setup-cli/-/pipelines)
+**Versión:** 3.10.0 — Piloto Institucional  
+**Institución:** Escuela Secundaria Diurna No. 310 "Presidentes de México" (CCT 09DES4310M)  
+**Plataforma:** Sistema nervioso institucional para organizar, registrar, consultar y dar seguimiento a la vida escolar.
 
-[Supabase](https://supabase.io) is an open source Firebase alternative. We're building the features of Firebase using enterprise-grade open source tools.
+---
 
-This repository contains all the functionality for Supabase CLI.
+## ¿Qué es SASE 310?
 
-- [x] Running Supabase locally
-- [x] Managing database migrations
-- [x] Creating and deploying Supabase Functions
-- [x] Generating types directly from your database schema
-- [x] Making authenticated HTTP requests to [Management API](https://supabase.com/docs/reference/api/introduction)
+SASE 310 centraliza la información escolar relevante de alumnos, grupos, incidencias, expedientes, orientación, prefectura, dirección, salud, UDEII, documentos, notificaciones y auditoría, para mejorar el seguimiento institucional, la comunicación interna, la toma de decisiones y la protección de la comunidad escolar.
 
-## Getting started
+No es una app de alumnos, ni un dashboard bonito, ni un repositorio de reportes. Es el sistema para que la escuela pueda **ver, cuidar, actuar y recordar**.
 
-### Install the CLI
+---
 
-Available via [NPM](https://www.npmjs.com) as dev dependency. To install:
+## Stack Tecnológico
 
-```bash
-npm i supabase --save-dev
-```
+| Capa | Tecnología |
+|------|-----------|
+| **Frontend** | React 19 + TypeScript + Vite 6 |
+| **Estado** | Zustand 5 + Context API |
+| **Estilos** | Tailwind CSS 3 (Luminous Refraction design system) |
+| **Backend** | Supabase (PostgreSQL 17 + Edge Functions Deno) |
+| **IA** | Google Gemini API + OpenRouter (Sasito Assistant) |
+| **Auth** | Supabase Auth (JWT) + RLS granular por rol |
+| **Tests** | Vitest + Testing Library + Playwright + TestSprite |
+| **CI/CD** | GitHub Actions + Husky |
 
-When installing with yarn 4, you need to disable experimental fetch with the following nodejs config.
+---
 
-```
-NODE_OPTIONS=--no-experimental-fetch yarn add supabase
-```
+## Módulos Principales (37 implementados)
 
-> **Note**
-For Bun versions below v1.0.17, you must add `supabase` as a [trusted dependency](https://bun.sh/guides/install/trusted) before running `bun add -D supabase`.
+- **Login / Auth** — Autenticación con Supabase, registro personal mínimo
+- **Onboarding 30-60-90** — Desbloqueo progresivo de módulos según fase
+- **Dashboards por rol** — Docente, Prefectura, Dirección, Subdirección, Orientación, Trabajo Social, Salud, UDEII, Promotora Lectura, Secretaría, Developer
+- **Expedientes** — Expediente institucional por alumno con línea de tiempo
+- **Incidencias** — Registro rápido y flujo completo con clasificación
+- **Agenda Escolar** — Eventos y seguimiento
+- **Asistencia / Pase de Lista**
+- **Protocolos** — Convivencia, salud, emergencia
+- **Bitácora de Auditoría (Caja Negra)** — Trazabilidad completa de acciones
+- **Matrícula Inteligente** — Gestión de matrícula y movimientos
+- **Cierre de Ciclo** — Promociones y cierre
+- **Documentación Institucional** — 9 tipos de documentos (citatorios, actas, etc.)
+- **IA Sasito** — Asistente institucional con clasificación y recomendaciones
+- **SOS Emergencia** — Alertas con auto-escalamiento
+- **Persistencia por área** — Trabajo Social, UDEII, Salud, Prefectura, Dirección
 
-<details>
-  <summary><b>macOS</b></summary>
+---
 
-  Available via [Homebrew](https://brew.sh). To install:
+## Requisitos
 
-  ```sh
-  brew install supabase/tap/supabase
-  ```
+- Node.js >= 20
+- pnpm >= 9.15
 
-  To install the beta release channel:
-  
-  ```sh
-  brew install supabase/tap/supabase-beta
-  brew link --overwrite supabase-beta
-  ```
-  
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Windows</b></summary>
-
-  Available via [Scoop](https://scoop.sh). To install:
-
-  ```powershell
-  scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
-  scoop install supabase
-  ```
-
-  To upgrade:
-
-  ```powershell
-  scoop update supabase
-  ```
-</details>
-
-<details>
-  <summary><b>Linux</b></summary>
-
-  Available via [Homebrew](https://brew.sh) and Linux packages.
-
-  #### via Homebrew
-
-  To install:
-
-  ```sh
-  brew install supabase/tap/supabase
-  ```
-
-  To upgrade:
-
-  ```sh
-  brew upgrade supabase
-  ```
-
-  #### via Linux packages
-
-  Linux packages are provided in [Releases](https://github.com/supabase/cli/releases). To install, download the `.apk`/`.deb`/`.rpm`/`.pkg.tar.zst` file depending on your package manager and run the respective commands.
-
-  ```sh
-  sudo apk add --allow-untrusted <...>.apk
-  ```
-
-  ```sh
-  sudo dpkg -i <...>.deb
-  ```
-
-  ```sh
-  sudo rpm -i <...>.rpm
-  ```
-
-  ```sh
-  sudo pacman -U <...>.pkg.tar.zst
-  ```
-</details>
-
-<details>
-  <summary><b>Other Platforms</b></summary>
-
-  You can also install the CLI via [go modules](https://go.dev/ref/mod#go-install) without the help of package managers.
-
-  ```sh
-  go install github.com/supabase/cli@latest
-  ```
-
-  Add a symlink to the binary in `$PATH` for easier access:
-
-  ```sh
-  ln -s "$(go env GOPATH)/bin/cli" /usr/bin/supabase
-  ```
-
-  This works on other non-standard Linux distros.
-</details>
-
-<details>
-  <summary><b>Community Maintained Packages</b></summary>
-
-  Available via [pkgx](https://pkgx.sh/). Package script [here](https://github.com/pkgxdev/pantry/blob/main/projects/supabase.com/cli/package.yml).
-  To install in your working directory:
-
-  ```bash
-  pkgx install supabase
-  ```
-
-  Available via [Nixpkgs](https://nixos.org/). Package script [here](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/supabase-cli/default.nix).
-</details>
-
-### Run the CLI
+## Instalación y desarrollo local
 
 ```bash
-supabase bootstrap
+pnpm install
+pnpm dev       # http://localhost:3101
+pnpm test      # Vitest (253+ tests)
+pnpm build     # Producción
+pnpm lint      # ESLint
+pnpm type-check # TypeScript
 ```
 
-Or using npx:
+## Variables de entorno
 
-```bash
-npx supabase bootstrap
-```
+Copiar `.env.example` a `.env.local` y configurar:
 
-The bootstrap command will guide you through the process of setting up a Supabase project using one of the [starter](https://github.com/supabase-community/supabase-samples/blob/main/samples.json) templates.
+- `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — Conexión a Supabase
+- `GOOGLE_API_KEY` / `OPENROUTER_API_KEY` — API keys para IA
+- `WHATSAPP_TOKEN` / `WHATSAPP_PHONE_ID` — Notificaciones WhatsApp
+- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` — Rate limiting
 
-## Docs
+Ver `.env.example` para todas las variables requeridas.
 
-Command & config reference can be found [here](https://supabase.com/docs/reference/cli/about).
+---
 
-## Breaking changes
+## Licencia
 
-We follow semantic versioning for changes that directly impact CLI commands, flags, and configurations.
-
-However, due to dependencies on other service images, we cannot guarantee that schema migrations, seed.sql, and generated types will always work for the same CLI major version. If you need such guarantees, we encourage you to pin a specific version of CLI in package.json.
-
-## Developing
-
-To run from source:
-
-```sh
-# Go >= 1.22
-go run . help
-```
+Propietaria — Uso exclusivo institucional. Copyright © 2026 ESD 310.

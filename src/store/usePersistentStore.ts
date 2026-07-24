@@ -10,6 +10,10 @@ interface PersistentState {
 }
 
 /**
+ * @deprecated Usar `useStore.ts` (useStore) en su lugar.
+ * Ambos stores persistían bajo la misma clave 'sase-storage'.
+ * Este archivo queda como referencia; no importar en código nuevo.
+ */
  * 🔮 SASE PERSISTENT STORE
  * Gestiona el estado que debe sobrevivir a recargas de página (F5).
  * Específicamente la vista actual y datos ligeros de sesión.
