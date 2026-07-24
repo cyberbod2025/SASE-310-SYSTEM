@@ -1,7 +1,6 @@
 import { useCallback } from "react";
-import { supabase } from "../supabase/client";
-import { useAuth } from "../components/AuthProvider";
-import { useApp } from "../store";
+import toast from "react-hot-toast";
+import { registerAuditEvent } from "../components/auditoria/auditoriaPersistence";
 
 // Tipos de acciones de seguimiento en información sensible
 export type AccionSensible =
@@ -11,8 +10,10 @@ export type AccionSensible =
   | "consultar_trabajo_social"
   | "abrir_panel_avanzado"
   | "abrir_expediente_institucional"
-  | "generar_analisis_ia_expediente"
-  | "exportar_expediente_pdf";
+  | "generar_sintesis_local_expediente"
+  | "exportar_expediente_pdf"
+  | "generar_documento_institucional"
+  | "imprimir_documento_institucional";
 
 interface RegistroAcceso {
   accion: AccionSensible;
@@ -25,51 +26,34 @@ interface RegistroAcceso {
  * Cada consulta queda en el registro institucional con fecha, hora, usuario y rol.
  */
 export const useAuditoriaAccesos = () => {
-  const { user } = useAuth();
-  const { currentUserRole } = useApp();
-
   const logAccess = useCallback(
     async ({
       accion,
       alumno_id,
       pantalla = "StudentAdvancedPanel",
     }: RegistroAcceso) => {
-      if (!user) {
-        if (import.meta.env.DEV) {
-          console.warn("[SEGUIMIENTO_ACCESOS] Registro omitido: sin usuario.");
-        }
-        return;
-      }
-
-      const now = new Date();
-      const fecha = now.toISOString().split("T")[0]; // YYYY-MM-DD
-      const hora = now.toTimeString().split(" ")[0]; // HH:MM:SS
-
       try {
-        const { error } = await (supabase as any)
-          .from("auditoria_accesos")
-          .insert([
-            {
-              usuario: user.id,
-              rol: currentUserRole as string,
-              accion,
-              alumno_id,
-              pantalla,
-              fecha,
-              hora,
-            },
-          ]);
-
-        if (error && import.meta.env.DEV) {
-          console.warn("[SEGUIMIENTO_ACCESOS] Error al registrar.");
-        }
+        await registerAuditEvent({
+          actionType: `ACCESO_SENSIBLE_${accion.toUpperCase()}`,
+          description: `Acceso sensible confirmado desde ${pantalla}.`,
+          targetTable: "alumnos",
+          targetRecordId: alumno_id,
+          purpose: "Trazabilidad de acceso a información estudiantil sensible",
+          studentId: alumno_id,
+        });
+        return true;
       } catch (err) {
-        if (import.meta.env.DEV) {
-          console.warn("[SEGUIMIENTO_ACCESOS] Fallo inesperado.");
-        }
+        console.error(
+          "No se confirmó el registro de acceso sensible:",
+          err,
+        );
+        toast.error(
+          "No se confirmó la trazabilidad del acceso sensible.",
+        );
+        return false;
       }
     },
-    [user, currentUserRole],
+    [],
   );
 
   return { logAccess };

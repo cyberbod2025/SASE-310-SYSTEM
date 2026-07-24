@@ -4,6 +4,7 @@ import { supabase } from "../../supabase/client";
 import { printContent } from "../../components/PrintButtons";
 import { sanitizeHtml } from "../../utils/security";
 import { SaseSplineOrb } from "../../components/SaseSplineOrb";
+import { useAuditoriaAccesos } from "../../hooks/useAuditoriaAccesos";
 
 import type {
   DatosAlumnoExpediente,
@@ -19,7 +20,7 @@ import {
   recopilarDocumentos,
   recopilarObjetosRetenidos,
   construirLineaTiempo,
-  generarAnalisisIA,
+  generarSintesisInstitucionalLocal,
   generarFolioExpediente,
   generarHTMLExpediente,
 } from "./serviciosExpediente";
@@ -33,6 +34,7 @@ export function ExpedienteInstitucional({
   alumno,
   onClose,
 }: ExpedienteInstitucionalProps) {
+  const { logAccess } = useAuditoriaAccesos();
   const [cargando, setCargando] = useState(true);
   const [generandoPDF, setGenerandoPDF] = useState(false);
   const [incidencias, setIncidencias] = useState<IncidenciaExpediente[]>([]);
@@ -75,9 +77,17 @@ export function ExpedienteInstitucional({
   const ejecutarAnalisisInstitucional = async () => {
     try {
       setAnalizando(true);
-      const analisis = await generarAnalisisIA(alumno, incidencias, documentos);
+      const analisis = generarSintesisInstitucionalLocal(
+        incidencias,
+        documentos,
+      );
       setAnalisisIA(analisis);
-      toast.success("Análisis IA-SASE completado");
+      await logAccess({
+        accion: "generar_sintesis_local_expediente",
+        alumno_id: alumno.id,
+        pantalla: "ExpedienteInstitucional:SintesisLocal",
+      });
+      toast.success("Síntesis local generada");
     } catch {
       toast.error("Error al generar análisis institucional");
     } finally {
@@ -116,18 +126,21 @@ export function ExpedienteInstitucional({
       // Usar printContent que ya existe en la plataforma (usa iframe y window.print)
       printContent("Expediente_Institucional", htmlContent);
 
-      // Registrar seguimiento institucional
-      await (supabase as any).from("auditoria_accesos").insert({
-        usuario: "SASE-310 User",
-        rol: "docente",
+      const auditConfirmed = await logAccess({
         accion: "exportar_expediente_pdf",
         alumno_id: alumno.id,
-        pantalla: `EXPEDIENTE_GENERADO:${folio}`,
-        fecha: new Date().toISOString().split("T")[0],
-        hora: new Date().toLocaleTimeString("es-MX", { hour12: false }),
+        pantalla: `ExpedienteInstitucional:EXPEDIENTE_GENERADO:${folio}`,
       });
 
-      toast.success("Expediente impreso", { id: "pdf-exp" });
+      if (auditConfirmed) {
+        toast.success("Expediente impreso y trazabilidad confirmada", {
+          id: "pdf-exp",
+        });
+      } else {
+        toast.error("Expediente impreso; trazabilidad no confirmada", {
+          id: "pdf-exp",
+        });
+      }
     } catch (err) {
       console.error(err);
       toast.error("Error al exportar", { id: "pdf-exp" });
@@ -389,7 +402,7 @@ export function ExpedienteInstitucional({
                   </div>
                 </div>
 
-                {/* Análisis IA */}
+                {/* Síntesis institucional local */}
                 <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm shrink-0 flex flex-col">
                   <div className="bg-slate-50 px-5 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-2">
@@ -397,7 +410,7 @@ export function ExpedienteInstitucional({
                         psychology
                       </span>
                       <h3 className="text-xs font-black text-slate-700 uppercase tracking-widest">
-                        Análisis Institucional IA-SASE
+                        Síntesis Institucional Local
                       </h3>
                     </div>
                     {!analisisIA && (
@@ -421,7 +434,7 @@ export function ExpedienteInstitucional({
                             <span className="material-symbols-outlined text-[14px]">
                               auto_awesome
                             </span>
-                            Generar Análisis
+                            Generar Síntesis
                           </>
                         )}
                       </button>
@@ -444,8 +457,8 @@ export function ExpedienteInstitucional({
                         </span>
                         <p className="text-xs font-medium max-w-[280px]">
                           {incidencias.length === 0 && documentos.length === 0
-                            ? "No hay suficientes datos para generar un análisis."
-                            : "Solicite a IA-SASE un análisis institucional objetivo basado en el Marco para la Convivencia Escolar."}
+                            ? "No hay suficientes datos para generar una síntesis."
+                            : "Genere una síntesis local de conteos confirmados. No sustituye la revisión colegiada."}
                         </p>
                       </div>
                     )}

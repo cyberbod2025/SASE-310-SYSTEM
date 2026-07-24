@@ -5,14 +5,11 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.0.0";
 
-type JsonRecord = Record<string, unknown>;
-
 const APPROVER_ROLES = new Set([
   "directivo",
   "subdireccion",
   "developer",
   "system_admin",
-  "admin",
 ]);
 
 const APPROVABLE_ROLES = new Set([
@@ -27,9 +24,10 @@ const APPROVABLE_ROLES = new Set([
   "udeii",
   "promotora_lectura",
   "secretaria",
-  "developer",
-  "system_admin",
 ]);
+
+const INSTITUTIONAL_EMAIL_PATTERN =
+  /^[a-z0-9]+(?:\.[a-z0-9]+)+@sase\.mx$/;
 
 const ROLE_ALIASES: Record<string, string> = {
   direccion: "directivo",
@@ -40,7 +38,6 @@ const ROLE_ALIASES: Record<string, string> = {
   promotora_lectura: "promotora_lectura",
   desarrollador: "developer",
   developer: "developer",
-  admin: "admin",
   system_admin: "system_admin",
   subdireccion: "subdireccion",
   docente: "docente",
@@ -50,165 +47,6 @@ const ROLE_ALIASES: Record<string, string> = {
   trabajo_social: "trabajo_social",
   udeii: "udeii",
   secretaria: "secretaria",
-};
-
-const PERMISSIONS_BY_ROLE: Record<string, JsonRecord> = {
-  directivo: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: true,
-    can_approve_staff: true,
-    can_assign_groups: true,
-    can_view_sensitive: true,
-    can_manage_system: true,
-  },
-  subdireccion: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: true,
-    can_approve_staff: true,
-    can_assign_groups: true,
-    can_view_sensitive: true,
-    can_manage_system: false,
-  },
-  docente: {
-    can_view_names: false,
-    can_register: true,
-    can_edit: false,
-    can_close: false,
-    can_escalate: true,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: false,
-    can_manage_system: false,
-  },
-  docente_tutor: {
-    can_view_names: false,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: false,
-    can_manage_system: false,
-  },
-  prefectura: {
-    can_view_names: false,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: false,
-    can_manage_system: false,
-  },
-  orientacion: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: true,
-    can_manage_system: false,
-  },
-  trabajo_social: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: true,
-    can_manage_system: false,
-  },
-  medico_escolar: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: false,
-    can_escalate: true,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: true,
-    can_manage_system: false,
-  },
-  promotora_lectura: {
-    can_view_names: false,
-    can_register: true,
-    can_edit: true,
-    can_close: false,
-    can_escalate: false,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: false,
-    can_manage_system: false,
-  },
-  secretaria: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: false,
-    can_escalate: false,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: false,
-    can_manage_system: false,
-  },
-  udeii: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: true,
-    can_manage_system: false,
-  },
-  developer: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: true,
-    can_approve_staff: true,
-    can_assign_groups: true,
-    can_view_sensitive: true,
-    can_manage_system: true,
-  },
-  system_admin: {
-    can_view_names: true,
-    can_register: true,
-    can_edit: true,
-    can_close: true,
-    can_escalate: true,
-    can_view_audit: true,
-    can_approve_staff: true,
-    can_assign_groups: true,
-    can_view_sensitive: true,
-    can_manage_system: true,
-  },
 };
 
 const getAllowedOrigins = (): string[] => {
@@ -245,58 +83,39 @@ const sanitizeStringList = (value: unknown, uppercase = false): string[] => {
   return [...new Set(items)];
 };
 
-const buildCombinedScopes = (roles: string[]): JsonRecord => {
-  const base: JsonRecord = {
-    can_view_names: false,
-    can_register: false,
-    can_edit: false,
-    can_close: false,
-    can_escalate: false,
-    can_view_audit: false,
-    can_approve_staff: false,
-    can_assign_groups: false,
-    can_view_sensitive: false,
-    can_manage_system: false,
-  };
-
-  for (const role of roles) {
-    const permissions = PERMISSIONS_BY_ROLE[role];
-    if (!permissions) continue;
-    for (const [key, value] of Object.entries(permissions)) {
-      if (value) {
-        base[key] = true;
-      }
-    }
-  }
-
-  return base;
-};
-
 const resolveRequesterRole = async (supabase: any, userId: string): Promise<string | null> => {
-  const { data: institutionalProfile } = await supabase
+  const { data: institutionalProfile, error } = await supabase
     .from("perfiles_usuario")
-    .select("rol")
+    .select("rol, estado_cuenta, seguridad_status")
     .eq("id", userId)
+    .eq("estado_cuenta", "activo")
+    .eq("seguridad_status", "active")
     .maybeSingle();
 
-  const institutionalRole = normalizeRole(institutionalProfile?.rol);
-  if (institutionalRole) return institutionalRole;
-
-  const { data: legacyProfile } = await supabase
-    .from("profiles")
-    .select("role, rol")
-    .eq("id", userId)
-    .maybeSingle();
-
-  return normalizeRole(legacyProfile?.rol ?? legacyProfile?.role);
+  if (error || !institutionalProfile) return null;
+  return normalizeRole(institutionalProfile.rol);
 };
 
 const findAuthUserByEmail = async (supabase: any, email: string) => {
-  const { data, error } = await supabase.auth.admin.listUsers();
-  if (error) throw error;
-  return data?.users?.find((user: any) =>
-    (user.email ?? "").toLowerCase() === email.toLowerCase()
-  ) ?? null;
+  const normalizedEmail = email.toLowerCase();
+  const perPage = 200;
+
+  for (let page = 1; page <= 100; page += 1) {
+    const { data, error } = await supabase.auth.admin.listUsers({
+      page,
+      perPage,
+    });
+    if (error) throw error;
+
+    const users = data?.users ?? [];
+    const match = users.find((user: any) =>
+      (user.email ?? "").toLowerCase() === normalizedEmail
+    );
+    if (match) return match;
+    if (users.length < perPage) return null;
+  }
+
+  throw new Error("No se pudo completar la búsqueda del usuario Auth.");
 };
 
 const ensureAuthUser = async (
@@ -314,18 +133,6 @@ const ensureAuthUser = async (
 
   const existingUser = await findAuthUserByEmail(supabase, email);
   if (existingUser) {
-    const { error: updateError } = await supabase.auth.admin.updateUserById(
-      existingUser.id,
-      {
-        user_metadata: {
-          ...(existingUser.user_metadata ?? {}),
-          ...metadata,
-        },
-      },
-    );
-
-    if (updateError) throw updateError;
-
     return { userId: existingUser.id, status: "existing" as const };
   }
 
@@ -413,7 +220,65 @@ serve(async (req: Request) => {
       });
     }
 
-    const solicitudId = typeof body.solicitudId === "string" ? body.solicitudId.trim() : "";
+    const solicitudId = typeof body.solicitudId === "string"
+      ? body.solicitudId.trim()
+      : "";
+    const action = body.action === "rechazar"
+      ? "rechazar"
+      : body.action === "aprobar" || body.action === undefined
+      ? "aprobar"
+      : null;
+
+    if (!solicitudId || !action) {
+      return new Response(JSON.stringify({ error: "Solicitud inválida" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
+    if (action === "rechazar") {
+      const reason = typeof body.reason === "string" ? body.reason.trim() : "";
+      if (reason.length < 10 || reason.length > 1000) {
+        return new Response(
+          JSON.stringify({
+            error: "El motivo debe contener entre 10 y 1000 caracteres",
+          }),
+          {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 400,
+          },
+        );
+      }
+
+      const { data: rejection, error: rejectionError } = await supabase.rpc(
+        "rechazar_solicitud_personal",
+        {
+          p_solicitud_id: solicitudId,
+          p_motivo: reason,
+          p_aprobador_id: authData.user.id,
+        },
+      );
+
+      if (rejectionError) {
+        const rejectionFailure = new Error(
+          rejectionError.message || "No se pudo rechazar la solicitud",
+        );
+        (rejectionFailure as any).status = rejectionError.code === "42501"
+          ? 403
+          : rejectionError.code === "P0002"
+          ? 404
+          : rejectionError.code === "23514"
+          ? 409
+          : 400;
+        throw rejectionFailure;
+      }
+
+      return new Response(JSON.stringify(rejection), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     const matriculaSase = typeof body.matricula_sase === "string"
       ? body.matricula_sase.trim().toUpperCase()
       : "";
@@ -424,13 +289,6 @@ serve(async (req: Request) => {
       ? body.grupo_tutor.trim().toUpperCase() || null
       : null;
 
-    if (!solicitudId) {
-      return new Response(JSON.stringify({ error: "Solicitud inválida" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      });
-    }
-
     if (!matriculaSase) {
       return new Response(JSON.stringify({ error: "Matrícula requerida" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -440,7 +298,9 @@ serve(async (req: Request) => {
 
     const { data: solicitud, error: solicitudError } = await supabase
       .from("solicitudes_alta_personal")
-      .select("*")
+      .select(
+        "id, estado, rol_solicitado, nombres, apellido_paterno, apellido_materno, correo_institucional",
+      )
       .eq("id", solicitudId)
       .maybeSingle();
 
@@ -465,18 +325,57 @@ serve(async (req: Request) => {
     const requestedRoles = Array.isArray(solicitud.rol_solicitado)
       ? solicitud.rol_solicitado
       : [];
-    const approvedRoles = [...new Set(requestedRoles
-      .map((role: unknown) => normalizeRole(role))
-      .filter((role): role is string => Boolean(role) && APPROVABLE_ROLES.has(role)))];
+    const normalizedRoles = requestedRoles.map((role: unknown) =>
+      normalizeRole(role)
+    );
 
-    if (approvedRoles.length === 0) {
-      return new Response(JSON.stringify({ error: "La solicitud no contiene roles aprobables" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 400,
-      });
+    if (
+      normalizedRoles.some((role) =>
+        !role || !APPROVABLE_ROLES.has(role)
+      )
+    ) {
+      return new Response(
+        JSON.stringify({ error: "La solicitud contiene un rol no aprobable" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        },
+      );
     }
 
-    if (esTutor && approvedRoles.includes("docente") && !approvedRoles.includes("docente_tutor")) {
+    const approvedRoles = [...new Set(normalizedRoles as string[])];
+
+    if (approvedRoles.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "La solicitud no contiene roles aprobables" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        },
+      );
+    }
+
+    if (
+      esTutor &&
+      !approvedRoles.includes("docente") &&
+      !approvedRoles.includes("docente_tutor")
+    ) {
+      return new Response(
+        JSON.stringify({
+          error: "La tutoría solo puede asignarse a personal docente",
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        },
+      );
+    }
+
+    if (
+      esTutor &&
+      approvedRoles.includes("docente") &&
+      !approvedRoles.includes("docente_tutor")
+    ) {
       approvedRoles.push("docente_tutor");
     }
 
@@ -490,7 +389,7 @@ serve(async (req: Request) => {
     ].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
     const institutionalEmail = String(solicitud.correo_institucional ?? "").trim().toLowerCase();
 
-    if (!institutionalEmail) {
+    if (!INSTITUTIONAL_EMAIL_PATTERN.test(institutionalEmail)) {
       return new Response(JSON.stringify({ error: "Correo institucional inválido" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
@@ -505,113 +404,96 @@ serve(async (req: Request) => {
       approvedRoles,
     );
 
-    const { data: conflictingProfile } = await supabase
-      .from("perfiles_usuario")
-      .select("id")
-      .eq("email", institutionalEmail)
-      .neq("id", userId)
-      .maybeSingle();
+    const { data: approval, error: approvalError } = await supabase.rpc(
+      "finalizar_aprobacion_personal",
+      {
+        p_solicitud_id: solicitudId,
+        p_usuario_auth_id: userId,
+        p_matricula_sase: matriculaSase,
+        p_grupos: grupos,
+        p_materias: materias,
+        p_es_tutor: esTutor,
+        p_grupo_tutor: grupoTutor,
+        p_aprobador_id: authData.user.id,
+        p_auth_status: status,
+      },
+    );
 
-    if (conflictingProfile) {
-      throw new Error("Existe un perfil institucional con otro ID para ese correo.");
+    if (approvalError) {
+      if (status === "invited") {
+        const { error: compensationError } =
+          await supabase.auth.admin.deleteUser(userId);
+        if (compensationError) {
+          console.error(
+            "No se pudo compensar la invitación Auth",
+            compensationError.message,
+          );
+        }
+      }
+
+      const approvalFailure = new Error(
+        approvalError.message || "No se pudo finalizar la aprobación",
+      );
+      (approvalFailure as any).status = approvalError.code === "42501"
+        ? 403
+        : approvalError.code === "P0002"
+        ? 404
+        : approvalError.code === "23505" ||
+            approvalError.code === "23514"
+        ? 409
+        : 400;
+      throw approvalFailure;
     }
 
-    const now = new Date().toISOString();
-    const scopes = buildCombinedScopes(approvedRoles);
-    const profilePayload = {
-      id: userId,
-      matricula_sase: matriculaSase,
-      rol: primaryRole,
-      rol_solicitado: approvedRoles.join(","),
-      nombre_completo: fullName,
-      curp: solicitud.curp,
-      email: institutionalEmail,
-      materias: materias.length > 0 ? materias : null,
-      grupos: grupos.length > 0 ? grupos : null,
-      turno: solicitud.turno,
-      es_tutor: esTutor,
-      grupo_tutor: grupoTutor,
-      alcances: scopes,
-      permisos: scopes,
-      estado_cuenta: "activo",
-      telefono: solicitud.telefono,
-      fecha_validacion: now,
-      validado_por: authData.user.id,
-      observaciones: solicitud.observaciones,
-      updated_at: now,
-    };
-
-    const { error: profileError } = await supabase
-      .from("perfiles_usuario")
-      .upsert(profilePayload, { onConflict: "id" });
-
-    if (profileError) throw profileError;
-
-    const legacyProfilePayload = {
-      id: userId,
-      full_name: fullName,
-      role: primaryRole,
-    };
-
-    const { error: legacyProfileError } = await supabase
-      .from("profiles")
-      .upsert(legacyProfilePayload, { onConflict: "id" });
-
-    if (legacyProfileError) {
-      console.warn("No se pudo sincronizar el perfil legacy", legacyProfileError.message);
+    let metadataSynchronized = status === "invited";
+    if (status === "existing") {
+      const existingUser = await findAuthUserByEmail(
+        supabase,
+        institutionalEmail,
+      );
+      const { error: metadataError } =
+        await supabase.auth.admin.updateUserById(userId, {
+          user_metadata: {
+            ...(existingUser?.user_metadata ?? {}),
+            role: primaryRole,
+            roles: approvedRoles,
+            full_name: fullName,
+          },
+        });
+      metadataSynchronized = !metadataError;
+      if (metadataError) {
+        console.warn(
+          "La aprobación quedó confirmada, pero Auth metadata no se sincronizó",
+          metadataError.message,
+        );
+      }
     }
 
-    const solicitudUpdate = {
-      estado: "APROBADA",
-      matricula_sase: matriculaSase,
-      es_tutor: esTutor,
-      grupo_tutor: grupoTutor,
-      materias: materias.length > 0 ? materias : null,
-      grupos: grupos.length > 0 ? grupos : null,
-      rol_solicitado: approvedRoles,
-      aprobado_por: authData.user.id,
-      aprobado_en: now,
-      observaciones_validacion: null,
-    };
-
-    const { error: updateSolicitudError } = await supabase
-      .from("solicitudes_alta_personal")
-      .update(solicitudUpdate)
-      .eq("id", solicitudId);
-
-    if (updateSolicitudError) throw updateSolicitudError;
-
-    const { error: auditError } = await supabase.from("auditoria").insert({
-      usuario_id: authData.user.id,
-      email_usuario: authData.user.email,
-      rol_usuario: requesterRole,
-      tipo_accion: "APROBACION_PERSONAL",
-      descripcion_accion:
-        `Aprobó la solicitud ${solicitudId} para ${institutionalEmail} con rol ${primaryRole} (${status === "invited" ? "usuario invitado" : "usuario existente"}).`,
-      tabla_objetivo: "solicitudes_alta_personal",
-      id_registro_objetivo: solicitudId,
-    });
-
-    if (auditError) {
-      console.warn("No se pudo registrar auditoría de aprobación", auditError.message);
-    }
+    const approvalPayload = approval &&
+        typeof approval === "object" &&
+        !Array.isArray(approval)
+      ? approval
+      : {
+        approved: true,
+        primaryRole,
+        approvedRoles,
+        userId,
+        alreadyExisted: status === "existing",
+      };
 
     return new Response(JSON.stringify({
-      approved: true,
-      primaryRole,
-      approvedRoles,
-      userId,
-      alreadyExisted: status === "existing",
+      ...approvalPayload,
+      metadataSynchronized,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error: any) {
-    const statusCode = error.message === "Unauthorized" ||
-        error.message.includes("authorization")
+    const statusCode = typeof error.status === "number"
+      ? error.status
+      : error.message === "Unauthorized" ||
+          error.message.includes("authorization")
       ? 401
-      : error.message.includes("perfil institucional")
-      ? 409
       : 400;
 
     return new Response(JSON.stringify({ error: error.message }), {

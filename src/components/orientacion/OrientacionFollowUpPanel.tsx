@@ -5,13 +5,36 @@ import type { OrientacionFollowUp } from "./orientacionTypes";
 
 interface Props {
   followUps: OrientacionFollowUp[];
-  onAddFollowUp: (payload: { tipo: string; descripcion: string; evidenciaUrl: string }) => void;
+  onAddFollowUp: (payload: {
+    tipo: string;
+    descripcion: string;
+    evidenciaUrl: string;
+  }) => Promise<boolean>;
 }
 
 export function OrientacionFollowUpPanel({ followUps, onAddFollowUp }: Props) {
   const [tipo, setTipo] = useState("nota");
   const [descripcion, setDescripcion] = useState("");
   const [evidenciaUrl, setEvidenciaUrl] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!descripcion.trim() || saving) return;
+    setSaving(true);
+    try {
+      const saved = await onAddFollowUp({
+        tipo,
+        descripcion,
+        evidenciaUrl,
+      });
+      if (saved) {
+        setDescripcion("");
+        setEvidenciaUrl("");
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <GlassCard className="border border-white/5 bg-slate-950/55">
@@ -28,8 +51,12 @@ export function OrientacionFollowUpPanel({ followUps, onAddFollowUp }: Props) {
         </select>
         <textarea className="min-h-24 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} placeholder="Describe el seguimiento, el acuerdo o la evidencia." />
         <input className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white" value={evidenciaUrl} onChange={(e) => setEvidenciaUrl(e.target.value)} placeholder="URL de evidencia (opcional)" />
-        <NeoButton onClick={() => onAddFollowUp({ tipo, descripcion, evidenciaUrl })} className="w-full bg-violet-500/20 text-white">
-          Registrar seguimiento
+        <NeoButton
+          onClick={() => void handleSubmit()}
+          disabled={saving || !descripcion.trim()}
+          className="w-full bg-violet-500/20 text-white"
+        >
+          {saving ? "Guardando..." : "Registrar seguimiento"}
         </NeoButton>
       </div>
 

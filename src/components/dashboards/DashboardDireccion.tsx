@@ -1,124 +1,84 @@
-import React, { useMemo, useState } from "react";
-import toast from "react-hot-toast";
-import { useInstitutionalActions } from "../../hooks/useInstitutionalActions";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { motion } from "framer-motion";
+import { useInstitutionalActions } from "../../hooks/useInstitutionalActions";
 import { useApp } from "../../store";
-import { AppModule, CaseLabels, CaseState, IncidentType, Student, UserRole } from "../../types";
-import { PERMISOS_POR_ROL } from "../../utils/permisos";
-import type { PermisosSASE } from "../../utils/permisos";
-import { PrintPreviewModal } from "../PrintPreviewModal";
-import { RoleHeader } from "../direccion/RoleHeader";
-import { CriticalCasesCard } from "../direccion/CriticalCasesCard";
-import { CaseTimeline } from "../direccion/CaseTimeline";
-import { ClosureGuard } from "../direccion/ClosureGuard";
-import { FollowUpCard } from "../direccion/FollowUpCard";
-import { SasitoInsights } from "../direccion/SasitoInsights";
-import { DireccionCaseDetail } from "../direccion/DireccionCaseDetail";
+import { AppModule, IncidentType, UserRole } from "../../types";
 import {
-  DIRECTION_CASE_STEPS,
-  DirectionCase,
-  DirectionCaseStep,
-  DirectionFollowUp,
-} from "../direccion/direccionTypes";
+  PERMISOS_POR_ROL,
+  type PermisosSASE,
+} from "../../utils/permisos";
+import {
+  loadDirectionPanorama,
+  type DirectionPanoramaItem,
+} from "../direccion/direccionPersistence";
+import { RoleHeader } from "../direccion/RoleHeader";
+import { SasitoInsights } from "../direccion/SasitoInsights";
+import { PrintPreviewModal } from "../PrintPreviewModal";
 
-const currentStepByState: Record<CaseState, DirectionCaseStep> = {
-  [CaseState.OBSERVADO]: "incidencia",
-  [CaseState.PATRON_DETECTADO]: "prefectura",
-  [CaseState.EN_ANALISIS]: "diagnostico",
-  [CaseState.INTERVENCION]: "direccion",
-  [CaseState.SEGUIMIENTO]: "seguimiento2",
-  [CaseState.CERRADO]: "cierre",
-};
+type PanoramaFilter = "all" | "attention" | "overdue";
+type LoadState = "loading" | "ready" | "error";
 
 const getPermissions = (role: UserRole, profile: any): PermisosSASE => {
-  const base = PERMISOS_POR_ROL[String(role).toLowerCase()] || PERMISOS_POR_ROL.guest;
+  const base =
+    PERMISOS_POR_ROL[String(role).toLowerCase()] ||
+    PERMISOS_POR_ROL.guest;
   return {
     ...base,
     ...(profile?.alcances || {}),
   };
 };
 
-const formatDateOffset = (days: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date.toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
+const schoolDateKey = (value: Date = new Date()) =>
+  new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(value);
+
+const isOverdue = (date: string | null) =>
+  Boolean(date && date < schoolDateKey());
+
+const formatDate = (value: string | null) => {
+  if (!value) return "No programada";
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
+    ? new Date(`${value}T12:00:00`)
+    : new Date(value);
+  if (Number.isNaN(date.getTime())) return "Fecha no documentada";
+  return date.toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 };
 
-const stepForFollowUp = (step: number): DirectionCaseStep => `seguimiento${step}` as DirectionCaseStep;
+const humanize = (value: string | null) =>
+  value
+    ? value.replaceAll("_", " ").replace(/\b\w/g, (letter) =>
+        letter.toUpperCase(),
+      )
+    : "No documentado";
 
-const hasIncidentEvidence = (student: Student) =>
-  (student.incidents || []).some((incident) => Array.isArray(incident.evidence) && incident.evidence.length > 0);
+const escapeHtml = (value: unknown) =>
+  String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
-const hasTeacherDiagnosis = (student: Student) =>
-  Boolean(
-    student.bapInfo?.diagnosisPrivate ||
-      (student.incidents || []).some((incident) =>
-        [IncidentType.ACADEMICO, IncidentType.SOCIOEMOCIONAL].includes(incident.type),
-      ),
-  );
-
-const buildDirectionCase = (student: Student): DirectionCase => {
-  const risk = Number(student.puntajeRiesgo || 0);
-  const incidents = student.incidents || [];
-  const completedFollowUps = student.caseState === CaseState.CERRADO
-    ? 4
-    : Math.min(4, Math.max(0, Math.floor(incidents.length / 2)));
-  const nextFollowUp = Math.min(4, completedFollowUps + 1);
-  const isOverdue = student.caseState === CaseState.INTERVENCION || risk >= 70;
-  const followUps: DirectionFollowUp[] = [1, 2, 3, 4].map((step) => ({
-    id: `${student.id}-seguimiento-${step}`,
-    alumno: student.name,
-    step,
-    total: 4,
-    fecha: formatDateOffset(step <= completedFollowUps ? -step * 4 : step * 3),
-    estado: step <= completedFollowUps ? "completed" : step === nextFollowUp && isOverdue ? "overdue" : "pending",
-  }));
-  const currentStep = student.caseState === CaseState.SEGUIMIENTO
-    ? stepForFollowUp(nextFollowUp)
-    : currentStepByState[student.caseState] || "direccion";
-  const currentStepIndex = DIRECTION_CASE_STEPS.indexOf(currentStep);
-  const evidence = hasIncidentEvidence(student) || Boolean(student.documentos?.length);
-  const teacherDiagnosis = hasTeacherDiagnosis(student);
-  const followUpsComplete = completedFollowUps >= 4 || student.caseState === CaseState.CERRADO;
-  const overdueSteps = followUps
-    .filter((item) => item.estado === "overdue")
-    .map((item) => stepForFollowUp(item.step));
-  const blockedSteps: DirectionCaseStep[] = followUpsComplete && evidence && teacherDiagnosis ? [] : ["cierre"];
-  const completedSteps = DIRECTION_CASE_STEPS.filter((_, index) => index < currentStepIndex);
-  const motivoCritico = overdueSteps.length > 0
-    ? `Seguimiento ${nextFollowUp}/4 vencido`
-    : !teacherDiagnosis
-      ? "Diagnóstico docente pendiente"
-      : !evidence
-        ? "Evidencia institucional pendiente"
-        : CaseLabels[student.caseState];
-
-  return {
-    id: student.id,
-    alumno: student.name,
-    grupo: student.group,
-    estado: student.caseState,
-    motivoCritico,
-    riesgo: risk,
-    currentStep,
-    completedSteps,
-    blockedSteps,
-    overdueSteps,
-    followUps,
-    closureChecks: {
-      followUpsComplete,
-      evidence,
-      teacherDiagnosis,
-    },
-    incidents,
-    sensitiveSummary: student.medicalHistory || student.bapInfo?.diagnosisPrivate || "Sin datos sensibles registrados en memoria local.",
-    student,
-  };
-};
+const sumBy = (
+  items: DirectionPanoramaItem[],
+  selector: (item: DirectionPanoramaItem) => number,
+) => items.reduce((total, item) => total + selector(item), 0);
 
 export const DashboardDireccion = () => {
   const {
-    students,
     currentUserRole,
     currentUserProfile,
     notifications,
@@ -127,125 +87,208 @@ export const DashboardDireccion = () => {
     setIsFeedbackOpen,
     openQuickRegister,
   } = useApp();
-  const {
-    escalateCase,
-    closeCase,
-    reopenCase,
-    scheduleFollowUp,
-    registerEvidence,
-    sosAlert,
-    confirmAttention,
-  } = useInstitutionalActions();
+  const { sosAlert } = useInstitutionalActions();
+  const [panorama, setPanorama] = useState<DirectionPanoramaItem[]>([]);
+  const [loadState, setLoadState] = useState<LoadState>("loading");
+  const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
-  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<PanoramaFilter>("all");
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(
+    null,
+  );
   const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState("");
 
   const permissions = useMemo(
-    () => getPermissions(currentUserRole as UserRole, currentUserProfile),
+    () =>
+      getPermissions(
+        currentUserRole as UserRole,
+        currentUserProfile,
+      ),
     [currentUserProfile, currentUserRole],
   );
-  const canCloseCase = permissions.can_close;
-  const canViewSensitive = permissions.can_view_sensitive;
-  const canRegister = permissions.can_register;
 
-  const directionCases = useMemo(
-    () => (students as Student[]).map(buildDirectionCase),
-    [students],
+  const refreshPanorama = useCallback(async () => {
+    setLoadState("loading");
+    setLoadError("");
+    setPanorama([]);
+    setSelectedStudentId(null);
+    try {
+      const confirmedPanorama = await loadDirectionPanorama();
+      setPanorama(confirmedPanorama);
+      setLoadState("ready");
+    } catch (error: any) {
+      console.error("No se pudo cargar el panorama de Dirección:", error);
+      setPanorama([]);
+      setLoadError(
+        error?.message ||
+          "No se pudo confirmar el panorama institucional.",
+      );
+      setLoadState("error");
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshPanorama();
+  }, [refreshPanorama]);
+
+  const visibleItems = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+    return panorama.filter((item) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        [
+          item.studentName,
+          item.enrollment,
+          item.group,
+          item.semaphoreState,
+          item.orientationState,
+          ...item.activeSources,
+          ...item.attentionReasons,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedSearch);
+      const matchesFilter =
+        filter === "all" ||
+        (filter === "attention" && item.requiresAttention) ||
+        (filter === "overdue" && isOverdue(item.nextActionDate));
+      return matchesSearch && matchesFilter;
+    });
+  }, [filter, panorama, search]);
+
+  const selectedItem = useMemo(
+    () =>
+      panorama.find((item) => item.studentId === selectedStudentId) ||
+      null,
+    [panorama, selectedStudentId],
   );
 
-  const visibleCases = useMemo(() => {
-    const normalized = search.trim().toLowerCase();
-    const base = directionCases.filter((caseItem) => caseItem.estado !== CaseState.CERRADO);
-    if (!normalized) return base;
-    return base.filter((caseItem) =>
-      [caseItem.alumno, caseItem.grupo, caseItem.motivoCritico, CaseLabels[caseItem.estado]]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalized),
-    );
-  }, [directionCases, search]);
-
-  const criticalCases = useMemo(
-    () => visibleCases
-      .filter((caseItem) =>
-        caseItem.overdueSteps.length > 0 ||
-        caseItem.riesgo >= 70 ||
-        [CaseState.INTERVENCION, CaseState.SEGUIMIENTO, CaseState.PATRON_DETECTADO].includes(caseItem.estado),
-      )
-      .sort((a, b) => b.riesgo - a.riesgo),
-    [visibleCases],
+  const overdueCount = useMemo(
+    () =>
+      panorama.filter((item) => isOverdue(item.nextActionDate)).length,
+    [panorama],
+  );
+  const attentionCount = useMemo(
+    () => panorama.filter((item) => item.requiresAttention).length,
+    [panorama],
+  );
+  const totalPending = useMemo(
+    () => sumBy(panorama, (item) => item.totalPendingItems),
+    [panorama],
   );
 
-  const activeCriticalCount = useMemo(
-    () => visibleCases.filter((caseItem) => caseItem.estado === CaseState.INTERVENCION).length,
-    [visibleCases],
+  const areaLoad = useMemo(
+    () =>
+      [
+        {
+          area: "Incidencias",
+          value: sumBy(panorama, (item) => item.openIncidents),
+          module: AppModule.EXPEDIENTES,
+        },
+        {
+          area: "Orientación",
+          value: panorama.filter((item) => item.orientationCaseId).length,
+          module: AppModule.EXPEDIENTES,
+        },
+        {
+          area: "Trabajo Social",
+          value: sumBy(panorama, (item) => item.openSocialWorkItems),
+          module: AppModule.TRABAJO_SOCIAL_TRACKER,
+        },
+        {
+          area: "UDEII",
+          value: sumBy(panorama, (item) => item.pendingBapItems),
+          module: AppModule.UDEII_TRACKER,
+        },
+        {
+          area: "Salud",
+          value: sumBy(
+            panorama,
+            (item) => item.pendingHealthFollowUps,
+          ),
+          module: AppModule.SALUD,
+        },
+      ].sort((a, b) => b.value - a.value),
+    [panorama],
   );
 
-  const activeFollowUps = useMemo(
-    () => criticalCases.flatMap((caseItem) => caseItem.followUps.filter((item) => item.estado !== "completed")),
-    [criticalCases],
-  );
-
-  const selectedCase = useMemo(
-    () => directionCases.find((caseItem) => caseItem.id === selectedCaseId) || null,
-    [directionCases, selectedCaseId],
-  );
-
-  const insights = useMemo(() => {
-    const overdueCount = criticalCases.reduce((total, item) => total + item.overdueSteps.length, 0);
-    const groupCounts = criticalCases.reduce<Record<string, number>>((acc, item) => {
-      acc[item.grupo] = (acc[item.grupo] || 0) + 1;
+  const groupLoad = useMemo(() => {
+    const totals = panorama.reduce<Record<string, number>>((acc, item) => {
+      acc[item.group] =
+        (acc[item.group] || 0) + item.totalPendingItems;
       return acc;
     }, {});
-    const recurrentGroup = Object.entries(groupCounts).sort((a, b) => b[1] - a[1])[0];
+    return Object.entries(totals)
+      .map(([group, value]) => ({ group, value }))
+      .filter((item) => item.value > 0)
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+  }, [panorama]);
+
+  const insights = useMemo(() => {
+    const busiestArea = areaLoad.find((item) => item.value > 0);
+    const busiestGroup = groupLoad[0];
     return [
-      `Detecté ${overdueCount} seguimientos vencidos en casos activos.`,
-      recurrentGroup ? `Grupo ${recurrentGroup[0]} presenta reincidencia institucional.` : "No detecté reincidencia por grupo en este corte.",
-      criticalCases.length > 0 ? "Recomiendo intervención directa y agenda de seguimiento." : "No hay intervención directiva urgente en este momento.",
+      `${attentionCount} alumnos requieren revisión con reglas institucionales explícitas.`,
+      overdueCount > 0
+        ? `${overdueCount} alumnos tienen una próxima acción con fecha vencida.`
+        : "No hay próximas acciones vencidas en las fechas documentadas.",
+      busiestArea
+        ? `${busiestArea.area} concentra ${busiestArea.value} pendientes abiertos.`
+        : "Las áreas no reportan pendientes abiertos en este corte.",
+      busiestGroup
+        ? `El grupo ${busiestGroup.group} concentra ${busiestGroup.value} pendientes; conviene revisar distribución y apoyos.`
+        : "No hay concentración de pendientes por grupo.",
     ];
-  }, [criticalCases]);
+  }, [areaLoad, attentionCount, groupLoad, overdueCount]);
 
-  const unreadNotifications = (notifications || []).filter((notification: any) => !notification.read).length;
-
-  // Helper para resolver caso actualmente seleccionado a datos del alumno
-  const getStudentFromCase = (caseId?: string | null) => {
-    const c = directionCases.find((item) => item.id === (caseId || selectedCaseId));
-    return c ? { id: c.id, name: c.alumno } : null;
-  };
-
-  const handleViewCase = (caseId: string) => {
-    setSelectedCaseId(caseId);
-    window.history.replaceState(null, "", `#/direccion/caso/${caseId}`);
-  };
-
-  const handleBack = () => {
-    setSelectedCaseId(null);
-    window.history.replaceState(null, "", "#/direccion");
-  };
+  const unreadNotifications = (notifications || []).filter(
+    (notification: any) => !notification.read,
+  ).length;
 
   const handleCreateReport = () => {
-    const rows = criticalCases.map((caseItem) => `
-      <tr>
-        <td style="padding: 10px; border: 1px solid #cbd5e1;">${caseItem.alumno}</td>
-        <td style="padding: 10px; border: 1px solid #cbd5e1;">${caseItem.grupo}</td>
-        <td style="padding: 10px; border: 1px solid #cbd5e1;">${caseItem.motivoCritico}</td>
-      </tr>
-    `).join("");
+    const rows = visibleItems
+      .map(
+        (item) => `
+          <tr>
+            <td>${escapeHtml(item.studentName)}</td>
+            <td>${escapeHtml(item.group)}</td>
+            <td>${item.riskScore}</td>
+            <td>${item.totalPendingItems}</td>
+            <td>${escapeHtml(item.activeSources.join(", ") || "Sin pendientes")}</td>
+            <td>${escapeHtml(formatDate(item.nextActionDate))}</td>
+          </tr>
+        `,
+      )
+      .join("");
     setPreviewContent(`
       <div style="font-family: Arial, sans-serif; color: #0f172a;">
-        <h1 style="color:#1e3a8a;">Informe Ejecutivo de Dirección</h1>
-        <p>Casos críticos activos: <strong>${criticalCases.length}</strong></p>
-        <p>Regla institucional: <strong>Si no hay seguimiento, no hay cierre.</strong></p>
-        <table style="width:100%; border-collapse: collapse; margin-top: 20px; font-size: 12px;">
+        <h1 style="color:#1e3a8a;">Panorama institucional de Dirección</h1>
+        <p>Fuente: RPC institucional confirmado. No incluye contenido clínico ni notas sensibles.</p>
+        <ul>
+          <li>Alumnos visibles: <strong>${panorama.length}</strong></li>
+          <li>Revisión prioritaria: <strong>${attentionCount}</strong></li>
+          <li>Próximas acciones vencidas: <strong>${overdueCount}</strong></li>
+          <li>Pendientes abiertos: <strong>${totalPending}</strong></li>
+        </ul>
+        <table style="width:100%; border-collapse: collapse; margin-top: 20px; font-size: 11px;">
           <thead>
             <tr style="background:#eff6ff;">
-              <th style="padding: 10px; border: 1px solid #cbd5e1; text-align:left;">Alumno</th>
-              <th style="padding: 10px; border: 1px solid #cbd5e1; text-align:left;">Grupo</th>
-              <th style="padding: 10px; border: 1px solid #cbd5e1; text-align:left;">Motivo</th>
+              <th>Alumno</th>
+              <th>Grupo</th>
+              <th>Riesgo</th>
+              <th>Pendientes</th>
+              <th>Fuentes</th>
+              <th>Próxima acción</th>
             </tr>
           </thead>
-          <tbody>${rows || "<tr><td colspan='3' style='padding: 10px; border: 1px solid #cbd5e1;'>Sin casos críticos.</td></tr>"}</tbody>
+          <tbody>
+            ${
+              rows ||
+              "<tr><td colspan='6'>Sin registros para el filtro actual.</td></tr>"
+            }
+          </tbody>
         </table>
       </div>
     `);
@@ -264,100 +307,214 @@ export const DashboardDireccion = () => {
         onSearchChange={setSearch}
         onOpenSasito={() => setIsAssistantOpen(true)}
         onOpenFeedback={() => setIsFeedbackOpen(true)}
-        onSOS={() => {
-          sosAlert(undefined, undefined, "SOS activado desde Dashboard Dirección");
+        onSOS={async () => {
+          await sosAlert(
+            undefined,
+            undefined,
+            "SOS activado desde Dashboard Dirección",
+          );
         }}
       />
-      <p className="sr-only">Vision sistemica institucional</p>
+      <p className="sr-only">Visión sistémica institucional verificable</p>
 
-      {selectedCase ? (
-        <DireccionCaseDetail
-          caseItem={selectedCase}
-          canCloseCase={canCloseCase}
-          canViewSensitive={canViewSensitive}
-          onBack={handleBack}
-          onCloseCase={() => { const s = getStudentFromCase(); if (s) closeCase(s.id, s.name); }}
-          onReopenCase={() => { const s = getStudentFromCase(); if (s) reopenCase(s.id, s.name); }}
-          onEscalateCase={() => { const s = getStudentFromCase(); if (s) escalateCase(s.id, s.name, "Intervención prioritaria desde detalle de caso"); }}
-          onScheduleFollowUp={() => { const s = getStudentFromCase(); if (s) scheduleFollowUp(s.id, s.name, "Seguimiento directivo"); }}
-          onRegisterEvidence={() => { const s = getStudentFromCase(); if (s) registerEvidence(s.id, s.name, "Evidencia directiva registrada"); }}
+      {loadState === "loading" && (
+        <section
+          role="status"
+          className="rounded-[2rem] border border-blue-200/20 bg-blue-500/10 p-8 text-center text-blue-50"
+        >
+          Consultando memoria institucional confirmada…
+        </section>
+      )}
+
+      {loadState === "error" && (
+        <section
+          role="alert"
+          className="rounded-[2rem] border border-rose-300/30 bg-rose-500/10 p-6 text-rose-50"
+        >
+          <h2 className="text-lg font-black">
+            Panorama no disponible
+          </h2>
+          <p className="mt-2 text-sm">{loadError}</p>
+          <p className="mt-2 text-xs text-rose-100/70">
+            No se conservaron datos anteriores ni se generaron indicadores
+            sustitutos.
+          </p>
+          <button
+            type="button"
+            onClick={() => void refreshPanorama()}
+            className="mt-4 min-h-11 rounded-2xl bg-white px-4 text-xs font-black uppercase tracking-widest text-rose-950"
+          >
+            Reintentar
+          </button>
+        </section>
+      )}
+
+      {loadState === "ready" && selectedItem && (
+        <DirectionStudentDetail
+          item={selectedItem}
+          onBack={() => setSelectedStudentId(null)}
+          onOpenModule={setCurrentModule}
         />
-      ) : (
+      )}
+
+      {loadState === "ready" && !selectedItem && (
         <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="space-y-4">
             <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              <KpiCard label="Poblacion total atendida" value={(students as Student[]).length} icon="folder_shared" />
-              <KpiCard label="Casos criticos activos" value={activeCriticalCount} icon="gavel" tone="danger" />
-              <KpiCard label="Vencidos" value={activeFollowUps.filter((item) => item.estado === "overdue").length} icon="schedule" tone="warning" />
-              <KpiCard label="Seguimientos" value={activeFollowUps.length} icon="fact_check" tone="success" />
+              <KpiCard
+                label="Alumnos visibles"
+                value={panorama.length}
+                icon="groups"
+              />
+              <KpiCard
+                label="Revisión prioritaria"
+                value={attentionCount}
+                icon="priority_high"
+                tone="danger"
+              />
+              <KpiCard
+                label="Fechas vencidas"
+                value={overdueCount}
+                icon="event_busy"
+                tone="warning"
+              />
+              <KpiCard
+                label="Pendientes abiertos"
+                value={totalPending}
+                icon="fact_check"
+                tone="success"
+              />
             </section>
 
-            <CriticalCasesCard
-              cases={criticalCases}
-              onViewCase={handleViewCase}
-              onReopen={(caseId) => { const s = getStudentFromCase(caseId); if (s) reopenCase(s.id, s.name); }}
-              onEscalate={(caseId) => { const s = getStudentFromCase(caseId); if (s) escalateCase(s.id, s.name, "Escalamiento desde panel de casos críticos"); }}
-              onReschedule={(caseId) => { const s = getStudentFromCase(caseId); if (s) scheduleFollowUp(s.id, s.name, "Reagendamiento directivo"); }}
-            />
+            <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 md:p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.28em] text-blue-200">
+                    Decisión informada
+                  </p>
+                  <h2 className="mt-1 text-xl font-black text-white">
+                    Seguimientos institucionales
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <FilterButton
+                    active={filter === "all"}
+                    label="Todos"
+                    onClick={() => setFilter("all")}
+                  />
+                  <FilterButton
+                    active={filter === "attention"}
+                    label="Prioritarios"
+                    onClick={() => setFilter("attention")}
+                  />
+                  <FilterButton
+                    active={filter === "overdue"}
+                    label="Vencidos"
+                    onClick={() => setFilter("overdue")}
+                  />
+                </div>
+              </div>
 
-            {criticalCases[0] && (
-              <CaseTimeline
-                currentStep={criticalCases[0].currentStep}
-                completedSteps={criticalCases[0].completedSteps}
-                blockedSteps={criticalCases[0].blockedSteps}
-                overdueSteps={criticalCases[0].overdueSteps}
-              />
-            )}
+              <div className="mt-4 space-y-3">
+                {visibleItems.length === 0 ? (
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 text-center text-sm text-slate-300">
+                    No hay alumnos que coincidan con el filtro actual.
+                  </div>
+                ) : (
+                  visibleItems.map((item) => (
+                    <PanoramaRow
+                      key={item.studentId}
+                      item={item}
+                      onView={() =>
+                        setSelectedStudentId(item.studentId)
+                      }
+                    />
+                  ))
+                )}
+              </div>
+            </section>
           </div>
 
           <aside className="space-y-4">
             <SasitoInsights insights={insights} />
 
             <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 md:p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-100">Acciones directivas</p>
-                  <h3 className="text-lg font-black text-white">Operación</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleCreateReport}
-                  className="rounded-2xl bg-amber-300 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-950"
-                >
-                  Generar reporte ejecutivo
-                </button>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-100">
+                Carga abierta por área
+              </p>
+              <div className="mt-4 space-y-2">
+                {areaLoad.map((item) => (
+                  <button
+                    type="button"
+                    key={item.area}
+                    onClick={() => setCurrentModule(item.module)}
+                    className="flex min-h-12 w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.05] px-4 text-left text-sm text-white hover:bg-white/10"
+                  >
+                    <span className="font-bold">{item.area}</span>
+                    <span className="font-black">{item.value}</span>
+                  </button>
+                ))}
               </div>
-              <div className="mt-4 grid gap-2">
-                {canRegister && (
-                  <ActionButton label="Crear incidencia" icon="add_alert" onClick={() => openQuickRegister(IncidentType.CONDUCTA)} />
+            </section>
+
+            <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 md:p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-blue-200">
+                Concentración por grupo
+              </p>
+              <div className="mt-4 space-y-2">
+                {groupLoad.length === 0 ? (
+                  <p className="text-sm text-slate-400">
+                    Sin pendientes agrupables.
+                  </p>
+                ) : (
+                  groupLoad.map((item) => (
+                    <div
+                      key={item.group}
+                      className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm text-white"
+                    >
+                      <span>Grupo {item.group}</span>
+                      <span className="font-black">
+                        {item.value} pendientes
+                      </span>
+                    </div>
+                  ))
                 )}
-                <ActionButton label="Consultar expediente institucional" icon="folder_open" onClick={() => setCurrentModule(AppModule.EXPEDIENTES)} />
-                <ActionButton label="Control de objetos retenidos" icon="inventory_2" onClick={() => setCurrentModule(AppModule.OBJETOS_RETENIDOS)} />
-                <ActionButton label="Generar informes" icon="print" onClick={handleCreateReport} />
-                <ActionButton label="Supervisar vencidos" icon="alarm" onClick={() => toast("Filtro aplicado a casos vencidos")} />
               </div>
             </section>
 
-            <section className="space-y-3">
-              {activeFollowUps.slice(0, 4).map((followUp) => (
-                <FollowUpCard
-                  key={followUp.id}
-                  followUp={followUp}
-                  onRegisterEvidence={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) registerEvidence(s.id, s.name, "Evidencia desde seguimiento"); }}
-                  onReschedule={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) scheduleFollowUp(s.id, s.name, "Reagendado desde panel de seguimientos"); }}
-                  onMarkAttendance={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) confirmAttention(s.id, s.name, "Asistencia al seguimiento"); }}
-                  onReopenCase={() => { const s = getStudentFromCase(followUp.id.split("-seguimiento-")[0]); if (s) reopenCase(s.id, s.name); }}
+            <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-4 md:p-5">
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-amber-100">
+                Acciones con fuente real
+              </p>
+              <div className="mt-4 grid gap-2">
+                {permissions.can_register && (
+                  <ActionButton
+                    label="Registrar incidencia"
+                    icon="add_alert"
+                    onClick={() =>
+                      openQuickRegister(IncidentType.CONDUCTA)
+                    }
+                  />
+                )}
+                <ActionButton
+                  label="Consultar expediente institucional"
+                  icon="folder_open"
+                  onClick={() =>
+                    setCurrentModule(AppModule.EXPEDIENTES)
+                  }
                 />
-              ))}
+                <ActionButton
+                  label="Generar reporte del corte"
+                  icon="print"
+                  onClick={handleCreateReport}
+                />
+                <ActionButton
+                  label="Supervisar fechas vencidas"
+                  icon="event_busy"
+                  onClick={() => setFilter("overdue")}
+                />
+              </div>
             </section>
-
-            {criticalCases[0] && (
-              <ClosureGuard
-                checks={criticalCases[0].closureChecks}
-                canCloseCase={canCloseCase}
-                onCloseCase={() => { const s = getStudentFromCase(criticalCases[0]?.id); if (s) closeCase(s.id, s.name); }}
-              />
-            )}
           </aside>
         </div>
       )}
@@ -365,12 +522,269 @@ export const DashboardDireccion = () => {
       <PrintPreviewModal
         isOpen={showPrintPreview}
         onClose={() => setShowPrintPreview(false)}
-        title="RESUMEN EJECUTIVO DE OPERACION INSTITUCIONAL"
+        title="PANORAMA INSTITUCIONAL DE DIRECCIÓN"
         initialHtml={previewContent}
       />
     </motion.div>
   );
 };
+
+const PanoramaRow = ({
+  item,
+  onView,
+}: {
+  item: DirectionPanoramaItem;
+  onView: () => void;
+}) => (
+  <article className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-base font-black text-white">
+            {item.studentName} — {item.group}
+          </h3>
+          {item.requiresAttention && (
+            <span className="rounded-full border border-rose-300/30 bg-rose-500/15 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-rose-100">
+              Revisión prioritaria
+            </span>
+          )}
+        </div>
+        <p className="mt-1 text-xs text-slate-300">
+          Riesgo persistido: {item.riskScore} · Pendientes:{" "}
+          {item.totalPendingItems}
+        </p>
+        <p className="mt-2 text-xs text-blue-100/70">
+          Fuentes: {item.activeSources.join(", ") || "Sin pendientes abiertos"}
+        </p>
+        <p
+          className={`mt-1 text-xs ${
+            isOverdue(item.nextActionDate)
+              ? "text-rose-200"
+              : "text-slate-400"
+          }`}
+        >
+          Próxima acción: {formatDate(item.nextActionDate)}
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={onView}
+        className="min-h-11 rounded-2xl bg-white px-4 text-xs font-black uppercase tracking-widest text-slate-950"
+      >
+        Ver fuentes
+      </button>
+    </div>
+    {item.attentionReasons.length > 0 && (
+      <ul className="mt-3 space-y-1 border-t border-white/10 pt-3 text-xs text-rose-100">
+        {item.attentionReasons.map((reason) => (
+          <li key={reason}>• {reason}</li>
+        ))}
+      </ul>
+    )}
+  </article>
+);
+
+const DirectionStudentDetail = ({
+  item,
+  onBack,
+  onOpenModule,
+}: {
+  item: DirectionPanoramaItem;
+  onBack: () => void;
+  onOpenModule: (module: AppModule) => void;
+}) => (
+  <section className="space-y-4">
+    <button
+      type="button"
+      onClick={onBack}
+      className="min-h-11 rounded-2xl border border-white/10 bg-white/10 px-4 text-xs font-black uppercase tracking-widest text-white"
+    >
+      Volver al panorama
+    </button>
+
+    <div className="rounded-[2rem] border border-blue-200/20 bg-blue-950/50 p-5">
+      <p className="text-[10px] font-black uppercase tracking-[0.28em] text-blue-200">
+        Fuentes institucionales agregadas
+      </p>
+      <h2 className="mt-2 text-2xl font-black text-white">
+        {item.studentName}
+      </h2>
+      <p className="mt-1 text-sm text-blue-100/80">
+        {item.group} · {item.enrollment} · Riesgo persistido{" "}
+        {item.riskScore} · {humanize(item.semaphoreState)}
+      </p>
+      <p className="mt-3 text-xs text-blue-100/60">
+        Este resumen no contiene diagnósticos BAP, notas sociales ni contenido
+        clínico.
+      </p>
+    </div>
+
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <SourceCard
+        label="Incidencias abiertas"
+        value={item.openIncidents}
+        date={item.lastIncidentAt}
+      />
+      <SourceCard
+        label="Orientación"
+        value={item.orientationCaseId ? 1 : 0}
+        date={item.nextOrientationReview}
+      />
+      <SourceCard
+        label="Trabajo Social"
+        value={item.openSocialWorkItems}
+        date={item.socialWorkUpdatedAt}
+      />
+      <SourceCard
+        label="UDEII"
+        value={item.pendingBapItems}
+        date={item.nextBapReview}
+      />
+      <SourceCard
+        label="Salud"
+        value={item.pendingHealthFollowUps}
+        date={item.nextHealthReview}
+      />
+    </div>
+
+    <div className="grid gap-4 lg:grid-cols-2">
+      <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5">
+        <h3 className="font-black text-white">Orientación</h3>
+        <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+          <DataPoint
+            label="Estado"
+            value={humanize(item.orientationState)}
+          />
+          <DataPoint
+            label="Prioridad"
+            value={humanize(item.orientationPriority)}
+          />
+          <DataPoint
+            label="Seguimientos"
+            value={String(item.orientationFollowUps)}
+          />
+          <DataPoint
+            label="Diagnósticos docentes"
+            value={String(item.teacherDiagnoses)}
+          />
+          <DataPoint
+            label="Planes activos"
+            value={String(item.activeOrientationPlans)}
+          />
+          <DataPoint
+            label="Próxima revisión"
+            value={formatDate(item.nextOrientationReview)}
+          />
+        </dl>
+      </div>
+
+      <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5">
+        <h3 className="font-black text-white">
+          Razones para revisión
+        </h3>
+        {item.attentionReasons.length === 0 ? (
+          <p className="mt-4 text-sm text-slate-400">
+            No se activó ninguna regla prioritaria.
+          </p>
+        ) : (
+          <ul className="mt-4 space-y-2 text-sm text-rose-100">
+            {item.attentionReasons.map((reason) => (
+              <li
+                key={reason}
+                className="rounded-xl border border-rose-300/20 bg-rose-500/10 p-3"
+              >
+                {reason}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+
+    <div className="grid gap-2 sm:grid-cols-4">
+      <ActionButton
+        label="Expediente"
+        icon="folder_open"
+        onClick={() => onOpenModule(AppModule.EXPEDIENTES)}
+      />
+      <ActionButton
+        label="Trabajo Social"
+        icon="diversity_3"
+        onClick={() =>
+          onOpenModule(AppModule.TRABAJO_SOCIAL_TRACKER)
+        }
+      />
+      <ActionButton
+        label="UDEII"
+        icon="accessibility_new"
+        onClick={() => onOpenModule(AppModule.UDEII_TRACKER)}
+      />
+      <ActionButton
+        label="Salud"
+        icon="medical_services"
+        onClick={() => onOpenModule(AppModule.SALUD)}
+      />
+    </div>
+  </section>
+);
+
+const SourceCard = ({
+  label,
+  value,
+  date,
+}: {
+  label: string;
+  value: number;
+  date: string | null;
+}) => (
+  <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4">
+    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+      {label}
+    </p>
+    <p className="mt-2 text-2xl font-black text-white">{value}</p>
+    <p className="mt-1 text-[10px] text-slate-500">
+      Fecha: {formatDate(date)}
+    </p>
+  </div>
+);
+
+const DataPoint = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) => (
+  <div>
+    <dt className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+      {label}
+    </dt>
+    <dd className="mt-1 text-white">{value}</dd>
+  </div>
+);
+
+const FilterButton = ({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    aria-pressed={active}
+    onClick={onClick}
+    className={`min-h-10 rounded-xl px-3 text-[10px] font-black uppercase tracking-widest ${
+      active
+        ? "bg-white text-slate-950"
+        : "border border-white/10 bg-white/[0.05] text-white"
+    }`}
+  >
+    {label}
+  </button>
+);
 
 const KpiCard = ({
   label,
@@ -387,25 +801,39 @@ const KpiCard = ({
     info: "border-blue-300/20 bg-blue-500/10 text-blue-100",
     danger: "border-rose-300/20 bg-rose-500/10 text-rose-100",
     warning: "border-amber-300/20 bg-amber-500/10 text-amber-100",
-    success: "border-emerald-300/20 bg-emerald-500/10 text-emerald-100",
+    success:
+      "border-emerald-300/20 bg-emerald-500/10 text-emerald-100",
   }[tone];
 
   return (
     <div className={`rounded-[1.75rem] border p-4 ${toneClass}`}>
       <span className="material-icons text-xl">{icon}</span>
       <p className="mt-3 text-2xl font-black text-white">{value}</p>
-      <p className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] opacity-75">{label}</p>
+      <p className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] opacity-75">
+        {label}
+      </p>
     </div>
   );
 };
 
-const ActionButton = ({ label, icon, onClick }: { label: string; icon: string; onClick: () => void }) => (
+const ActionButton = ({
+  label,
+  icon,
+  onClick,
+}: {
+  label: string;
+  icon: string;
+  onClick: () => void;
+}) => (
   <button
     type="button"
+    aria-label={label}
     onClick={onClick}
     className="flex min-h-[48px] items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white hover:bg-white/10"
   >
-    <span className="material-icons text-base text-amber-100">{icon}</span>
+    <span className="material-icons text-base text-amber-100">
+      {icon}
+    </span>
     {label}
   </button>
 );

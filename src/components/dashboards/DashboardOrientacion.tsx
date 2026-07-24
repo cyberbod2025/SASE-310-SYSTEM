@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
-import { useAuth } from "../AuthProvider";
 import { GlassCard } from "../ui/GlassCard";
 import { OrientacionRoleHeader } from "../orientacion/OrientacionRoleHeader";
 import { OrientacionInsights } from "../orientacion/OrientacionInsights";
@@ -20,6 +19,7 @@ import {
   loadDocentes,
   loadOrientacionCasos,
   loadStudentHistory,
+  registrarSeguimientoOrientacion,
   solicitarDiagnostico,
 } from "../orientacion/orientacionApi";
 import type {
@@ -31,13 +31,10 @@ import type {
   OrientacionPlan,
   OrientacionStudentSummary,
 } from "../orientacion/orientacionTypes";
-import { supabase } from "../../supabase/client";
-
 type StudentSuggestion = OrientacionStudentSummary & { rawId: string };
 
 export const DashboardOrientacion = () => {
   const { students } = useApp();
-  const { user } = useAuth();
   const [cases, setCases] = useState<OrientacionCaseSummary[]>([]);
   const [docentes, setDocentes] = useState<OrientacionDocenteOption[]>([]);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
@@ -66,6 +63,7 @@ export const DashboardOrientacion = () => {
   const [showDeriveConfirm, setShowDeriveConfirm] = useState(false);
   const [showEscalateConfirm, setShowEscalateConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [historyRevision, setHistoryRevision] = useState(0);
 
   const suggestions: StudentSuggestion[] = students
     .filter((student) => student.caseState !== "CERRADO")
@@ -87,15 +85,6 @@ export const DashboardOrientacion = () => {
 
   useEffect(() => {
     const load = async () => {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("demo") === "1") {
-        setCases([]);
-        setDocentes([]);
-        setSelectedCaseId(null);
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
         const [loadedCases, loadedDocentes] = await Promise.all([loadOrientacionCasos(), loadDocentes()]);
@@ -127,12 +116,13 @@ export const DashboardOrientacion = () => {
     };
 
     loadHistory();
-  }, [selectedCase?.alumnoId, selectedCase?.id]);
+  }, [historyRevision, selectedCase?.alumnoId, selectedCase?.id]);
 
   const refreshCases = async (caseIdToSelect?: string) => {
     const loadedCases = await loadOrientacionCasos();
     setCases(loadedCases);
     setSelectedCaseId(caseIdToSelect ?? loadedCases[0]?.id ?? null);
+    setHistoryRevision((current) => current + 1);
     return loadedCases;
   };
 
@@ -155,21 +145,31 @@ export const DashboardOrientacion = () => {
     }
   };
 
-  const handleRequestDiagnosis = async (docenteId: string, observaciones: string) => {
-    if (!selectedCase) return;
+  const handleRequestDiagnosis = async (
+    docenteId: string,
+    observaciones: string,
+  ): Promise<boolean> => {
+    if (!selectedCase || !docenteId) return false;
 
     try {
       await solicitarDiagnostico({ docenteId, casoId: selectedCase.id, observaciones });
       await refreshCases(selectedCase.id);
       toast.success("Solicitud de diagnóstico enviada");
+      return true;
     } catch (error) {
       console.error(error);
       toast.error("No se pudo enviar la solicitud");
+      return false;
     }
   };
 
-  const handleCreatePlan = async (payload: { objetivo: string; acciones: string; responsable: string; fechaRevision: string }) => {
-    if (!selectedCase) return;
+  const handleCreatePlan = async (payload: {
+    objetivo: string;
+    acciones: string;
+    responsable: string;
+    fechaRevision: string;
+  }): Promise<boolean> => {
+    if (!selectedCase) return false;
 
     try {
       await crearPlanIntervencion({
@@ -181,29 +181,42 @@ export const DashboardOrientacion = () => {
       });
       await refreshCases(selectedCase.id);
       toast.success("Plan de intervención guardado");
+      return true;
     } catch (error) {
       console.error(error);
       toast.error("No se pudo guardar el plan");
+      return false;
     }
   };
 
-  const handleAddFollowUp = async (payload: { tipo: string; descripcion: string; evidenciaUrl: string }) => {
-    if (!selectedCase) return;
+  const handleAddFollowUp = async (payload: {
+    tipo: string;
+    descripcion: string;
+    evidenciaUrl: string;
+  }): Promise<boolean> => {
+    if (!selectedCase || !payload.descripcion.trim()) return false;
 
     try {
-      const { error } = await supabase.from("seguimiento_orientacion" as any).insert({
-        caso_id: selectedCase.id,
+      const persisted = await registrarSeguimientoOrientacion({
+        casoId: selectedCase.id,
         tipo: payload.tipo,
         descripcion: payload.descripcion,
-        evidencia_url: payload.evidenciaUrl || null,
-        created_by: user?.id ?? null,
+        evidenciaUrl: payload.evidenciaUrl,
       });
-      if (error) throw error;
+      setHistory((current) => ({
+        ...current,
+        followUps: [
+          persisted,
+          ...current.followUps.filter((item) => item.id !== persisted.id),
+        ],
+      }));
       await refreshCases(selectedCase.id);
       toast.success("Seguimiento registrado");
+      return true;
     } catch (error) {
       console.error(error);
       toast.error("No se pudo registrar el seguimiento");
+      return false;
     }
   };
 
@@ -306,7 +319,10 @@ export const DashboardOrientacion = () => {
                 onRequestDiagnosis={() => {
                   const nextDocente = docentes[0]?.id;
                   if (!nextDocente || !selectedCase) return toast.error("No hay docente disponible");
-                  void handleRequestDiagnosis(nextDocente, `Solicitud institucional para ${selectedCase.alumnoNombre}.`);
+                  void handleRequestDiagnosis(
+                    nextDocente,
+                    `Solicitud institucional para ${selectedCase.alumnoNombre}.`,
+                  );
                 }}
                 onDeriveSocialWork={handleDeriveSocialWork}
                 onEscalateDirection={handleEscalateDirection}
@@ -351,7 +367,9 @@ export const DashboardOrientacion = () => {
             ¿Confirmas la derivación del caso de <strong className="text-white font-black">{selectedCase.alumnoNombre}</strong> al área de Trabajo Social?
           </p>
           <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-indigo-400 bg-indigo-950/20 border border-indigo-500/20 p-3 rounded-xl leading-relaxed">
-            ⚠️ Esta acción programará una visita domiciliaria y una investigación familiar para verificar el contexto sociofamiliar del alumno.
+            Esta acción registra la derivación y pone el caso a disposición de
+            Trabajo Social. El área receptora definirá la siguiente acción
+            segura; no programa visitas automáticamente.
           </p>
           <div className="mt-6 flex gap-3">
             <button
@@ -398,7 +416,9 @@ export const DashboardOrientacion = () => {
             ¿Confirmas el escalamiento del caso del alumno <strong className="text-white font-black">{selectedCase.alumnoNombre}</strong> a la Dirección escolar?
           </p>
           <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-rose-400 bg-rose-950/20 border border-rose-500/20 p-3 rounded-xl leading-relaxed">
-            ⚠️ Esta acción transferirá la custodia formal del caso a la Dirección General para establecer sanciones o medidas institucionales permanentes.
+            Esta acción registra el escalamiento para valoración de Dirección y
+            definición de acuerdos institucionales. No impone sanciones ni
+            medidas automáticas.
           </p>
           <div className="mt-6 flex gap-3">
             <button

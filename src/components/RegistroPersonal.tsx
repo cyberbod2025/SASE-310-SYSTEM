@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "../supabase/client";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { normalizeString, cleanCURP } from "../utils/stringUtils";
-import { useRef } from "react";
+import { cleanCURP } from "../utils/stringUtils";
+import {
+  submitStaffAccessRequest,
+  verifyOfficialStaff,
+} from "./personal/registroPersonalPersistence";
 
 interface RegistroPersonalProps {
   onBack: () => void;
@@ -36,17 +38,29 @@ const AVAILABLE_ROLES = [
     color: "bg-slate-600",
   },
   {
-    id: "enfermeria",
+    id: "medico_escolar",
     label: "Enfermería",
     icon: "medical_services",
     color: "bg-red-600",
   },
   { id: "udeii", label: "UDEII", icon: "diversity_3", color: "bg-teal-600" },
   {
-    id: "direccion",
+    id: "directivo",
     label: "Dirección",
     icon: "admin_panel_settings",
     color: "bg-slate-900",
+  },
+  {
+    id: "subdireccion",
+    label: "Subdirección",
+    icon: "supervisor_account",
+    color: "bg-slate-700",
+  },
+  {
+    id: "promotora_lectura",
+    label: "Promotoría de lectura",
+    icon: "local_library",
+    color: "bg-violet-600",
   },
 ];
 
@@ -55,10 +69,12 @@ const AVISO_PRIVACIDAD_TEXTO = `
 
   La ESCUELA SECUNDARIA DIURNA No 310 "PRESIDENTES DE MEXICO" TURNO VESPERTINO, con CCT 09DES4310M y domicilio en CALLE JAIME NUÑO S/N, COL. PRESIDENTES DE MÉXICO, ALCALDÍA IZTAPALAPA, CDMX, es la responsable del tratamiento de los datos personales que nos proporcione.
 
-  Los datos que se recaben (Nombre, CURP, Correo Institucional, Función Escolar) serán utilizados exclusivamente para:
-  1. Identificación y autenticación en la plataforma institucional.
-  2. Control de acceso y asignación de privilegios según su función.
-  3. Registro institucional de actividad en el sistema para garantizar la seguridad de la información institucional y la protección del alumnado.
+  Los datos que se recaben (Nombre, CURP, Correo Institucional, Función Escolar, CCT y Turno) serán utilizados exclusivamente para:
+  1. Verificar la adscripción en la nómina oficial.
+  2. Tramitar y resolver la solicitud de acceso institucional.
+  3. Conservar trazabilidad de la solicitud y, si se aprueba, asignar los permisos correspondientes.
+
+  Este formulario no solicita contraseñas ni respuestas de recuperación. El envío de la solicitud no autoriza el acceso ni activa credenciales.
 
   Usted podrá ejercer sus derechos ARCO directamente ante la dirección del plantel.
   Al marcar la casilla, usted manifiesta su consentimiento expreso para el tratamiento de sus datos bajo los lineamientos de la NEM.
@@ -98,8 +114,6 @@ const InputGroupSase = ({
         readOnly={readonly}
         autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         onKeyDown={onKeyDown}
         placeholder={placeholder}
         title={title || label}
@@ -188,9 +202,6 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
   const [success, setSuccess] = useState(false);
   const [folioSolicitud, setFolioSolicitud] = useState("");
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const birthDateRef = useRef<HTMLInputElement>(null);
-  const curpRef = useRef<HTMLInputElement>(null);
 
   // Form Data
   const [formData, setFormData] = React.useState({
@@ -200,69 +211,12 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
     apellidoPaterno: "",
     apellidoMaterno: "",
     curp: "",
-    fechaNacimiento: "",
-    rfc: "",
-    matricula: "",
-    cct: "09DES4310M", // Updated to official CCT
+    cct: "09DES4310M",
     correoInstitucional: "",
-    password: "",
-    confirmPassword: "",
-    // Security Questions
-    preguntaSeguridad1: "",
-    respuestaSeguridad1: "",
-    preguntaSeguridad2: "",
-    respuestaSeguridad2: "",
     checkPrivacidad: false,
     checkEtica: false,
     checkAuditoria: false,
   });
-
-  // AUTO-GENERATION LOGIC: RFC & MATRICULA
-  useEffect(() => {
-    if (
-      formData.nombres &&
-      formData.apellidoPaterno &&
-      formData.fechaNacimiento
-    ) {
-      const p = formData.apellidoPaterno.trim().toUpperCase();
-      const m = formData.apellidoMaterno.trim().toUpperCase() || "X";
-      const n = formData.nombres.trim().toUpperCase();
-      const d = formData.fechaNacimiento; // YYYY-MM-DD
-
-      const rfcBase = (
-        p.substring(0, 2) +
-        m.substring(0, 1) +
-        n.substring(0, 1) +
-        d.substring(2, 4) +
-        d.substring(5, 7) +
-        d.substring(8, 10)
-      ).toUpperCase();
-
-      if (formData.rfc !== rfcBase) {
-        setFormData((prev) => ({ ...prev, rfc: rfcBase }));
-      }
-    }
-  }, [
-    formData.nombres,
-    formData.apellidoPaterno,
-    formData.apellidoMaterno,
-    formData.fechaNacimiento,
-  ]);
-
-  useEffect(() => {
-    const cleanedCURP = cleanCURP(formData.curp);
-    if (cleanedCURP && cleanedCURP.length >= 10) {
-      const uniqueSuffix = Math.floor(1000 + Math.random() * 9000);
-      const generated = `MAT-${formData.curp.substring(0, 10)}-${uniqueSuffix}`;
-      // Solo generamos si no hay una o si el CURP cambió significativamente
-      if (
-        !formData.matricula ||
-        !formData.matricula.includes(formData.curp.substring(0, 10))
-      ) {
-        setFormData((prev) => ({ ...prev, matricula: generated }));
-      }
-    }
-  }, [formData.curp]);
 
   const selectedRoleData = AVAILABLE_ROLES.find((r) => r.id === formData.rol);
 
@@ -281,102 +235,67 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
       !formData.checkAuditoria
     )
       return toast.error("Debe aceptar todos los términos y avisos");
-    if (formData.password !== formData.confirmPassword)
-      return toast.error("Las contraseñas no coinciden");
     if (!validateCURP(formData.curp))
       return toast.error("El formato de CURP no es válido");
-    if (formData.matricula.trim().length === 0)
-      return toast.error("La matrícula personal es obligatoria");
-
-    // VALIDACION CONTRA NOMINA OFICIAL (Improved Lenient Matching)
-    const fullNameNormalized = normalizeString(
-      `${formData.nombres} ${formData.apellidoPaterno} ${formData.apellidoMaterno}`,
-    ).replace(/\s+/g, " ");
 
     let verifiedRole: string | null = null;
     try {
-      const verifyResponse = await fetch("/api/auth/verify-staff", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName: fullNameNormalized }),
-      });
-
-      if (!verifyResponse.ok) {
-        throw new Error("No se pudo validar la nómina oficial");
-      }
-
-      const verifyData = await verifyResponse.json();
-      if (!verifyData?.match) {
+      const verification = await verifyOfficialStaff(
+        `${formData.nombres} ${formData.apellidoPaterno} ${formData.apellidoMaterno}`,
+        `${formData.apellidoPaterno} ${formData.apellidoMaterno} ${formData.nombres}`,
+      );
+      if (!verification.match) {
         return toast.error(
           "Su nombre no coincide con la nómina oficial del plantel 310. Verifique sus apellidos o acuda a Dirección.",
         );
       }
 
-      verifiedRole = verifyData.role || null;
-    } catch (verifyError) {
-      console.error(verifyError);
-      return toast.error("Error al validar la nómina oficial");
-    }
-
-    if (
-      !formData.preguntaSeguridad1 ||
-      !formData.respuestaSeguridad1 ||
-      !formData.preguntaSeguridad2 ||
-      !formData.respuestaSeguridad2
-    ) {
+      verifiedRole = verification.role;
+      if (verifiedRole !== formData.rol) {
+        return toast.error(
+          "La función seleccionada no coincide con la nómina oficial. Corrija la selección o acuda a Dirección.",
+        );
+      }
+    } catch (error) {
+      console.error(error);
       return toast.error(
-        "Debe completar las preguntas de seguridad para soporte técnico.",
+        error instanceof Error
+          ? error.message
+          : "Error al validar la nómina oficial",
       );
     }
 
     setLoading(true);
     try {
-      const randomNum = Math.floor(Math.random() * 1000);
-      const folio = `REQ-${new Date().getFullYear()}-${String(randomNum).padStart(4, "0")}`;
+      if (!verifiedRole) {
+        throw new Error("La función institucional no pudo verificarse.");
+      }
 
-      const roleToRequest = verifiedRole || formData.rol;
-      const { error } = await supabase
-        .from("solicitudes_alta_personal")
-        .insert({
-          rol_solicitado: [roleToRequest],
+      const { folio } = await submitStaffAccessRequest(
+        {
+          rolDeclarado: formData.rol,
           turno: formData.turno,
-          nombres: formData.nombres.toUpperCase(),
-          apellido_paterno: formData.apellidoPaterno.toUpperCase(),
-          apellido_materno: formData.apellidoMaterno.toUpperCase(),
-          curp: formData.curp.toUpperCase(),
-          correo_institucional: formData.correoInstitucional,
-          acepta_privacidad: formData.checkPrivacidad,
-          acepta_etica: formData.checkEtica,
-          acepta_auditoria: formData.checkAuditoria,
-          estado: "PENDIENTE",
-          metadata: {
-            folio_solicitud: folio,
-            cct: formData.cct,
-            matricula: formData.matricula,
-            rfc_parcial: formData.rfc,
-            fecha_nacimiento: formData.fechaNacimiento,
-            origen: "WEB_WIZARD",
-            version_registro: "3.10",
-            preguntas_seguridad: [
-              {
-                q: formData.preguntaSeguridad1,
-                a: formData.respuestaSeguridad1.toLowerCase().trim(),
-              },
-              {
-                q: formData.preguntaSeguridad2,
-                a: formData.respuestaSeguridad2.toLowerCase().trim(),
-              },
-            ],
-          },
-        });
-
-      if (error) throw error;
+          nombres: formData.nombres,
+          apellidoPaterno: formData.apellidoPaterno,
+          apellidoMaterno: formData.apellidoMaterno,
+          curp: formData.curp,
+          correoInstitucional: formData.correoInstitucional,
+          cct: formData.cct,
+          aceptaPrivacidad: formData.checkPrivacidad,
+          aceptaEtica: formData.checkEtica,
+          aceptaAuditoria: formData.checkAuditoria,
+        },
+      );
       setFolioSolicitud(folio);
       setSuccess(true);
       toast.success("Solicitud enviada correctamente");
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast.error("Error al procesar su solicitud");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Error al procesar su solicitud",
+      );
     } finally {
       setLoading(false);
     }
@@ -614,10 +533,10 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           </h2>
 
           <p className="text-lg md:text-2xl text-slate-300 font-medium max-w-xl mx-auto leading-relaxed mb-12">
-            El sistema ha configurado el entorno para tu perfil.
+            Primero verificaremos tu adscripción y enviaremos la solicitud.
             <br />
             <span className="text-blue-400 font-bold">
-              Tienes el control total.
+              El acceso se habilita únicamente después de la aprobación.
             </span>
           </p>
 
@@ -628,13 +547,13 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
             >
               <div className="btn-liquid-glass"></div>
               <div className="btn-liquid-inner gap-4 text-xs md:text-sm">
-                <span>Desbloquear Funciones</span>
-                <span className="material-symbols-outlined">lock_open</span>
+                <span>Continuar con la solicitud</span>
+                <span className="material-symbols-outlined">arrow_forward</span>
               </div>
             </button>
           </div>
           <p className="mt-8 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-            Acceso Autorizado • SASE 310
+            Solicitud sujeta a validación • SASE 310
           </p>
         </div>
       </div>
@@ -658,16 +577,17 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
           </div>
 
           <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-4">
-            Solicitud <span className="text-emerald-500">Procesada</span>
+            Solicitud <span className="text-emerald-500">Enviada</span>
           </h2>
           <p className="text-slate-400 text-sm mb-10 leading-relaxed font-medium">
-            Su registro ha sido encriptado y enviado a la coordinación. Espere
-            la aprobación de Dirección para activar sus credenciales.
+            Dirección revisará la información y, si procede, enviará una
+            invitación al correo institucional. Este folio no constituye una
+            autorización de acceso.
           </p>
 
           <div className="bg-white/[0.03] border border-white/5 rounded-3xl py-8 px-6 mb-12 shadow-inner">
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400/60 mb-3">
-              Folio S.A.S.E. v3.10.0
+              Folio de solicitud SASE
             </p>
             <div className="inline-block font-mono text-3xl text-white font-black tracking-[0.3em] bg-blue-500/5 px-8 py-4 rounded-2xl border border-blue-500/10">
               {folioSolicitud}
@@ -729,8 +649,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 {selectedRoleData?.label}
               </h2>
               <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                Protocolo de alta institucional activo. Sus datos serán
-                procesados bajo estándares de encriptación NEM 2026.
+                Esta solicitud recaba únicamente los datos necesarios para
+                verificar la adscripción y tramitar un posible acceso.
               </p>
             </div>
 
@@ -747,7 +667,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     check_circle
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Tus datos son encriptados antes de enviarse.
+                    El registro no solicita contraseñas ni respuestas de
+                    recuperación.
                   </p>
                 </li>
                 <li className="flex items-start gap-3">
@@ -755,7 +676,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     check_circle
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Accesos monitoreados por la dirección.
+                    Dirección revisa y resuelve cada solicitud.
                   </p>
                 </li>
                 <li className="flex items-start gap-3">
@@ -763,7 +684,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     check_circle
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Cumplimiento con normativa AEFCM.
+                    Toda aprobación queda registrada en la auditoría
+                    institucional.
                   </p>
                 </li>
               </ul>
@@ -804,8 +726,8 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                 Solicitud de Alta Personal
               </h2>
               <p className="text-slate-400 text-sm font-medium">
-                Completa tu perfil institucional. Tu matrícula y RFC se
-                generarán automáticamente.
+                Captura los datos mínimos para que Dirección valide tu
+                adscripción. No se crearán credenciales en este paso.
               </p>
             </div>
 
@@ -871,54 +793,14 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       const cleaned = cleanCURP(v);
                       setFormData({ ...formData, curp: cleaned });
                       if (cleaned.length === 18) {
-                        // Intentamos enfocar el siguiente campo después de un pequeño delay
                         setTimeout(() => {
                           const nextInput =
-                            document.getElementById("reg-fecha");
+                            document.getElementById("reg-correo");
                           if (nextInput)
                             (nextInput as HTMLInputElement).focus();
                         }, 100);
                       }
                     }}
-                  />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-1">
-                      <InputGroupSase
-                        id="reg-fecha"
-                        name="fechaNacimiento"
-                        label="Fecha de Nacimiento"
-                        title="Seleccione su fecha de nacimiento"
-                        type="date"
-                        value={formData.fechaNacimiento}
-                        onChange={(v: string) =>
-                          setFormData({ ...formData, fechaNacimiento: v })
-                        }
-                      />
-                      <p className="text-[8px] text-blue-400/60 font-bold uppercase tracking-tighter px-1">
-                        * Usamos este dato para celebrar tu cumpleaños en la
-                        comunidad SASE 310.
-                      </p>
-                    </div>
-                    <InputGroupSase
-                      id="reg-rfc"
-                      name="rfc"
-                      label="RFC (Dato Autogenerado)"
-                      readonly
-                      isMono
-                      placeholder="Sistema"
-                      value={formData.rfc}
-                      onChange={() => {}}
-                    />
-                  </div>
-                  <InputGroupSase
-                    id="reg-matricula"
-                    name="matricula"
-                    label="Matrícula Personal (Asignada • Inamovible)"
-                    readonly
-                    isMono
-                    placeholder="Generando matrícula..."
-                    value={formData.matricula}
-                    onChange={() => {}}
                   />
                 </div>
               </div>
@@ -938,9 +820,24 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     id="reg-cct"
                     name="cct"
                     label="Clave de Centro de Trabajo (CCT)"
+                    readonly
                     value={formData.cct}
+                    onChange={() => {}}
+                  />
+                  <InputGroupSase
+                    id="reg-correo"
+                    name="correoInstitucional"
+                    label="Correo Institucional"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="nombre.apellido@sase.mx"
+                    title="Ingrese su correo institucional @sase.mx"
+                    value={formData.correoInstitucional}
                     onChange={(v: string) =>
-                      setFormData({ ...formData, cct: v })
+                      setFormData({
+                        ...formData,
+                        correoInstitucional: v.toLowerCase(),
+                      })
                     }
                   />
                   <div className="space-y-2">
@@ -967,101 +864,6 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                       </option>
                     </select>
                   </div>
-                </div>
-              </div>
-
-              {/* SECTION: Bóveda Personal (Security Questions) */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 mb-6 opacity-80">
-                  <span className="w-8 h-[2px] bg-amber-500"></span>
-                  <h3 className="text-xs font-black text-amber-500 uppercase tracking-widest">
-                    03. BÓVEDA DE RECUPERACIÓN (SOPORTE)
-                  </h3>
-                  <span className="flex-1 h-[1px] bg-white/10"></span>
-                </div>
-
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight bg-amber-500/5 p-4 rounded-xl border border-amber-500/10">
-                  Importante: Estas preguntas le permitirán cambiar su
-                  contraseña si la olvida, ya que SASE no requiere el uso de
-                  correos externos para resetear claves.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest pl-1">
-                      Pregunta 1
-                    </label>
-                    <select
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none focus:border-amber-500/50"
-                      value={formData.preguntaSeguridad1}
-                      title="Seleccionar pregunta de seguridad 1"
-                      aria-label="Seleccionar pregunta de seguridad 1"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          preguntaSeguridad1: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="">Seleccione una pregunta...</option>
-                      <option value="escuela">
-                        ¿Nombre de su primera escuela primaria?
-                      </option>
-                      <option value="madre">
-                        ¿Ciudad donde nació su madre?
-                      </option>
-                      <option value="mascota">
-                        ¿Nombre de su primera mascota?
-                      </option>
-                    </select>
-                  </div>
-                  <InputGroupSase
-                    label="Respuesta de Seguridad 1"
-                    value={formData.respuestaSeguridad1}
-                    onChange={(v: string) =>
-                      setFormData({ ...formData, respuestaSeguridad1: v })
-                    }
-                    placeholder="Su respuesta aquí..."
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[9px] font-black text-slate-300 uppercase tracking-widest pl-1">
-                      Pregunta 2
-                    </label>
-                    <select
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-medium outline-none focus:border-amber-500/50"
-                      value={formData.preguntaSeguridad2}
-                      title="Seleccionar pregunta de seguridad 2"
-                      aria-label="Seleccionar pregunta de seguridad 2"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          preguntaSeguridad2: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="">Seleccione una pregunta...</option>
-                      <option value="libro">
-                        ¿Título de su libro favorito?
-                      </option>
-                      <option value="auto">
-                        ¿Marca de su primer automóvil?
-                      </option>
-                      <option value="idolo">
-                        ¿Nombre de su héroe de la infancia?
-                      </option>
-                    </select>
-                  </div>
-                  <InputGroupSase
-                    label="Respuesta de Seguridad 2"
-                    value={formData.respuestaSeguridad2}
-                    onChange={(v: string) =>
-                      setFormData({ ...formData, respuestaSeguridad2: v })
-                    }
-                    placeholder="Su respuesta aquí..."
-                  />
                 </div>
               </div>
 
@@ -1114,7 +916,7 @@ export const RegistroPersonal: React.FC<RegistroPersonalProps> = ({
                     {loading ? (
                       <>
                         <div className="size-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-                        <span>Encriptando...</span>
+                        <span>Enviando...</span>
                       </>
                     ) : (
                       <>

@@ -229,17 +229,23 @@ export const StudentAdvancedPanel: React.FC<StudentAdvancedPanelProps> = ({
 
     try {
       const res = await sendWhatsAppNotification({
-        to: student.guardianInfo.phonePrimary,
-        message: `SASE ALERTA: Reporte de ${incident.type} para ${student.name}. Detalle: ${incident.description}`,
-        studentName: student.name,
-        incidentType: incident.type
+        incidentId: incident.id,
       });
 
-      if (res.success) {
+      if (res.delivered) {
         toast.success("Notificación enviada con éxito", { id: loadingToast });
         await markIncidentAsNotified(student.id, incident.id);
+      } else if (res.status === "simulated") {
+        toast.error(
+          "Canal no configurado; la incidencia no fue marcada como notificada.",
+          { id: loadingToast },
+        );
       } else {
-        toast.error(`Error: ${res.error}`, { id: loadingToast });
+        const errorMessage =
+          "error" in res
+            ? res.error
+            : "No se confirmó la entrega de la notificación.";
+        toast.error(`Error: ${errorMessage}`, { id: loadingToast });
       }
     } catch (err) {
       toast.error("Error al conectar con el servicio de mensajería", { id: loadingToast });

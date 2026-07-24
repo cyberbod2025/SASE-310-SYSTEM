@@ -5,6 +5,7 @@ import { CaseState, IncidentType, UserRole } from "../src/types";
 
 const supabaseMocks = vi.hoisted(() => ({
   insert: vi.fn(),
+  incidentSingle: vi.fn(),
   from: vi.fn(),
   removeChannel: vi.fn(),
 }));
@@ -78,7 +79,19 @@ const renderStudentsSlice = () =>
 describe("useStudentsSlice addIncident", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    supabaseMocks.insert.mockResolvedValue({ error: null });
+    supabaseMocks.incidentSingle.mockResolvedValue({
+      data: {
+        id: "incident-db-confirmed",
+        fecha: "2026-07-18T18:00:00.000Z",
+        created_at: "2026-07-18T18:00:00.000Z",
+      },
+      error: null,
+    });
+    supabaseMocks.insert.mockReturnValue({
+      select: vi.fn(() => ({
+        single: supabaseMocks.incidentSingle,
+      })),
+    });
     notificationMocks.sendWhatsAppNotification.mockResolvedValue({ success: true });
     supabaseMocks.from.mockImplementation((table: string) => {
       if (table === "grupos") {
@@ -124,7 +137,10 @@ describe("useStudentsSlice addIncident", () => {
   });
 
   it("no muta estado local si addIncident falla con 403", async () => {
-    supabaseMocks.insert.mockResolvedValueOnce({ error: { status: 403, message: "RLS" } });
+    supabaseMocks.incidentSingle.mockResolvedValueOnce({
+      data: null,
+      error: { status: 403, message: "RLS" },
+    });
     const { result } = renderStudentsSlice();
 
     await waitFor(() => expect(result.current.students).toHaveLength(1));
@@ -143,6 +159,34 @@ describe("useStudentsSlice addIncident", () => {
     expect(notificationMocks.sendWhatsAppNotification).not.toHaveBeenCalled();
   });
 
+  it("conserva el UUID y la fecha confirmados por Postgres", async () => {
+    const { result } = renderStudentsSlice();
+    await waitFor(() => expect(result.current.students).toHaveLength(1));
+
+    let saved: boolean | undefined;
+    await act(async () => {
+      saved = await result.current.addIncident(
+        "student-1",
+        IncidentType.CONDUCTA,
+        "Acuerdo de acompañamiento en aula",
+      );
+    });
+
+    expect(saved).toBe(true);
+    expect(supabaseMocks.insert).toHaveBeenCalledWith({
+      alumno_id: "student-1",
+      tipo: "conducta",
+      descripcion: "Acuerdo de acompañamiento en aula",
+      reportado_por: "user-1",
+      fecha: expect.any(String),
+    });
+    expect(result.current.students[0].incidents[0]).toMatchObject({
+      id: "incident-db-confirmed",
+      date: "2026-07-18T18:00:00.000Z",
+      description: "Acuerdo de acompañamiento en aula",
+    });
+  });
+
   it("no truena cuando descripcion llega undefined", async () => {
     const { result } = renderStudentsSlice();
     await waitFor(() => expect(result.current.students).toHaveLength(1));
@@ -157,7 +201,7 @@ describe("useStudentsSlice addIncident", () => {
     expect(result.current.students[0].incidents).toHaveLength(0);
   });
 
-  it("reutiliza escalamiento, notificaciones y WhatsApp tras RPC post-emergencia", async () => {
+  it("reutiliza escalamiento sin enviar WhatsApp automáticamente tras RPC post-emergencia", async () => {
     const { result } = renderStudentsSlice();
     await waitFor(() => expect(result.current.students).toHaveLength(1));
 
@@ -175,13 +219,7 @@ describe("useStudentsSlice addIncident", () => {
     expect(saved).toBe(true);
     expect(result.current.students[0].incidents[0].id).toBe("incident-db-1");
     expect(addNotification).toHaveBeenCalled();
-    expect(notificationMocks.sendWhatsAppNotification).toHaveBeenCalledWith(
-      expect.objectContaining({
-        to: "5512345678",
-        studentName: "Alumno Prueba",
-        incidentType: IncidentType.CONDUCTA,
-      }),
-    );
+    expect(notificationMocks.sendWhatsAppNotification).not.toHaveBeenCalled();
     expect(logAudit).toHaveBeenCalledWith(
       "CREACION",
       expect.stringContaining("Protocolo Activado"),

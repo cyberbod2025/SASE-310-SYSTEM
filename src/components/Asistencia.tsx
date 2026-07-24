@@ -35,12 +35,23 @@ export const Asistencia: React.FC = () => {
 
   const handleRegister = async (student: Student, estado: "presente" | "retardo" | "falta") => {
     try {
-      await registerAttendance(student.id, estado);
-      
+      const attendanceSaved = await registerAttendance(student.id, estado);
+      if (!attendanceSaved) return;
+
       if (estado === "retardo") {
-        await addIncident(student.id, IncidentType.RETARDO, "Retardo registrado en control de asistencia");
+        const incidentSaved = await addIncident(
+          student.id,
+          IncidentType.RETARDO,
+          "Retardo registrado en control de asistencia",
+        );
+        if (!incidentSaved) return;
       } else if (estado === "falta") {
-        await addIncident(student.id, IncidentType.ASISTENCIA, "Inasistencia registrada en control de asistencia");
+        const incidentSaved = await addIncident(
+          student.id,
+          IncidentType.ASISTENCIA,
+          "Inasistencia registrada en control de asistencia",
+        );
+        if (!incidentSaved) return;
       }
 
       await logAudit(

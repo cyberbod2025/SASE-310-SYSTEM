@@ -4,11 +4,9 @@ import { routeAI } from "./aiRouter";
 
 export class AIClient {
   private static instance: AIClient;
-  public enabled: boolean = true; // Enabled by default now that we have a key
+  public enabled = true;
 
-  private constructor() {
-    // Inicialización administrada en aiRouter.ts
-  }
+  private constructor() {}
 
   public static getInstance(): AIClient {
     if (!AIClient.instance) {
@@ -30,12 +28,11 @@ export class AIClient {
       return {
         taskId: request.taskId,
         status: "error",
-        content: "El núcleo de IA no está configurado o está deshabilitado.",
-        metadata: { tokens: 0, latency: 0, riskScore: 0 },
+        content: "El núcleo de IA está deshabilitado.",
+        metadata: { tokens: 0, latency: 0 },
       };
     }
 
-    // 1. Guardrails
     for (const guard of SECURITY_GUARDS) {
       if (!guard.check(request.prompt, request.context)) {
         return {
@@ -48,12 +45,10 @@ export class AIClient {
 
     try {
       const startTime = Date.now();
-
-      // Construcción del contexto para el prompt
-      const contextPrompt = `Contexto del Sistema Escolar (SASE):\nRol: ${request.role}\n${JSON.stringify(request.context)}\n\nUsuario solicita: ${request.prompt}`;
-
-      // Llamada al router centralizado en lugar de generación directa
-      const response = await routeAI(contextPrompt, request.model);
+      const response = await routeAI(request.prompt, request.model, {
+        contextType: "asistente_institucional",
+        purpose: "Atender una consulta institucional asistida y no decisoria",
+      });
       const latency = Date.now() - startTime;
 
       return {
@@ -63,18 +58,17 @@ export class AIClient {
         metadata: {
           tokens: response.tokens || 0,
           latency,
-          riskScore: 0.05,
         },
       };
-    } catch (error: any) {
+    } catch {
       if (import.meta.env.DEV) {
         console.warn("Error en IA-SASE");
       }
       return {
         taskId: request.taskId,
         status: "error",
-        content: `Error operativo en el Núcleo IA: ${error.message || "Desconocido"}`,
-        metadata: { tokens: 0, latency: 0, riskScore: 1 },
+        content: "No se pudo obtener un borrador institucional.",
+        metadata: { tokens: 0, latency: 0 },
       };
     }
   }

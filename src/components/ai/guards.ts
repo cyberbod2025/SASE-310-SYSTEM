@@ -1,28 +1,29 @@
 import { AIGuardRule } from "./types";
 
+const personalIdentifierPatterns = [
+  /\b[A-ZÑ&]{4}\d{6}[HM][A-ZÑ]{5}[A-Z0-9]\d\b/i,
+  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i,
+  /(?:\+?52[\s().-]*)?(?:\d[\s().-]*){10,13}/,
+  /\b(curp|rfc|matr[ií]cula|domicilio|direcci[oó]n particular|tel[eé]fono (?:del )?tutor|fecha de nacimiento|datos[_ ]?tutor|datos[_ ]?bap|diagn[oó]stico m[eé]dico)\b/i,
+  /["']?(nombre_completo|datos_tutor|datos_bap|phoneprimary|matricula|curp)["']?\s*:/i,
+  /\b(nombre(?:\s+completo)?|alumn[oa]|estudiante)\s*:\s*[\p{Lu}ÁÉÍÓÚÑ][\p{L}'-]+(?:\s+[\p{Lu}ÁÉÍÓÚÑ][\p{L}'-]+){1,5}/iu,
+];
+
 export const SECURITY_GUARDS: AIGuardRule[] = [
   {
-    id: "NO_PII_LEAK",
-    description: "Evitar envío de datos financieros o direcciones exactas",
-    check: (prompt: string) => {
-      // Regex simple para detectar posibles tarjetas o datos sensibles obvios
-      const creditCardRegex = /\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b/;
-      return !creditCardRegex.test(prompt);
-    },
+    id: "NO_IDENTIFICADORES_PERSONALES",
+    description:
+      "Impide enviar identificadores personales escolares a proveedores externos",
+    check: (prompt: string) =>
+      !personalIdentifierPatterns.some((pattern) => pattern.test(prompt)),
     errorMessage:
-      "La solicitud contiene datos sensibles que infringen el protocolo de privacidad.",
+      "Retire nombres, CURP, matrícula, contacto, domicilio o datos clínicos antes de solicitar apoyo externo.",
   },
   {
-    id: "APPROPRIATE_LANGUAGE",
-    description: "Bloquear lenguaje ofensivo o inapropiado",
-    check: (prompt: string) => {
-      const badWords = ["violencia", "insulto", "droga"]; // Lista simplificada
-      const lowerPrompt = prompt.toLowerCase();
-      // En un contexto escolar, "violencia" puede ser válida si es reporte,
-      // pero aquí simulamos un filtro estricto para el demo.
-      // Ajustamos: solo bloquear insultos explícitos (simulado)
-      return !lowerPrompt.includes("@@@"); // Placeholder
-    },
-    errorMessage: "Lenguaje inapropiado detectado.",
+    id: "LONGITUD_CONTROLADA",
+    description: "Limita la solicitud a un borrador breve y revisable",
+    check: (prompt: string) =>
+      prompt.trim().length > 0 && prompt.length <= 8000,
+    errorMessage: "La solicitud está vacía o excede el límite permitido.",
   },
 ];

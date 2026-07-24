@@ -363,18 +363,23 @@ export type Database = {
           atendido_por: string
           condiciones_entrega: string | null
           diagnostico: string | null
+          estado_atencion: string
+          fecha_seguimiento: string | null
           generado_por: string | null
           grupo: string | null
           hora: string
           id: string
           medicamento: string | null
           motivo: string | null
+          nivel_urgencia: string
           nombre_alumno: string | null
           notificacion_padres: string | null
           observaciones: string | null
           signos_vitales: string | null
           sintomas: string
+          tipo_salida: string | null
           tratamiento: string
+          updated_at: string
         }
         Insert: {
           acudieron_por_el?: string | null
@@ -383,18 +388,23 @@ export type Database = {
           atendido_por: string
           condiciones_entrega?: string | null
           diagnostico?: string | null
+          estado_atencion?: string
+          fecha_seguimiento?: string | null
           generado_por?: string | null
           grupo?: string | null
           hora?: string
           id?: string
           medicamento?: string | null
           motivo?: string | null
+          nivel_urgencia?: string
           nombre_alumno?: string | null
           notificacion_padres?: string | null
           observaciones?: string | null
           signos_vitales?: string | null
           sintomas: string
+          tipo_salida?: string | null
           tratamiento: string
+          updated_at?: string
         }
         Update: {
           acudieron_por_el?: string | null
@@ -403,18 +413,23 @@ export type Database = {
           atendido_por?: string
           condiciones_entrega?: string | null
           diagnostico?: string | null
+          estado_atencion?: string
+          fecha_seguimiento?: string | null
           generado_por?: string | null
           grupo?: string | null
           hora?: string
           id?: string
           medicamento?: string | null
           motivo?: string | null
+          nivel_urgencia?: string
           nombre_alumno?: string | null
           notificacion_padres?: string | null
           observaciones?: string | null
           signos_vitales?: string | null
           sintomas?: string
+          tipo_salida?: string | null
           tratamiento?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -442,7 +457,7 @@ export type Database = {
             foreignKeyName: "atenciones_medicas_atendido_por_fkey"
             columns: ["atendido_por"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "perfiles_usuario"
             referencedColumns: ["id"]
           },
         ]
@@ -537,6 +552,7 @@ export type Database = {
       }
       auditoria: {
         Row: {
+          alumno_id: string | null
           descripcion_accion: string | null
           email_usuario: string | null
           fecha: string | null
@@ -545,6 +561,8 @@ export type Database = {
           ip_address: string | null
           new_values: Json | null
           old_values: Json | null
+          origen: string
+          proposito: string | null
           rol_usuario: string | null
           tabla_objetivo: string | null
           tipo_accion: string
@@ -552,6 +570,7 @@ export type Database = {
           usuario_id: string | null
         }
         Insert: {
+          alumno_id?: string | null
           descripcion_accion?: string | null
           email_usuario?: string | null
           fecha?: string | null
@@ -560,6 +579,8 @@ export type Database = {
           ip_address?: string | null
           new_values?: Json | null
           old_values?: Json | null
+          origen?: string
+          proposito?: string | null
           rol_usuario?: string | null
           tabla_objetivo?: string | null
           tipo_accion: string
@@ -567,6 +588,7 @@ export type Database = {
           usuario_id?: string | null
         }
         Update: {
+          alumno_id?: string | null
           descripcion_accion?: string | null
           email_usuario?: string | null
           fecha?: string | null
@@ -575,6 +597,8 @@ export type Database = {
           ip_address?: string | null
           new_values?: Json | null
           old_values?: Json | null
+          origen?: string
+          proposito?: string | null
           rol_usuario?: string | null
           tabla_objetivo?: string | null
           tipo_accion?: string
@@ -1921,6 +1945,79 @@ export type Database = {
         }
         Relationships: []
       }
+      notificaciones_whatsapp: {
+        Row: {
+          alumno_id: string
+          creado_en: string
+          destinatario_ultimos4: string
+          error_codigo: string | null
+          error_detalle: string | null
+          estado: string
+          id: string
+          incidencia_id: string
+          proveedor: string
+          proveedor_mensaje_id: string | null
+          proposito: string
+          resuelto_en: string | null
+          rol_solicitante: string
+          solicitado_por: string
+        }
+        Insert: {
+          alumno_id: string
+          creado_en?: string
+          destinatario_ultimos4: string
+          error_codigo?: string | null
+          error_detalle?: string | null
+          estado?: string
+          id?: string
+          incidencia_id: string
+          proveedor?: string
+          proveedor_mensaje_id?: string | null
+          proposito: string
+          resuelto_en?: string | null
+          rol_solicitante: string
+          solicitado_por: string
+        }
+        Update: {
+          alumno_id?: string
+          creado_en?: string
+          destinatario_ultimos4?: string
+          error_codigo?: string | null
+          error_detalle?: string | null
+          estado?: string
+          id?: string
+          incidencia_id?: string
+          proveedor?: string
+          proveedor_mensaje_id?: string | null
+          proposito?: string
+          resuelto_en?: string | null
+          rol_solicitante?: string
+          solicitado_por?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificaciones_whatsapp_alumno_id_fkey"
+            columns: ["alumno_id"]
+            isOneToOne: false
+            referencedRelation: "alumnos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_whatsapp_incidencia_id_fkey"
+            columns: ["incidencia_id"]
+            isOneToOne: false
+            referencedRelation: "incidencias"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_whatsapp_solicitado_por_fkey"
+            columns: ["solicitado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       objetos_retenidos: {
         Row: {
           alumno_id: string | null
@@ -2552,27 +2649,42 @@ export type Database = {
       }
       salud: {
         Row: {
+          activa: boolean
+          actualizado_por: string | null
           alergias: string | null
           alumno_id: string
+          created_at: string
           id: string
+          indicaciones: string | null
           medicamentos: string | null
           padecimiento: string | null
+          tipo_alerta: string
           ultima_actualizacion: string
         }
         Insert: {
+          activa?: boolean
+          actualizado_por?: string | null
           alergias?: string | null
           alumno_id: string
+          created_at?: string
           id?: string
+          indicaciones?: string | null
           medicamentos?: string | null
           padecimiento?: string | null
+          tipo_alerta?: string
           ultima_actualizacion?: string
         }
         Update: {
+          activa?: boolean
+          actualizado_por?: string | null
           alergias?: string | null
           alumno_id?: string
+          created_at?: string
           id?: string
+          indicaciones?: string | null
           medicamentos?: string | null
           padecimiento?: string | null
+          tipo_alerta?: string
           ultima_actualizacion?: string
         }
         Relationships: [
@@ -2596,6 +2708,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "expediente_integral_alumno"
             referencedColumns: ["alumno_id"]
+          },
+          {
+            foreignKeyName: "salud_actualizado_por_fkey"
+            columns: ["actualizado_por"]
+            isOneToOne: false
+            referencedRelation: "perfiles_usuario"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2658,31 +2777,43 @@ export type Database = {
       }
       seguimiento_bap: {
         Row: {
-          ajuste_razonable: string | null
+          ajuste_razonable: string
           alumno_id: string
           creado_en: string | null
           creado_por: string | null
-          estatus: string | null
+          estatus: string
+          fecha_revision: string | null
           id: string
-          tipo_bap: string | null
+          observaciones: string | null
+          responsable: string | null
+          tipo_bap: string
+          tipo_evento: string
         }
         Insert: {
-          ajuste_razonable?: string | null
+          ajuste_razonable: string
           alumno_id: string
           creado_en?: string | null
           creado_por?: string | null
-          estatus?: string | null
+          estatus?: string
+          fecha_revision?: string | null
           id?: string
-          tipo_bap?: string | null
+          observaciones?: string | null
+          responsable?: string | null
+          tipo_bap: string
+          tipo_evento?: string
         }
         Update: {
-          ajuste_razonable?: string | null
+          ajuste_razonable?: string
           alumno_id?: string
           creado_en?: string | null
           creado_por?: string | null
-          estatus?: string | null
+          estatus?: string
+          fecha_revision?: string | null
           id?: string
-          tipo_bap?: string | null
+          observaciones?: string | null
+          responsable?: string | null
+          tipo_bap?: string
+          tipo_evento?: string
         }
         Relationships: [
           {
@@ -2769,8 +2900,11 @@ export type Database = {
           estatus: string | null
           fecha: string | null
           id: string
+          metadata: Json
           motivo: string | null
           seguimiento: string | null
+          tipo_evento: string
+          updated_at: string
         }
         Insert: {
           acuerdos?: string | null
@@ -2780,8 +2914,11 @@ export type Database = {
           estatus?: string | null
           fecha?: string | null
           id?: string
+          metadata?: Json
           motivo?: string | null
           seguimiento?: string | null
+          tipo_evento?: string
+          updated_at?: string
         }
         Update: {
           acuerdos?: string | null
@@ -2791,8 +2928,11 @@ export type Database = {
           estatus?: string | null
           fecha?: string | null
           id?: string
+          metadata?: Json
           motivo?: string | null
           seguimiento?: string | null
+          tipo_evento?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -3450,6 +3590,89 @@ export type Database = {
         Args: { p_student_id: string }
         Returns: undefined
       }
+      consultar_caja_negra: {
+        Args: {
+          p_busqueda?: string
+          p_categoria?: string
+          p_cursor_fecha?: string
+          p_cursor_id?: string
+          p_desde?: string
+          p_hasta?: string
+          p_limite?: number
+          p_rol?: string
+          p_tabla?: string
+        }
+        Returns: {
+          alumno_id: string | null
+          alumno_nombre: string | null
+          categoria_accion: string
+          descripcion_accion: string | null
+          email_usuario: string | null
+          fecha: string | null
+          id: string
+          id_registro_objetivo: string | null
+          origen: string
+          proposito: string | null
+          rol_usuario: string | null
+          tabla_objetivo: string | null
+          tipo_accion: string
+          total_filtrado: number
+          usuario_id: string | null
+        }[]
+      }
+      finalizar_aprobacion_personal: {
+        Args: {
+          p_aprobador_id?: string
+          p_auth_status?: string
+          p_es_tutor?: boolean
+          p_grupo_tutor?: string
+          p_grupos?: string[]
+          p_materias?: string[]
+          p_matricula_sase: string
+          p_solicitud_id: string
+          p_usuario_auth_id: string
+        }
+        Returns: Json
+      }
+      iniciar_notificacion_whatsapp: {
+        Args: {
+          p_incidencia_id: string
+          p_proposito: string
+          p_solicitante_id: string
+        }
+        Returns: {
+          alumno_nombre: string
+          destinatario: string
+          incidencia_tipo: string
+          intento_id: string
+        }[]
+      }
+      registrar_solicitud_personal: {
+        Args: {
+          p_acepta_auditoria: boolean
+          p_acepta_etica: boolean
+          p_acepta_privacidad: boolean
+          p_apellido_materno: string
+          p_apellido_paterno: string
+          p_cct: string
+          p_correo_institucional: string
+          p_curp: string
+          p_nombres: string
+          p_rol_declarado: string
+          p_turno: string
+        }
+        Returns: Json
+      }
+      resolver_notificacion_whatsapp: {
+        Args: {
+          p_error_codigo?: string
+          p_error_detalle?: string
+          p_estado: string
+          p_intento_id: string
+          p_proveedor_mensaje_id?: string
+        }
+        Returns: Json
+      }
       crear_plan_intervencion: {
         Args: {
           p_acciones: string
@@ -3584,6 +3807,98 @@ export type Database = {
       registrar_behavior_metric: {
         Args: { p_alumno_id: string }
         Returns: undefined
+      }
+      registrar_evento_bap: {
+        Args: {
+          p_ajuste_razonable: string
+          p_alumno_id: string
+          p_estatus?: string
+          p_fecha_revision?: string
+          p_observaciones?: string
+          p_responsable?: string
+          p_tipo_bap: string
+          p_tipo_evento: string
+        }
+        Returns: {
+          ajuste_razonable: string
+          alumno_id: string
+          creado_en: string
+          creado_por: string
+          datos_bap: Json
+          estatus: string
+          fecha_revision: string | null
+          id: string
+          observaciones: string | null
+          responsable: string | null
+          tipo_bap: string
+          tipo_evento: string
+        }[]
+      }
+      registrar_evento_auditoria: {
+        Args: {
+          p_alumno_id?: string
+          p_descripcion: string
+          p_id_registro_objetivo: string
+          p_proposito: string
+          p_tabla_objetivo: string
+          p_tipo_accion: string
+        }
+        Returns: string
+      }
+      rechazar_solicitud_personal: {
+        Args: {
+          p_aprobador_id: string
+          p_motivo: string
+          p_solicitud_id: string
+        }
+        Returns: Json
+      }
+      obtener_panorama_direccion: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          actualizacion_orientacion: string | null
+          actualizacion_reciente: string | null
+          alumno_id: string
+          bap_pendientes: number
+          caso_orientacion_id: string | null
+          diagnosticos_docentes: number
+          estado_orientacion: string | null
+          estado_semaforo: string
+          fuentes_activas: string[]
+          grupo: string
+          incidencias_abiertas: number
+          matricula: string
+          nombre_alumno: string
+          planes_orientacion_activos: number
+          prioridad_orientacion: string | null
+          proxima_accion: string | null
+          proxima_revision_bap: string | null
+          proxima_revision_orientacion: string | null
+          proxima_revision_salud: string | null
+          puntaje_riesgo: number
+          razones_atencion: string[]
+          requiere_atencion: boolean
+          salud_seguimientos_pendientes: number
+          seguimientos_orientacion: number
+          total_pendientes: number
+          trabajo_social_abiertos: number
+          ultima_actualizacion_social: string | null
+          ultima_incidencia: string | null
+        }[]
+      }
+      referir_caso_orientacion: {
+        Args: {
+          p_alumno_id: string
+          p_motivo: string
+          p_prioridad?: string
+          p_resumen?: string
+        }
+        Returns: {
+          caso_existente: boolean
+          caso_id: string
+          responsable_id: string
+          responsable_nombre: string | null
+        }[]
       }
       registrar_diagnostico: {
         Args: {

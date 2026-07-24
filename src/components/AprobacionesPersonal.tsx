@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../supabase/client";
+import { supabase } from "../lib/supabaseClient";
 import toast from "react-hot-toast";
-import { combinarPermisos } from "../utils/permisos";
+import {
+  approveStaffRequest,
+  rejectStaffRequest,
+} from "./personal/aprobacionPersonalPersistence";
 
 interface Solicitud {
   id: string;
@@ -23,10 +26,6 @@ interface Solicitud {
   observaciones: string | null;
   estado: "PENDIENTE" | "APROBADA" | "RECHAZADA" | "OBSERVACIONES";
   observaciones_validacion: string | null;
-  metadata?: {
-    cct?: string;
-    folio_solicitud?: string;
-  };
 }
 
 export const AprobacionesPersonal: React.FC = () => {
@@ -88,7 +87,9 @@ export const AprobacionesPersonal: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from("solicitudes_alta_personal")
-        .select("*")
+        .select(
+          "id, created_at, matricula_sase, rol_solicitado, turno, nombres, apellido_paterno, apellido_materno, curp, correo_institucional, telefono, materias, grupos, es_tutor, grupo_tutor, area_cobertura, observaciones, estado, observaciones_validacion",
+        )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -110,171 +111,58 @@ export const AprobacionesPersonal: React.FC = () => {
     setProcesando(solicitud.id);
 
     try {
-      let userId = "";
-
-      // INTENTO 1: Crear usuario Real via Edge Function (Seguro)
-      try {
-        // Generate a cryptographically safer-ish random temp password
-        // Generate a cryptographically secure random temp password
-        const secureRandomString = () => {
-          const array = new Uint8Array(12);
-          window.crypto.getRandomValues(array);
-          return Array.from(array, byte => byte.toString(36).padStart(2, '0')).join('');
-        };
-        const tempPassword = secureRandomString().slice(0, 14) + "!@#A1";
-
-        const { data, error } = await supabase.functions.invoke("create-user", {
-          body: {
-            email: solicitud.correo_institucional,
-            password: tempPassword,
-            userData: {
-              full_name: `${solicitud.nombres} ${solicitud.apellido_paterno} ${solicitud.apellido_materno}`,
-              curp: solicitud.curp,
-            },
-          },
-        });
-
-        if (error) throw error;
-        if (data?.user) {
-          userId = data.user.id;
-        } else {
-          throw new Error("No user ID returned from Edge Function");
-        }
-      } catch (edgeErr: any) {
-        if (import.meta.env.DEV) {
-          console.warn(
-            "Edge Function Failed (Expected if not deployed), using Simulation Mode...",
-            edgeErr,
-          );
-
-          // MODO SIMULACIÓN: Para desarrollo/preview sin Edge Functions configuradas
-          toast("Modo Simulación: Aprobando sin crear Auth User real.", {
-            icon: "🔧",
-          });
-          userId = `sim-${Date.now()}`;
-        } else {
-          // En PROD, si la Edge Function falla, detenemos el proceso
-          console.error("Critical Security Error in Edge Function:", edgeErr);
-          toast.error(
-            "Error Crítico de Seguridad: " +
-              (edgeErr.message || "Fallo en creación de usuario"),
-          );
-          throw edgeErr;
-        }
-      }
-
-      // 2. Calcular permisos combinados (Asumimos el rol principal como base)
-      const rolesFinales = [...(solicitud.rol_solicitado || [])];
-      if (assignmentData.es_tutor && !rolesFinales.includes("docente_tutor")) {
-        rolesFinales.push("docente_tutor");
-      }
-      const permisosCombinados = combinarPermisos(rolesFinales);
-
-      // 3. Crear perfil en perfiles_usuario
-      try {
-        const { error: perfilError } = await supabase
-          .from("perfiles_usuario")
-          .insert([
-            {
-              id: userId,
-              matricula_sase: assignmentData.matricula_sase,
-              rol: rolesFinales[0],
-              nombre_completo: `${solicitud.nombres} ${solicitud.apellido_paterno} ${solicitud.apellido_materno}`,
-              curp: solicitud.curp,
-              email: solicitud.correo_institucional,
-              telefono: solicitud.telefono || undefined,
-              materias: assignmentData.materias.join(", "),
-              grupos: assignmentData.grupos,
-              turno: solicitud.turno,
-              es_tutor: assignmentData.es_tutor,
-              grupo_tutor: assignmentData.grupo_tutor,
-              alcances: permisosCombinados,
-              estado_cuenta: "activo",
-            },
-          ] as any);
-
-        if (perfilError) throw perfilError;
-      } catch (perfilErr) {
-        console.warn("Perfil creation failed (DB constraint):", perfilErr);
-      }
-
-      // 4. Actualizar solicitud -> APROBADA
-      const { data: userData } = await supabase.auth.getUser();
-      const { error: updateError } = await supabase
-        .from("solicitudes_alta_personal")
-        .update({
-          estado: "APROBADA",
-          aprobado_por: userData?.user?.id || "admin-simulado",
-          aprobado_en: new Date().toISOString(),
-          matricula_sase: assignmentData.matricula_sase,
-          es_tutor: assignmentData.es_tutor,
-          grupo_tutor: assignmentData.grupo_tutor,
-          materias: assignmentData.materias,
-          grupos: assignmentData.grupos,
-        })
-        .eq("id", solicitud.id);
-
-      if (updateError) throw updateError;
-
-      // 5. Registrar en auditoría
-      await supabase.from("auditoria").insert({
-        tipo_accion: "APROBACION_PERSONAL",
-        descripcion_accion: `Aprobada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Matrícula SASE asignada: ${assignmentData.matricula_sase} [ALUMNO: ${solicitud.nombres} ${solicitud.apellido_paterno}]`,
-        tabla_objetivo: "solicitudes_alta_personal",
-        id_registro_objetivo: solicitud.id,
-        new_values: { userIdAsignado: userId, asignacion: assignmentData } as any,
+      const result = await approveStaffRequest({
+        requestId: solicitud.id,
+        matriculaSase: assignmentData.matricula_sase,
+        grupos: assignmentData.grupos,
+        materias: assignmentData.materias,
+        esTutor: assignmentData.es_tutor,
+        grupoTutor: assignmentData.grupo_tutor || null,
       });
 
       toast.success(
-        `✅ Personal activado con éxito. Matrícula: ${assignmentData.matricula_sase}`,
+        result.alreadyExisted
+          ? `Solicitud aprobada y perfil activado. Matrícula: ${assignmentData.matricula_sase}`
+          : `Solicitud aprobada; invitación enviada. Matrícula: ${assignmentData.matricula_sase}`,
       );
-      cargarSolicitudes();
+      if (!result.metadataSynchronized) {
+        toast(
+          "La aprobación quedó confirmada; la metadata Auth de compatibilidad requiere revisión.",
+          { icon: "⚠️" },
+        );
+      }
+      await cargarSolicitudes();
       setSolicitudSeleccionada(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error crítico aprobando solicitud:", error);
-      toast.error(error.message || "Error al aprobar solicitud");
+      toast.error(
+        error instanceof Error ? error.message : "Error al aprobar solicitud",
+      );
     } finally {
       setProcesando(null);
     }
   };
 
   const rechazarSolicitud = async (solicitud: Solicitud) => {
-    if (!motivoRechazo.trim()) {
-      toast.error("Ingresa un motivo de rechazo");
+    if (motivoRechazo.trim().length < 10) {
+      toast.error("El motivo debe contener al menos 10 caracteres");
       return;
     }
 
     setProcesando(solicitud.id);
 
     try {
-      const { data: userData } = await supabase.auth.getUser();
+      await rejectStaffRequest(solicitud.id, motivoRechazo);
 
-      const { error } = await supabase
-        .from("solicitudes_alta_personal")
-        .update({
-          estado: "RECHAZADA",
-          observaciones_validacion: motivoRechazo,
-          aprobado_por: userData?.user?.id,
-          aprobado_en: new Date().toISOString(),
-        })
-        .eq("id", solicitud.id);
-
-      if (error) throw error;
-
-      await supabase.from("auditoria").insert({
-        tipo_accion: "RECHAZO_PERSONAL",
-        descripcion_accion: `Rechazada solicitud de ${solicitud.nombres} ${solicitud.apellido_paterno}. Motivo: ${motivoRechazo}`,
-        tabla_objetivo: "solicitudes_alta_personal",
-        id_registro_objetivo: solicitud.id,
-      });
-
-      toast.success("❌ Solicitud rechazada");
-      cargarSolicitudes();
+      toast.success("Solicitud rechazada y documentada");
+      await cargarSolicitudes();
       setSolicitudSeleccionada(null);
       setMotivoRechazo("");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error rechazando solicitud:", error);
-      toast.error("Error al rechazar solicitud");
+      toast.error(
+        error instanceof Error ? error.message : "Error al rechazar solicitud",
+      );
     } finally {
       setProcesando(null);
     }
@@ -457,11 +345,6 @@ export const AprobacionesPersonal: React.FC = () => {
                         <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
                           CURP: {solicitudSeleccionada.curp}
                         </p>
-                        {solicitudSeleccionada.metadata?.cct && (
-                          <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
-                            CCT: {solicitudSeleccionada.metadata.cct}
-                          </p>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -610,7 +493,7 @@ export const AprobacionesPersonal: React.FC = () => {
                         disabled={procesando === solicitudSeleccionada.id}
                         onClick={() => aprobarSolicitud(solicitudSeleccionada)}
                         className="w-full h-16 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-900/40 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-                        title="Finalizar proceso y activar las credenciales del personal"
+                        title="Aprobar la solicitud y enviar o vincular la invitación institucional"
                       >
                         {procesando === solicitudSeleccionada.id ? (
                           <>
@@ -622,7 +505,7 @@ export const AprobacionesPersonal: React.FC = () => {
                             <span className="material-symbols-outlined">
                               how_to_reg
                             </span>
-                            Activar Personal
+                            Aprobar e invitar
                           </>
                         )}
                       </button>

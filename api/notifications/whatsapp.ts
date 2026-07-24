@@ -1,271 +1,387 @@
 import { createClient } from "@supabase/supabase-js";
+import { getRateLimitKey, isRateLimited } from "../ai/rateLimit";
 
 type VercelRequest = any;
 type VercelResponse = any;
 
-const WHATSAPP_ALLOWED_ROLES = new Set([
+type NotificationStartRow = {
+  intento_id: string;
+  destinatario: string;
+  alumno_nombre: string;
+  incidencia_tipo: string;
+};
+
+type NotificationStatus = "ENVIADO" | "SIMULADO" | "FALLIDO";
+
+const ALLOWED_FIELDS = new Set(["incidentId"]);
+const ALLOWED_ROLES = new Set([
   "directivo",
   "subdireccion",
-  "docente",
-  "docente_tutor",
   "prefectura",
   "orientacion",
   "trabajo_social",
+  "docente_tutor",
   "medico_escolar",
-  "udeii",
-  "promotora_lectura",
-  "secretaria",
-  "developer",
   "system_admin",
+  "developer",
 ]);
-
-const ROLE_ALIASES: Record<string, string> = {
-  direccion: "directivo",
-  directivo: "directivo",
-  enfermeria: "medico_escolar",
-  medico_escolar: "medico_escolar",
-  promotora: "promotora_lectura",
-  promotora_lectura: "promotora_lectura",
-  desarrollador: "developer",
-  developer: "developer",
-  admin: "directivo",
-  system_admin: "system_admin",
-  subdireccion: "subdireccion",
-  docente: "docente",
-  docente_tutor: "docente_tutor",
-  prefectura: "prefectura",
-  orientacion: "orientacion",
-  trabajo_social: "trabajo_social",
-  udeii: "udeii",
-  secretaria: "secretaria",
-};
-
-/**
- * SASE-310: WhatsApp Notification Service
- * Este endpoint maneja el envío de notificaciones críticas a padres y personal.
- * Implementado siguiendo los principios de seguridad y estabilidad institucional.
- */
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const NOTIFICATION_PURPOSE =
+  "Comunicar al tutor una incidencia institucional registrada";
 
 function isAllowedOrigin(origin: string | undefined): boolean {
-  const allowed = process.env.ALLOWED_ORIGINS;
-  if (!allowed) return false;
-  if (!origin) return false;
-  return allowed
+  const configuredOrigins = process.env.ALLOWED_ORIGINS;
+  if (!configuredOrigins || !origin) return false;
+
+  return configuredOrigins
     .split(",")
-    .map((o) => o.trim())
+    .map((item) => item.trim())
     .filter(Boolean)
     .includes(origin);
 }
 
-function setCorsHeaders(res: VercelResponse, origin: string | undefined) {
+function setCorsHeaders(
+  response: VercelResponse,
+  origin: string | undefined,
+): void {
   if (!origin) return;
-  res.setHeader("Access-Control-Allow-Origin", origin);
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader(
+  response.setHeader("Access-Control-Allow-Origin", origin);
+  response.setHeader("Vary", "Origin");
+  response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  response.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
+    "Authorization, Content-Type",
   );
-  res.setHeader("Access-Control-Max-Age", "86400");
+  response.setHeader("Access-Control-Max-Age", "86400");
 }
 
-function normalizeRole(role: unknown): string | null {
-  if (typeof role !== "string") return null;
-  const normalized = role.trim().toLowerCase();
-  if (!normalized) return null;
-  return ROLE_ALIASES[normalized] || normalized;
+function getBearerToken(authorization: unknown): string | null {
+  if (typeof authorization !== "string") return null;
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
+  return match?.[1]?.trim() || null;
 }
 
-async function resolveInstitutionalRole(supabase: any, userId: string) {
-  const { data: institutionalProfile } = await supabase
+function isNotificationStartRow(value: unknown): value is NotificationStartRow {
+  if (!value || typeof value !== "object") return false;
+  const row = value as Record<string, unknown>;
+  return (
+    typeof row.intento_id === "string" &&
+    UUID_PATTERN.test(row.intento_id) &&
+    typeof row.destinatario === "string" &&
+    /^\d{10,15}$/.test(row.destinatario) &&
+    typeof row.alumno_nombre === "string" &&
+    row.alumno_nombre.trim().length > 0 &&
+    typeof row.incidencia_tipo === "string" &&
+    row.incidencia_tipo.trim().length > 0
+  );
+}
+
+function statusForDatabaseError(code: string | undefined): number {
+  if (code === "42501") return 403;
+  if (code === "P0002") return 404;
+  if (code === "23505" || code === "23514") return 409;
+  return 400;
+}
+
+function providerErrorCode(payload: unknown): string {
+  if (!payload || typeof payload !== "object") return "META_RECHAZADO";
+  const error = (payload as Record<string, unknown>).error;
+  if (!error || typeof error !== "object") return "META_RECHAZADO";
+  const code = (error as Record<string, unknown>).code;
+  return typeof code === "number" || typeof code === "string"
+    ? `META_${String(code).slice(0, 40)}`
+    : "META_RECHAZADO";
+}
+
+function providerMessageId(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+  const messages = (payload as Record<string, unknown>).messages;
+  if (!Array.isArray(messages) || messages.length === 0) return null;
+  const first = messages[0];
+  if (!first || typeof first !== "object") return null;
+  const id = (first as Record<string, unknown>).id;
+  return typeof id === "string" && id.trim() ? id.trim().slice(0, 200) : null;
+}
+
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse,
+) {
+  if (!process.env.ALLOWED_ORIGINS) {
+    response.status(500).json({ error: "CORS origins not configured" });
+    return;
+  }
+
+  const origin = request.headers?.origin;
+  if (!isAllowedOrigin(origin)) {
+    response.status(403).json({ error: "Forbidden origin" });
+    return;
+  }
+  setCorsHeaders(response, origin);
+
+  if (request.method === "OPTIONS") {
+    response.status(204).end();
+    return;
+  }
+  if (request.method !== "POST") {
+    response.status(405).json({ error: "Method Not Allowed" });
+    return;
+  }
+
+  const accessToken = getBearerToken(request.headers?.authorization);
+  if (!accessToken) {
+    response.status(401).json({ error: "Authentication required" });
+    return;
+  }
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceRoleKey) {
+    response.status(500).json({ error: "Missing Supabase service credentials" });
+    return;
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser(accessToken);
+  if (authError || !user) {
+    response.status(401).json({ error: "Invalid authentication" });
+    return;
+  }
+
+  const { data: profile, error: profileError } = await supabase
     .from("perfiles_usuario")
     .select("rol")
-    .eq("id", userId)
+    .eq("id", user.id)
+    .eq("estado_cuenta", "activo")
+    .eq("seguridad_status", "active")
     .maybeSingle();
-
-  const institutionalRole = normalizeRole(institutionalProfile?.rol);
-  if (institutionalRole) return institutionalRole;
-
-  const { data: legacyProfile } = await supabase
-    .from("profiles")
-    .select("role, rol")
-    .eq("id", userId)
-    .maybeSingle();
-
-  return normalizeRole(legacyProfile?.rol || legacyProfile?.role);
-}
-
-async function insertAuditEntry(
-  supabase: any,
-  params: {
-    userId: string;
-    email: string | null | undefined;
-    role: string;
-    to: string;
-    studentName?: string;
-    incidentType?: string;
-    status: string;
-  },
-) {
-  const { error } = await supabase.from("auditoria").insert({
-    usuario_id: params.userId,
-    email_usuario: params.email ?? null,
-    rol_usuario: params.role,
-    tipo_accion: "NOTIFICACION_WHATSAPP",
-    descripcion_accion:
-      `WhatsApp ${params.status} a ${params.to} para ${params.studentName || "alumno no especificado"} (${params.incidentType || "incidencia no especificada"}).`,
-    tabla_objetivo: "incidencias",
-  });
-
-  if (error) {
-    console.warn("[SASE-WHATSAPP] No se pudo registrar auditoría:", error.message);
-  }
-}
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (!process.env.ALLOWED_ORIGINS) {
-    res.status(500).json({ error: "CORS origins not configured" });
+  if (
+    profileError ||
+    !profile ||
+    typeof profile.rol !== "string" ||
+    !ALLOWED_ROLES.has(profile.rol)
+  ) {
+    response.status(403).json({ error: "Institutional role not authorized" });
     return;
   }
 
-  const origin = req.headers.origin;
-  if (!isAllowedOrigin(origin)) {
-    res.status(403).json({ error: "Forbidden origin" });
+  const rateKey = `${user.id}:${getRateLimitKey(request)}`;
+  if (await isRateLimited(`whatsapp:${rateKey}`, 10, 60_000)) {
+    response.status(429).json({ error: "Rate limit exceeded" });
     return;
   }
 
-  setCorsHeaders(res, origin);
-
-  if (req.method === "OPTIONS") {
-    res.status(204).end();
+  const body = request.body ?? {};
+  if (
+    typeof body !== "object" ||
+    Array.isArray(body) ||
+    Object.keys(body).some((key) => !ALLOWED_FIELDS.has(key))
+  ) {
+    response.status(400).json({ error: "Invalid request body" });
     return;
   }
 
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed" });
+  const { incidentId } = body as { incidentId?: unknown };
+  if (typeof incidentId !== "string" || !UUID_PATTERN.test(incidentId)) {
+    response.status(400).json({ error: "Invalid incidentId" });
     return;
   }
 
-  // Authentication Check (Only authenticated staff can trigger notifications)
-  const authHeader = req.headers.authorization || (req.headers.Authorization as string | undefined);
-  if (!authHeader || typeof authHeader !== "string") {
-    res.status(401).json({ error: "No autorizado" });
-    return;
-  }
+  let attemptId: string | null = null;
+  let attemptResolved = false;
+  let providerConfirmed = false;
 
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7).trim() : "";
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const resolveAttempt = async (
+    status: NotificationStatus,
+    providerId?: string,
+    errorCode?: string,
+    errorDetail?: string,
+  ): Promise<void> => {
+    if (!attemptId) throw new Error("ATTEMPT_NOT_STARTED");
+    const { data, error } = await supabase.rpc(
+      "resolver_notificacion_whatsapp",
+      {
+        p_intento_id: attemptId,
+        p_estado: status,
+        p_proveedor_mensaje_id: providerId ?? null,
+        p_error_code: errorCode ?? null,
+        p_error_detail: errorDetail ?? null,
+      },
+    );
+    if (error || !data || typeof data !== "object") {
+      throw new Error("ATTEMPT_RESOLUTION_FAILED");
+    }
+    attemptResolved = true;
+  };
 
-  if (!supabaseUrl || !serviceRoleKey) {
-    res.status(500).json({ error: "Error de configuración del servidor" });
-    return;
-  }
-
-  const supabase = createClient(supabaseUrl, serviceRoleKey);
-  const { data: authData, error: authError } = await supabase.auth.getUser(token);
-
-  if (authError || !authData?.user) {
-    res.status(401).json({ error: "Sesión inválida" });
-    return;
-  }
-
-  const requesterRole = await resolveInstitutionalRole(supabase, authData.user.id);
-  if (!requesterRole || !WHATSAPP_ALLOWED_ROLES.has(requesterRole)) {
-    res.status(403).json({ error: "Permisos institucionales insuficientes" });
-    return;
-  }
-
-  // Payload Validation
-  const { to, message, studentName, incidentType } = req.body ?? {};
-
-  if (typeof to !== "string" || typeof message !== "string" || !to.trim() || !message.trim()) {
-    res.status(400).json({ error: "Faltan datos obligatorios (destinatario o mensaje)" });
-    return;
-  }
-
-  const cleanRecipient = to.trim();
-  const cleanMessage = message.trim();
-
-  /**
-   * INTEGRACIÓN CON WHATSAPP BUSINESS API (META)
-   * Aquí se realizaría la llamada real a la API de Meta o Twilio.
-   * Por ahora, implementamos la lógica de registro y simulamos el envío.
-   */
-  
-  const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
-  const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_ID;
-
-  if (!WHATSAPP_TOKEN || !PHONE_NUMBER_ID) {
-    // Modo Simulación / Loggeado si no hay llaves configuradas
-    console.log(`[SASE-WHATSAPP] MOCK SEND to ${cleanRecipient}: ${cleanMessage}`);
-    await insertAuditEntry(supabase, {
-      userId: authData.user.id,
-      email: authData.user.email,
-      role: requesterRole,
-      to: cleanRecipient,
-      studentName,
-      incidentType,
-      status: "SIMULADO",
-    });
-
-    res.status(200).json({ 
-      success: true, 
-      status: "simulated",
-      message: "Notificación procesada en modo simulación (Faltan variables de entorno)" 
-    });
-    return;
-  }
-
-  // Llamada Real a Meta API (Opcional si el usuario provee las llaves)
   try {
-    const response = await fetch(
-      `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`,
+    const { data: startData, error: startError } = await supabase.rpc(
+      "iniciar_notificacion_whatsapp",
+      {
+        p_incidencia_id: incidentId,
+        p_solicitante_id: user.id,
+        p_proposito: NOTIFICATION_PURPOSE,
+      },
+    );
+    if (startError) {
+      console.error(
+        "No se pudo iniciar la notificación institucional",
+        startError.code,
+      );
+      response.status(statusForDatabaseError(startError.code)).json({
+        error: "No se pudo iniciar la notificación institucional.",
+      });
+      return;
+    }
+
+    const startRow = Array.isArray(startData) ? startData[0] : startData;
+    if (startRow && typeof startRow === "object") {
+      const candidateId = (startRow as Record<string, unknown>).intento_id;
+      if (typeof candidateId === "string" && UUID_PATTERN.test(candidateId)) {
+        attemptId = candidateId;
+      }
+    }
+    if (!isNotificationStartRow(startRow)) {
+      if (attemptId) {
+        await resolveAttempt(
+          "FALLIDO",
+          undefined,
+          "RESPUESTA_INSTITUCIONAL_INVALIDA",
+          "La base no devolvió todos los datos requeridos para el envío.",
+        );
+      }
+      response.status(502).json({
+        error: "La base no confirmó el intento de notificación.",
+      });
+      return;
+    }
+    attemptId = startRow.intento_id;
+
+    const whatsappToken = process.env.WHATSAPP_TOKEN;
+    const whatsappPhoneId = process.env.WHATSAPP_PHONE_ID;
+    if (!whatsappToken || !whatsappPhoneId) {
+      await resolveAttempt(
+        "SIMULADO",
+        undefined,
+        "CANAL_NO_CONFIGURADO",
+        "El canal institucional de WhatsApp no está configurado.",
+      );
+      response.status(200).json({
+        delivered: false,
+        status: "simulated",
+        attemptId,
+        incidentId,
+        error:
+          "Canal no configurado; la incidencia no fue marcada como notificada.",
+      });
+      return;
+    }
+
+    const providerResponse = await fetch(
+      `https://graph.facebook.com/v21.0/${encodeURIComponent(whatsappPhoneId)}/messages`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+          Authorization: `Bearer ${whatsappToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           messaging_product: "whatsapp",
-          to: cleanRecipient.replace(/\D/g, ""), // Limpiar formato a E.164 sin +
+          to: startRow.destinatario,
           type: "template",
           template: {
-            name: "incidencia_critica", // Template pre-aprobado por Meta para SASE
+            name: "incidencia_critica",
             language: { code: "es_MX" },
             components: [
               {
                 type: "body",
                 parameters: [
-                  { type: "text", text: studentName || "el alumno" },
-                  { type: "text", text: incidentType || "conducta" }
-                ]
-              }
-            ]
-          }
+                  { type: "text", text: startRow.alumno_nombre },
+                  { type: "text", text: startRow.incidencia_tipo },
+                ],
+              },
+            ],
+          },
         }),
-      }
+      },
     );
+    const providerPayload: unknown = await providerResponse
+      .json()
+      .catch(() => null);
 
-    const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error?.message || "Error en Meta API");
-      }
-
-      await insertAuditEntry(supabase, {
-        userId: authData.user.id,
-        email: authData.user.email,
-        role: requesterRole,
-        to: cleanRecipient,
-        studentName,
-        incidentType,
-        status: "ENVIADO",
+    if (!providerResponse.ok) {
+      await resolveAttempt(
+        "FALLIDO",
+        undefined,
+        providerErrorCode(providerPayload),
+        "El proveedor rechazó la solicitud de envío.",
+      );
+      response.status(502).json({
+        delivered: false,
+        status: "failed",
+        attemptId,
+        error: "El proveedor no confirmó el envío de la notificación.",
       });
+      return;
+    }
 
-      res.status(200).json({ success: true, meta_id: result.messages?.[0]?.id });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    const messageId = providerMessageId(providerPayload);
+    if (!messageId) {
+      await resolveAttempt(
+        "FALLIDO",
+        undefined,
+        "RESPUESTA_SIN_ID",
+        "El proveedor respondió sin un identificador de entrega.",
+      );
+      response.status(502).json({
+        delivered: false,
+        status: "failed",
+        attemptId,
+        error: "El proveedor no confirmó el envío de la notificación.",
+      });
+      return;
+    }
+
+    providerConfirmed = true;
+    await resolveAttempt("ENVIADO", messageId);
+    response.status(200).json({
+      delivered: true,
+      status: "sent",
+      attemptId,
+      incidentId,
+      messageId,
+    });
+  } catch (error) {
+    if (attemptId && !attemptResolved && !providerConfirmed) {
+      try {
+        await resolveAttempt(
+          "FALLIDO",
+          undefined,
+          "ERROR_SERVIDOR",
+          "El servidor no pudo completar el intento de notificación.",
+        );
+      } catch {
+        console.error(
+          "No se pudo cerrar el intento de notificación",
+          "ATTEMPT_RESOLUTION_FAILED",
+        );
+      }
+    }
+    console.error(
+      "Falló la notificación institucional",
+      error instanceof Error ? error.message : "UNKNOWN_ERROR",
+    );
+    response.status(500).json({
+      delivered: false,
+      status: "failed",
+      attemptId,
+      error: "No se pudo completar la notificación institucional.",
+    });
   }
 }

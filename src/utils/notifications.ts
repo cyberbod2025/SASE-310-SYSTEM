@@ -1,46 +1,118 @@
-import { supabase } from "../supabase/client";
+import { supabase } from "../lib/supabaseClient";
 
-/**
- * Utilidad frontend para interactuar con el servicio de notificaciones SASE.
- */
-
-interface WhatsAppNotificationParams {
-  to: string;
-  message: string;
-  studentName?: string;
-  incidentType?: string;
+export interface WhatsAppNotificationParams {
+  incidentId: string;
 }
 
-export const sendWhatsAppNotification = async (params: WhatsAppNotificationParams) => {
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      throw new Error("No hay sesión activa para enviar notificaciones");
+export type WhatsAppNotificationResult =
+  | {
+      delivered: true;
+      status: "sent";
+      attemptId: string;
+      incidentId: string;
+      messageId: string;
     }
+  | {
+      delivered: false;
+      status: "simulated" | "failed";
+      attemptId?: string;
+      incidentId?: string;
+      error: string;
+    };
 
+const readString = (
+  value: unknown,
+  key: string,
+): string | undefined => {
+  if (!value || typeof value !== "object") return undefined;
+  const field = (value as Record<string, unknown>)[key];
+  return typeof field === "string" && field.trim() ? field.trim() : undefined;
+};
+
+/**
+ * Solicita al servidor una notificación institucional. El navegador solo
+ * identifica la incidencia; teléfono, plantilla y contenido se resuelven en
+ * el servidor.
+ */
+export const sendWhatsAppNotification = async (
+  params: WhatsAppNotificationParams,
+): Promise<WhatsAppNotificationResult> => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    return {
+      delivered: false,
+      status: "failed",
+      error: "No hay una sesión institucional activa.",
+    };
+  }
+
+  try {
     const response = await fetch("/api/notifications/whatsapp", {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${session.access_token}`,
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${session.access_token}`
       },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ incidentId: params.incidentId }),
     });
+    const payload: unknown = await response.json().catch(() => null);
+    const attemptId = readString(payload, "attemptId");
+    const incidentId = readString(payload, "incidentId");
+    const status = readString(payload, "status");
+    const error =
+      readString(payload, "error") ||
+      "No se confirmó la entrega de la notificación.";
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || "Error al enviar notificación");
+    if (
+      response.ok &&
+      status === "sent" &&
+      payload &&
+      typeof payload === "object" &&
+      (payload as Record<string, unknown>).delivered === true
+    ) {
+      const messageId = readString(payload, "messageId");
+      if (attemptId && incidentId && messageId) {
+        return {
+          delivered: true,
+          status: "sent",
+          attemptId,
+          incidentId,
+          messageId,
+        };
+      }
     }
 
-    return { 
-      success: true, 
-      status: result.status, 
-      messageId: result.meta_id 
+    if (
+      response.ok &&
+      status === "simulated" &&
+      payload &&
+      typeof payload === "object" &&
+      (payload as Record<string, unknown>).delivered === false
+    ) {
+      return {
+        delivered: false,
+        status: "simulated",
+        attemptId,
+        incidentId,
+        error,
+      };
+    }
+
+    return {
+      delivered: false,
+      status: "failed",
+      attemptId,
+      incidentId,
+      error,
     };
-  } catch (error: any) {
-    console.error("[WhatsAppService] Error:", error.message);
-    return { success: false, error: error.message };
+  } catch {
+    return {
+      delivered: false,
+      status: "failed",
+      error: "No se pudo conectar con el servicio institucional de mensajería.",
+    };
   }
 };

@@ -12,7 +12,6 @@ import {
   TIPOS_DOCUMENTO,
 } from "./types";
 import { generarPlantillaHTML } from "./plantillas";
-import { generarPromptDocumento } from "./prompts";
 import { analizarDocumento, Advertencia } from "./detectarAdvertencias";
 import {
   mejorarRedaccionInstitucional,
@@ -137,24 +136,24 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
 
   const checkCitatoriosPrevios = useCallback(async () => {
     try {
-      // Buscar documentos previos tipo citatorio para este alumno
+      // Consultar documentos persistidos, no una tabla de auditoría legada.
       const { data, error } = await (supabase as any)
-        .from("audit_log")
+        .from("documentos_institucionales")
         .select("id")
-        .eq("target_record_id", studentId)
-        .ilike("action_description", "%citatorio%")
+        .eq("alumno_id", studentId)
+        .eq("tipo", "citatorio_padres")
         .limit(10);
 
-      if (!error && data) {
-        setCitatoriosPrevios(data.length);
-      }
-    } catch {
-      // Silencioso — no bloquea funcionalidad
+      if (error) throw error;
+      setCitatoriosPrevios(data?.length ?? 0);
+    } catch (error) {
+      console.error("No se confirmó el historial de citatorios:", error);
+      setCitatoriosPrevios(0);
     }
   }, [studentId]);
 
-  // Generar borrador con IA
-  const handleGenerarBorrador = async () => {
+  // Generar borrador local para evitar transferir datos del caso.
+  const handleGenerarBorrador = () => {
     if (!datos.descripcion.trim()) {
       toast.error("Ingrese una descripción del incidente");
       return;
@@ -166,34 +165,13 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     setFolio(nuevoFolio);
     setDocumentoRegistrado(false);
 
-    try {
-      const prompt = generarPromptDocumento(tipoDoc, datos);
-      const response = await fetch("/api/ai/gemini", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model: "gemini-2.0-flash" }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData?.error || response.statusText);
-      }
-
-      const data = await response.json();
-      const texto = (data?.text || "").trim();
-
-      setContenidoIA(texto);
-      setContenidoEditado(texto);
-      setFase("revision");
-      toast.success("Borrador generado por IA-SASE");
-    } catch (proxyError: any) {
-      console.error("[DOC_GEN] Error Gemini:", proxyError);
-      const fallback = generarTextoFallback(tipoDoc, datos);
-      setContenidoIA(fallback);
-      setContenidoEditado(fallback);
-      setFase("revision");
-      toast("Documento generado sin IA (error de conexión)", { icon: "⚠️" });
-    }
+    const borradorLocal = generarTextoFallback(tipoDoc, datos);
+    setContenidoIA(borradorLocal);
+    setContenidoEditado(borradorLocal);
+    setFase("revision");
+    toast.success(
+      "Borrador local generado; revise los hechos antes de continuar.",
+    );
   };
 
   // Generar documento final
@@ -203,31 +181,13 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
     setFase("listo");
 
     // Registrar seguimiento institucional
-    logAccess({
-      accion: "consultar_expediente",
+    await logAccess({
+      accion: "generar_documento_institucional",
       alumno_id: studentId,
       pantalla: `GeneradorDocumentos:${tipoDoc}:${folio}`,
     });
 
-    // Registrar folio en base de datos para trazabilidad
-    (supabase as any)
-      .from("auditoria_accesos")
-      .insert([
-        {
-          usuario: user?.id,
-          rol: currentUserRole as string,
-          accion: "consultar_expediente",
-          alumno_id: studentId,
-          pantalla: `FOLIO_GENERADO:${folio}:${tipoDoc}`,
-          fecha: new Date().toISOString().split("T")[0],
-          hora: new Date().toTimeString().split(" ")[0],
-        },
-      ])
-      .then(() => {
-        console.log(`[SEGUIMIENTO] Folio ${folio} registrado`);
-      });
-
-    if (tipoDoc === "acta_corresponsabilidad" && !documentoRegistrado) {
+    if (!documentoRegistrado) {
       await registrarDocumentoInstitucional(html);
     }
 
@@ -261,7 +221,7 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
       if (error) throw error;
 
       setDocumentoRegistrado(true);
-      toast.success("Acta registrada en expediente institucional");
+      toast.success("Documento registrado en expediente institucional");
     } catch (error) {
       console.error("[DOC_GEN] Error registrando acta:", error);
       toast.error(
@@ -271,29 +231,23 @@ export const GeneradorDocumentos: React.FC<GeneradorDocumentosProps> = ({
   };
 
   // Imprimir y cerrar
-  const handleImprimir = () => {
+  const handleImprimir = async () => {
     printContent(
       `${TIPOS_DOCUMENTO[tipoDoc].label} — ${studentName}`,
       htmlFinal,
     );
 
-    // Registrar generación en seguimiento institucional persistente
-    (supabase as any)
-      .from("auditoria_accesos")
-      .insert([
-        {
-          usuario: user?.id,
-          rol: currentUserRole as string,
-          accion: "consultar_expediente",
-          alumno_id: studentId,
-          pantalla: `GeneradorDocumentos:IMPRIMIR:${tipoDoc}`,
-          fecha: new Date().toISOString().split("T")[0],
-          hora: new Date().toTimeString().split(" ")[0],
-        },
-      ])
-      .then(() => {
-        toast.success("Documento enviado a impresión y registrado institucionalmente");
-      });
+    const auditConfirmed = await logAccess({
+      accion: "imprimir_documento_institucional",
+      alumno_id: studentId,
+      pantalla: `GeneradorDocumentos:IMPRIMIR:${tipoDoc}:${folio}`,
+    });
+
+    if (auditConfirmed) {
+      toast.success(
+        "Documento enviado a impresión y trazabilidad confirmada.",
+      );
+    }
   };
 
   // UI del campo de datos

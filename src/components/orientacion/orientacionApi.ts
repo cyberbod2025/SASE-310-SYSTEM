@@ -22,14 +22,18 @@ export async function loadOrientacionCasos(): Promise<OrientacionCaseSummary[]> 
 
   const casosRows = (casos ?? []) as any[];
   const alumnoIds = Array.from(new Set(casosRows.map((item) => item.alumno_id)));
-  const { data: alumnos } = alumnoIds.length
+  const alumnosResult = alumnoIds.length
     ? await supabase
         .from("alumnos" as any)
         .select(selectStudentFields)
         .in("id", alumnoIds)
-    : { data: [] as any[] };
+    : { data: [] as any[], error: null };
 
-  const alumnosById = new Map<string, any>(((alumnos ?? []) as any[]).map((item) => [item.id, item]));
+  if (alumnosResult.error) throw alumnosResult.error;
+
+  const alumnosById = new Map<string, any>(
+    ((alumnosResult.data ?? []) as any[]).map((item) => [item.id, item]),
+  );
 
   return casosRows.map((caso) => {
     const alumno = alumnosById.get(caso.alumno_id);
@@ -61,7 +65,8 @@ export async function loadDocentes(): Promise<OrientacionDocenteOption[]> {
 
   return ((data ?? []) as any[]).map((item) => ({
     id: item.id,
-    nombreCompleto: item.nombre_completo ?? "Docente",
+    nombreCompleto:
+      item.nombre_completo ?? "Docente sin nombre documentado",
     rol: item.rol ?? "docente",
   }));
 }
@@ -77,18 +82,27 @@ export async function loadStudentHistory(studentId: string, caseId?: string): Pr
   requests: OrientacionDiagnosisRequest[];
   followUps: OrientacionFollowUp[];
 }> {
-  const groupResult = await supabase.from("alumnos" as any).select("grupo").eq("id", studentId).maybeSingle();
-  const group = (groupResult.data as any)?.grupo ?? null;
-
   const [summaryResult, incidentsResult, citationsResult, contactsResult, interventionsResult, teacherReportsResult, plansResult, requestsResult, followUpsResult] = await Promise.all([
-    supabase.from("expediente_integral_alumno" as any).select("*").eq("alumno_id", studentId).maybeSingle(),
+    supabase
+      .from("expediente_integral_alumno" as any)
+      .select("alumno_id, total_incidencias, total_justificantes")
+      .eq("alumno_id", studentId)
+      .maybeSingle(),
     supabase.from("incidencias" as any).select("id, fecha, tipo, descripcion, estado").eq("alumno_id", studentId).order("fecha", { ascending: false }).limit(5),
     supabase.from("citas_padres" as any).select("id, created_at, fecha_cita, motivo, estado").eq("alumno_id", studentId).order("fecha_cita", { ascending: false }).limit(5),
     supabase.from("contacts_log" as any).select("id, created_at, method, notes, outcome").eq("student_id", studentId).order("created_at", { ascending: false }).limit(5),
     supabase.from("interventions_log" as any).select("id, created_at, reason, notes, result").eq("student_id", studentId).order("created_at", { ascending: false }).limit(5),
-    group
-      ? supabase.from("respuestas_docentes" as any).select("id, fecha, docente, comentarios, impacto, periodo").eq("grupo", group).order("fecha", { ascending: false }).limit(5)
-      : supabase.from("respuestas_docentes" as any).select("id, fecha, docente, comentarios, impacto, periodo").eq("grupo", "0000"),
+    caseId
+      ? supabase
+          .from("diagnosticos_docentes")
+          .select("id, created_at, conducta, aprovechamiento, asistencia, observaciones, recomendaciones")
+          .eq("caso_id", caseId)
+          .order("created_at", { ascending: false })
+          .limit(5)
+      : supabase
+          .from("diagnosticos_docentes")
+          .select("id, created_at, conducta, aprovechamiento, asistencia, observaciones, recomendaciones")
+          .eq("caso_id", "00000000-0000-0000-0000-000000000000"),
     caseId
       ? supabase.from("planes_intervencion" as any).select("*").eq("caso_id", caseId).order("fecha_inicio", { ascending: false })
       : supabase.from("planes_intervencion" as any).select("*").eq("caso_id", "00000000-0000-0000-0000-000000000000"),
@@ -123,38 +137,46 @@ export async function loadStudentHistory(studentId: string, caseId?: string): Pr
     summary: summaryResult.data ?? null,
     incidents: incidentsRows.map((item) => ({
       id: item.id,
-      fecha: item.fecha ?? item.created_at ?? new Date().toISOString(),
+      fecha: item.fecha ?? null,
       titulo: item.tipo ?? "Incidencia",
       detalle: item.descripcion ?? "Sin descripción",
-      fuente: `Estado: ${item.estado ?? "Nuevo"}`,
+      fuente: `Estado: ${item.estado ?? "No documentado"}`,
     })),
     citations: citationsRows.map((item) => ({
       id: item.id,
-      fecha: item.fecha_cita ?? item.created_at ?? new Date().toISOString(),
+      fecha: item.fecha_cita ?? item.created_at ?? null,
       titulo: item.motivo ?? "Citatorio",
-      detalle: `Estado: ${item.estado ?? "PENDIENTE"}`,
+      detalle: `Estado: ${item.estado ?? "No documentado"}`,
       fuente: "Citas a familias",
     })),
     contacts: contactsRows.map((item) => ({
       id: item.id,
-      fecha: item.created_at ?? new Date().toISOString(),
-      titulo: item.method ?? "Contacto",
-      detalle: item.notes ?? item.outcome ?? "Sin nota",
+      fecha: item.created_at ?? null,
+      titulo: item.method ?? "Contacto sin método documentado",
+      detalle: item.notes ?? item.outcome ?? "Sin nota documentada",
       fuente: "Bitácora de contactos",
     })),
     interventions: interventionsRows.map((item) => ({
       id: item.id,
-      fecha: item.created_at ?? new Date().toISOString(),
-      titulo: item.reason ?? "Intervención",
-      detalle: item.notes ?? item.result ?? "Sin resultado",
+      fecha: item.created_at ?? null,
+      titulo: item.reason ?? "Intervención sin motivo documentado",
+      detalle: item.notes ?? item.result ?? "Sin resultado documentado",
       fuente: "Bitácora institucional",
     })),
     teacherReports: teacherReportRows.map((item) => ({
       id: item.id,
-      fecha: item.fecha ?? new Date().toISOString(),
-      titulo: item.docente ?? "Reporte docente",
-      detalle: item.comentarios ?? `Impacto: ${item.impacto ?? "Sin dato"}`,
-      fuente: item.periodo ?? "Reportes docentes",
+      fecha: item.created_at ?? null,
+      titulo: "Diagnóstico docente del caso",
+      detalle: [
+        item.conducta ? `Conducta: ${item.conducta}` : null,
+        item.aprovechamiento
+          ? `Aprovechamiento: ${item.aprovechamiento}`
+          : null,
+        item.asistencia ? `Asistencia: ${item.asistencia}` : null,
+        item.observaciones,
+        item.recomendaciones,
+      ].filter(Boolean).join(" · ") || "Sin observaciones documentadas",
+      fuente: "Diagnósticos docentes asignados",
     })),
     plans: plansRows.map((item) => ({
       id: item.id,
@@ -261,6 +283,47 @@ export async function crearPlanIntervencion(params: {
   });
   if (error) throw error;
   return data;
+}
+
+export async function registrarSeguimientoOrientacion(params: {
+  casoId: string;
+  tipo: string;
+  descripcion: string;
+  evidenciaUrl?: string | null;
+}): Promise<OrientacionFollowUp> {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user?.id) {
+    throw new Error("La sesión institucional no está disponible.");
+  }
+
+  const { data, error } = await supabase
+    .from("seguimiento_orientacion")
+    .insert({
+      caso_id: params.casoId,
+      tipo: params.tipo,
+      descripcion: params.descripcion.trim(),
+      evidencia_url: params.evidenciaUrl?.trim() || null,
+      created_by: authData.user.id,
+    })
+    .select(
+      "id, caso_id, tipo, descripcion, evidencia_url, created_by, created_at",
+    )
+    .single();
+
+  if (error) throw error;
+  if (!data) {
+    throw new Error("Supabase no confirmó el seguimiento de Orientación.");
+  }
+
+  return {
+    id: data.id,
+    casoId: data.caso_id,
+    tipo: data.tipo,
+    descripcion: data.descripcion,
+    evidenciaUrl: data.evidencia_url,
+    createdBy: data.created_by,
+    createdAt: data.created_at,
+  };
 }
 
 export async function derivarTrabajoSocial(casoId: string): Promise<void> {

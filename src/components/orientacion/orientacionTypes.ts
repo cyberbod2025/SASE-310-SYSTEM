@@ -75,7 +75,7 @@ export interface OrientacionFollowUp {
 
 export interface OrientacionHistoryItem {
   id: string;
-  fecha: string;
+  fecha: string | null;
   titulo: string;
   detalle: string;
   fuente: string;

@@ -81,7 +81,7 @@ export const DashboardHoy = () => {
         openQuickRegister(IncidentType.CONDUCTA);
         return;
       case UserRole.PREFECTURA:
-        setCurrentModule(AppModule.BITACORA);
+        setCurrentModule(AppModule.ASISTENCIA);
         return;
       case UserRole.ORIENTACION:
       case UserRole.TRABAJO_SOCIAL:

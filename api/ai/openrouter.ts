@@ -1,5 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
-import { getRateLimitKey, isRateLimited } from "./rateLimit";
+import {
+  authorizeInstitutionalAIRequest,
+  recordInstitutionalAIEvent,
+} from "../../server/aiSecurity";
 
 type VercelRequest = any;
 type VercelResponse = any;
@@ -10,142 +12,239 @@ const ALLOWED_MODELS = new Set([
   "google/gemini-pro-1.5",
   "google/gemini-flash-1.5",
 ]);
+const DEFAULT_MODEL =
+  "google/gemini-2.0-flash-lite-preview-02-05:free";
 
 function isAllowedOrigin(origin: string | undefined): boolean {
   const allowed = process.env.ALLOWED_ORIGINS;
-  if (!allowed) return false;
-  if (!origin) return false;
+  if (!allowed || !origin) return false;
   return allowed
     .split(",")
-    .map((o) => o.trim())
+    .map((item) => item.trim())
     .filter(Boolean)
     .includes(origin);
 }
 
-function setCorsHeaders(res: VercelResponse, origin: string | undefined) {
+function setCorsHeaders(
+  response: VercelResponse,
+  origin: string | undefined,
+): void {
   if (!origin) return;
-  res.setHeader("Access-Control-Allow-Origin", origin);
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader(
+  response.setHeader("Access-Control-Allow-Origin", origin);
+  response.setHeader("Vary", "Origin");
+  response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  response.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
+    "Authorization, Content-Type",
   );
-  res.setHeader("Access-Control-Max-Age", "86400");
+  response.setHeader("Access-Control-Max-Age", "86400");
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+function readOpenRouterResult(
+  payload: unknown,
+): { text: string; tokens: number } | null {
+  if (!payload || typeof payload !== "object") return null;
+  const record = payload as Record<string, unknown>;
+  const choices = record.choices;
+  if (!Array.isArray(choices) || choices.length === 0) return null;
+  const first = choices[0];
+  if (!first || typeof first !== "object") return null;
+  const message = (first as Record<string, unknown>).message;
+  if (!message || typeof message !== "object") return null;
+  const content = (message as Record<string, unknown>).content;
+  if (typeof content !== "string" || !content.trim()) return null;
+
+  const usage =
+    record.usage && typeof record.usage === "object"
+      ? (record.usage as Record<string, unknown>)
+      : null;
+  const totalTokens = usage?.total_tokens;
+  return {
+    text: content.trim(),
+    tokens:
+      typeof totalTokens === "number" &&
+      Number.isFinite(totalTokens) &&
+      totalTokens >= 0
+        ? totalTokens
+        : 0,
+  };
+}
+
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse,
+) {
   if (!process.env.ALLOWED_ORIGINS) {
-    res.status(500).json({ error: "CORS origins not configured" });
+    response.status(500).json({ error: "Orígenes CORS no configurados" });
     return;
   }
 
-  const origin = req.headers.origin;
+  const origin = request.headers?.origin;
   if (!isAllowedOrigin(origin)) {
-    res.status(403).json({ error: "Forbidden origin" });
+    response.status(403).json({ error: "Origen no permitido" });
+    return;
+  }
+  setCorsHeaders(response, origin);
+
+  if (request.method === "OPTIONS") {
+    response.status(204).end();
+    return;
+  }
+  if (request.method !== "POST") {
+    response.status(405).json({ error: "Método no permitido" });
     return;
   }
 
-  setCorsHeaders(res, origin);
-
-  if (req.method === "OPTIONS") {
-    res.status(204).end();
+  const authorization = await authorizeInstitutionalAIRequest(
+    request,
+    ALLOWED_MODELS,
+    DEFAULT_MODEL,
+  );
+  if (!authorization.ok) {
+    response
+      .status(authorization.status)
+      .json({ error: authorization.error });
     return;
   }
+  const institutionalRequest = authorization.value;
+  const auditDetails = {
+    contextType: institutionalRequest.contextType,
+    model: institutionalRequest.model,
+    promptChars: institutionalRequest.prompt.length,
+    provider: "openrouter" as const,
+  };
 
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed" });
-    return;
-  }
-
-  const authHeader =
-    req.headers.authorization || (req.headers.Authorization as string | undefined);
-  if (!authHeader || typeof authHeader !== "string") {
-    res.status(401).json({ error: "Missing authorization" });
-    return;
-  }
-
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7).trim()
-    : "";
-  if (!token) {
-    res.status(401).json({ error: "Invalid authorization" });
-    return;
-  }
-
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey =
-    process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) {
-    res.status(500).json({ error: "Missing Supabase credentials" });
-    return;
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-  const { data: authData, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !authData?.user) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-
-  const rateKey = getRateLimitKey(req);
-  if (await isRateLimited(rateKey)) {
-    res.status(429).json({ error: "Rate limit exceeded" });
-    return;
-  }
-
-  const body = req.body ?? {};
-  if (typeof body !== "object" || Array.isArray(body)) {
-    res.status(400).json({ error: "Invalid request body" });
-    return;
-  }
-
-  const { prompt, model } = body as { prompt?: string; model?: string };
-  if (!prompt || typeof prompt !== "string" || prompt.length > 8000) {
-    res.status(400).json({ error: "Invalid prompt" });
-    return;
-  }
-
-  if (model && typeof model !== "string") {
-    res.status(400).json({ error: "Invalid model" });
+  const startAudit = await recordInstitutionalAIEvent(
+    institutionalRequest,
+    "IA_SOLICITUD_AUTORIZADA",
+    auditDetails,
+  );
+  if (!startAudit.ok) {
+    console.error(
+      "No se pudo auditar la solicitud de OpenRouter",
+      startAudit.code,
+    );
+    response.status(500).json({
+      error: "No se pudo registrar la trazabilidad de la solicitud.",
+    });
     return;
   }
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    res.status(500).json({ error: "Missing OPENROUTER_API_KEY" });
-    return;
-  }
-
-  const modelId = model && ALLOWED_MODELS.has(model)
-    ? model
-    : "google/gemini-2.0-flash-lite-preview-02-05:free";
-
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "X-Title": "SASE Institucional",
-      ...(req.headers.origin ? { "HTTP-Referer": req.headers.origin } : {}),
-    },
-    body: JSON.stringify({
-      model: modelId,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    res.status(response.status).json({
-      error: errorData?.error?.message || response.statusText,
+    await recordInstitutionalAIEvent(
+      institutionalRequest,
+      "IA_PROVEEDOR_FALLIDO",
+      { ...auditDetails, httpStatus: 500 },
+    );
+    response.status(503).json({
+      error: "El proveedor de IA no está configurado.",
     });
     return;
   }
 
-  const data = await response.json();
-  const text = data?.choices?.[0]?.message?.content || "";
-  const tokens = data?.usage?.total_tokens || 0;
+  try {
+    const providerResponse = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "X-Title": "SASE Institucional",
+          "HTTP-Referer": origin,
+        },
+        body: JSON.stringify({
+          model: institutionalRequest.model,
+          messages: [
+            { role: "user", content: institutionalRequest.prompt },
+          ],
+        }),
+      },
+    );
+    const payload: unknown = await providerResponse.json().catch(() => null);
 
-  res.status(200).json({ text, tokens });
+    if (!providerResponse.ok) {
+      const failureAudit = await recordInstitutionalAIEvent(
+        institutionalRequest,
+        "IA_PROVEEDOR_FALLIDO",
+        { ...auditDetails, httpStatus: providerResponse.status },
+      );
+      if (!failureAudit.ok) {
+        console.error(
+          "No se pudo auditar el fallo de OpenRouter",
+          failureAudit.code,
+        );
+      }
+      response.status(502).json({
+        error: "El proveedor no pudo completar el borrador solicitado.",
+      });
+      return;
+    }
+
+    const result = readOpenRouterResult(payload);
+    if (!result) {
+      const failureAudit = await recordInstitutionalAIEvent(
+        institutionalRequest,
+        "IA_PROVEEDOR_FALLIDO",
+        { ...auditDetails, httpStatus: 502 },
+      );
+      if (!failureAudit.ok) {
+        console.error(
+          "No se pudo auditar la respuesta vacía de OpenRouter",
+          failureAudit.code,
+        );
+      }
+      response.status(502).json({
+        error: "El proveedor no devolvió un borrador utilizable.",
+      });
+      return;
+    }
+
+    const successAudit = await recordInstitutionalAIEvent(
+      institutionalRequest,
+      "IA_RESPUESTA_RECIBIDA",
+      {
+        ...auditDetails,
+        httpStatus: 200,
+        responseChars: result.text.length,
+        tokens: result.tokens,
+      },
+    );
+    if (!successAudit.ok) {
+      console.error(
+        "No se pudo auditar la respuesta de OpenRouter",
+        successAudit.code,
+      );
+      response.status(500).json({
+        error: "No se pudo registrar la trazabilidad del borrador.",
+      });
+      return;
+    }
+
+    response.status(200).json({
+      text: result.text,
+      tokens: result.tokens,
+      draft: true,
+    });
+  } catch (error) {
+    const failureAudit = await recordInstitutionalAIEvent(
+      institutionalRequest,
+      "IA_PROVEEDOR_FALLIDO",
+      { ...auditDetails, httpStatus: 502 },
+    );
+    if (!failureAudit.ok) {
+      console.error(
+        "No se pudo auditar la interrupción de OpenRouter",
+        failureAudit.code,
+      );
+    }
+    console.error(
+      "Falló la conexión con OpenRouter",
+      error instanceof Error ? error.name : "UNKNOWN_ERROR",
+    );
+    response.status(502).json({
+      error: "No se pudo conectar con el proveedor de IA.",
+    });
+  }
 }

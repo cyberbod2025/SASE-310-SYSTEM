@@ -5,7 +5,7 @@ interface FamilyContactLogProps {
   selectedCase: TrabajoSocialCase | null;
   contacts: FamilyContactRecord[];
   canEdit: boolean;
-  onRegisterContact: (caseId: string, tipo: ContactType, resultado: string) => void;
+  onRegisterContact: (caseId: string, tipo: ContactType, resultado: string) => Promise<boolean>;
 }
 
 const contactLabels: Record<ContactType, string> = {
@@ -21,12 +21,18 @@ export const FamilyContactLog: React.FC<FamilyContactLogProps> = ({
   onRegisterContact,
 }) => {
   const [result, setResult] = useState("");
+  const [saving, setSaving] = useState(false);
   const caseContacts = selectedCase ? contacts.filter((contact) => contact.caseId === selectedCase.id) : [];
 
-  const register = (tipo: ContactType) => {
+  const register = async (tipo: ContactType) => {
     if (!selectedCase || !canEdit) return;
-    onRegisterContact(selectedCase.id, tipo, result);
-    setResult("");
+    setSaving(true);
+    try {
+      const saved = await onRegisterContact(selectedCase.id, tipo, result);
+      if (saved) setResult("");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -36,8 +42,8 @@ export const FamilyContactLog: React.FC<FamilyContactLogProps> = ({
           <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Contacto familiar</p>
           <h2 className="text-xl font-black text-white flex flex-wrap items-center gap-2">
             <span>Llamadas, mensajes y reuniones</span>
-            <span className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-500">
-              ⚠️ REGISTRO LOCAL
+            <span className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-emerald-300">
+              Memoria institucional
             </span>
           </h2>
         </div>
@@ -52,8 +58,8 @@ export const FamilyContactLog: React.FC<FamilyContactLogProps> = ({
 
       <div className="mt-3 grid grid-cols-3 gap-2">
         {(["llamada", "mensaje", "reunion"] as ContactType[]).map((tipo) => (
-          <button key={tipo} type="button" disabled={!selectedCase || !canEdit} onClick={() => register(tipo)} className="min-h-[48px] rounded-2xl border border-orange-300/30 bg-orange-500/10 px-2 text-[10px] font-black uppercase tracking-widest text-orange-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500">
-            {contactLabels[tipo]}
+          <button key={tipo} type="button" disabled={!selectedCase || !canEdit || saving} onClick={() => register(tipo)} className="min-h-[48px] rounded-2xl border border-orange-300/30 bg-orange-500/10 px-2 text-[10px] font-black uppercase tracking-widest text-orange-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500">
+            {saving ? "Guardando..." : contactLabels[tipo]}
           </button>
         ))}
       </div>

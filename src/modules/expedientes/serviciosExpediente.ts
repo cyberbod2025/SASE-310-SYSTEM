@@ -1,5 +1,4 @@
 import type {
-  DatosAlumnoExpediente,
   IncidenciaExpediente,
   DocumentoExpediente,
   EventoLinea,
@@ -164,69 +163,41 @@ export function construirLineaTiempo(
 }
 
 /**
- * Genera análisis institucional del caso con IA.
+ * Genera una síntesis local y descriptiva. No envía el expediente a terceros
+ * ni sustituye la valoración colegiada.
  */
-export async function generarAnalisisIA(
-  alumno: DatosAlumnoExpediente,
+export function generarSintesisInstitucionalLocal(
   incidencias: IncidenciaExpediente[],
   documentos: DocumentoExpediente[],
-): Promise<string> {
-  const resumenIncidencias = incidencias
-    .slice(0, 10)
-    .map((i) => `- ${i.fecha}: ${i.tipo} — ${i.descripcion.substring(0, 80)}`)
-    .join("\n");
+): string {
+  const abiertos = incidencias.filter((incidencia) => {
+    const estado = incidencia.estado.trim().toLowerCase();
+    return estado !== "cerrado" && estado !== "resuelto";
+  }).length;
+  const conteoPorTipo = incidencias.reduce<Record<string, number>>(
+    (conteo, incidencia) => {
+      const tipo = incidencia.tipo.trim() || "sin tipo";
+      conteo[tipo] = (conteo[tipo] ?? 0) + 1;
+      return conteo;
+    },
+    {},
+  );
+  const tiposFrecuentes = Object.entries(conteoPorTipo)
+    .sort(
+      ([tipoA, totalA], [tipoB, totalB]) =>
+        totalB - totalA || tipoA.localeCompare(tipoB, "es"),
+    )
+    .slice(0, 3)
+    .map(([tipo, total]) => `${tipo}: ${total}`)
+    .join(", ");
 
-  const resumenDocs = documentos
-    .slice(0, 10)
-    .map((d) => `- ${d.fecha}: ${d.tipo} — Folio: ${d.folio}`)
-    .join("\n");
-
-  const prompt = `Eres el sistema IA-SASE de la Escuela Secundaria Diurna No. 310, CDMX.
-Genera un ANÁLISIS INSTITUCIONAL breve del expediente del alumno, basado en el 
-"Marco para la Convivencia Escolar en las Escuelas de Educación Básica del Distrito Federal".
-
-DATOS DEL ALUMNO:
-- Nombre: ${alumno.nombre}
-- Grupo: ${alumno.grupo}
-
-HISTORIAL DE INCIDENCIAS (${incidencias.length} registradas):
-${resumenIncidencias || "Sin incidencias registradas."}
-
-DOCUMENTOS GENERADOS (${documentos.length}):
-${resumenDocs || "Sin documentos generados."}
-
-INSTRUCCIONES:
-1. Resume la situación del alumno de forma objetiva (2-3 párrafos)
-2. Identifica patrones de conducta si existen
-3. Clasifica el nivel de atención según el Marco (Preventivo, Formativo, Correctivo)
-4. Sugiere acciones de seguimiento
-5. Usa lenguaje técnico-pedagógico. NUNCA uses juicios de valor.
-6. NO incluyas encabezados ni formato — solo el análisis.
-
-ANÁLISIS INSTITUCIONAL:`;
-
-  try {
-    const { buildAuthHeaders } = await import("../../components/ai/aiAuth");
-    const authHeaders = await buildAuthHeaders();
-    const response = await fetch("/api/ai/gemini", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...authHeaders },
-      body: JSON.stringify({ prompt, model: "gemini-2.0-flash" }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error || response.statusText);
-    }
-
-    const data = await response.json();
-    return (data?.text || "").trim();
-  } catch (proxyError) {
-    if (import.meta.env.DEV) {
-      console.warn("[EXPEDIENTE] Error IA");
-    }
-    return "Análisis no disponible — sin conexión con IA-SASE.";
-  }
+  return [
+    `Síntesis local del expediente visible: ${incidencias.length} incidencias y ${documentos.length} documentos institucionales registrados.`,
+    incidencias.length > 0
+      ? `Seguimiento de incidencias: ${abiertos} permanecen abiertas o sin resolución confirmada.${tiposFrecuentes ? ` Distribución por tipo: ${tiposFrecuentes}.` : ""}`
+      : "No hay incidencias registradas en el corte visible.",
+    "Esta síntesis organiza conteos confirmados; no determina culpabilidad, nivel de riesgo, medida disciplinaria ni siguiente acción. El personal autorizado debe revisar los hechos, acuerdos y seguimientos antes de decidir.",
+  ].join("\n\n");
 }
 
 /**

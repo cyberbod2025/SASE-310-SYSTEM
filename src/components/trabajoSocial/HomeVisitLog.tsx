@@ -5,17 +5,17 @@ interface HomeVisitLogProps {
   selectedCase: TrabajoSocialCase | null;
   visits: HomeVisitRecord[];
   canEdit: boolean;
-  onRegisterVisit: (caseId: string, observaciones: string) => void;
+  onRegisterVisit: (caseId: string, observaciones: string) => Promise<boolean>;
 }
 
 export const HomeVisitLog: React.FC<HomeVisitLogProps> = ({ selectedCase, visits, canEdit, onRegisterVisit }) => {
   const [observations, setObservations] = useState("");
   const caseVisits = selectedCase ? visits.filter((visit) => visit.caseId === selectedCase.id) : [];
 
-  const registerVisit = () => {
+  const registerVisit = async () => {
     if (!selectedCase || !canEdit) return;
-    onRegisterVisit(selectedCase.id, observations);
-    setObservations("");
+    const saved = await onRegisterVisit(selectedCase.id, observations);
+    if (saved) setObservations("");
   };
 
   return (
@@ -23,12 +23,7 @@ export const HomeVisitLog: React.FC<HomeVisitLogProps> = ({ selectedCase, visits
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Visitas domiciliarias</p>
-          <h2 className="text-xl font-black text-white flex flex-wrap items-center gap-2">
-            <span>Evidencia de campo</span>
-            <span className="rounded bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-500">
-              ⚠️ BORRADOR LOCAL
-            </span>
-          </h2>
+          <h2 className="text-xl font-black text-white">Evidencia de campo</h2>
         </div>
       </div>
 

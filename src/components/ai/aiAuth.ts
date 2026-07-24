@@ -1,4 +1,4 @@
-import { supabase } from "../../supabase/client";
+import { supabase } from "../../lib/supabaseClient";
 
 export const getAccessToken = async (): Promise<string | null> => {
   const { data } = await supabase.auth.getSession();
@@ -7,6 +7,8 @@ export const getAccessToken = async (): Promise<string | null> => {
 
 export const buildAuthHeaders = async (): Promise<Record<string, string>> => {
   const token = await getAccessToken();
-  if (!token) return {};
+  if (!token) {
+    throw new Error("No hay una sesión institucional activa.");
+  }
   return { Authorization: `Bearer ${token}` };
 };

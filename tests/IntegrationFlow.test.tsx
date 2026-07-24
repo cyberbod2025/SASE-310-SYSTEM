@@ -67,6 +67,45 @@ vi.mock("../src/supabase/client", () => {
 
   return {
     supabase: {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: "admin-test" } },
+          error: null,
+        }),
+      },
+      rpc: vi.fn().mockResolvedValue({
+        data: [{
+          alumno_id: "std-1",
+          matricula: "TESTM",
+          nombre_alumno: "Juan Test",
+          grupo: "3º B",
+          puntaje_riesgo: 0,
+          estado_semaforo: "CERRADO",
+          incidencias_abiertas: 2,
+          ultima_incidencia: new Date().toISOString(),
+          caso_orientacion_id: null,
+          estado_orientacion: null,
+          prioridad_orientacion: null,
+          actualizacion_orientacion: null,
+          seguimientos_orientacion: 0,
+          diagnosticos_docentes: 0,
+          planes_orientacion_activos: 0,
+          proxima_revision_orientacion: null,
+          trabajo_social_abiertos: 0,
+          ultima_actualizacion_social: null,
+          bap_pendientes: 0,
+          proxima_revision_bap: null,
+          salud_seguimientos_pendientes: 0,
+          proxima_revision_salud: null,
+          total_pendientes: 2,
+          proxima_accion: null,
+          actualizacion_reciente: new Date().toISOString(),
+          requiere_atencion: false,
+          razones_atencion: [],
+          fuentes_activas: ["Incidencias"],
+        }],
+        error: null,
+      }),
       from: mocks.from,
       channel: vi.fn(() => ({
         on: vi.fn().mockReturnThis(),
@@ -159,7 +198,7 @@ describe("Integration: Docente -> Direccion Flow", () => {
     });
 
     await waitFor(() => {
-      const kpiElement = screen.getByText(/Poblacion total atendida/i).closest("div");
+      const kpiElement = screen.getByText(/Alumnos visibles/i).closest("div");
       expect(kpiElement).toHaveTextContent("1");
     });
   }, 15000);

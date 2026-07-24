@@ -37,13 +37,18 @@ export const GenericActionModal = ({
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
+  const handleClose = () => {
+    setFormData({});
+    onClose();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       await onSubmit(formData);
       toast.success("Acción registrada correctamente");
-      onClose();
+      handleClose();
     } catch (error) {
       console.error(error);
       toast.error("Error al registrar acción");
@@ -67,7 +72,7 @@ export const GenericActionModal = ({
             )}
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-slate-400 hover:text-slate-600 transition-colors"
             title="Cerrar modal"
           >
@@ -81,11 +86,16 @@ export const GenericActionModal = ({
         >
           {fields.map((field) => (
             <div key={field.name}>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5">
+              <label
+                htmlFor={`generic-action-${field.name}`}
+                className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1.5"
+              >
                 {field.label} {field.required && "*"}
               </label>
               {field.type === "textarea" ? (
                 <textarea
+                  id={`generic-action-${field.name}`}
+                  aria-label={field.label}
                   required={field.required}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700"
                   rows={3}
@@ -95,6 +105,8 @@ export const GenericActionModal = ({
                 />
               ) : field.type === "select" ? (
                 <select
+                  id={`generic-action-${field.name}`}
+                  aria-label={field.label}
                   required={field.required}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700 appearance-none"
                   title="Seleccionar opción"
@@ -119,6 +131,8 @@ export const GenericActionModal = ({
                     Subir Archivo o Evidencia
                   </span>
                   <input
+                    id={`generic-action-${field.name}`}
+                    aria-label={field.label}
                     type="file"
                     className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
                     title="Seleccionar archivo o evidencia"
@@ -134,6 +148,8 @@ export const GenericActionModal = ({
                 </div>
               ) : (
                 <input
+                  id={`generic-action-${field.name}`}
+                  aria-label={field.label}
                   type={field.type}
                   required={field.required}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-700"
@@ -148,7 +164,7 @@ export const GenericActionModal = ({
           <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-6">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-5 py-2.5 btn-sase-secondary"
             >
               Cancelar

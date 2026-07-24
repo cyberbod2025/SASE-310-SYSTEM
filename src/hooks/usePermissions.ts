@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useApp } from "../store";
 import { UserRole, AppModule, PermisosSASE } from "../types";
 import { PERMISOS_POR_ROL } from "../utils/permisos";
+import { canAccessSensitiveModule } from "../utils/sensitiveModuleAccess";
 
 export const usePermissions = () => {
   const { currentUserRole, currentUserProfile } = useApp();
@@ -35,23 +36,9 @@ export const usePermissions = () => {
       case AppModule.APROBACIONES_PERSONAL:
         return permissions.can_approve_staff;
       case AppModule.SALUD:
-        return [
-          UserRole.MEDICO_ESCOLAR,
-          UserRole.DIRECTIVO,
-          UserRole.DEVELOPER,
-        ].includes(currentUserRole);
       case AppModule.UDEII_TRACKER:
-        return [
-          UserRole.UDEII,
-          UserRole.DIRECTIVO,
-          UserRole.DEVELOPER,
-        ].includes(currentUserRole);
       case AppModule.TRABAJO_SOCIAL_TRACKER:
-        return [
-          UserRole.TRABAJO_SOCIAL,
-          UserRole.DIRECTIVO,
-          UserRole.DEVELOPER,
-        ].includes(currentUserRole);
+        return canAccessSensitiveModule(module, currentUserRole);
       case AppModule.LECTURA_TRACKER:
         return [
           UserRole.PROMOTORA_LECTURA,

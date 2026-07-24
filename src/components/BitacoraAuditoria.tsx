@@ -1,394 +1,700 @@
-import React, { useState, useEffect } from "react";
-import { supabase } from "../supabase/client";
-import { useApp } from "../store";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
+import {
+  AuditCategory,
+  AuditCursor,
+  AuditEntry,
+  AuditFilters,
+  buildAuditCsv,
+  loadAuditPage,
+  registerAuditEvent,
+} from "./auditoria/auditoriaPersistence";
 
-interface AuditEntry {
-  id: string;
-  user_id: string | null;
-  user_email: string | null;
-  user_role: string | null;
-  action_type: string;
-  action_description: string | null;
-  target_table: string | null;
-  target_record_id: string | null;
-  target_student_name: string | null;
-  created_at: string;
-}
+const EMPTY_FILTERS: AuditFilters = {
+  category: "",
+  role: "",
+  table: "",
+  search: "",
+  from: "",
+  to: "",
+};
+
+const CATEGORY_LABELS: Record<AuditCategory, string> = {
+  CONSULTA: "Consulta",
+  CREACION: "Creación",
+  ACTUALIZACION: "Actualización",
+  ELIMINACION: "Eliminación",
+  OTRA: "Otra",
+};
+
+const formatAuditDate = (value: string | null) => {
+  if (!value) {
+    return { date: "Sin fecha", time: "No documentada" };
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return { date: "Fecha inválida", time: value };
+  }
+
+  return {
+    date: parsed.toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    time: parsed.toLocaleTimeString("es-MX", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  };
+};
+
+const mergeWithoutDuplicates = (
+  current: AuditEntry[],
+  incoming: AuditEntry[],
+) => {
+  const existingIds = new Set(current.map((entry) => entry.id));
+  return [
+    ...current,
+    ...incoming.filter((entry) => !existingIds.has(entry.id)),
+  ];
+};
 
 export const BitacoraAuditoria: React.FC = () => {
-  const { currentUserRole } = useApp();
   const [entries, setEntries] = useState<AuditEntry[]>([]);
+  const [filters, setFilters] = useState<AuditFilters>(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] =
+    useState<AuditFilters>(EMPTY_FILTERS);
+  const [nextCursor, setNextCursor] = useState<AuditCursor | null>(null);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<string>("all");
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAuditLog = useCallback(
+    async (cursor: AuditCursor | null = null, append = false) => {
+      append ? setLoadingMore(true) : setLoading(true);
+      setError(null);
+
+      try {
+        const page = await loadAuditPage(appliedFilters, cursor);
+        setEntries((current) =>
+          append
+            ? mergeWithoutDuplicates(current, page.entries)
+            : page.entries,
+        );
+        if (!append) setTotal(page.total);
+        setNextCursor(page.nextCursor);
+        setHasMore(page.hasMore);
+      } catch (caughtError) {
+        console.error("No se pudo consultar Caja Negra:", caughtError);
+        if (!append) {
+          setEntries([]);
+          setTotal(0);
+          setNextCursor(null);
+          setHasMore(false);
+        }
+        setError(
+          caughtError instanceof Error
+            ? caughtError.message
+            : "No se pudo confirmar el registro institucional.",
+        );
+      } finally {
+        append ? setLoadingMore(false) : setLoading(false);
+      }
+    },
+    [appliedFilters],
+  );
 
   useEffect(() => {
-    fetchAuditLog();
-  }, []);
+    void fetchAuditLog();
+  }, [fetchAuditLog]);
 
-  const fetchAuditLog = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("auditoria")
-        .select("*")
-        .order("fecha", { ascending: false })
-        .limit(100);
+  const categoryCounts = useMemo(
+    () =>
+      entries.reduce<Record<AuditCategory, number>>(
+        (counts, entry) => {
+          counts[entry.actionCategory] += 1;
+          return counts;
+        },
+        {
+          CONSULTA: 0,
+          CREACION: 0,
+          ACTUALIZACION: 0,
+          ELIMINACION: 0,
+          OTRA: 0,
+        },
+      ),
+    [entries],
+  );
 
-      if (error) {
-        console.error("Error fetching audit log:", error);
-      } else {
-        const mappedEntries = (data || []).map((item: any) => ({
-          id: item.id,
-          user_id: item.usuario_id,
-          user_email: item.email_usuario,
-          user_role: item.rol_usuario,
-          action_type: item.tipo_accion,
-          action_description: item.descripcion_accion,
-          target_table: item.tabla_objetivo,
-          target_record_id: item.id_registro_objetivo,
-          target_student_name: item.descripcion_accion?.match(/\[ALUMNO:\s*([^\]]+)\]/)?.[1] || null,
-          created_at: item.fecha || new Date().toISOString(),
-        }));
-        setEntries(mappedEntries);
-      }
-    } catch (err) {
-      console.error("Unexpected error:", err);
-    }
-    setLoading(false);
+  const visibleStaff = useMemo(
+    () =>
+      new Set(
+        entries
+          .map((entry) => entry.userEmail)
+          .filter((email): email is string => Boolean(email)),
+      ).size,
+    [entries],
+  );
+
+  const applyFilters = (event: React.FormEvent) => {
+    event.preventDefault();
+    setAppliedFilters({
+      category: filters.category || "",
+      role: filters.role?.trim() || "",
+      table: filters.table?.trim() || "",
+      search: filters.search?.trim() || "",
+      from: filters.from || "",
+      to: filters.to || "",
+    });
   };
 
-  const filteredEntries =
-    filter === "all"
-      ? entries
-      : entries.filter((e) => e.action_type === filter);
+  const clearFilters = () => {
+    setFilters(EMPTY_FILTERS);
+    setAppliedFilters(EMPTY_FILTERS);
+  };
+
+  const downloadCsv = async () => {
+    if (entries.length === 0) {
+      toast.error("No hay filas autorizadas para exportar.");
+      return;
+    }
+
+    setExporting(true);
+    try {
+      await registerAuditEvent({
+        actionType: "EXPORTACION_CAJA_NEGRA",
+        description: `Exportó ${entries.length} eventos visibles de Caja Negra.`,
+        targetTable: "auditoria",
+        targetRecordId: "FILTRO_ACTUAL",
+        purpose: "Resguardo autorizado de trazabilidad institucional",
+      });
+
+      const csv = buildAuditCsv(entries);
+      const blob = new Blob([csv], {
+        type: "text/csv;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      const date = new Date().toISOString().slice(0, 10);
+      anchor.href = url;
+      anchor.download = `sase310-caja-negra-${date}.csv`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+
+      toast.success(`CSV generado con ${entries.length} filas visibles.`);
+    } catch (caughtError) {
+      console.error("No se pudo exportar Caja Negra:", caughtError);
+      toast.error(
+        "No se descargó el CSV porque su trazabilidad no fue confirmada.",
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
-    <div className="flex-1 w-full space-y-8 animate-fadeIn">
-      {/* Header Institucional */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="flex items-center gap-5">
-          <div className="size-16 backdrop-blur-3xl bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 shadow-lg border border-white/10">
+    <section className="flex-1 w-full space-y-6 animate-fadeIn">
+      <header className="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          <div className="size-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 border border-blue-500/20">
             <span className="material-symbols-outlined text-3xl">policy</span>
           </div>
           <div>
-            <h2 className="text-3xl font-black text-white tracking-tight uppercase italic">
-              Registro institucional de actividad
+            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+              Caja Negra institucional
             </h2>
-            <p className="text-blue-500/80 font-black text-xs uppercase tracking-[0.3em] mt-1.5 flex items-center gap-2">
-              <span className="size-2.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.6)]"></span>
-              Seguridad y Monitoreo de Protocolos
+            <p className="text-xs text-slate-400 mt-1">
+              Quién hizo qué, cuándo, sobre qué registro y con qué propósito.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
-            onClick={fetchAuditLog}
-            className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 hover:text-white transition-all font-bold text-xs uppercase tracking-widest shadow-lg active:scale-95"
-            title="Sincronizar y actualizar registro institucional"
+            type="button"
+            onClick={() => void fetchAuditLog()}
+            disabled={loading}
+            className="px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-slate-200 hover:bg-white/10 disabled:opacity-50 text-xs font-bold uppercase tracking-wider"
           >
-            <span className="material-symbols-outlined text-xl">refresh</span>
+            <span className="material-symbols-outlined text-base align-middle mr-2">
+              refresh
+            </span>
             Sincronizar
           </button>
-
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            title="Filtrar por tipo de acción"
-            className="bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-xs font-black text-blue-400 focus:border-blue-500/40 transition-all outline-none uppercase tracking-[0.15em] backdrop-blur-md"
+          <button
+            type="button"
+            onClick={() => void downloadCsv()}
+            disabled={exporting || loading || entries.length === 0}
+            aria-label={`Descargar ${entries.length} filas visibles`}
+            className="px-5 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-xl text-white text-xs font-bold uppercase tracking-wider"
           >
-            <option value="all">Todas las Acciones</option>
-            <option value="CONSULTA">Consultas</option>
-            <option value="ACTUALIZACION">Actualizaciones</option>
-            <option value="CREACION">Creaciones</option>
-            <option value="ELIMINACION">Eliminaciones</option>
-          </select>
+            <span className="material-symbols-outlined text-base align-middle mr-2">
+              download
+            </span>
+            {exporting
+              ? "Confirmando..."
+              : `Descargar ${entries.length} filas visibles`}
+          </button>
         </div>
+      </header>
+
+      <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 px-5 py-4 text-xs text-blue-100">
+        Registro append-only para clientes. Los eventos legados pueden mostrar
+        “No documentado”; SASE no completa ni adivina datos faltantes.
       </div>
 
-      {/* KPI Cards Estilo Institucional */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+      <form
+        onSubmit={applyFilters}
+        className="bg-[#0b121a]/70 border border-white/10 rounded-2xl p-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-3"
+      >
+        <label className="xl:col-span-2">
+          <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+            Buscar
+          </span>
+          <input
+            value={filters.search}
+            onChange={(event) =>
+              setFilters((current) => ({
+                ...current,
+                search: event.target.value,
+              }))
+            }
+            maxLength={120}
+            placeholder="Acción, correo, registro o propósito"
+            className="w-full bg-slate-950/60 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+          />
+        </label>
+
+        <FilterSelect
+          label="Categoría"
+          value={filters.category || ""}
+          onChange={(value) =>
+            setFilters((current) => ({
+              ...current,
+              category: value as AuditCategory | "",
+            }))
+          }
+          options={[
+            ["", "Todas"],
+            ["CONSULTA", "Consultas"],
+            ["CREACION", "Creaciones"],
+            ["ACTUALIZACION", "Actualizaciones"],
+            ["ELIMINACION", "Eliminaciones"],
+            ["OTRA", "Otras"],
+          ]}
+        />
+
+        <FilterInput
+          label="Rol exacto"
+          value={filters.role || ""}
+          placeholder="directivo"
+          onChange={(value) =>
+            setFilters((current) => ({ ...current, role: value }))
+          }
+        />
+
+        <FilterInput
+          label="Tabla exacta"
+          value={filters.table || ""}
+          placeholder="incidencias"
+          onChange={(value) =>
+            setFilters((current) => ({ ...current, table: value }))
+          }
+        />
+
+        <FilterInput
+          label="Desde"
+          type="date"
+          value={filters.from || ""}
+          onChange={(value) =>
+            setFilters((current) => ({ ...current, from: value }))
+          }
+        />
+
+        <FilterInput
+          label="Hasta"
+          type="date"
+          value={filters.to || ""}
+          onChange={(value) =>
+            setFilters((current) => ({ ...current, to: value }))
+          }
+        />
+
+        <div className="md:col-span-2 xl:col-span-7 flex flex-wrap justify-end gap-3 pt-2">
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white"
+          >
+            Limpiar filtros
+          </button>
+          <button
+            type="submit"
+            className="px-5 py-2 bg-blue-500/15 border border-blue-500/30 rounded-lg text-xs font-bold text-blue-300 hover:bg-blue-500/25"
+          >
+            Aplicar filtros
+          </button>
+        </div>
+      </form>
+
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <StatCard
-          label="Consultas"
-          value={entries.filter((e) => e.action_type === "CONSULTA").length}
-          icon="visibility"
+          label="Resultados confirmados"
+          value={total}
+          icon="fact_check"
           color="blue"
         />
         <StatCard
-          label="Actualiz."
-          value={
-            entries.filter((e) => e.action_type === "ACTUALIZACION").length
-          }
-          icon="edit_note"
-          color="amber"
+          label="Consultas visibles"
+          value={categoryCounts.CONSULTA}
+          icon="visibility"
+          color="indigo"
         />
         <StatCard
-          label="Creaciones"
-          value={entries.filter((e) => e.action_type === "CREACION").length}
+          label="Creaciones visibles"
+          value={categoryCounts.CREACION}
           icon="add_circle"
           color="emerald"
         />
         <StatCard
-          label="Personal"
-          value={new Set(entries.map((e) => e.user_email)).size}
+          label="Actualizaciones visibles"
+          value={categoryCounts.ACTUALIZACION}
+          icon="edit_note"
+          color="amber"
+        />
+        <StatCard
+          label="Actores identificados"
+          value={visibleStaff}
           icon="group"
-          color="indigo"
+          color="violet"
         />
       </div>
 
-      {/* Registro Institucional de Actividad */}
-      <div className="bg-[#0b121a]/60 border border-white/10 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl backdrop-blur-3xl overflow-hidden">
-        <div className="px-5 md:px-8 py-5 md:py-6 border-b border-white/5 bg-white/[0.02] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {error && (
+        <div
+          role="alert"
+          className="rounded-2xl border border-red-500/30 bg-red-500/10 p-5 text-sm text-red-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+        >
           <div>
-            <h3 className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-3">
-              <span className="material-symbols-outlined text-blue-500 text-sm md:text-base">
-                history
-              </span>
-              Actividad del Plantel
-            </h3>
-            <p className="hidden md:block text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mt-1.5">
-              Registro inalterable de protocolos digitales
-            </p>
+            <p className="font-black">Consulta no confirmada</p>
+            <p className="text-xs text-red-200/80 mt-1">{error}</p>
           </div>
           <button
-            onClick={() => toast.success("Exportando registro oficial...")}
-            className="w-full md:w-auto text-[9px] font-black text-blue-400 uppercase tracking-widest flex items-center justify-center gap-3 px-6 py-3 md:py-2.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-xl border border-blue-500/20 transition-all"
-            title="Descargar reporte oficial en formato CSV"
+            type="button"
+            onClick={() => void fetchAuditLog()}
+            className="px-4 py-2 rounded-lg border border-red-400/30 text-xs font-bold"
           >
-            <span className="material-symbols-outlined text-sm">download</span>
-            Descargar Reporte CSV
+            Reintentar
           </button>
         </div>
+      )}
 
-        {/* --- VISTA MÓVIL: TICKETS DE ACTIVIDAD --- */}
-        <div className="md:hidden divide-y divide-white/5">
-          {loading ? (
-            <div className="p-10 text-center space-y-3">
-              <div className="size-8 border-2 border-slate-700 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
-              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                Validando libros...
-              </p>
-            </div>
-          ) : (
-            filteredEntries.map((entry) => (
-              <div
-                key={entry.id}
-                className="p-5 space-y-4 active:bg-white/5 transition-colors"
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-2">
-                    <div className="size-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[9px]">
-                      {(entry.user_role || "S").charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-black text-white">
-                        {entry.user_email?.split("@")[0] || "SISTEMA"}
-                      </p>
-                      <p className="text-[8px] font-black text-blue-500/60 uppercase tracking-widest">
-                        {entry.user_role || "SISTEMA"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] font-black text-white">
-                      {new Date(entry.created_at).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                    <p className="text-[8px] font-bold text-slate-500 uppercase">
-                      {new Date(entry.created_at).toLocaleDateString([], {
-                        day: "2-digit",
-                        month: "short",
-                      })}
-                    </p>
-                  </div>
-                </div>
-                <div className="bg-white/[0.02] border border-white/5 p-3 rounded-xl">
-                  <div className="flex items-center gap-2 mb-2">
-                    <ActionBadge type={entry.action_type} />
-                  </div>
-                  <p className="text-[10px] text-slate-400 leading-relaxed italic">
-                    "{entry.action_description}"
-                  </p>
-                </div>
-              </div>
-            ))
-          )}
+      <div className="bg-[#0b121a]/70 border border-white/10 rounded-2xl overflow-hidden">
+        <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
+          <div>
+            <h3 className="text-xs font-black text-white uppercase tracking-widest">
+              Eventos autorizados
+            </h3>
+            <p className="text-[10px] text-slate-500 mt-1">
+              {entries.length} filas cargadas de {total} resultados
+            </p>
+          </div>
+          <span className="text-[10px] text-slate-500 uppercase tracking-wider">
+            Sin payloads sensibles
+          </span>
         </div>
 
-        {/* --- VISTA WEB: TABLA ROBUSTA --- */}
-        <div className="hidden md:block overflow-x-auto">
+        <div className="hidden lg:block overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-white/[0.01]">
-                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                  Fecha y Hora
-                </th>
-                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                  Personal Responsable
-                </th>
-                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                  Operación
-                </th>
-                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                  Detalle de Acción
-                </th>
-                <th className="px-8 py-5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
-                  Afectado / Alumno
-                </th>
+              <tr className="bg-white/[0.02] text-[9px] text-slate-500 uppercase tracking-widest">
+                <th className="px-5 py-4">Fecha real</th>
+                <th className="px-5 py-4">Actor</th>
+                <th className="px-5 py-4">Acción</th>
+                <th className="px-5 py-4">Objetivo</th>
+                <th className="px-5 py-4">Alumno</th>
+                <th className="px-5 py-4">Propósito</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.03]">
+            <tbody className="divide-y divide-white/5">
               {loading ? (
-                <tr>
-                  <td colSpan={5} className="px-8 py-20 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="size-10 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        Validando libros de registro...
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredEntries.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-8 py-20 text-center text-slate-400"
-                  >
-                    <span className="material-symbols-outlined text-5xl opacity-20">
-                      inventory_2
-                    </span>
-                    <p className="text-xs font-bold uppercase mt-4">
-                      Sin registros para mostrar
-                    </p>
-                  </td>
-                </tr>
+                <LoadingRow />
+              ) : entries.length === 0 ? (
+                <EmptyRow />
               ) : (
-                filteredEntries.map((entry) => (
-                  <tr
-                    key={entry.id}
-                    className="hover:bg-white/[0.03] transition-colors group"
-                  >
-                    <td className="px-8 py-5">
-                      <span className="text-[11px] font-black text-white block">
-                        {new Date(entry.created_at).toLocaleDateString(
-                          "es-MX",
-                          {
-                            day: "2-digit",
-                            month: "short",
-                          },
-                        )}
-                      </span>
-                      <span className="text-[10px] font-bold text-slate-500 block mt-0.5">
-                        {new Date(entry.created_at).toLocaleTimeString(
-                          "es-MX",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          },
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-black text-[10px]">
-                          {(entry.user_role || "S").charAt(0)}
-                        </div>
-                        <div>
-                          <p className="text-[11px] font-black text-white truncate max-w-[150px]">
-                            {entry.user_email || "SISTEMA"}
-                          </p>
-                          <p className="text-[9px] font-black text-blue-400/60 uppercase tracking-tight mt-0.5">
-                            {entry.user_role || "PROCESO AUTO"}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-8 py-5">
-                      <ActionBadge type={entry.action_type} />
-                    </td>
-                    <td className="px-8 py-5">
-                      <p className="text-[11px] text-slate-400 font-medium leading-relaxed max-w-[250px] line-clamp-2">
-                        {entry.action_description}
-                      </p>
-                    </td>
-                    <td className="px-8 py-5">
-                      {entry.target_student_name ? (
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-sm text-blue-500/40">
-                            person
-                          </span>
-                          <span className="text-[11px] font-black text-blue-400/80 italic">
-                            {entry.target_student_name}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-700 text-[10px] font-black uppercase tracking-widest">
-                          --
-                        </span>
-                      )}
-                    </td>
-                  </tr>
+                entries.map((entry) => (
+                  <AuditTableRow key={entry.id} entry={entry} />
                 ))
               )}
             </tbody>
           </table>
         </div>
+
+        <div className="lg:hidden divide-y divide-white/5">
+          {loading ? (
+            <div className="p-10 text-center text-xs text-slate-500">
+              Consultando eventos autorizados...
+            </div>
+          ) : entries.length === 0 ? (
+            <div className="p-10 text-center text-xs text-slate-500">
+              No hay eventos confirmados para estos filtros.
+            </div>
+          ) : (
+            entries.map((entry) => (
+              <AuditCard key={entry.id} entry={entry} />
+            ))
+          )}
+        </div>
+
+        {hasMore && nextCursor && (
+          <div className="p-4 border-t border-white/5 text-center">
+            <button
+              type="button"
+              disabled={loadingMore}
+              onClick={() => void fetchAuditLog(nextCursor, true)}
+              className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-300 hover:bg-white/10 disabled:opacity-50"
+            >
+              {loadingMore ? "Cargando..." : "Cargar eventos anteriores"}
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 };
 
-// --- Helper Components ---
-
-const StatCard: React.FC<{
-  label: string;
-  value: number | string;
-  icon: string;
-  color: string;
-}> = ({ label, value, icon, color }) => {
-  const colors: any = {
-    blue: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    amber: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    emerald: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    indigo: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
-  };
-
+const AuditTableRow: React.FC<{ entry: AuditEntry }> = ({ entry }) => {
+  const timestamp = formatAuditDate(entry.createdAt);
   return (
-    <div className="bg-[#0b121a]/60 p-6 rounded-[2rem] border border-white/5 shadow-lg backdrop-blur-3xl flex items-center gap-5 hover:border-white/10 transition-all group">
-      <div
-        className={`size-12 rounded-2xl flex items-center justify-center ${colors[color]} border shadow-lg group-hover:scale-110 transition-transform duration-500`}
-      >
-        <span className="material-symbols-outlined text-2xl">{icon}</span>
-      </div>
-      <div>
-        <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
-          {label}
+    <tr className="hover:bg-white/[0.02] align-top">
+      <td className="px-5 py-4 min-w-36">
+        <p className="text-xs font-bold text-white">{timestamp.date}</p>
+        <p className="text-[10px] text-slate-500 mt-1">{timestamp.time}</p>
+        <p className="text-[9px] text-slate-600 mt-2 uppercase">
+          {entry.origin}
         </p>
-        <p className="text-2xl font-black text-white tracking-tight">{value}</p>
-      </div>
-    </div>
+      </td>
+      <td className="px-5 py-4 min-w-48">
+        <p className="text-xs font-bold text-white">
+          {entry.userEmail ?? "SISTEMA"}
+        </p>
+        <p className="text-[10px] text-blue-400 uppercase mt-1">
+          {entry.userRole ?? "ROL NO DOCUMENTADO"}
+        </p>
+      </td>
+      <td className="px-5 py-4 min-w-56">
+        <ActionBadge category={entry.actionCategory} />
+        <p className="text-[10px] font-bold text-slate-300 mt-2">
+          {entry.actionType}
+        </p>
+        <p className="text-[11px] text-slate-400 mt-2 leading-relaxed">
+          {entry.actionDescription ?? "Descripción no documentada"}
+        </p>
+      </td>
+      <td className="px-5 py-4 min-w-44">
+        <p className="text-xs font-bold text-slate-200">
+          {entry.targetTable ?? "Tabla no documentada"}
+        </p>
+        <p className="text-[10px] text-slate-500 mt-1 break-all">
+          {entry.targetRecordId ?? "Registro no documentado"}
+        </p>
+      </td>
+      <td className="px-5 py-4 min-w-44">
+        <p className="text-xs font-bold text-slate-200">
+          {entry.studentName ?? "No documentado"}
+        </p>
+        <p className="text-[10px] text-slate-500 mt-1 break-all">
+          {entry.studentId ?? "Sin ID de alumno"}
+        </p>
+      </td>
+      <td className="px-5 py-4 min-w-56">
+        <p className="text-[11px] text-slate-300 leading-relaxed">
+          {entry.purpose ?? "Propósito no documentado"}
+        </p>
+        <p className="text-[9px] text-slate-600 mt-2 break-all">
+          Evento {entry.id}
+        </p>
+      </td>
+    </tr>
   );
 };
 
-const ActionBadge: React.FC<{ type: string }> = ({ type }) => {
-  const styles: any = {
-    CONSULTA: "bg-blue-50 text-blue-700 border-blue-100",
-    ACTUALIZACION: "bg-amber-50 text-amber-700 border-amber-100",
-    CREACION: "bg-emerald-50 text-emerald-700 border-emerald-100",
-    ELIMINACION: "bg-red-50 text-red-700 border-red-100",
+const AuditCard: React.FC<{ entry: AuditEntry }> = ({ entry }) => {
+  const timestamp = formatAuditDate(entry.createdAt);
+  return (
+    <article className="p-5 space-y-3">
+      <div className="flex justify-between gap-4">
+        <div>
+          <p className="text-xs font-black text-white">
+            {entry.userEmail ?? "SISTEMA"}
+          </p>
+          <p className="text-[9px] text-blue-400 uppercase">
+            {entry.userRole ?? "ROL NO DOCUMENTADO"}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] font-bold text-white">{timestamp.date}</p>
+          <p className="text-[9px] text-slate-500">{timestamp.time}</p>
+        </div>
+      </div>
+      <ActionBadge category={entry.actionCategory} />
+      <p className="text-[10px] font-bold text-slate-300">
+        {entry.actionType}
+      </p>
+      <p className="text-xs text-slate-400">
+        {entry.actionDescription ?? "Descripción no documentada"}
+      </p>
+      <dl className="grid grid-cols-2 gap-3 text-[10px]">
+        <AuditDefinition
+          label="Objetivo"
+          value={`${entry.targetTable ?? "No documentado"} · ${
+            entry.targetRecordId ?? "Sin registro"
+          }`}
+        />
+        <AuditDefinition
+          label="Alumno"
+          value={entry.studentName ?? entry.studentId ?? "No documentado"}
+        />
+        <AuditDefinition
+          label="Propósito"
+          value={entry.purpose ?? "No documentado"}
+        />
+        <AuditDefinition label="Origen" value={entry.origin} />
+      </dl>
+    </article>
+  );
+};
+
+const AuditDefinition: React.FC<{ label: string; value: string }> = ({
+  label,
+  value,
+}) => (
+  <div>
+    <dt className="text-slate-600 uppercase tracking-wider">{label}</dt>
+    <dd className="text-slate-300 mt-1 break-words">{value}</dd>
+  </div>
+);
+
+const ActionBadge: React.FC<{ category: AuditCategory }> = ({
+  category,
+}) => {
+  const styles: Record<AuditCategory, string> = {
+    CONSULTA: "bg-blue-500/10 text-blue-300 border-blue-500/20",
+    CREACION: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+    ACTUALIZACION: "bg-amber-500/10 text-amber-300 border-amber-500/20",
+    ELIMINACION: "bg-red-500/10 text-red-300 border-red-500/20",
+    OTRA: "bg-slate-500/10 text-slate-300 border-slate-500/20",
   };
 
   return (
     <span
-      className={`px-3 py-1 rounded-lg border text-[10px] font-black uppercase tracking-widest ${
-        styles[type] || "bg-slate-50 text-slate-500"
-      }`}
+      className={`inline-flex px-2.5 py-1 rounded-lg border text-[9px] font-black uppercase tracking-wider ${styles[category]}`}
     >
-      {type}
+      {CATEGORY_LABELS[category]}
     </span>
   );
 };
+
+const StatCard: React.FC<{
+  label: string;
+  value: number;
+  icon: string;
+  color: "blue" | "indigo" | "emerald" | "amber" | "violet";
+}> = ({ label, value, icon, color }) => {
+  const styles = {
+    blue: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+    indigo: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+    emerald: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+    amber: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+    violet: "text-violet-400 bg-violet-500/10 border-violet-500/20",
+  };
+
+  return (
+    <div className="bg-[#0b121a]/70 p-4 rounded-2xl border border-white/5 flex items-center gap-3">
+      <div
+        className={`size-10 rounded-xl border flex items-center justify-center ${styles[color]}`}
+      >
+        <span className="material-symbols-outlined text-xl">{icon}</span>
+      </div>
+      <div>
+        <p className="text-[9px] text-slate-500 uppercase tracking-wider">
+          {label}
+        </p>
+        <p className="text-xl font-black text-white">{value}</p>
+      </div>
+    </div>
+  );
+};
+
+const FilterInput: React.FC<{
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: "text" | "date";
+  placeholder?: string;
+}> = ({ label, value, onChange, type = "text", placeholder }) => (
+  <label>
+    <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+      {label}
+    </span>
+    <input
+      type={type}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      placeholder={placeholder}
+      className="w-full bg-slate-950/60 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+    />
+  </label>
+);
+
+const FilterSelect: React.FC<{
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: [string, string][];
+}> = ({ label, value, onChange, options }) => (
+  <label>
+    <span className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+      {label}
+    </span>
+    <select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      className="w-full bg-slate-950/60 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-blue-500"
+    >
+      {options.map(([optionValue, optionLabel]) => (
+        <option key={optionValue || "all"} value={optionValue}>
+          {optionLabel}
+        </option>
+      ))}
+    </select>
+  </label>
+);
+
+const LoadingRow = () => (
+  <tr>
+    <td colSpan={6} className="px-8 py-16 text-center text-xs text-slate-500">
+      Consultando eventos autorizados...
+    </td>
+  </tr>
+);
+
+const EmptyRow = () => (
+  <tr>
+    <td colSpan={6} className="px-8 py-16 text-center text-xs text-slate-500">
+      No hay eventos confirmados para estos filtros.
+    </td>
+  </tr>
+);

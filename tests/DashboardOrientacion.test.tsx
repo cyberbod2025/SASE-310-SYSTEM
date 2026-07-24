@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   loadCases: vi.fn(),
   loadDocentes: vi.fn(),
   loadHistory: vi.fn(),
+  registerFollowUp: vi.fn(),
   print: vi.fn(),
 }));
 
@@ -25,6 +26,7 @@ vi.mock("../src/components/orientacion/orientacionApi", () => ({
   loadOrientacionCasos: mocks.loadCases,
   loadDocentes: mocks.loadDocentes,
   loadStudentHistory: mocks.loadHistory,
+  registrarSeguimientoOrientacion: mocks.registerFollowUp,
 }));
 
 vi.mock("../src/store", () => ({
@@ -103,6 +105,15 @@ describe("Dashboard Orientacion v2", () => {
     mocks.createPlan.mockResolvedValue("plan-1");
     mocks.deriveSocialWork.mockResolvedValue(undefined);
     mocks.escalateDirection.mockResolvedValue(undefined);
+    mocks.registerFollowUp.mockResolvedValue({
+      id: "follow-up-1",
+      casoId: "case-1",
+      tipo: "nota",
+      descripcion: "Acuerdo de seguimiento confirmado.",
+      evidenciaUrl: null,
+      createdBy: "user-1",
+      createdAt: "2026-07-18T17:00:00.000Z",
+    });
   });
 
   it("renderiza el encabezado institucional y la bandeja", async () => {
@@ -126,5 +137,95 @@ describe("Dashboard Orientacion v2", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /enviar solicitud/i }));
     await waitFor(() => expect(mocks.requestDiagnosis).toHaveBeenCalled());
+  }, 15000);
+
+  it("confirma el seguimiento y refresca la memoria del mismo caso", async () => {
+    const refreshedHistory = {
+      summary: { total_incidencias: 3, total_justificantes: 1 },
+      incidents: [],
+      citations: [],
+      contacts: [],
+      interventions: [],
+      teacherReports: [],
+      plans: [],
+      requests: [],
+      followUps: [{
+        id: "follow-up-1",
+        casoId: "case-1",
+        tipo: "nota",
+        descripcion: "Acuerdo de seguimiento confirmado.",
+        evidenciaUrl: null,
+        createdBy: "user-1",
+        createdAt: "2026-07-18T17:00:00.000Z",
+      }],
+    };
+    mocks.loadHistory
+      .mockResolvedValueOnce({
+        ...refreshedHistory,
+        followUps: [],
+      })
+      .mockResolvedValue(refreshedHistory);
+
+    render(<DashboardOrientacion />);
+    await screen.findByRole("heading", { name: "Ana Rivera" });
+
+    const input = screen.getByPlaceholderText(
+      "Describe el seguimiento, el acuerdo o la evidencia.",
+    );
+    fireEvent.change(input, {
+      target: { value: "Acuerdo de seguimiento confirmado." },
+    });
+    fireEvent.click(screen.getByRole("button", {
+      name: /Registrar seguimiento/i,
+    }));
+
+    await waitFor(() => expect(mocks.registerFollowUp).toHaveBeenCalledWith({
+      casoId: "case-1",
+      tipo: "nota",
+      descripcion: "Acuerdo de seguimiento confirmado.",
+      evidenciaUrl: "",
+    }));
+    await waitFor(() => expect(mocks.loadHistory.mock.calls.length)
+      .toBeGreaterThan(1));
+    expect(await screen.findByText("Acuerdo de seguimiento confirmado."))
+      .toBeInTheDocument();
+    expect(input).toHaveValue("");
+  }, 15000);
+
+  it("conserva el seguimiento capturado cuando Supabase lo rechaza", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    mocks.registerFollowUp.mockRejectedValueOnce(new Error("RLS denied"));
+    render(<DashboardOrientacion />);
+    await screen.findByRole("heading", { name: "Ana Rivera" });
+
+    const input = screen.getByPlaceholderText(
+      "Describe el seguimiento, el acuerdo o la evidencia.",
+    );
+    fireEvent.change(input, {
+      target: { value: "Evidencia que debe conservarse" },
+    });
+    fireEvent.click(screen.getByRole("button", {
+      name: /Registrar seguimiento/i,
+    }));
+
+    await waitFor(() => expect(mocks.registerFollowUp).toHaveBeenCalled());
+    expect(input).toHaveValue("Evidencia que debe conservarse");
+    consoleError.mockRestore();
+  }, 15000);
+
+  it("describe derivación y escalamiento sin prometer automatismos", async () => {
+    render(<DashboardOrientacion />);
+    await screen.findByRole("heading", { name: "Ana Rivera" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Derivar" }));
+    expect(screen.getByText(/no programa visitas automáticamente/i))
+      .toBeInTheDocument();
+    expect(screen.queryByText(/programará una visita domiciliaria/i))
+      .not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Escalar" }));
+    expect(screen.getByText(/No impone sanciones ni medidas automáticas/i))
+      .toBeInTheDocument();
   }, 15000);
 });

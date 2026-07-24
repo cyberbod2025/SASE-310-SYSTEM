@@ -59,13 +59,16 @@ export interface ComplianceAgreement {
   estado: ComplianceStatus;
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
+export interface SocialInterventionRecord {
+  id: string;
+  caseId: string;
+  fecha: string;
+  accion: string;
+  resultado: string;
+  notas: string | null;
+}
 
-const dateDaysAgo = (days: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  return date.toISOString().slice(0, 10);
-};
+const today = () => new Date().toISOString().slice(0, 10);
 
 const responsablePrevioFor = (state: CaseState): TrabajoSocialCase["responsablePrevio"] => {
   if (state === CaseState.SEGUIMIENTO) return "Subdireccion";
@@ -96,7 +99,7 @@ export const priorityLabels: Record<OperationalPriority, string> = {
 };
 
 export const buildTrabajoSocialCases = (students: Student[]): TrabajoSocialCase[] => getPendingCases(students)
-  .map((caseItem, index) => ({
+  .map((caseItem) => ({
     id: caseItem.id,
     alumno: caseItem.alumno,
     grupo: caseItem.grupo,
@@ -105,65 +108,12 @@ export const buildTrabajoSocialCases = (students: Student[]): TrabajoSocialCase[
     prioridad: caseItem.prioridad,
     motivo: caseItem.motivo,
     riesgo: caseItem.riesgo,
-    ultimaActividad: caseItem.ultimaActividad || dateDaysAgo(index === 0 ? 16 : 5),
+    ultimaActividad: caseItem.ultimaActividad || null,
     interventionPlan: caseItem.estado === CaseState.SEGUIMIENTO
       ? "Verificar cumplimiento de acuerdos familiares definidos por el equipo institucional."
       : "Establecer contacto familiar, documentar respuesta y asegurar continuidad del plan.",
     student: caseItem.student,
   }));
-
-export const buildInitialCitatorios = (cases: TrabajoSocialCase[]): CitatorioRecord[] => cases.flatMap((caseItem, index) => {
-  if (index === 0 || caseItem.prioridad === "critica") {
-    return [1, 2, 3].map((numero) => ({
-      id: `${caseItem.id}-citatorio-${numero}`,
-      caseId: caseItem.id,
-      numero,
-      fecha: dateDaysAgo(10 - numero * 2),
-      respuesta: "sin_respuesta" as const,
-    }));
-  }
-
-  return [{
-    id: `${caseItem.id}-citatorio-1`,
-    caseId: caseItem.id,
-    numero: 1,
-    fecha: dateDaysAgo(3),
-    respuesta: index % 2 === 0 ? "sin_respuesta" : "asistio",
-  }];
-});
-
-export const buildInitialContacts = (cases: TrabajoSocialCase[]): FamilyContactRecord[] => cases.slice(0, 2).map((caseItem, index) => ({
-  id: `${caseItem.id}-contacto-${index + 1}`,
-  caseId: caseItem.id,
-  fecha: dateDaysAgo(index + 1),
-  tipo: index === 0 ? "llamada" : "mensaje",
-  resultado: index === 0 ? "No contestan; se deja registro para segundo intento." : "Tutor confirma recepcion y queda pendiente reunion.",
-}));
-
-export const buildInitialVisits = (cases: TrabajoSocialCase[]): HomeVisitRecord[] => cases.slice(1, 2).map((caseItem) => ({
-  id: `${caseItem.id}-visita-1`,
-  caseId: caseItem.id,
-  fecha: dateDaysAgo(4),
-  observaciones: "Visita de verificacion realizada sin incidencias de seguridad.",
-  contextoFamiliar: "Se requiere seguimiento de acuerdos y presencia del tutor.",
-}));
-
-export const buildInitialAgreements = (cases: TrabajoSocialCase[]): ComplianceAgreement[] => cases.flatMap((caseItem) => [
-  {
-    id: `${caseItem.id}-acuerdo-1`,
-    caseId: caseItem.id,
-    acuerdo: "Tutor asiste a reunion de seguimiento semanal.",
-    responsable: "Familia",
-    estado: "en_proceso" as const,
-  },
-  {
-    id: `${caseItem.id}-acuerdo-2`,
-    caseId: caseItem.id,
-    acuerdo: "Alumno mantiene asistencia regular y reporta avances.",
-    responsable: "Alumno y familia",
-    estado: caseItem.prioridad === "critica" ? "incumplido" as const : "en_proceso" as const,
-  },
-]);
 
 export const unansweredCitatoriosFor = (caseId: string, citatorios: CitatorioRecord[]) => citatorios
   .filter((citatorio) => citatorio.caseId === caseId && citatorio.respuesta === "sin_respuesta")

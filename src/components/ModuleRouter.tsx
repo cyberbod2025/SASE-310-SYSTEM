@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEcosystemModules } from "../hooks/useEcosystemModules";
 import { ExternalModuleLauncher } from "./ExternalModuleLauncher";
 import { canAccessSecurityDashboard } from "../utils/securityDashboardAccess";
+import { canAccessSensitiveModule } from "../utils/sensitiveModuleAccess";
 const Unauthorized = React.lazy(() => import("./Unauthorized").then(m => ({ default: m.Unauthorized })));
 
 // Loading Component
@@ -106,7 +107,12 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.REPORTES) return <Reportes />;
             if (currentModule === AppModule.EXPEDIENTES) return <Expedientes />;
             if (currentModule === AppModule.BITACORA) {
-              const allowedRoles = [UserRole.DIRECTIVO, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
+              const allowedRoles = [
+                UserRole.DIRECTIVO,
+                UserRole.SUBDIRECCION,
+                UserRole.SYSTEM_ADMIN,
+                UserRole.DEVELOPER,
+              ];
               if (!allowedRoles.includes(currentUserRole as UserRole)) {
                 return <Unauthorized />;
               }
@@ -124,7 +130,12 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.ARCHIVO) return <Archivo />;
             if (currentModule === AppModule.PROTOCOLOS) return <ProtocolsView />;
             if (currentModule === AppModule.APROBACIONES_PERSONAL) {
-              const allowedRoles = [UserRole.DIRECTIVO, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER];
+              const allowedRoles = [
+                UserRole.DIRECTIVO,
+                UserRole.SUBDIRECCION,
+                UserRole.SYSTEM_ADMIN,
+                UserRole.DEVELOPER,
+              ];
               if (!allowedRoles.includes(currentUserRole as UserRole)) {
                 return <Unauthorized />;
               }
@@ -141,12 +152,36 @@ export const ModuleRouter: React.FC = () => {
             if (currentModule === AppModule.CIERRE_CICLO) return <CierreCiclo />;
             if (currentModule === AppModule.MANUAL_USUARIO) return <ManualUsuario />;
             if (currentModule === AppModule.PERFIL) return <PerfilUsuario />;
-            if (currentModule === AppModule.SALUD) return <DashboardSalud />;
+            if (currentModule === AppModule.SALUD) {
+              if (!canAccessSensitiveModule(
+                currentModule,
+                currentUserRole as UserRole,
+              )) {
+                return <Unauthorized />;
+              }
+              return <DashboardSalud />;
+            }
             if (currentModule === AppModule.CALIFICACIONES) return <DashboardDocente />;
             if (currentModule === AppModule.SUBDIRECCION) return <DashboardSubdireccion />;
             if (currentModule === AppModule.IA_SASE) return <ManualUsuario />;
-            if (currentModule === AppModule.TRABAJO_SOCIAL_TRACKER) return <DashboardTrabajoSocial />;
-            if (currentModule === AppModule.UDEII_TRACKER) return <DashboardUDEII />;
+            if (currentModule === AppModule.TRABAJO_SOCIAL_TRACKER) {
+              if (!canAccessSensitiveModule(
+                currentModule,
+                currentUserRole as UserRole,
+              )) {
+                return <Unauthorized />;
+              }
+              return <DashboardTrabajoSocial />;
+            }
+            if (currentModule === AppModule.UDEII_TRACKER) {
+              if (!canAccessSensitiveModule(
+                currentModule,
+                currentUserRole as UserRole,
+              )) {
+                return <Unauthorized />;
+              }
+              return <DashboardUDEII />;
+            }
             if (currentModule === AppModule.LECTURA_TRACKER) return <DashboardLectura />;
             if (currentModule === AppModule.NOT_FOUND) return <NotFound />;
 

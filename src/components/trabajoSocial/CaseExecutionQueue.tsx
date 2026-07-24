@@ -36,7 +36,7 @@ export const CaseExecutionQueue: React.FC<CaseExecutionQueueProps> = ({
     <div className="mb-4 flex items-center justify-between gap-3">
       <div>
         <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Cola de ejecución</p>
-        <h2 className="text-xl font-black text-white">Casos asignados <span className="text-[10px] text-amber-500 font-black uppercase tracking-widest bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded ml-2">⚠️ BORRADOR LOCAL</span></h2>
+        <h2 className="text-xl font-black text-white">Casos asignados</h2>
       </div>
       <span className="rounded-full bg-orange-500/15 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-100">
         {cases.length} activos
@@ -81,10 +81,10 @@ export const CaseExecutionQueue: React.FC<CaseExecutionQueueProps> = ({
 
             <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <button type="button" disabled={!canEdit} onClick={() => onStartFollowUp(caseItem.id)} className="min-h-[46px] rounded-2xl bg-orange-500 px-4 text-[10.5px] font-black uppercase tracking-wider text-slate-950 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400">
-                Iniciar seguimiento (borrador local)
+                Iniciar seguimiento
               </button>
               <button type="button" disabled={!canEdit} onClick={() => onRegisterContact(caseItem.id)} className="min-h-[46px] rounded-2xl border border-orange-300/30 bg-orange-500/10 px-4 text-[10.5px] font-black uppercase tracking-wider text-orange-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500">
-                Registrar contacto (registro local)
+                Registrar contacto
               </button>
             </div>
           </article>

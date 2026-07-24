@@ -51,7 +51,7 @@ export const TrabajoSocialRoleHeader: React.FC<TrabajoSocialRoleHeaderProps> = (
           <SOSButton
             compact
             onActivate={onSOS}
-            confirmationMessage="Alerta crítica registrada en modo local. La notificación automática institucional está en preparación."
+            confirmationMessage="Alerta crítica registrada en el flujo institucional de emergencias."
           />
         </div>
 

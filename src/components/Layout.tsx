@@ -405,19 +405,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   collapsed={isSidebarCollapsed}
                 />
 
-                <NavItem
-                  id="nav-incidencias"
-                  icon="report_problem"
-                  label="Incidencias"
-                  active={currentModule === AppModule.BITACORA}
-                  onClick={() => {
-                    setCurrentModule(AppModule.BITACORA);
-                    setIsSidebarOpen(false);
-                  }}
-                  color={currentUserRole}
-                  highlighted={highlightedModule === AppModule.BITACORA}
-                  collapsed={isSidebarCollapsed}
-                />
               </>
             )}
 
@@ -478,7 +465,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             )}
             
             {canAccess(AppModule.BITACORA) && 
-              [UserRole.DIRECTIVO, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER].includes(currentUserRole as UserRole) && (
+              [UserRole.DIRECTIVO, UserRole.SUBDIRECCION, UserRole.SYSTEM_ADMIN, UserRole.DEVELOPER].includes(currentUserRole as UserRole) && (
               <NavItem
                 id="nav-bitacora"
                 icon="history"

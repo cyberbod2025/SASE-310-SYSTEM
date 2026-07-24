@@ -5,7 +5,12 @@ import type { OrientacionPlan } from "./orientacionTypes";
 
 interface Props {
   plans: OrientacionPlan[];
-  onCreatePlan: (payload: { objetivo: string; acciones: string; responsable: string; fechaRevision: string }) => void;
+  onCreatePlan: (payload: {
+    objetivo: string;
+    acciones: string;
+    responsable: string;
+    fechaRevision: string;
+  }) => Promise<boolean>;
 }
 
 export function InterventionPlanEditor({ plans, onCreatePlan }: Props) {
@@ -13,6 +18,35 @@ export function InterventionPlanEditor({ plans, onCreatePlan }: Props) {
   const [acciones, setAcciones] = useState("");
   const [responsable, setResponsable] = useState("");
   const [fechaRevision, setFechaRevision] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async () => {
+    if (
+      saving
+      || !objetivo.trim()
+      || !acciones.trim()
+      || !responsable.trim()
+    ) {
+      return;
+    }
+    setSaving(true);
+    try {
+      const saved = await onCreatePlan({
+        objetivo,
+        acciones,
+        responsable,
+        fechaRevision,
+      });
+      if (saved) {
+        setObjetivo("");
+        setAcciones("");
+        setResponsable("");
+        setFechaRevision("");
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <GlassCard className="border border-white/5 bg-slate-950/55">
@@ -24,8 +58,17 @@ export function InterventionPlanEditor({ plans, onCreatePlan }: Props) {
         <textarea className="min-h-24 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white" value={acciones} onChange={(e) => setAcciones(e.target.value)} placeholder="Acciones, responsables, frecuencia, acuerdos." />
         <input className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white" value={responsable} onChange={(e) => setResponsable(e.target.value)} placeholder="Responsable principal" />
         <input type="date" className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white" value={fechaRevision} onChange={(e) => setFechaRevision(e.target.value)} />
-        <NeoButton onClick={() => onCreatePlan({ objetivo, acciones, responsable, fechaRevision })} className="w-full bg-violet-500/20 text-white">
-          Guardar plan
+        <NeoButton
+          onClick={() => void handleSubmit()}
+          disabled={
+            saving
+            || !objetivo.trim()
+            || !acciones.trim()
+            || !responsable.trim()
+          }
+          className="w-full bg-violet-500/20 text-white"
+        >
+          {saving ? "Guardando..." : "Guardar plan"}
         </NeoButton>
       </div>
 

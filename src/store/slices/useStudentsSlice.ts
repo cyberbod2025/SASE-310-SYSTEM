@@ -19,7 +19,6 @@ import {
   BehaviorMetric,
 } from "../../types";
 import { evaluateEscalation } from "../../utils/saseUtils";
-import { sendWhatsAppNotification } from "../../utils/notifications";
 import toast from "react-hot-toast";
 
 type TipoIncidencia = Database["public"]["Enums"]["tipo_incidencia"];
@@ -158,23 +157,6 @@ export const useStudentsSlice = (
         });
       });
 
-      if (priority === "CRITICAL" && student.guardianInfo?.phonePrimary) {
-        const whatsappMsg = `SASE-310 ALERTA: Se ha activado un protocolo de ${message} para el alumno ${student.name}. Por favor, comuníquese con la institución.`;
-
-        sendWhatsAppNotification({
-          to: student.guardianInfo.phonePrimary,
-          message: whatsappMsg,
-          studentName: student.name,
-          incidentType: type,
-        }).then(res => {
-          if (res.success) {
-            console.log("WhatsApp enviado correctamente");
-          } else {
-            console.warn("Fallo al enviar WhatsApp:", res.error);
-          }
-        });
-      }
-
       if (priority === "CRITICAL") {
         toast.error(`¡ACTIVACIÓN DE PROTOCOLO! ${message}`, { duration: 6000 });
         logAudit(
@@ -243,7 +225,7 @@ export const useStudentsSlice = (
             id, folio, fecha_inicio, fecha_fin, motivo, descripcion, creado_en, emitido_por
           ),
           salud (
-            padecimiento, documento_url
+            padecimiento, activa
           ),
           calificaciones (
             id, materia, trimestre1, trimestre2, trimestre3, promedio_final, ciclo_escolar
@@ -306,6 +288,7 @@ export const useStudentsSlice = (
             issuedBy: j.emitido_por,
           })),
           medicalAlerts: (d.salud || [])
+            .filter((s: any) => s.activa !== false)
             .map((s: any) => s.padecimiento)
             .filter(Boolean),
           lastModifiedBy: d.modificado_por,
@@ -403,8 +386,6 @@ export const useStudentsSlice = (
     description: string,
     evidence?: string[],
   ) => {
-    const tempId = Math.random().toString(36).substr(2, 9);
-
     try {
       const cleanDescription = String(description ?? "").trim();
       const student = students.find((s) => s.id === studentId);
@@ -415,24 +396,29 @@ export const useStudentsSlice = (
       }
 
       const incidentDate = new Date().toISOString();
-      const { error } = await supabase.from("incidencias").insert([
-        {
+      const { data, error } = await supabase
+        .from("incidencias")
+        .insert({
           alumno_id: studentId,
           tipo: mapIncidentTypeToDB(type),
           descripcion: cleanDescription,
           reportado_por: user.id,
           fecha: incidentDate,
-        },
-      ]);
+        })
+        .select("id, fecha, created_at")
+        .single();
       if (error) throw error;
+      if (!data?.id) {
+        throw new Error("Supabase no confirmó la incidencia.");
+      }
 
       return await applyIncidentSideEffects({
         studentId,
         type,
         description: cleanDescription,
         evidence,
-        incidentId: tempId,
-        incidentDate,
+        incidentId: data.id,
+        incidentDate: data.fecha || data.created_at || incidentDate,
       });
     } catch (err: any) {
       console.warn("Error al guardar incidencia", err);
@@ -526,22 +512,30 @@ export const useStudentsSlice = (
   };
 
   const updateBapInfo = async (studentId: string, bapData: BAPInfo) => {
-    setStudents((prev) =>
-      prev.map((s) => (s.id === studentId ? { ...s, bapInfo: bapData } : s)),
-    );
-    try {
-      await supabase
-        .from("alumnos")
-        .update({
-            datos_bap: { ...bapData, lastUpdated: new Date().toISOString() },
-        })
-        .eq("id", studentId);
-      toast.success("Información UDEII actualizada");
-    } catch (err) {
-      if (import.meta.env.DEV) {
-        console.warn("Error al actualizar informacion UDEII");
-      }
+    const persistedBapInfo = {
+      ...bapData,
+      lastUpdated: new Date().toISOString(),
+    };
+    const { data, error } = await supabase
+      .from("alumnos")
+      .update({ datos_bap: persistedBapInfo })
+      .eq("id", studentId)
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      toast.error(PERSISTENCE_ERROR_MESSAGE);
+      throw error ?? new Error("Supabase no confirmó la actualización UDEII.");
     }
+
+    setStudents((prev) =>
+      prev.map((student) =>
+        student.id === studentId
+          ? { ...student, bapInfo: persistedBapInfo }
+          : student,
+      ),
+    );
+    toast.success("Información UDEII actualizada");
   };
 
   const toggleDistanceState = async (
@@ -758,57 +752,6 @@ export const useStudentsSlice = (
     }
   };
 
-  const addAtencionMedica = async (studentId: string, data: any) => {
-    try {
-      if (!user) {
-        toast.error("No hay sesión activa");
-        return;
-      }
-
-      const { error } = await supabase
-        .from("atenciones_medicas")
-        .insert([{
-          alumno_id: studentId,
-          nombre_alumno: data.nombre_alumno,
-          grupo: data.grupo,
-          hora: data.hora || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          motivo: data.motivo,
-          sintomas: data.sintomas || "No especificado",
-          diagnostico: data.diagnostico,
-          signos_vitales: data.signos_vitales,
-          atencion_brindada: data.atencion_brindada,
-          tratamiento: data.tratamiento || data.atencion_brindada || "Consultar atención brindada",
-          medicamento: data.medicamento,
-          notificacion_padres: String(data.notificacion_padres || false),
-          acudieron_por_el: String(data.acudieron_por_el || false),
-          condiciones_entrega: data.condiciones_entrega,
-          observaciones: data.observaciones,
-          generado_por: user.id,
-          atendido_por: user.id
-        }]);
-
-      if (error) throw error;
-
-      toast.success("Atención médica guardada ✔️");
-      
-      // Auditoría
-      await logAudit(
-        "CREACION",
-        `Atención médica registrada: ${data.motivo}`,
-        "atenciones_medicas",
-        studentId,
-        data.nombre_alumno
-      );
-
-      fetchStudents();
-      return { success: true };
-    } catch (err: any) {
-      console.error("Error al guardar atención médica:", err);
-      toast.error("RLS me bloquea ❌ o hubo un error técnico");
-      return { success: false, error: err };
-    }
-  };
-
   const updateEstadoObjeto = async (objetoId: string, nuevoEstado: EstadoObjetoRetenido) => {
     try {
       const { error } = await (supabase as any)
@@ -873,7 +816,6 @@ export const useStudentsSlice = (
     addObjetoRetenido,
     updateEstadoObjeto,
     registrarDevolucion,
-    addAtencionMedica,
     markIncidentAsNotified: async (studentId: string, incidentId: string) => {
       setStudents((prev) =>
         prev.map((s) => {
@@ -886,19 +828,6 @@ export const useStudentsSlice = (
           };
         })
       );
-
-      try {
-        const { error } = await supabase
-          .from("incidencias")
-          .update({ notificado_whatsapp: true })
-          .eq("id", incidentId);
-
-        if (error) throw error;
-        toast.success("Estado de notificación actualizado");
-      } catch (err) {
-        console.error("Error marking incident as notified:", err);
-        toast.error("No se pudo actualizar el estado de notificación");
-      }
     },
     setStudents,
   };

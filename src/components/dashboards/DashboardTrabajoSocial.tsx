@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useApp } from "../../store";
 import { PERMISOS_POR_ROL } from "../../utils/permisos";
@@ -11,10 +11,16 @@ import { TrabajoSocialCaseDetail } from "../trabajoSocial/TrabajoSocialCaseDetai
 import { TrabajoSocialInsights } from "../trabajoSocial/TrabajoSocialInsights";
 import { TrabajoSocialRoleHeader } from "../trabajoSocial/TrabajoSocialRoleHeader";
 import {
-  buildInitialAgreements,
-  buildInitialCitatorios,
-  buildInitialContacts,
-  buildInitialVisits,
+  persistCitatorio,
+  persistCitatorioAttendance,
+  persistAgreement,
+  persistAgreementStatus,
+  persistFamilyContact,
+  persistHomeVisit,
+  persistIntervention,
+  loadSocialTracking,
+} from "../trabajoSocial/trabajoSocialPersistence";
+import {
   buildTrabajoSocialCases,
   CitatorioRecord,
   ComplianceAgreement,
@@ -22,83 +28,59 @@ import {
   ContactType,
   createCitatorio,
   createContact,
-  createVisit,
   FamilyContactRecord,
   hasThreeUnansweredCitatorios,
   HomeVisitRecord,
+  SocialInterventionRecord,
   TrabajoSocialInterventionStatus,
 } from "../trabajoSocial/trabajoSocialTypes";
 
 export const DashboardTrabajoSocial = () => {
   const { students, createEmergencyAlert, currentUserProfile } = useApp();
   const rolePermissions = PERMISOS_POR_ROL.trabajo_social;
-  const baseCases = buildTrabajoSocialCases(students);
+  const baseCases = useMemo(() => buildTrabajoSocialCases(students), [students]);
+  const caseStudentIdsKey = [...new Set(
+    baseCases.map((caseItem) => caseItem.student.id),
+  )].sort().join("|");
 
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState("");
 
-  // Estado de seguimiento local de la sesión (honesto, sin fingir persistencia DB)
-  const [localCases, setLocalCases] = useState<Record<string, {
-    status: "Cumplido" | "En proceso" | "Incumplido" | "Sin iniciar";
-    history: Array<{ action: string; timestamp: string }>;
-  }>>({});
-
-  const addLocalAction = (studentId: string, actionName: string) => {
-    if (!studentId) return;
-    const time = new Date().toLocaleTimeString("es-MX", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-    setLocalCases((prev) => {
-      const current = prev[studentId] || { status: "Sin iniciar", history: [] };
-      return {
-        ...prev,
-        [studentId]: {
-          ...current,
-          history: [
-            ...current.history,
-            { action: actionName, timestamp: time },
-          ],
-        },
-      };
-    });
-  };
-
-  const updateLocalStatus = (studentId: string, status: "Cumplido" | "En proceso" | "Incumplido") => {
-    if (!studentId) return;
-    const time = new Date().toLocaleTimeString("es-MX", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    setLocalCases((prev) => {
-      const current = prev[studentId] || { status: "Sin iniciar", history: [] };
-      return {
-        ...prev,
-        [studentId]: {
-          ...current,
-          status,
-          history: [
-            ...current.history,
-            { action: `Estado cambiado a ${status}`, timestamp: time },
-          ],
-        },
-      };
-    });
-    toast.success(`Estado actualizado a ${status} (borrador local - pendiente de persistencia institucional)`, {
-      icon: "📝",
-    });
-  };
-
   const [sasitoOpen, setSasitoOpen] = useState(false);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(baseCases[0]?.id || null);
   const [statusOverrides, setStatusOverrides] = useState<Record<string, TrabajoSocialInterventionStatus>>({});
   const [lastAction, setLastAction] = useState<string | null>(null);
-  const [citatorios, setCitatorios] = useState<CitatorioRecord[]>(() => buildInitialCitatorios(baseCases));
-  const [contacts, setContacts] = useState<FamilyContactRecord[]>(() => buildInitialContacts(baseCases));
-  const [visits, setVisits] = useState<HomeVisitRecord[]>(() => buildInitialVisits(baseCases));
-  const [agreements, setAgreements] = useState<ComplianceAgreement[]>(() => buildInitialAgreements(baseCases));
+  const [citatorios, setCitatorios] = useState<CitatorioRecord[]>([]);
+  const [contacts, setContacts] = useState<FamilyContactRecord[]>([]);
+  const [visits, setVisits] = useState<HomeVisitRecord[]>([]);
+  const [agreements, setAgreements] = useState<ComplianceAgreement[]>([]);
+  const [interventions, setInterventions] = useState<SocialInterventionRecord[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    const studentIds = caseStudentIdsKey
+      ? caseStudentIdsKey.split("|")
+      : [];
+
+    loadSocialTracking(studentIds)
+      .then((tracking) => {
+        if (!active) return;
+        setCitatorios(tracking.citatorios);
+        setContacts(tracking.contacts);
+        setVisits(tracking.visits);
+        setAgreements(tracking.agreements);
+        setInterventions(tracking.interventions);
+      })
+      .catch((error) => {
+        console.error("No se pudo cargar el seguimiento social persistente", error);
+        if (active) toast.error("No se pudo cargar la memoria institucional de Trabajo Social.");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [caseStudentIdsKey]);
 
   const cases = baseCases.map((caseItem) => ({
     ...caseItem,
@@ -122,73 +104,154 @@ export const DashboardTrabajoSocial = () => {
     setStatusOverrides((current) => ({ ...current, [caseId]: status }));
   };
 
-  const handleStartFollowUp = (caseId: string) => {
+  const handleStartFollowUp = async (caseId: string) => {
+    let intervention: SocialInterventionRecord;
+    try {
+      intervention = await persistIntervention({
+        studentId: caseId,
+        reason: "Inicio de seguimiento de Trabajo Social",
+        result: "seguimiento",
+        notes: "Seguimiento iniciado desde la cola operativa.",
+      });
+    } catch (error) {
+      console.error("No se pudo persistir el inicio de seguimiento", error);
+      toast.error("No se pudo guardar el inicio del seguimiento.");
+      return;
+    }
     setSelectedCaseId(caseId);
+    setInterventions((current) => [intervention, ...current]);
     setCaseStatus(caseId, "seguimiento");
-    addLocalAction(caseId, "Iniciar seguimiento");
-    setLastAction("Seguimiento iniciado (borrador local - pendiente de persistencia institucional)");
-    toast.success("Seguimiento iniciado (borrador local - pendiente de persistencia)", { icon: "🚀" });
+    setLastAction("Seguimiento iniciado y guardado en el expediente institucional.");
+    toast.success("Seguimiento iniciado y guardado.", { icon: "🚀" });
   };
 
-  const handleRegisterCitatorio = (caseId: string) => {
+  const handleRegisterCitatorio = async (caseId: string) => {
     const currentCount = citatorios.filter((citatorio) => citatorio.caseId === caseId).length;
-    setCitatorios((current) => [...current, createCitatorio(caseId, currentCount)]);
+    let persistedId: string;
+    try {
+      persistedId = await persistCitatorio({
+        studentId: caseId,
+        date: new Date().toISOString().slice(0, 10),
+        reason: `Citatorio de seguimiento familiar número ${currentCount + 1}.`,
+      });
+    } catch (error) {
+      console.error("No se pudo persistir el citatorio", error);
+      toast.error("No se pudo guardar el citatorio.");
+      return;
+    }
+    setCitatorios((current) => [...current, { ...createCitatorio(caseId, currentCount), id: persistedId }]);
     setCaseStatus(caseId, "alerta_sin_respuesta");
-    addLocalAction(caseId, "Citatorio registrado");
-    setLastAction("Nuevo citatorio registrado (borrador local - pendiente de persistencia institucional)");
-    toast.success("Citatorio agendado (borrador local - pendiente de persistencia)", { icon: "📅" });
+    setLastAction("Nuevo citatorio registrado y guardado en el expediente institucional.");
+    toast.success("Citatorio agendado y guardado.", { icon: "📅" });
   };
 
-  const handleMarkAttendance = (citatorioId: string) => {
-    const citatorioItem = citatorios.find((c) => c.id === citatorioId);
-    if (citatorioItem) {
-      addLocalAction(citatorioItem.caseId, "Marcar asistencia");
+  const handleMarkAttendance = async (citatorioId: string) => {
+    try {
+      await persistCitatorioAttendance(citatorioId);
+    } catch (error) {
+      console.error("No se pudo persistir la asistencia del citatorio", error);
+      toast.error("No se pudo guardar la asistencia.");
+      return;
     }
     setCitatorios((current) => current.map((citatorio) => citatorio.id === citatorioId ? { ...citatorio, respuesta: "asistio" } : citatorio));
-    setLastAction("Asistencia familiar marcada en citatorio (registro local - pendiente de persistencia institucional)");
-    toast.success("Asistencia marcada (registro local - pendiente de persistencia)", { icon: "✅" });
+    setLastAction("Asistencia familiar marcada y guardada.");
+    toast.success("Asistencia marcada y guardada.", { icon: "✅" });
   };
 
-  const handleRegisterContact = (caseId: string, tipo: ContactType = "llamada", resultado = "Contacto familiar rapido registrado.") => {
+  const handleRegisterContact = async (caseId: string, tipo: ContactType = "llamada", resultado = "Contacto familiar rapido registrado.") => {
+    try {
+      await persistFamilyContact({ studentId: caseId, method: tipo, outcome: resultado });
+    } catch (error) {
+      console.error("No se pudo persistir el contacto familiar", error);
+      toast.error("No se pudo guardar el contacto familiar.");
+      return false;
+    }
     setSelectedCaseId(caseId);
     setContacts((current) => [createContact(caseId, tipo, resultado), ...current]);
     setCaseStatus(caseId, "contacto_familiar");
-    addLocalAction(caseId, `Contacto registrado: ${tipo}`);
-    setLastAction("Contacto familiar registrado (registro local - pendiente de persistencia institucional)");
-    toast.success("Contacto registrado (registro local - pendiente de persistencia)", { icon: "📞" });
+    setLastAction("Contacto familiar registrado y guardado.");
+    toast.success("Contacto registrado y guardado.", { icon: "📞" });
+    return true;
   };
 
-  const handleRegisterVisit = (caseId: string, observaciones: string) => {
+  const handleRegisterVisit = async (caseId: string, observaciones: string) => {
+    let visit: HomeVisitRecord;
+    try {
+      visit = await persistHomeVisit({ studentId: caseId, observations: observaciones });
+    } catch (error) {
+      console.error("No se pudo persistir la visita domiciliaria", error);
+      toast.error("No se pudo guardar la visita domiciliaria.");
+      return false;
+    }
     setSelectedCaseId(caseId);
-    setVisits((current) => [createVisit(caseId, observaciones), ...current]);
+    setVisits((current) => [visit, ...current]);
     setCaseStatus(caseId, "visita_programada");
-    addLocalAction(caseId, "Visita domiciliaria registrada");
-    setLastAction("Visita domiciliaria agregada a la bitacora (borrador local - pendiente de persistencia institucional)");
-    toast.success("Visita registrada (borrador local - pendiente de persistencia)", { icon: "🏠" });
+    setLastAction("Visita domiciliaria guardada en la memoria institucional.");
+    toast.success("Visita registrada y guardada.", { icon: "🏠" });
+    return true;
   };
 
-  const handleUpdateCompliance = (agreementId: string, status: ComplianceStatus) => {
-    const agreementItem = agreements.find((a) => a.id === agreementId);
-    if (agreementItem) {
-      addLocalAction(agreementItem.caseId, `Acuerdo: ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'}`);
+  const handleCreateAgreement = async (caseId: string, agreement: string, responsible: string) => {
+    let persistedAgreement: ComplianceAgreement;
+    try {
+      persistedAgreement = await persistAgreement({
+        studentId: caseId,
+        agreement,
+        responsible,
+      });
+    } catch (error) {
+      console.error("No se pudo persistir el acuerdo", error);
+      toast.error("No se pudo guardar el acuerdo.");
+      return false;
+    }
+    setAgreements((current) => [persistedAgreement, ...current]);
+    setCaseStatus(caseId, "acuerdos_en_proceso");
+    setLastAction("Acuerdo guardado en la memoria institucional.");
+    toast.success("Acuerdo registrado y guardado.", { icon: "🤝" });
+    return true;
+  };
+
+  const handleUpdateCompliance = async (agreementId: string, status: ComplianceStatus) => {
+    try {
+      await persistAgreementStatus(agreementId, status);
+    } catch (error) {
+      console.error("No se pudo persistir el estado del acuerdo", error);
+      toast.error("No se pudo actualizar el acuerdo.");
+      return;
     }
     setAgreements((current) => current.map((agreement) => agreement.id === agreementId ? { ...agreement, estado: status } : agreement));
-    setLastAction(`Cumplimiento actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (borrador local - pendiente de persistencia institucional)`);
-    toast.success(`Acuerdo actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} (borrador local - pendiente de persistencia)`, { icon: "📝" });
+    setLastAction(`Cumplimiento actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'} y guardado.`);
+    toast.success(`Acuerdo actualizado a ${status === 'cumplido' ? 'Cumplido' : status === 'en_proceso' ? 'En proceso' : 'Incumplido'}.`, { icon: "📝" });
   };
 
-  const handleEscalate = (caseId: string) => {
+  const handleEscalate = async (caseId: string) => {
+    let intervention: SocialInterventionRecord;
+    try {
+      intervention = await persistIntervention({ studentId: caseId, reason: "Escalamiento a Dirección", result: "escalado" });
+    } catch (error) {
+      console.error("No se pudo persistir el escalamiento", error);
+      toast.error("No se pudo guardar el escalamiento.");
+      return;
+    }
     setSelectedCaseId(caseId);
-    addLocalAction(caseId, "Escalar a Dirección");
-    setLastAction("Turnando caso a Dirección (función en preparación - pendiente de persistencia institucional)");
-    toast.success("Caso turnado a Dirección (función en preparación)", { icon: "gavel" });
+    setInterventions((current) => [intervention, ...current]);
+    setLastAction("Escalamiento registrado para revisión de Dirección.");
+    toast.success("Escalamiento registrado.", { icon: "gavel" });
   };
 
-  const handleReturnToOrientacion = (caseId: string) => {
+  const handleReturnToOrientacion = async (caseId: string) => {
+    let intervention: SocialInterventionRecord;
+    try {
+      intervention = await persistIntervention({ studentId: caseId, reason: "Devolución a Orientación", result: "devuelto" });
+    } catch (error) {
+      console.error("No se pudo persistir la devolución a Orientación", error);
+      toast.error("No se pudo guardar la devolución a Orientación.");
+      return;
+    }
     setSelectedCaseId(caseId);
-    addLocalAction(caseId, "Devolver a Orientación");
-    setLastAction("Devolviendo caso a Orientación (función en preparación - pendiente de persistencia institucional)");
-    toast.success("Caso devuelto a Orientación (función en preparación)", { icon: "assignment_return" });
+    setInterventions((current) => [intervention, ...current]);
+    setLastAction("Solicitud de devolución a Orientación registrada.");
+    toast.success("Solicitud de devolución registrada.", { icon: "assignment_return" });
   };
 
   const handleSOS = async () => {
@@ -239,6 +302,7 @@ export const DashboardTrabajoSocial = () => {
             contacts={contacts}
             visits={visits}
             agreements={agreements}
+            interventions={interventions}
             canEdit={rolePermissions.can_edit}
             canEscalate={rolePermissions.can_escalate}
             canViewSensitive={rolePermissions.can_view_sensitive}
@@ -261,6 +325,7 @@ export const DashboardTrabajoSocial = () => {
               selectedCase={selectedCase}
               agreements={agreements}
               canEdit={rolePermissions.can_edit}
+              onCreateAgreement={handleCreateAgreement}
               onUpdateCompliance={handleUpdateCompliance}
             />
           </div>

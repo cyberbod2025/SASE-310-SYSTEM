@@ -3,6 +3,14 @@ import { supabase } from "../../supabase/client";
 import { Suministro, DailyStats } from "../../types";
 import toast from "react-hot-toast";
 
+const getSchoolDate = (value: Date = new Date()) =>
+  new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(value);
+
 export const useInventoryStatsSlice = (user: any) => {
   const [suministros, setSuministros] = useState<Suministro[]>([]);
   const [dailyStats, setDailyStats] = useState<DailyStats>({
@@ -65,7 +73,7 @@ export const useInventoryStatsSlice = (user: any) => {
   };
 
   const fetchDailyStats = async () => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = getSchoolDate();
     try {
       const { data, error } = await supabase
         .from("attendance_logs")
@@ -93,30 +101,44 @@ export const useInventoryStatsSlice = (user: any) => {
   const registerAttendance = async (
     alumnoId: string,
     estado: "presente" | "falta" | "retardo" | "justificado",
-  ) => {
+  ): Promise<boolean> => {
     try {
-      const { error } = await (supabase as any).from("attendance_logs").insert([
-        {
+      if (!user?.id) {
+        toast.error("No hay una sesión institucional activa");
+        return false;
+      }
+
+      const { data, error } = await supabase
+        .from("attendance_logs")
+        .insert({
           alumno_id: alumnoId,
-          estado: estado,
-          registrado_por: user?.id,
-        },
-      ] as any);
+          estado,
+          registrado_por: user.id,
+          fecha: getSchoolDate(),
+        })
+        .select("id")
+        .single();
 
       if (error) {
         if (error.code === "23505") {
           toast.error("Este alumno ya tiene registro de asistencia hoy");
+          return false;
         } else {
           throw error;
         }
-      } else {
-        fetchDailyStats();
       }
+      if (!data?.id) {
+        throw new Error("Supabase no confirmó el registro de asistencia.");
+      }
+
+      await fetchDailyStats();
+      return true;
     } catch (err) {
       if (import.meta.env.DEV) {
         console.warn("Error registering attendance");
       }
       toast.error("Error en registro de asistencia");
+      return false;
     }
   };
 

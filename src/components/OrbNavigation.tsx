@@ -246,6 +246,12 @@ export const OrbNavigation = () => {
             color: "from-cyan-600 to-blue-700",
           },
           {
+            id: AppModule.BITACORA,
+            label: "Caja Negra",
+            icon: "policy",
+            color: "from-slate-700 to-slate-900",
+          },
+          {
             id: AppModule.AGENDA,
             label: "Agenda",
             icon: "calendar_month",

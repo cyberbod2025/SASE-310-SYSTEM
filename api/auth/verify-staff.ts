@@ -4,6 +4,26 @@ import { getRateLimitKey, isRateLimited } from "../ai/rateLimit";
 type VercelRequest = any;
 type VercelResponse = any;
 
+const APPROVABLE_ROLES = new Set([
+  "directivo",
+  "subdireccion",
+  "docente",
+  "docente_tutor",
+  "prefectura",
+  "orientacion",
+  "trabajo_social",
+  "medico_escolar",
+  "udeii",
+  "promotora_lectura",
+  "secretaria",
+]);
+
+const ROLE_ALIASES: Record<string, string> = {
+  direccion: "directivo",
+  enfermeria: "medico_escolar",
+  promotora: "promotora_lectura",
+};
+
 function normalizeName(value: string): string {
   return value
     .trim()
@@ -11,6 +31,13 @@ function normalizeName(value: string): string {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, " ");
+}
+
+function normalizeRole(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  const canonical = ROLE_ALIASES[normalized] ?? normalized;
+  return APPROVABLE_ROLES.has(canonical) ? canonical : null;
 }
 
 function isAllowedOrigin(origin: string | undefined): boolean {
@@ -69,7 +96,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const { fullName } = body as { fullName?: string };
+  const { fullName, alternateFullName } = body as {
+    fullName?: string;
+    alternateFullName?: string;
+  };
   if (!fullName || typeof fullName !== "string" || fullName.length > 200) {
     res.status(400).json({ error: "Invalid fullName" });
     return;
@@ -79,8 +109,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.status(400).json({ error: "Invalid fullName" });
     return;
   }
+  if (
+    alternateFullName !== undefined &&
+    (typeof alternateFullName !== "string" ||
+      alternateFullName.length > 200 ||
+      alternateFullName.trim().length < 4)
+  ) {
+    res.status(400).json({ error: "Invalid alternateFullName" });
+    return;
+  }
 
   const normalizedTarget = normalizeName(fullName);
+  const normalizedAlternate =
+    typeof alternateFullName === "string"
+      ? normalizeName(alternateFullName)
+      : normalizedTarget;
+  const nameCandidates = [...new Set([normalizedTarget, normalizedAlternate])];
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceRoleKey) {
@@ -92,22 +136,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const { data, error } = await supabase
     .from("personal_oficial")
-    .select("full_name, role, is_active")
-    .eq("is_active", true);
+    .select("role")
+    .eq("is_active", true)
+    .in("full_name_normalized", nameCandidates)
+    .limit(5);
 
   if (error) {
     res.status(500).json({ error: "Error al validar la nomina oficial" });
     return;
   }
 
-  const match = (data || []).find(
-    (staff) => normalizeName(staff.full_name || "") === normalizedTarget,
-  );
-
-  if (!match || !match.is_active) {
+  const matchedRoles = [
+    ...new Set((data || []).map((staff) => normalizeRole(staff.role))),
+  ].filter((role): role is string => Boolean(role));
+  if (matchedRoles.length !== 1) {
     res.status(200).json({ match: false });
     return;
   }
 
-  res.status(200).json({ match: true, role: match.role });
+  res.status(200).json({ match: true, role: matchedRoles[0] });
 }

@@ -6,12 +6,16 @@ import type { OrientacionDiagnosisRequest, OrientacionDocenteOption } from "./or
 interface Props {
   requests: OrientacionDiagnosisRequest[];
   docentes: OrientacionDocenteOption[];
-  onRequest: (docenteId: string, observaciones: string) => void;
+  onRequest: (
+    docenteId: string,
+    observaciones: string,
+  ) => Promise<boolean>;
 }
 
 export function TeacherDiagnosisRequests({ requests, docentes, onRequest }: Props) {
   const [docenteId, setDocenteId] = useState(docentes[0]?.id ?? "");
   const [observaciones, setObservaciones] = useState("");
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (!docenteId && docentes[0]?.id) {
@@ -19,10 +23,23 @@ export function TeacherDiagnosisRequests({ requests, docentes, onRequest }: Prop
     }
   }, [docenteId, docentes]);
 
+  const handleSubmit = async () => {
+    if (!docenteId || sending) return;
+    setSending(true);
+    try {
+      const sent = await onRequest(docenteId, observaciones);
+      if (sent) setObservaciones("");
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <GlassCard className="border border-white/5 bg-slate-950/55">
       <h2 className="text-lg font-bold text-white">Solicitudes de diagnóstico</h2>
-      <p className="mt-1 text-sm text-slate-400">Envía una solicitud solo a docentes asignados.</p>
+      <p className="mt-1 text-sm text-slate-400">
+        Envía una solicitud a un docente institucional identificado.
+      </p>
 
       <div className="mt-4 grid gap-3">
         <label className="grid gap-1 text-sm text-slate-300">
@@ -38,8 +55,12 @@ export function TeacherDiagnosisRequests({ requests, docentes, onRequest }: Prop
           Observaciones
           <textarea className="min-h-24 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-white" value={observaciones} onChange={(e) => setObservaciones(e.target.value)} placeholder="Contexto del caso, puntos a evaluar, fecha límite, etc." />
         </label>
-        <NeoButton onClick={() => onRequest(docenteId, observaciones)} className="w-full bg-violet-500/20 text-white">
-          Enviar solicitud
+        <NeoButton
+          onClick={() => void handleSubmit()}
+          disabled={!docenteId || sending}
+          className="w-full bg-violet-500/20 text-white"
+        >
+          {sending ? "Enviando..." : "Enviar solicitud"}
         </NeoButton>
       </div>
 

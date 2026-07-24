@@ -13,7 +13,7 @@ export const SasitoInsights: React.FC<SasitoInsightsProps> = ({ insights }) => {
         </div>
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.28em] text-blue-200">Sasito</p>
-          <h3 className="text-lg font-black text-white">Insights de Dirección</h3>
+          <h3 className="text-lg font-black text-white">Resumen verificable de Dirección</h3>
         </div>
       </div>
       <div className="mt-4 space-y-3">

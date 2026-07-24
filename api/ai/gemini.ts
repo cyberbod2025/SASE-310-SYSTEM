@@ -1,140 +1,231 @@
-import { createClient } from "@supabase/supabase-js";
-import { getRateLimitKey, isRateLimited } from "./rateLimit";
+import {
+  authorizeInstitutionalAIRequest,
+  recordInstitutionalAIEvent,
+} from "../../server/aiSecurity";
 
 type VercelRequest = any;
 type VercelResponse = any;
 
-const ALLOWED_MODELS = new Set(["gemini-flash-latest", "gemini-2.0-flash"]);
+const ALLOWED_MODELS = new Set([
+  "gemini-flash-latest",
+  "gemini-2.0-flash",
+]);
+const DEFAULT_MODEL = "gemini-2.0-flash";
 
 function isAllowedOrigin(origin: string | undefined): boolean {
   const allowed = process.env.ALLOWED_ORIGINS;
-  if (!allowed) return false;
-  if (!origin) return false;
+  if (!allowed || !origin) return false;
   return allowed
     .split(",")
-    .map((o) => o.trim())
+    .map((item) => item.trim())
     .filter(Boolean)
     .includes(origin);
 }
 
-function setCorsHeaders(res: VercelResponse, origin: string | undefined) {
+function setCorsHeaders(
+  response: VercelResponse,
+  origin: string | undefined,
+): void {
   if (!origin) return;
-  res.setHeader("Access-Control-Allow-Origin", origin);
-  res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader(
+  response.setHeader("Access-Control-Allow-Origin", origin);
+  response.setHeader("Vary", "Origin");
+  response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  response.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
+    "Authorization, Content-Type",
   );
-  res.setHeader("Access-Control-Max-Age", "86400");
+  response.setHeader("Access-Control-Max-Age", "86400");
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+function readGeminiText(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+  const candidates = (payload as Record<string, unknown>).candidates;
+  if (!Array.isArray(candidates) || candidates.length === 0) return null;
+  const candidate = candidates[0];
+  if (!candidate || typeof candidate !== "object") return null;
+  const content = (candidate as Record<string, unknown>).content;
+  if (!content || typeof content !== "object") return null;
+  const parts = (content as Record<string, unknown>).parts;
+  if (!Array.isArray(parts)) return null;
+  const text = parts
+    .map((part) =>
+      part && typeof part === "object"
+        ? (part as Record<string, unknown>).text
+        : null,
+    )
+    .filter((value): value is string => typeof value === "string")
+    .join("")
+    .trim();
+  return text || null;
+}
+
+export default async function handler(
+  request: VercelRequest,
+  response: VercelResponse,
+) {
   if (!process.env.ALLOWED_ORIGINS) {
-    res.status(500).json({ error: "CORS origins not configured" });
+    response.status(500).json({ error: "Orígenes CORS no configurados" });
     return;
   }
 
-  const origin = req.headers.origin;
+  const origin = request.headers?.origin;
   if (!isAllowedOrigin(origin)) {
-    res.status(403).json({ error: "Forbidden origin" });
+    response.status(403).json({ error: "Origen no permitido" });
+    return;
+  }
+  setCorsHeaders(response, origin);
+
+  if (request.method === "OPTIONS") {
+    response.status(204).end();
+    return;
+  }
+  if (request.method !== "POST") {
+    response.status(405).json({ error: "Método no permitido" });
     return;
   }
 
-  setCorsHeaders(res, origin);
-
-  if (req.method === "OPTIONS") {
-    res.status(204).end();
+  const authorization = await authorizeInstitutionalAIRequest(
+    request,
+    ALLOWED_MODELS,
+    DEFAULT_MODEL,
+  );
+  if (!authorization.ok) {
+    response
+      .status(authorization.status)
+      .json({ error: authorization.error });
     return;
   }
+  const institutionalRequest = authorization.value;
+  const auditDetails = {
+    contextType: institutionalRequest.contextType,
+    model: institutionalRequest.model,
+    promptChars: institutionalRequest.prompt.length,
+    provider: "gemini" as const,
+  };
 
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed" });
-    return;
-  }
-
-  const authHeader =
-    req.headers.authorization || (req.headers.Authorization as string | undefined);
-  if (!authHeader || typeof authHeader !== "string") {
-    res.status(401).json({ error: "Missing authorization" });
-    return;
-  }
-
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7).trim()
-    : "";
-  if (!token) {
-    res.status(401).json({ error: "Invalid authorization" });
-    return;
-  }
-
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey =
-    process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) {
-    res.status(500).json({ error: "Missing Supabase credentials" });
-    return;
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-  const { data: authData, error: authError } = await supabase.auth.getUser(token);
-  if (authError || !authData?.user) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-
-  const rateKey = getRateLimitKey(req);
-  if (await isRateLimited(rateKey)) {
-    res.status(429).json({ error: "Rate limit exceeded" });
-    return;
-  }
-
-  const body = req.body ?? {};
-  if (typeof body !== "object" || Array.isArray(body)) {
-    res.status(400).json({ error: "Invalid request body" });
-    return;
-  }
-
-  const { prompt, model } = body as { prompt?: string; model?: string };
-  if (!prompt || typeof prompt !== "string" || prompt.length > 8000) {
-    res.status(400).json({ error: "Invalid prompt" });
-    return;
-  }
-
-  if (model && typeof model !== "string") {
-    res.status(400).json({ error: "Invalid model" });
+  const startAudit = await recordInstitutionalAIEvent(
+    institutionalRequest,
+    "IA_SOLICITUD_AUTORIZADA",
+    auditDetails,
+  );
+  if (!startAudit.ok) {
+    console.error(
+      "No se pudo auditar la solicitud de Gemini",
+      startAudit.code,
+    );
+    response.status(500).json({
+      error: "No se pudo registrar la trazabilidad de la solicitud.",
+    });
     return;
   }
 
   const apiKey = process.env.GOOGLE_API_KEY;
   if (!apiKey) {
-    res.status(500).json({ error: "Missing GOOGLE_API_KEY" });
-    return;
-  }
-
-  const modelId = model && ALLOWED_MODELS.has(model) ? model : "gemini-2.0-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-    }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    res.status(response.status).json({
-      error: errorData?.error?.message || response.statusText,
+    await recordInstitutionalAIEvent(
+      institutionalRequest,
+      "IA_PROVEEDOR_FALLIDO",
+      { ...auditDetails, httpStatus: 500 },
+    );
+    response.status(503).json({
+      error: "El proveedor de IA no está configurado.",
     });
     return;
   }
 
-  const data = await response.json();
-  const text =
-    data?.candidates?.[0]?.content?.parts?.map((p: any) => p.text).join("") ||
-    "";
+  try {
+    const providerResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(institutionalRequest.model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: institutionalRequest.prompt }],
+            },
+          ],
+        }),
+      },
+    );
+    const payload: unknown = await providerResponse.json().catch(() => null);
 
-  res.status(200).json({ text });
+    if (!providerResponse.ok) {
+      const failureAudit = await recordInstitutionalAIEvent(
+        institutionalRequest,
+        "IA_PROVEEDOR_FALLIDO",
+        { ...auditDetails, httpStatus: providerResponse.status },
+      );
+      if (!failureAudit.ok) {
+        console.error(
+          "No se pudo auditar el fallo de Gemini",
+          failureAudit.code,
+        );
+      }
+      response.status(502).json({
+        error: "El proveedor no pudo completar el borrador solicitado.",
+      });
+      return;
+    }
+
+    const text = readGeminiText(payload);
+    if (!text) {
+      const failureAudit = await recordInstitutionalAIEvent(
+        institutionalRequest,
+        "IA_PROVEEDOR_FALLIDO",
+        { ...auditDetails, httpStatus: 502 },
+      );
+      if (!failureAudit.ok) {
+        console.error(
+          "No se pudo auditar la respuesta vacía de Gemini",
+          failureAudit.code,
+        );
+      }
+      response.status(502).json({
+        error: "El proveedor no devolvió un borrador utilizable.",
+      });
+      return;
+    }
+
+    const successAudit = await recordInstitutionalAIEvent(
+      institutionalRequest,
+      "IA_RESPUESTA_RECIBIDA",
+      {
+        ...auditDetails,
+        httpStatus: 200,
+        responseChars: text.length,
+      },
+    );
+    if (!successAudit.ok) {
+      console.error(
+        "No se pudo auditar la respuesta de Gemini",
+        successAudit.code,
+      );
+      response.status(500).json({
+        error: "No se pudo registrar la trazabilidad del borrador.",
+      });
+      return;
+    }
+
+    response.status(200).json({ text, draft: true });
+  } catch (error) {
+    const failureAudit = await recordInstitutionalAIEvent(
+      institutionalRequest,
+      "IA_PROVEEDOR_FALLIDO",
+      { ...auditDetails, httpStatus: 502 },
+    );
+    if (!failureAudit.ok) {
+      console.error(
+        "No se pudo auditar la interrupción de Gemini",
+        failureAudit.code,
+      );
+    }
+    console.error(
+      "Falló la conexión con Gemini",
+      error instanceof Error ? error.name : "UNKNOWN_ERROR",
+    );
+    response.status(502).json({
+      error: "No se pudo conectar con el proveedor de IA.",
+    });
+  }
 }

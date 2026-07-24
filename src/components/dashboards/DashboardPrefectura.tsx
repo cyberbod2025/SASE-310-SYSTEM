@@ -10,6 +10,18 @@ import {
 import { printContent } from "../PrintButtons";
 import { GlassCard } from "../ui/GlassCard";
 import { NeoButton } from "../ui/NeoButton";
+import { referStudentToOrientation } from "../prefectura/prefecturaPersistence";
+
+const mexicoDateKey = (value: string | Date) => {
+  const date = typeof value === "string" ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "America/Mexico_City",
+  }).format(date);
+};
 
 // --- MICRO-COMPONENTS (TACTICAL UI) ---
 
@@ -94,6 +106,7 @@ const TacticalActionButton = ({
   onClick: () => void;
 }) => (
   <button
+    aria-label={label}
     onClick={onClick}
     className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all active:scale-95 h-28 w-full relative overflow-hidden group ${color}`}
   >
@@ -158,7 +171,6 @@ export const DashboardPrefectura = () => {
   const {
     students,
     addIncident,
-    logAudit,
     setCurrentModule,
     openQuickRegister,
     dailyStats,
@@ -171,9 +183,10 @@ export const DashboardPrefectura = () => {
   );
   const [showEscalateConfirm, setShowEscalateConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [referralReason, setReferralReason] = useState("");
 
   // --- HELPERS ---
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = mexicoDateKey(new Date());
   const todayDisplay = new Date().toLocaleDateString("es-MX", {
     weekday: "long",
     day: "numeric",
@@ -201,8 +214,8 @@ export const DashboardPrefectura = () => {
     [students],
   );
 
-  const dailyIncidents = allIncidents.filter((i) =>
-    i.date.startsWith(todayStr),
+  const dailyIncidents = allIncidents.filter(
+    (incident) => mexicoDateKey(incident.date) === todayStr,
   );
 
   // Sort by most recent
@@ -216,21 +229,20 @@ export const DashboardPrefectura = () => {
       .slice(0, 5);
   }, [students]);
 
-  // Pattern Data: Top Groups with Retardos
-  // Pattern Data: Top Groups by Risk
-  const groupsWithDelays = useMemo(() => {
+  // Pattern Data: incidencias registradas por grupo.
+  const incidentsByGroup = useMemo(() => {
     const counts: Record<string, number> = {};
     students.forEach((s) => {
-      counts[s.group] = (counts[s.group] || 0) + (s.puntajeRiesgo || 0);
+      counts[s.group] = (counts[s.group] || 0) + s.incidents.length;
     });
     return Object.entries(counts)
-      .map(([label, value]) => ({ label, value: Math.round(value) }))
+      .map(([label, value]) => ({ label, value }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 4);
   }, [students]);
 
-  // Pattern Data: Top Students by Risk Score
-  const studentsWithIncidents = useMemo(() => {
+  // Pattern Data: alumnos con mayor puntaje institucional persistido.
+  const studentsByRisk = useMemo(() => {
     return [...students]
       .map((s) => ({ label: s.name.split(" ")[0], value: Math.round(s.puntajeRiesgo || 0) }))
       .sort((a, b) => b.value - a.value)
@@ -264,21 +276,15 @@ export const DashboardPrefectura = () => {
 
     // Execute Registration
     if (type === IncidentType.RETARDO) {
-      await registerAttendance(student.id, "retardo");
+      const saved = await registerAttendance(student.id, "retardo");
+      if (!saved) return;
     } else if (type === IncidentType.ASISTENCIA) {
-      await registerAttendance(student.id, "falta");
+      const saved = await registerAttendance(student.id, "falta");
+      if (!saved) return;
     }
 
-    addIncident(student.id, type, desc);
-    await logAudit(
-      "CREACION",
-      `Prefectura: ${desc}`,
-      "incidencias",
-      student.id,
-      student.name,
-      null,
-      { type, desc },
-    );
+    const incidentSaved = await addIncident(student.id, type, desc);
+    if (!incidentSaved) return;
 
     toast.success(`${label} registrado a ${student.name.split(" ")[0]}`);
     setMatriculaInput(""); // Clear for mobility
@@ -288,7 +294,7 @@ export const DashboardPrefectura = () => {
   const selectedStudent = students.find((s) => s.id === selectedStudentId);
 
   return (
-      <GlassCard className="flex-1 min-h-full p-4 lg:p-8 bg-[rgba(121,118,124,0.08)] relative overflow-hidden custom-scrollbar pb-32">
+    <GlassCard className="flex-1 min-h-full p-4 lg:p-8 bg-[rgba(121,118,124,0.08)] relative overflow-hidden custom-scrollbar pb-32">
       {/* Background Ambient Glow */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-sase-warning/[0.04] blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sase-danger/[0.03] blur-[100px] rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
@@ -303,13 +309,13 @@ export const DashboardPrefectura = () => {
             <div className="flex items-center gap-3">
               <span className="h-[2px] w-12 bg-sase-warning shadow-[0_0_15px_rgba(245,158,11,0.5)]"></span>
               <p className="text-[10px] font-black text-[var(--sase-text-muted)] uppercase tracking-[0.5em] italic">
-                CONTROL OPERATIVO // PREFECTURA_UNIT
+                SEGUIMIENTO OPERATIVO // PREFECTURA
               </p>
             </div>
             <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase italic leading-none">
-              CENTRO DE{" "}
+              ACOMPAÑAMIENTO{" "}
               <span className="text-sase-warning drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                CONTROL
+                ESCOLAR
               </span>
             </h1>
           </div>
@@ -321,14 +327,21 @@ export const DashboardPrefectura = () => {
                 transition={{ duration: 2, repeat: Infinity }}
                 className="size-1.5 bg-sase-clinical rounded-full shadow-[0_0_8px_rgba(125,114,147,0.4)]"
               />
-              <span>SINC_NUCLEO_ACTIVA</span>
+              <span>SINCRONIZACIÓN ACTIVA</span>
             </div>
             <NeoButton
               icon="print"
               onClick={() =>
                 printContent(
                   "Reporte Diario",
-                  `<h1>Reporte Prefectura ${todayDisplay}</h1>`,
+                  `<h1>Reporte de Prefectura</h1>
+                  <p>${todayDisplay}</p>
+                  <ul>
+                    <li>Asistencia registrada: ${dailyStats.attendanceCount}</li>
+                    <li>Retardos: ${dailyStats.lateCount}</li>
+                    <li>Incidencias del día: ${dailyIncidents.length}</li>
+                    <li>Objetos en custodia: ${retainedObjectsCount}</li>
+                  </ul>`,
                 )
               }
               className="uppercase tracking-widest text-[10px] md:text-[11px] px-5 py-3"
@@ -555,11 +568,7 @@ export const DashboardPrefectura = () => {
                     icon="visibility"
                     color="bg-slate-500/10 text-slate-600 border-slate-500/20 hover:bg-slate-500/20 hover:border-slate-500/40"
                     onClick={() =>
-                      handleAction(
-                        "Observación",
-                        IncidentType.CONDUCTA,
-                        "Observación General",
-                      )
+                      openQuickRegister(IncidentType.CONDUCTA)
                     }
                   />
                 </div>
@@ -580,11 +589,11 @@ export const DashboardPrefectura = () => {
                 />
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
                 <h3 className="text-[10px] font-black text-sase-warning uppercase tracking-[0.3em] italic mb-4 relative z-10">
-                  PATRÓN // RIESGO_POR_GRUPO
+                  INCIDENCIAS // POR GRUPO
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
-                    data={groupsWithDelays}
+                    data={incidentsByGroup}
                     color="bg-sase-warning"
                   />
                 </div>
@@ -602,11 +611,11 @@ export const DashboardPrefectura = () => {
                 />
                 <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20 group-hover:opacity-100 transition-opacity"></div>
                 <h3 className="text-[10px] font-black text-sase-danger uppercase tracking-[0.3em] italic mb-4 relative z-10">
-                  PATRÓN // TOP_RIESGOS_ACTIVOS
+                  SEGUIMIENTO // PUNTAJE DE RIESGO
                 </h3>
                 <div className="relative z-10">
                   <TacticalBarChart
-                    data={studentsWithIncidents}
+                    data={studentsByRisk}
                     color="bg-sase-danger"
                   />
                 </div>
@@ -628,14 +637,11 @@ export const DashboardPrefectura = () => {
               <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100 relative z-10">
                 <h3 className="text-[11px] font-black text-sase-warning uppercase tracking-[0.4em] italic flex items-center gap-3">
                   <span className="size-2 bg-sase-warning rounded-full animate-ping"></span>
-                  CANAL_ACTIVIDAD
+                  CANAL DE ACTIVIDAD
                 </h3>
-                <button
-                  onClick={() => setCurrentModule(AppModule.BITACORA)}
-                  className="text-[10px] font-black text-sase-info uppercase tracking-widest hover:text-white transition-colors"
-                >
-                  Ver Bitácora →
-                </button>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                  Actividad local confirmada
+                </span>
               </div>
 
               <div className="space-y-2 overflow-y-auto custom-scrollbar max-h-[300px] pr-2 flex-1 relative z-10">
@@ -654,7 +660,7 @@ export const DashboardPrefectura = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.05 }}
-                      key={idx}
+                      key={item.id}
                       className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.02] border border-slate-100 hover:bg-white/[0.05] transition-all group/item"
                     >
                       <div className="flex items-center gap-3">
@@ -719,14 +725,14 @@ export const DashboardPrefectura = () => {
               </div>
 
               <h3 className="text-[11px] font-black text-sase-danger uppercase tracking-[0.4em] italic mb-5 relative z-10">
-                CRITICAL_ALERTS
+                SEGUIMIENTO PRIORITARIO
               </h3>
 
               {activeAlerts.length === 0 ? (
                 <div className="flex items-center gap-3 p-3 bg-sase-clinical/5 border border-sase-clinical/10 rounded-xl relative z-10">
                   <div className="size-2 bg-sase-clinical rounded-full"></div>
                   <p className="text-[10px] font-black text-sase-clinical italic uppercase tracking-widest">
-                    SISTEMA ESTABLE
+                    SIN ALUMNOS EN SEGUIMIENTO PRIORITARIO
                   </p>
                 </div>
               ) : (
@@ -740,13 +746,13 @@ export const DashboardPrefectura = () => {
                         setSelectedStudentId(s.id);
                         setMatriculaInput("");
                       }}
-              className="p-3 bg-[var(--sase-surface-low)] border border-sase-danger/10 rounded-xl cursor-pointer hover:bg-[rgba(121,118,124,0.12)] hover:border-sase-danger/30 transition-all group/alert"
+                      className="p-3 bg-[var(--sase-surface-low)] border border-sase-danger/10 rounded-xl cursor-pointer hover:bg-[rgba(121,118,124,0.12)] hover:border-sase-danger/30 transition-all group/alert"
                     >
                       <p className="text-xs font-black text-white uppercase tracking-tight italic group-hover/alert:text-sase-danger transition-colors">
                         {s.name}
                       </p>
                       <p className="text-[9px] font-black text-sase-danger/60 mt-1 uppercase tracking-widest">
-                        {s.incidents.length} Seguimientos en curso
+                        {s.incidents.length} incidencias registradas
                       </p>
                     </motion.div>
                   ))}
@@ -770,7 +776,7 @@ export const DashboardPrefectura = () => {
               <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-[var(--sase-border-ghost)] opacity-20"></div>
 
               <h3 className="text-[11px] font-black text-sase-warning uppercase tracking-[0.4em] italic mb-5 relative z-10">
-                CONTEXTO_ACTIVO
+                CONTEXTO DEL ALUMNO
               </h3>
 
               {selectedStudent ? (
@@ -847,19 +853,11 @@ export const DashboardPrefectura = () => {
                   <div className="space-y-2 pt-2">
                     <button
                       onClick={() => {
-                        toast.success(`Notificación enviada al tutor legal de ${selectedStudent.name.split(" ")[0]} a través de la pasarela institucional.`);
-                      }}
-                      className="w-full py-3 bg-sase-warning text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-sase-warning transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] active:scale-95"
-                    >
-                      Notificar Tutor
-                    </button>
-                    <button
-                      onClick={() => {
                         setShowEscalateConfirm(true);
                       }}
                       className="w-full py-3 bg-[var(--sase-surface-low)] border border-[var(--sase-border-ghost)] text-[var(--sase-text-muted)] rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[rgba(121,118,124,0.12)] hover:text-white transition-all active:scale-95"
                     >
-                      Escalar a Orientación
+                      Canalizar a Orientación
                     </button>
                   </div>
                 </div>
@@ -891,16 +889,28 @@ export const DashboardPrefectura = () => {
                 <span className="material-symbols-outlined text-2xl font-black">campaign</span>
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-sase-warning">Protocolo Prefectura</p>
-                <h3 className="text-lg font-black text-white">Escalar a Orientación</h3>
+                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-sase-warning">Canalización institucional</p>
+                <h3 className="text-lg font-black text-white">Canalizar a Orientación</h3>
               </div>
             </div>
             <p className="mt-4 text-xs leading-6 text-slate-300 font-medium">
-              ¿Confirmas el escalamiento preventivo del alumno <strong className="text-white font-black">{selectedStudent.name}</strong> al departamento de Orientación Psicopedagógica?
+              Documenta el motivo para canalizar a <strong className="text-white font-black">{selectedStudent.name}</strong> al equipo de Orientación.
             </p>
             <p className="mt-3 text-[10px] font-black uppercase tracking-wider text-sase-warning/90 bg-amber-950/20 border border-sase-warning/20 p-3 rounded-xl leading-relaxed">
-              ⚠️ Esta acción registrará el reporte de prefectura en el expediente y alertará a los orientadores en su bandeja de prioridad.
+              La operación abrirá o reutilizará un caso y lo asignará a una
+              cuenta activa de Orientación. No crea otra incidencia ni envía
+              notificaciones a la familia.
             </p>
+            <label className="mt-4 block text-[10px] font-black uppercase tracking-widest text-slate-300">
+              Motivo verificable
+              <textarea
+                aria-label="Motivo de canalización a Orientación"
+                value={referralReason}
+                onChange={(event) => setReferralReason(event.target.value)}
+                className="mt-2 min-h-24 w-full rounded-xl border border-white/10 bg-black/30 p-3 text-sm normal-case tracking-normal text-white"
+                placeholder="Describe el hecho, necesidad de acompañamiento o acuerdo pendiente."
+              />
+            </label>
             <div className="mt-6 flex gap-3">
               <button
                 type="button"
@@ -915,30 +925,35 @@ export const DashboardPrefectura = () => {
                 onClick={async () => {
                   setIsSubmitting(true);
                   try {
-                    await addIncident(
-                      selectedStudent.id,
-                      IncidentType.CONDUCTA,
-                      "Escalamiento preventivo a Orientación por Prefectura"
+                    const referral = await referStudentToOrientation({
+                      studentId: selectedStudent.id,
+                      reason: referralReason,
+                      summary:
+                        `Referencia de Prefectura. Incidencias visibles al momento: ${selectedStudent.incidents.length}.`,
+                      priority:
+                        (selectedStudent.puntajeRiesgo || 0) >= 80
+                          ? "critica"
+                          : (selectedStudent.puntajeRiesgo || 0) >= 60
+                            ? "alta"
+                            : "media",
+                    });
+                    const responsible = referral.responsibleName
+                      || "el equipo de Orientación";
+                    toast.success(
+                      referral.reusedOpenCase
+                        ? `Referencia agregada al caso abierto de ${selectedStudent.name.split(" ")[0]}; responsable: ${responsible}.`
+                        : `Canalización asignada a ${responsible}.`,
                     );
-                    await logAudit(
-                      "CREACION",
-                      `Prefectura: Escalamiento preventivo a Orientación`,
-                      "incidencias",
-                      selectedStudent.id,
-                      selectedStudent.name,
-                      null,
-                      { type: IncidentType.CONDUCTA, desc: "Escalamiento preventivo a Orientación" }
-                    );
-                    toast.success(`Caso de ${selectedStudent.name.split(" ")[0]} escalado a Orientación correctamente.`);
+                    setReferralReason("");
                     setShowEscalateConfirm(false);
                   } catch (err) {
-                    console.error("Error escalating in Prefectura:", err);
-                    toast.error("Error al registrar escalamiento.");
+                    console.error("Error al canalizar desde Prefectura:", err);
+                    toast.error("No se pudo confirmar la canalización.");
                   } finally {
                     setIsSubmitting(false);
                   }
                 }}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !referralReason.trim()}
                 className="flex-1 min-h-[44px] rounded-xl bg-sase-warning text-[10px] font-black uppercase tracking-widest text-white hover:bg-amber-500 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (

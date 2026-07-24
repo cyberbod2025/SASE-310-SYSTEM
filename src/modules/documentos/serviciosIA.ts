@@ -4,16 +4,25 @@ async function callGeminiProxy(prompt: string, model: string): Promise<string> {
   const response = await fetch("/api/ai/gemini", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...authHeaders },
-    body: JSON.stringify({ prompt, model }),
+    body: JSON.stringify({
+      prompt,
+      model,
+      purpose: "Apoyar la revisión de redacción institucional sin decidir ni guardar",
+      contextType: "redaccion_institucional",
+    }),
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData?.error || response.statusText);
+  const data = await response.json().catch(() => null);
+  if (
+    !response.ok ||
+    data?.draft !== true ||
+    typeof data?.text !== "string" ||
+    !data.text.trim()
+  ) {
+    throw new Error("No se obtuvo un borrador institucional verificable.");
   }
 
-  const data = await response.json();
-  return (data?.text || "").trim();
+  return data.text.trim();
 }
 
 /**

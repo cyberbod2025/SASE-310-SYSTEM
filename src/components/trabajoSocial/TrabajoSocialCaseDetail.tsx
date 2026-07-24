@@ -5,6 +5,7 @@ import {
   ContactType,
   FamilyContactRecord,
   HomeVisitRecord,
+  SocialInterventionRecord,
   statusLabels,
   TrabajoSocialCase,
 } from "./trabajoSocialTypes";
@@ -15,12 +16,13 @@ interface TrabajoSocialCaseDetailProps {
   contacts: FamilyContactRecord[];
   visits: HomeVisitRecord[];
   agreements: ComplianceAgreement[];
+  interventions: SocialInterventionRecord[];
   canEdit: boolean;
   canEscalate: boolean;
   canViewSensitive: boolean;
   lastAction: string | null;
   onRegisterContact: (caseId: string, tipo: ContactType, resultado: string) => void;
-  onRegisterVisit: (caseId: string, observaciones: string) => void;
+  onRegisterVisit: (caseId: string, observaciones: string) => Promise<boolean>;
   onEscalate: (caseId: string) => void;
   onReturnToOrientacion: (caseId: string) => void;
 }
@@ -31,6 +33,7 @@ export const TrabajoSocialCaseDetail: React.FC<TrabajoSocialCaseDetailProps> = (
   contacts,
   visits,
   agreements,
+  interventions,
   canEdit,
   canEscalate,
   canViewSensitive,
@@ -52,17 +55,13 @@ export const TrabajoSocialCaseDetail: React.FC<TrabajoSocialCaseDetailProps> = (
   const caseContacts = contacts.filter((contact) => contact.caseId === selectedCase.id);
   const caseVisits = visits.filter((visit) => visit.caseId === selectedCase.id);
   const caseAgreements = agreements.filter((agreement) => agreement.caseId === selectedCase.id);
+  const caseInterventions = interventions.filter((intervention) => intervention.caseId === selectedCase.id);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-slate-950/70 p-4 shadow-2xl shadow-black/30 md:p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200 flex items-center gap-1.5">
-            <span>Detalle de caso</span>
-            <span className="rounded bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-amber-500">
-              ⚠️ BORRADOR LOCAL
-            </span>
-          </p>
+          <p className="text-[10px] font-black uppercase tracking-[0.26em] text-orange-200">Detalle de caso</p>
           <h2 className="text-2xl font-black text-white">{selectedCase.alumno}</h2>
           <p className="mt-1 text-sm font-semibold text-slate-400">{selectedCase.grupo} · responsable previo: {selectedCase.responsablePrevio}</p>
         </div>
@@ -118,18 +117,37 @@ export const TrabajoSocialCaseDetail: React.FC<TrabajoSocialCaseDetailProps> = (
         </div>
       </div>
 
+      <div className="mt-5 rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Historial de intervención</p>
+        <div className="mt-3 space-y-2">
+          {caseInterventions.length === 0 && (
+            <p className="text-sm font-semibold text-slate-400">Sin intervenciones registradas para este caso.</p>
+          )}
+          {caseInterventions.map((intervention) => (
+            <article key={intervention.id} className="rounded-2xl border border-white/10 bg-slate-950/45 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-black text-white">{intervention.accion}</p>
+                <span className="text-xs font-bold text-slate-500">{intervention.fecha}</span>
+              </div>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-orange-100">{intervention.resultado}</p>
+              {intervention.notas && <p className="mt-2 text-sm text-slate-300">{intervention.notas}</p>}
+            </article>
+          ))}
+        </div>
+      </div>
+
       <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button type="button" disabled={!canEdit} onClick={() => onRegisterContact(selectedCase.id, "llamada", "Contacto rapido desde detalle.")} className="min-h-[48px] rounded-2xl bg-orange-500 px-4 text-xs font-black uppercase tracking-widest text-slate-950 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400 hover:bg-orange-400">
-          Registrar contacto (registro local)
+          Registrar contacto
         </button>
         <button type="button" disabled={!canEdit} onClick={() => onRegisterVisit(selectedCase.id, "Visita rapida desde detalle.")} className="min-h-[48px] rounded-2xl border border-orange-300/30 bg-orange-500/10 px-4 text-xs font-black uppercase tracking-widest text-orange-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500 hover:bg-orange-500/20">
-          Registrar visita (borrador local)
+          Registrar visita
         </button>
         <button type="button" disabled={!canEscalate} onClick={() => onEscalate(selectedCase.id)} className="min-h-[48px] rounded-2xl border border-red-300/40 bg-red-500/15 px-4 text-xs font-black uppercase tracking-widest text-red-100 disabled:cursor-not-allowed disabled:border-slate-700 disabled:text-slate-500 hover:bg-red-500/35">
-          Escalar a Dirección (en preparación)
+          Registrar escalamiento a Dirección
         </button>
         <button type="button" disabled={!canEdit} onClick={() => onReturnToOrientacion(selectedCase.id)} className="min-h-[48px] rounded-2xl border border-white/10 bg-white/[0.06] px-4 text-xs font-black uppercase tracking-widest text-white disabled:cursor-not-allowed disabled:text-slate-500 hover:bg-white/[0.12]">
-          Devolver a Orientación (en preparación)
+          Registrar devolución a Orientación
         </button>
       </div>
 

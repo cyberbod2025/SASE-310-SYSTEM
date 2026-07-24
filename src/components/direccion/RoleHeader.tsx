@@ -26,7 +26,7 @@ export const RoleHeader: React.FC<RoleHeaderProps> = ({
             <span className="inline-flex rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-amber-100">
               Dirección
             </span>
-            <h1 className="mt-2 text-xl font-black text-white md:text-2xl">Flujo institucional de casos</h1>
+            <h1 className="mt-2 text-xl font-black text-white md:text-2xl">Panorama institucional verificable</h1>
           </div>
           <SOSButton compact onActivate={onSOS} />
         </div>

@@ -101,6 +101,7 @@ export const AssistantBanner: React.FC<{
     }
 
     if (currentUserRole === UserRole.DIRECTIVO ||
+        currentUserRole === UserRole.SUBDIRECCION ||
         currentUserRole === UserRole.SYSTEM_ADMIN ||
         currentUserRole === UserRole.DEVELOPER) {
       actions.push({
