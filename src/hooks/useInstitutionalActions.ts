@@ -88,10 +88,11 @@ export const useInstitutionalActions = () => {
         if (error) throw error;
 
         // Actualizar estado del alumno si está en observación
-        await supabase
+        const { error: updateError } = await supabase
           .from("alumnos")
           .update({ estado_semaforo: CaseState.INTERVENCION })
           .eq("id", studentId);
+        if (updateError) throw updateError;
 
         addNotification({
           title: "🚨 CASO ESCALADO",
